@@ -4,6 +4,8 @@ const FRANCE = 0
 const BRITAIN = 1
 
 function on_init() {
+	var i
+
 	define_board("map", 1650, 1275)
 
 	// TODO: define spaces and layouts on map
@@ -16,12 +18,20 @@ function on_init() {
 	define_panel("hand", 0, "hand")
 
 	// TODO: define pieces, tiles, and cards
+
+	for (i = 1; i <= 41; ++i)
+		define_card("action_card", i, "c" + i)
+	for (i = 1; i <= 26; ++i)
+		define_card("ministry_card", i, "c" + i)
 }
 
 function on_update() {
 	begin_update()
 
 	// TODO: update pieces, tiles, and cards
+
+	if (V.hand)
+		populate_with_list("hand", 0, "action_card", V.hand)
 
 	action_button("pass", "Pass")
 	action_button("next", "Next")

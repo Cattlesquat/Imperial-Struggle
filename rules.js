@@ -8,11 +8,31 @@ const FRANCE = 0
 const BRITAIN = 1
 
 function on_setup(scenario, options) {
+	var i
+
 	G.active = FRANCE
+
+	G.hand = [ [], [] ]
+
+	G.deck = []
+	for (i = 1; i <= 41; ++i)
+		G.deck.push(i)
+
+	shuffle(G.deck)
+
+	for (i = 0; i < 8; ++i) {
+		G.hand[FRANCE].push(G.deck.pop())
+		G.hand[BRITAIN].push(G.deck.pop())
+	}
+
 	call("main")
 }
 
 function on_view() {
+	if (R === FRANCE)
+		V.hand = G.hand[FRANCE]
+	if (R === BRITAIN)
+		V.hand = G.hand[BRITAIN]
 }
 
 /* FRAMEWORK */
