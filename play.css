@@ -1,0 +1,46 @@
+main { background-color: slategray; }
+
+header { background-color: tan }
+body.France header.your_turn { background-color: skyblue }
+body.Britain header.your_turn { background-color: salmon }
+
+#role_France { background-color: skyblue }
+#role_Britain { background-color: salmon }
+
+#mapwrap {
+	width: 2550px;
+	height: 1650px;
+}
+
+#map {
+	width: 2550px;
+	height: 1650px;
+	background-image: url(images/map150.jpg);
+	background-size: 2550px 1650px;
+}
+
+#war_display {
+	width: 825px;
+	height: 637px;
+	background-size: 825px 637.5px;
+	background-position: 0px 0px;
+	margin: 12px auto;
+}
+
+#war_display.war-was { background-image: url(images/war_display_was.jpg); }
+#war_display.war-7yw { background-image: url(images/war_display_7yw.jpg); }
+#war_display.war-wss { background-image: url(images/war_display_wss.jpg); }
+#war_display.war-awi { background-image: url(images/war_display_awi.jpg); }
+
+#panels {
+	margin: 12px;
+}
+
+.panel {
+	max-width: 1650px;
+	margin: 12px auto;
+}
+
+.panel-body {
+	min-height: 350px;
+}
