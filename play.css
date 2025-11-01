@@ -15,7 +15,7 @@ body.Britain header.your_turn { background-color: salmon }
 #map {
 	width: 2550px;
 	height: 1650px;
-	background-image: url(images/map150.jpg);
+	background-image: url(images/Imperial\ Struggle\ Map_Final-150-Clean.png);
 	background-size: 2550px 1650px;
 }
 
@@ -27,10 +27,10 @@ body.Britain header.your_turn { background-color: salmon }
 	margin: 12px auto;
 }
 
-#war_display.war-was { background-image: url(images/war_display_was.jpg); }
-#war_display.war-7yw { background-image: url(images/war_display_7yw.jpg); }
-#war_display.war-wss { background-image: url(images/war_display_wss.jpg); }
-#war_display.war-awi { background-image: url(images/war_display_awi.jpg); }
+#war_display.war-7yw { background-image: url(images/War Display_7YW.jpg); }
+#war_display.war-awi { background-image: url(images/War Display_AWI.jpg); }
+#war_display.war-was { background-image: url(images/War Display_WAS.jpg); }
+#war_display.war-wss { background-image: url(images/War Display_WSS.jpg); }
 
 #panels {
 	margin: 12px;
