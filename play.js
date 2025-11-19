@@ -20,7 +20,7 @@ function on_init() {
 	// TODO: define pieces, tiles, and cards
 
 	for (i = 1; i <= 41; ++i)
-		define_card("action_card", i, "c" + i)
+		define_card("event_card", i, "c" + i)
 	for (i = 1; i <= 26; ++i)
 		define_card("ministry_card", i, "c" + i)
 }
@@ -31,7 +31,7 @@ function on_update() {
 	// TODO: update pieces, tiles, and cards
 
 	if (V.hand)
-		populate_with_list("hand", 0, "action_card", V.hand)
+		populate_with_list("hand", 0, "event_card", V.hand)
 
 	action_button("pass", "Pass")
 	action_button("next", "Next")

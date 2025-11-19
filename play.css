@@ -7,6 +7,18 @@ body.Britain header.your_turn { background-color: salmon }
 #role_France { background-color: skyblue }
 #role_Britain { background-color: salmon }
 
+.panel {
+	background-color: #0002;
+}
+
+.panel-head {
+	background-color: #0002;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+}
+
+
 #mapwrap {
 	width: 2550px;
 	height: 1650px;
@@ -15,22 +27,9 @@ body.Britain header.your_turn { background-color: salmon }
 #map {
 	width: 2550px;
 	height: 1650px;
-	background-image: url("images/Imperial Struggle Map_Final-150-Clean.png");
+	background-image: url(boards75/map.avif);
 	background-size: 2550px 1650px;
 }
-
-#war_display {
-	width: 825px;
-	height: 637px;
-	background-size: 825px 637.5px;
-	background-position: 0px 0px;
-	margin: 12px auto;
-}
-
-#war_display.war-7yw { background-image: url("images/War Display_7YW.jpg"); }
-#war_display.war-awi { background-image: url("images/War Display_AWI.jpg"); }
-#war_display.war-was { background-image: url("images/War Display_WAS.jpg"); }
-#war_display.war-wss { background-image: url("images/War Display_WSS.jpg"); }
 
 #panels {
 	margin: 12px;
@@ -45,75 +44,104 @@ body.Britain header.your_turn { background-color: salmon }
 	min-height: 350px;
 }
 
+.board {
+	margin: 12px auto;
+	border: 1px solid black;
+}
+
+#war_display, #mat_1, #mat_2 {
+	width: 825px;
+	height: 638px;
+}
+
+#tile_display {
+	width: 638px;
+	height: 825px;
+}
+
+.board.war-7yw { background-image: url(boards75/war_1.avif); }
+.board.war-wss { background-image: url(boards75/war_2.avif); }
+.board.war-was { background-image: url(boards75/war_3.avif); }
+.board.war-awi { background-image: url(boards75/war_4.avif); }
+
+.board.britain { background-image: url(boards75/mat_1.avif) }
+.board.france { background-image: url(boards75/mat_2.avif) }
+
+#tile_display { background-image: url(boards75/display_1.avif); }
+
 .card {
 	width: 250px;
 	height: 350px;
 	background-size: 250px 350px;
+	border: 1px solid black;
+	border-radius: 16px;
 }
 
-.card.action_card.c1 { background-image: url("images/Card-01 Carnatic War.png") }
-.card.action_card.c2 { background-image: url("images/Card-02 Acts of Union.png") }
-.card.action_card.c3 { background-image: url("images/Card-03 Tropical Diseases.png") }
-.card.action_card.c4 { background-image: url("images/Card-04 South Sea Speculation.png") }
-.card.action_card.c5 { background-image: url("images/Card-05 War of Jenkin's Ear.png") }
-.card.action_card.c6 { background-image: url("images/Card-06 Nativce American Alliances.png") }
-.card.action_card.c7 { background-image: url("images/Card-07 Austor-Spanish Rivalry.png") }
-.card.action_card.c8 { background-image: url("images/Card-08 Tax Reform.png") }
-.card.action_card.c9 { background-image: url("images/Card-09 Great Northern War.png") }
-.card.action_card.c10 { background-image: url("images/Card-10 Vatican Politics.png") }
-.card.action_card.c11 { background-image: url("images/Card-11 Calico Acts.png") }
-.card.action_card.c12 { background-image: url("images/Card-12 Military Spending Overruns.png") }
-.card.action_card.c13 { background-image: url("images/Card-13 Alberoni's Ambition.png") }
-.card.action_card.c14 { background-image: url("images/Card-14 Famine in Ireland.png") }
-.card.action_card.c15 { background-image: url("images/Card-15 Interest Payments.png") }
-.card.action_card.c16 { background-image: url("images/Card-16 Caribbean Slave Unrest.png") }
-.card.action_card.c17 { background-image: url("images/Card-17 Pacte De Famille.png") }
-.card.action_card.c18 { background-image: url("images/Card-18 Byng's Trial.png") }
-.card.action_card.c19 { background-image: url("images/Card-19 Le Beau Monde.png") }
-.card.action_card.c20 { background-image: url("images/Card-20 Hyder Ali.png") }
-.card.action_card.c21 { background-image: url("images/Card-21 Co-Hong System.png") }
-.card.action_card.c22 { background-image: url("images/Card-22 Corsican Crisis.png") }
-.card.action_card.c23 { background-image: url("images/Card-23 European Panic.png") }
-.card.action_card.c24 { background-image: url("images/Card-24 West African Gold Mining.png") }
-.card.action_card.c25 { background-image: url("images/Card-25 War of the Quadruple Alliance.png") }
-.card.action_card.c26 { background-image: url("images/Card-26 Salon D'Hercule.png") }
-.card.action_card.c27 { background-image: url("images/Card-27 Bengal Famine.png") }
-.card.action_card.c28 { background-image: url("images/Card-28 Father Le Loutre.png") }
-.card.action_card.c29 { background-image: url("images/Card-29 War of the Polish Succession.png") }
-.card.action_card.c30 { background-image: url("images/Card-30 Jonathan's Coffee House.png") }
-.card.action_card.c31 { background-image: url("images/Card-31 Nootka Incident.png") }
-.card.action_card.c32 { background-image: url("images/Card-32 Haitian revolution.png") }
-.card.action_card.c33 { background-image: url("images/Card-33 Loge Des Neuf Soers.png") }
-.card.action_card.c34 { background-image: url("images/Card-34 La Gabelle.png") }
-.card.action_card.c35 { background-image: url("images/Card-35 Jesuit Abolition.png") }
-.card.action_card.c36 { background-image: url("images/Card-36 Wealth of Nations.png") }
-.card.action_card.c37 { background-image: url("images/Card-37 Debt Crisis.png") }
-.card.action_card.c38 { background-image: url("images/Card-38 East Asia Piracy.png") }
-.card.action_card.c39 { background-image: url("images/Card-39 Stamp Act.png") }
-.card.action_card.c40 { background-image: url("images/Card-40 Falklands Crisis.png") }
-.card.action_card.c41 { background-image: url("images/Card-41 Cook and  Bougainville.png") }
-.card.ministry_card.c6 { background-image: url("images/Card-BR Ministry 06 Jonathan Swift.png") }
-.card.ministry_card.c7 { background-image: url("images/Card-BR Ministry 07 East India Company.png") }
-.card.ministry_card.c8 { background-image: url("images/Card-BR Ministry 08 Bank of England.png") }
-.card.ministry_card.c10 { background-image: url("images/Card-BR Ministry 10 Edmond Halley.png") }
-.card.ministry_card.c15 { background-image: url("images/Card-BR Ministry 15 Pitt the Elder.png") }
-.card.ministry_card.c16 { background-image: url("images/Card-BR Ministry 16 Charles Hanbury Williams.png") }
-.card.ministry_card.c17 { background-image: url("images/Card-BR Ministry 17 Merchant Banks.png") }
-.card.ministry_card.c18 { background-image: url("images/Card-BR Ministry 18 Samuel Johnson.png") }
-.card.ministry_card.c19 { background-image: url("images/Card-BR Ministry 19 James Watt.png") }
-.card.ministry_card.c20 { background-image: url("images/Card-BR Ministry 20 Papacy-Hanover Negotiations.png") }
-.card.ministry_card.c21 { background-image: url("images/Card-BR Ministry 21 Townshend Acts.png") }
-.card.ministry_card.c22 { background-image: url("images/Card-BR Ministry 22 Edmund Burke.png") }
-.card.ministry_card.c1 { background-image: url("images/Card-FR Ministry 01 The Cardinal Ministers.png") }
-.card.ministry_card.c2 { background-image: url("images/Card-FR Ministry 02 John Law.png") }
-.card.ministry_card.c3 { background-image: url("images/Card-FR Ministry 03 Court of the Sun King.png") }
-.card.ministry_card.c4 { background-image: url("images/Card-FR Ministry 04 Jacobite Uprisings.png") }
-.card.ministry_card.c9 { background-image: url("images/Card-FR Ministry 09 New World Huguenots.png") }
-.card.ministry_card.c11 { background-image: url("images/Card-FR Ministry 11 Choiseul.png") }
-.card.ministry_card.c12 { background-image: url("images/Card-FR Ministry 12 Dupleix.png") }
-.card.ministry_card.c13 { background-image: url("images/Card-FR Ministry 13 Pompadour and Du Barry.png") }
-.card.ministry_card.c14 { background-image: url("images/Card-FR Ministry 14 Voltaire.png") }
-.card.ministry_card.c23 { background-image: url("images/Card-FR Ministry 23 Turgot.png") }
-.card.ministry_card.c24 { background-image: url("images/Card-FR Ministry 24 North American Trade.png") }
-.card.ministry_card.c25 { background-image: url("images/Card-FR Ministry 25 Marquis De Condorcet.png") }
-.card.ministry_card.c26 { background-image: url("images/Card-FR Ministry 26 Lavoisier.png") }
+.card.event_card.c1 { background-image: url(cards100/event_01.avif) }
+.card.event_card.c2 { background-image: url(cards100/event_02.avif) }
+.card.event_card.c3 { background-image: url(cards100/event_03.avif) }
+.card.event_card.c4 { background-image: url(cards100/event_04.avif) }
+.card.event_card.c5 { background-image: url(cards100/event_05.avif) }
+.card.event_card.c6 { background-image: url(cards100/event_06.avif) }
+.card.event_card.c7 { background-image: url(cards100/event_07.avif) }
+.card.event_card.c8 { background-image: url(cards100/event_08.avif) }
+.card.event_card.c9 { background-image: url(cards100/event_09.avif) }
+.card.event_card.c10 { background-image: url(cards100/event_10.avif) }
+.card.event_card.c11 { background-image: url(cards100/event_11.avif) }
+.card.event_card.c12 { background-image: url(cards100/event_12.avif) }
+.card.event_card.c13 { background-image: url(cards100/event_13.avif) }
+.card.event_card.c14 { background-image: url(cards100/event_14.avif) }
+.card.event_card.c15 { background-image: url(cards100/event_15.avif) }
+.card.event_card.c16 { background-image: url(cards100/event_16.avif) }
+.card.event_card.c17 { background-image: url(cards100/event_17.avif) }
+.card.event_card.c18 { background-image: url(cards100/event_18.avif) }
+.card.event_card.c19 { background-image: url(cards100/event_19.avif) }
+.card.event_card.c20 { background-image: url(cards100/event_20.avif) }
+.card.event_card.c21 { background-image: url(cards100/event_21.avif) }
+.card.event_card.c22 { background-image: url(cards100/event_22.avif) }
+.card.event_card.c23 { background-image: url(cards100/event_23.avif) }
+.card.event_card.c24 { background-image: url(cards100/event_24.avif) }
+.card.event_card.c25 { background-image: url(cards100/event_25.avif) }
+.card.event_card.c26 { background-image: url(cards100/event_26.avif) }
+.card.event_card.c27 { background-image: url(cards100/event_27.avif) }
+.card.event_card.c28 { background-image: url(cards100/event_28.avif) }
+.card.event_card.c29 { background-image: url(cards100/event_29.avif) }
+.card.event_card.c30 { background-image: url(cards100/event_30.avif) }
+.card.event_card.c31 { background-image: url(cards100/event_31.avif) }
+.card.event_card.c32 { background-image: url(cards100/event_32.avif) }
+.card.event_card.c33 { background-image: url(cards100/event_33.avif) }
+.card.event_card.c34 { background-image: url(cards100/event_34.avif) }
+.card.event_card.c35 { background-image: url(cards100/event_35.avif) }
+.card.event_card.c36 { background-image: url(cards100/event_36.avif) }
+.card.event_card.c37 { background-image: url(cards100/event_37.avif) }
+.card.event_card.c38 { background-image: url(cards100/event_38.avif) }
+.card.event_card.c39 { background-image: url(cards100/event_39.avif) }
+.card.event_card.c40 { background-image: url(cards100/event_40.avif) }
+.card.event_card.c41 { background-image: url(cards100/event_41.avif) }
+
+.card.ministry_card.c1 { background-image: url(cards100/ministry_01.avif) }
+.card.ministry_card.c2 { background-image: url(cards100/ministry_02.avif) }
+.card.ministry_card.c3 { background-image: url(cards100/ministry_03.avif) }
+.card.ministry_card.c4 { background-image: url(cards100/ministry_04.avif) }
+.card.ministry_card.c5 { background-image: url(cards100/ministry_05.avif) }
+.card.ministry_card.c6 { background-image: url(cards100/ministry_06.avif) }
+.card.ministry_card.c7 { background-image: url(cards100/ministry_07.avif) }
+.card.ministry_card.c8 { background-image: url(cards100/ministry_08.avif) }
+.card.ministry_card.c9 { background-image: url(cards100/ministry_09.avif) }
+.card.ministry_card.c10 { background-image: url(cards100/ministry_10.avif) }
+.card.ministry_card.c11 { background-image: url(cards100/ministry_11.avif) }
+.card.ministry_card.c12 { background-image: url(cards100/ministry_12.avif) }
+.card.ministry_card.c13 { background-image: url(cards100/ministry_13.avif) }
+.card.ministry_card.c14 { background-image: url(cards100/ministry_14.avif) }
+.card.ministry_card.c15 { background-image: url(cards100/ministry_15.avif) }
+.card.ministry_card.c16 { background-image: url(cards100/ministry_16.avif) }
+.card.ministry_card.c17 { background-image: url(cards100/ministry_17.avif) }
+.card.ministry_card.c18 { background-image: url(cards100/ministry_18.avif) }
+.card.ministry_card.c19 { background-image: url(cards100/ministry_19.avif) }
+.card.ministry_card.c20 { background-image: url(cards100/ministry_20.avif) }
+.card.ministry_card.c21 { background-image: url(cards100/ministry_21.avif) }
+.card.ministry_card.c22 { background-image: url(cards100/ministry_22.avif) }
+.card.ministry_card.c23 { background-image: url(cards100/ministry_23.avif) }
+.card.ministry_card.c24 { background-image: url(cards100/ministry_24.avif) }
+.card.ministry_card.c25 { background-image: url(cards100/ministry_25.avif) }
+.card.ministry_card.c26 { background-image: url(cards100/ministry_26.avif) }

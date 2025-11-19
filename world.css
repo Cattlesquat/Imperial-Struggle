@@ -48,11 +48,6 @@ body.hide-pieces .piece { display: none }
 	background-repeat: no-repeat;
 }
 
-.card, .piece, .marker {
-	justify-self: center;
-	align-self: center;
-}
-
 /* LAYOUT */
 
 .layout {
