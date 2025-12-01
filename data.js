@@ -2,19 +2,23 @@ const data = {}
 
 data.cards = [
     {},
-    {
-        "num": 1, "era": 0, "name": "Carnatic War",  "keywords": { 1 }, "keylabel": "BONUS: Mercantilism", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel", "", "britisheffect": "", "britishbonus": "", "frenchlabel": "" "frencheffect": "", "frenchbonus": "" },
-        "num": 2, "era": 0, "name": "Acts of Union", "keywords": {   }, "keylabel": "BONUS: More Prestige spaces in Scotland and Ireland", "effect": "", "bonus": "", "britishlabel": "United Parliament reduces Scottish intrigue in Europe" "britisheffect": "1 =diplo= (unflagging in Europe only).", "britishbonus": "Score 2 VP.", "frenchlabel", "Hapsburgs isolated", "frencheffect": "2 =diplo=", "frenchbonus": "Unflag a Political space in Europe (not in Spain or Austria)." },
+    { "num": 1, "era": 0, "name": "Carnatic War",  "keywords": { 1 }, "keylabel": "BONUS: Mercantilism", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel", "", "britisheffect": "", "britishbonus": "", "frenchlabel": "" "frencheffect": "", "frenchbonus": "" },
+    { "num": 2, "era": 0, "name": "Acts of Union", "keywords": {   }, "keylabel": "BONUS: More Prestige spaces in Scotland and Ireland", "effect": "", "bonus": "", "britishlabel": "United Parliament reduces Scottish intrigue in Europe" "britisheffect": "1 =diplo= (unflagging in Europe only).", "britishbonus": "Score 2 VP.", "frenchlabel", "Hapsburgs isolated", "frencheffect": "2 =diplo=", "frenchbonus": "Unflag a Political space in Europe (not in Spain or Austria)." },
 
-    }
 ]
 
 data.ministries = [
     {},
-    {
-        "num": 1,
-        "faction": "fr",
-    }
+    { "num": 1, "side": 0, "era" : { 0 },       "name": "The Cardinal Ministers", "keywords": { 2 },    "keylabel": "Governance",         "effect": "Once per turn, at the start of an Action Round in which your Investment Tile has any Diplomatic Action, that Action confers 1 extra =diplo= for each of the following you control (max 3): Savoy, Sardinia, and each Prestige space in Spain and Austria." },
+    { "num": 2, "side": 0, "era" : { 0 },       "name": "John Law",               "keywords": { 0 },    "keylabel": "Finance",            "effect": "At the end of each Peace turn, reduce your Debt by 1 (or 2, if you control any spaces in Scotland)." },
+    { "num": 3, "side": 0, "era" : { 0 },       "name": "Court of the Sun King",  "keywords": { 3, 4 }, "keylabel": "Style, Scholarship", "effect": "The Award for Europe is worth 1 extra VP to you." },
+    { "num": 4, "side": 0, "era" : { 0, 1, 2 }, "name": "Jacobite Uprisings",     "keywords": { },      "keylabel": "None",               "effect": "Once per turn you may use =mil= to shift spaces in Scotland and/or Ireland. Once per turn, on a different Action Round, you may spend 3=mil= to score 1 VP (max 4) for each FR-flagged such space and Jacobite Victory marker. Immediately remove this card from the game after BR play of the Papacy-Hanover Negotiations Ministry card, or after a Jacobite Defeat war result." },
+    { "num": 5, "side": 1, "era" : { 0 },       "name": "Robert Walpole",         "keywords": { 2 },    "keylabel": "Governance",         "effect": "Once per turn, you may draw one Event card, then discard one Event card." },
+    { "num": 6, "side": 1, "era" : { 0 },       "name": "Jonathan Swift",         "keywords": { 3 },    "keylabel": "Style",              "effect": "Spaces in Ireland and Scotland cost you 1 less =diplo= to flag. \n\n If you control any spaces in Ireland, your Minor Diplomatic Actions may be used to remove FR flags in Europe." },
+    { "num": 7, "side": 1, "era" : { 0, 1},     "name": "East India Company",     "keywords": { 1 },    "keylabel": "Mercantilism",       "effect": "During the Scoring Phase, score 1 VP for each of the following unexhausted Advantages you control (maximum 3): Textiles, Silk, Fruit, Fur Trade, Rum." },
+
+
+
 ]
 
 data.investments = [
