@@ -14,10 +14,11 @@ const ECON  = 0
 const DIP   = 1
 const MIL   = 2
 
-const NUM_INVESTMENT_TILES = 24
-const NUM_BASE_WAR_TILES   = 16 // per side
-const NUM_BONUS_WAR_TILES  = 12 // per side, per war
-const NUM_WARS             = 4
+const NUM_INVESTMENT_TILES  = 24
+const NUM_BASE_WAR_TILES    = 16 // per side
+const NUM_BONUS_WAR_TILES   = 12 // per side, per war
+const NUM_WARS              = 4
+const NUM_MINISTRY_KEYWORDS = 5
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -31,7 +32,14 @@ const WAS = 1
 const 7YW = 2
 const AWI = 3
 
-// Event Deck
+// Ministry keywords
+const FINANCE      = 0
+const MERCANTILISM = 1
+const GOVERNANCE   = 2
+const STYLE        = 3
+const SCHOLARSHIP  = 4
+
+// Event Deck Eras
 const SUCCESSION_ERA_CARDS = 15
 const EMPIRE_ERA_CARDS = 30
 const REVOLUTION_ERA_CARDS = 41

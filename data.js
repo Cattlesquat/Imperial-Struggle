@@ -3,7 +3,9 @@ const data = {}
 data.cards = [
     {},
     {
-        "num": 1,
+        "num": 1, "era": 0, "name": "Carnatic War",  "keywords": { 1 }, "keylabel": "BONUS: Mercantilism", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel", "", "britisheffect": "", "britishbonus": "", "frenchlabel": "" "frencheffect": "", "frenchbonus": "" },
+        "num": 2, "era": 0, "name": "Acts of Union", "keywords": {   }, "keylabel": "BONUS: More Prestige spaces in Scotland and Ireland", "effect": "", "bonus": "", "britishlabel": "United Parliament reduces Scottish intrigue in Europe" "britisheffect": "1 =diplo= (unflagging in Europe only).", "britishbonus": "Score 2 VP.", "frenchlabel", "Hapsburgs isolated", "frencheffect": "2 =diplo=", "frenchbonus": "Unflag a Political space in Europe (not in Spain or Austria)." },
+
     }
 ]
 
