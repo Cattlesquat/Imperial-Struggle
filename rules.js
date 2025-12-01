@@ -15,13 +15,21 @@ const DIP   = 1
 const MIL   = 2
 
 const NUM_INVESTMENT_TILES = 24
-const NUM_BASE_WAR_TILES = 16
+const NUM_BASE_WAR_TILES   = 16 // per side
+const NUM_BONUS_WAR_TILES  = 12 // per side, per war
+const NUM_WARS             = 4
 
-// Types of Basic War Tile
-const WAR_SOLDIER = 0
-const WAR_DEBT = 1
-const WAR_FORT = 2
-const WAR_FLAG = 3
+// Types of War Tile
+const WAR_DUDE = 0 // Just a soldier
+const WAR_DEBT = 1 // Debt attack
+const WAR_FORT = 2 // Fort/Fleet attack
+const WAR_FLAG = 3 // Diplomatic attack
+
+// Wars
+const WSS = 0
+const WAS = 1
+const 7YW = 2
+const AWI = 3
 
 // Event Deck
 const SUCCESSION_ERA_CARDS = 15
