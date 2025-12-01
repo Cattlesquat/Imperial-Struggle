@@ -44,3 +44,41 @@ data.investments = [
     { "num" : 23, "majortype" : 2, "majorval": 2, "minortype" : 2, "minorval" : 2}  // 2 mil, 2 diplo
 ]
 
+data.basic_war_tiles = [
+    // French basic war tiles
+    { "num" :  0, "side": 0, "val":  2, "type": 0 }, // +2 tile, x3
+    { "num" :  1, "side": 0, "val":  2, "type": 0 },
+    { "num" :  2, "side": 0, "val":  2, "type": 0 },
+    { "num" :  3, "side": 0, "val":  1, "type": 0 }, // +1 tile, x4
+    { "num" :  4, "side": 0, "val":  1, "type": 0 },
+    { "num" :  5, "side": 0, "val":  1, "type": 0 },
+    { "num" :  6, "side": 0, "val":  1, "type": 0 },
+    { "num" :  7, "side": 0, "val":  0, "type": 1 }, // 0 w/ Debt, x4
+    { "num" :  8, "side": 0, "val":  0, "type": 1 },
+    { "num" :  9, "side": 0, "val":  0, "type": 1 },
+    { "num" : 10, "side": 0, "val":  0, "type": 1 },
+    { "num" : 11, "side": 0, "val":  0, "type": 2 }, // 0 w/ Fort, x2
+    { "num" : 12, "side": 0, "val":  0, "type": 2 },
+    { "num" : 13, "side": 0, "val": -1, "type": 3 }, // -1 w/ Flag x3
+    { "num" : 14, "side": 0, "val": -1, "type": 3 },
+    { "num" : 15, "side": 0, "val": -1, "type": 3 },
+
+    // British basic war tiles
+    { "num" :  0, "side": 1, "val":  2, "type": 0 }, // +2 tile, x3
+    { "num" :  1, "side": 1, "val":  2, "type": 0 },
+    { "num" :  2, "side": 1, "val":  2, "type": 0 },
+    { "num" :  3, "side": 1, "val":  1, "type": 0 }, // +1 tile, x4
+    { "num" :  4, "side": 1, "val":  1, "type": 0 },
+    { "num" :  5, "side": 1, "val":  1, "type": 0 },
+    { "num" :  6, "side": 1, "val":  1, "type": 0 },
+    { "num" :  7, "side": 1, "val":  0, "type": 1 }, // 0 w/ Debt, x4
+    { "num" :  8, "side": 1, "val":  0, "type": 1 },
+    { "num" :  9, "side": 1, "val":  0, "type": 1 },
+    { "num" : 10, "side": 1, "val":  0, "type": 1 },
+    { "num" : 11, "side": 1, "val":  0, "type": 2 }, // 0 w/ Fort, x2
+    { "num" : 12, "side": 1, "val":  0, "type": 2 },
+    { "num" : 13, "side": 1, "val": -1, "type": 3 }, // -1 w/ Flag x3
+    { "num" : 14, "side": 1, "val": -1, "type": 3 },
+    { "num" : 15, "side": 1, "val": -1, "type": 3 }
+]
+

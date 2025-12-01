@@ -15,6 +15,13 @@ const DIP   = 1
 const MIL   = 2
 
 const NUM_INVESTMENT_TILES = 24
+const NUM_BASE_WAR_TILES = 16
+
+// Types of Basic War Tile
+const WAR_SOLDIER = 0
+const WAR_DEBT = 1
+const WAR_FORT = 2
+const WAR_FLAG = 3
 
 // Event Deck
 const SUCCESSION_ERA_CARDS = 15
