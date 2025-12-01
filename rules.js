@@ -7,6 +7,84 @@ var G, L, R, V, P = {}
 const FRANCE = 0
 const BRITAIN = 1
 
+const SUCCESSION_ERA_CARDS = 15
+const EMPIRE_ERA_CARDS = 30
+const REVOLUTION_ERA_CARDS = 41
+
+// Event Cards
+const CARNATIC_WAR = 1
+const ACTS_OF_UNION = 2
+const TROPICAL_DISEASES = 3
+const SOUTH_SEA_SPECULATION = 4
+const WAR_OF_JENKINS_EAR = 5
+const NATIVE_AMERICAN_ALLIANCES = 6
+const AUSTRO_SPANISH_RIVALRY = 7
+const TAX_REFORM = 8
+const GREAT_NORTHERN_WAR = 9
+const VATICAN_POLITICS = 10
+const CALICO_ACTS = 11
+const MILITARY_SPENDING_OVERRUNS = 12
+const ALBERONIS_AMBITION = 13
+const FAMINE_IN_IRELAND = 14
+const INTEREST_PAYMENTS = 15
+const CARRIBEAN_SLAVE_UNREST = 16 // SUCCESSION ERA
+const PACTE_DE_FAMILLE = 17
+const BYNGS_TRIAL = 18
+const LE_BEAU_MONDE = 19
+const HYDER_ALI = 20
+const CO_HONG_SYSTEM = 21
+const CORSICAN_CRISIS = 22
+const EUROPEAN_PANIC = 23
+const WEST_AFRICAN_GOLD_MINING = 24
+const WAR_OF_THE_QUADRUPLE_ALLIANCE = 25
+const SALON_D_HERCULE = 26
+const BENGAL_FAMINE = 27
+const FATHER_LE_LOUTRE = 28
+const WAR_OF_THE_POLISH_SUCCESSION = 29
+const JONATHANS_COFFEE_HOUSE = 30
+const NOOTKA_INCIDENT = 31 // REVOLUTION ERA
+const HAITIAN_REVOLUTION = 32
+const LOGE_DES_NEUF_SOEURS = 33
+const LA_GABELLE = 34
+const JESUIT_ABOLITION = 35
+const WEALTH_OF_NATIONS = 36
+const DEBT_CRISIS = 37
+const EAST_ASIA_PIRACY = 38
+const STAMP_ACT = 39
+const FALKLANDS_CRISIS = 40
+const COOK_AND_BOUGAINVILLE = 41
+
+// MINISTRY CARDS
+const THE_CARDINAL_MINISTERS = 1        // F
+const JOHN_LAW = 2                      // F
+const COURT_OF_THE_SUN_KING = 3         // F
+const JACOBITE_UPRISINGS = 4            // F
+const ROBERT_WALPOLE = 5                //  B
+const JONATHAN_SWIFT = 6                //  B
+const EAST_INDIA_COMPANY = 7            //  B
+const BANK_OF_ENGLAND = 8               //  B
+const NEW_WORLD_HUGUENOTS = 9           // F
+const EDMOND_HALLEY = 10                //  B
+const CHOISEUL = 11                     // F
+const DUPLEIX = 12                      // F
+const POMPADOUR_AND_DU_BARRY = 13       // F
+const VOLTAIRE = 14                     // F
+const PITT_THE_ELDER = 15               //  B
+const CHARLES_HANBURY_WILLIAMS = 16     //  B
+const MERCHANT_BANKS = 17               //  B
+const SAMUEL_JOHNSON = 18               //  B
+const JAMES_WATT = 19                   //  B
+const PAPACY_HANOVER_NEGOTIATIONS = 20  //  B
+const TOWNSHEND_ACTS = 21               //  B
+const EDMUND_BURKE = 22                 //  B
+const TURGOT = 23                       // F
+const NORTH_AMERICAN_TRADE = 24         // F
+const MARQUIS_DE_CONDORCET = 25         // F
+const LAVOISIER = 26                    // F
+
+
+
+
 function on_setup(scenario, options) {
 	var i
 
@@ -15,7 +93,7 @@ function on_setup(scenario, options) {
 	G.hand = [ [], [] ]
 
 	G.deck = []
-	for (i = 1; i <= 41; ++i)
+	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 
 	shuffle(G.deck)
