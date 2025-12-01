@@ -1,12 +1,22 @@
 "use strict"
+const data = require("./data.js")
 
 const ROLES = [ "France", "Britain" ]
 
 var G, L, R, V, P = {}
 
+// SIDES
 const FRANCE = 0
 const BRITAIN = 1
 
+// Types of Action Point
+const ECON  = 0
+const DIP   = 1
+const MIL   = 2
+
+const NUM_INVESTMENT_TILES = 24
+
+// Event Deck
 const SUCCESSION_ERA_CARDS = 15
 const EMPIRE_ERA_CARDS = 30
 const REVOLUTION_ERA_CARDS = 41
