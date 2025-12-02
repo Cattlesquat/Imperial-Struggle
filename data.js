@@ -1,5 +1,25 @@
 const data = {}
 
+data.demands = [
+    { "num": 0, "name": "Fish" },
+    { "num": 0, "name": "Furs" },
+    { "num": 0, "name": "Spice" },
+    { "num": 0, "name": "Sugar" },
+    { "num": 0, "name": "Tobacco" },
+    { "num": 0, "name": "Cotton" },
+]
+
+data.awards = [
+    { "num": 0, "vp": 3, "by2": true,  "trp": 0 },
+    { "num": 1, "vp": 2, "by2": true,  "trp": 0 },
+    { "num": 2, "vp": 1, "by2": false, "trp": 1 },
+    { "num": 3, "vp": 1, "by2": false, "trp": 1 },
+    { "num": 4, "vp": 1, "by2": false, "trp": 0 },
+    { "num": 5, "vp": 1, "by2": false, "trp": 0 },
+    { "num": 6, "vp": 0, "by2": false, "trp": 1 },
+    { "num": 7, "vp": 0, "by2": false, "trp": 1 },
+]
+
 data.cards = [
     {},
     { "num":  1, "era": 0, "name": "Carnatic War",               "keywords": { 1 }, "keylabel": "BONUS: Mercantilism",                                     "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
@@ -25,18 +45,34 @@ data.cards = [
 
 data.ministries = [
     {},
-    { "num":  1, "side": 0, "era" : { 0 },       "name": "The Cardinal Ministers", "keywords": { 2 },    "keylabel": "Governance",         "effect": "Once per turn, at the start of an Action Round in which your Investment Tile has any Diplomatic Action, that Action confers 1 extra =diplo= for each of the following you control (max 3): Savoy, Sardinia, and each Prestige space in Spain and Austria." },
-    { "num":  2, "side": 0, "era" : { 0 },       "name": "John Law",               "keywords": { 0 },    "keylabel": "Finance",            "effect": "At the end of each Peace turn, reduce your Debt by 1 (or 2, if you control any spaces in Scotland)." },
-    { "num":  3, "side": 0, "era" : { 0 },       "name": "Court of the Sun King",  "keywords": { 3, 4 }, "keylabel": "Style, Scholarship", "effect": "The Award for Europe is worth 1 extra VP to you." },
-    { "num":  4, "side": 0, "era" : { 0, 1, 2 }, "name": "Jacobite Uprisings",     "keywords": { },      "keylabel": "None",               "effect": "Once per turn you may use =mil= to shift spaces in Scotland and/or Ireland. Once per turn, on a different Action Round, you may spend 3=mil= to score 1 VP (max 4) for each FR-flagged such space and Jacobite Victory marker. Immediately remove this card from the game after BR play of the Papacy-Hanover Negotiations Ministry card, or after a Jacobite Defeat war result." },
-    { "num":  5, "side": 1, "era" : { 0 },       "name": "Robert Walpole",         "keywords": { 2 },    "keylabel": "Governance",         "effect": "Once per turn, you may draw one Event card, then discard one Event card." },
-    { "num":  6, "side": 1, "era" : { 0 },       "name": "Jonathan Swift",         "keywords": { 3 },    "keylabel": "Style",              "effect": "Spaces in Ireland and Scotland cost you 1 less =diplo= to flag.\n\nIf you control any spaces in Ireland, your Minor Diplomatic Actions may be used to remove FR flags in Europe." },
-    { "num":  7, "side": 1, "era" : { 0, 1 },    "name": "East India Company",     "keywords": { 1 },    "keylabel": "Mercantilism",       "effect": "During the Scoring Phase, score 1 VP for each of the following unexhausted Advantages you control (maximum 3): Textiles, Silk, Fruit, Fur Trade, Rum." },
-    { "num":  8, "side": 1, "era" : { 0 },       "name": "Bank of England",        "keywords": { 0 },    "keylabel": "Finance",            "effect": "Once per turn, you may increase your Debt Limit by 1.\n\nOnce per turn, you may play an Economic event even if your selected Investment Tile does not have an Economic Major Action. (It must still have the Event symbol.)" },
-    { "num":  9, "side": 0, "era" : { 0 },       "name": "New World Huguenots",    "keywords": { 1 },    "keylabel": "Mercantilism",       "effect": "Once per turn, during a FR Action Round, place 1 Huguenots marker in one FR-flagged Territory in N. America or the Caribbean where there isn't one already. A Huguenots marker increases its space's CP cost by 1. It may be flipped once per game to reduce the =econ= cost of a Market in its Region by 1. It is permanently removed if its space becomes BR-flagged." },
-    { "num": 10, "side": 1, "era" : { 0 },       "name": "Edmond Halley",          "keywords": { 4 },    "keylabel": "Scholarship",        "effect": "Once per turn, you may spend 2=mil= to build a Squadron (instead of the usual 4).\n\nOnce per turn, if you have a Squadron in Europe, you may discard an Event card from your hand and take 1 TRP." },
+    { "num":  1, "side": 0, "era": { 0 },       "name": "The Cardinal Ministers",      "keywords": { 2 },    "keylabel": "Governance",           "effect": "Once per turn, at the start of an Action Round in which your Investment Tile has any Diplomatic Action, that Action confers 1 extra =diplo= for each of the following you control (max 3): Savoy, Sardinia, and each Prestige space in Spain and Austria." },
+    { "num":  2, "side": 0, "era": { 0 },       "name": "John Law",                    "keywords": { 0 },    "keylabel": "Finance",              "effect": "At the end of each Peace turn, reduce your Debt by 1 (or 2, if you control any spaces in Scotland)." },
+    { "num":  3, "side": 0, "era": { 0 },       "name": "Court of the Sun King",       "keywords": { 3, 4 }, "keylabel": "Style, Scholarship",   "effect": "The Award for Europe is worth 1 extra VP to you." },
+    { "num":  4, "side": 0, "era": { 0, 1, 2 }, "name": "Jacobite Uprisings",          "keywords": { },      "keylabel": "None",                 "effect": "Once per turn you may use =mil= to shift spaces in Scotland and/or Ireland. Once per turn, on a different Action Round, you may spend 3=mil= to score 1 VP (max 4) for each FR-flagged such space and Jacobite Victory marker. Immediately remove this card from the game after BR play of the Papacy-Hanover Negotiations Ministry card, or after a Jacobite Defeat war result." },
+    { "num":  5, "side": 1, "era": { 0 },       "name": "Robert Walpole",              "keywords": { 2 },    "keylabel": "Governance",           "effect": "Once per turn, you may draw one Event card, then discard one Event card." },
+    { "num":  6, "side": 1, "era": { 0 },       "name": "Jonathan Swift",              "keywords": { 3 },    "keylabel": "Style",                "effect": "Spaces in Ireland and Scotland cost you 1 less =diplo= to flag.\n\nIf you control any spaces in Ireland, your Minor Diplomatic Actions may be used to remove FR flags in Europe." },
+    { "num":  7, "side": 1, "era": { 0, 1 },    "name": "East India Company",          "keywords": { 1 },    "keylabel": "Mercantilism",         "effect": "During the Scoring Phase, score 1 VP for each of the following unexhausted Advantages you control (maximum 3): Textiles, Silk, Fruit, Fur Trade, Rum." },
+    { "num":  8, "side": 1, "era": { 0 },       "name": "Bank of England",             "keywords": { 0 },    "keylabel": "Finance",              "effect": "Once per turn, you may increase your Debt Limit by 1.\n\nOnce per turn, you may play an Economic event even if your selected Investment Tile does not have an Economic Major Action. (It must still have the Event symbol.)" },
+    { "num":  9, "side": 0, "era": { 0 },       "name": "New World Huguenots",         "keywords": { 1 },    "keylabel": "Mercantilism",         "effect": "Once per turn, during a FR Action Round, place 1 Huguenots marker in one FR-flagged Territory in N. America or the Caribbean where there isn't one already. A Huguenots marker increases its space's CP cost by 1. It may be flipped once per game to reduce the =econ= cost of a Market in its Region by 1. It is permanently removed if its space becomes BR-flagged." },
+    { "num": 10, "side": 1, "era": { 0 },       "name": "Edmond Halley",               "keywords": { 4 },    "keylabel": "Scholarship",          "effect": "Once per turn, you may spend 2=mil= to build a Squadron (instead of the usual 4).\n\nOnce per turn, if you have a Squadron in Europe, you may discard an Event card from your hand and take 1 TRP." },
 
+    { "num": 11, "side": 0, "era": { 1 },       "name": "Choiseul",                    "keywords": { 2, 0 }, "keylabel": "Governance, Finance",  "effect": "Once per turn, when taking a Military action, you receive 1 extra =mil= that you may spend on Bonus War Tiles or deploying Squadrons (only). Once per turn, if you have a Squadron in North America, you may may 2 =mil= to construct a new Squadron (instead of the usual 4)." },
+    { "num": 12, "side": 0, "era": { 1 },       "name": "Dupleix",                     "keywords": { 1 },    "keylabel": "Mercantilism",         "effect": "The Awards for India, Cotton, and Spice are worth 1 extra TRP to you." },
+    { "num": 13, "side": 0, "era": { 1, 2 },    "name": "Pompadour & Du Barry",        "keywords": { 3 },    "keylabel": "Style",                "effect": "The first time each Action Round that you exhaust an Advantage in Europe, gain 1 TRP." },
+    { "num": 14, "side": 0, "era": { 1, 2 },    "name": "Voltaire",                    "keywords": { 4 },    "keylabel": "Scholarship",          "effect": "When the Europe Award is given, gain 1 TRP for each multi-space country in which you control a Prestige space (max 3)." },
+    { "num": 15, "side": 1, "era": { 1 },       "name": "Pitt the Elder",              "keywords": { 2 },    "keylabel": "Governance",           "effect": "Once per turn, when taking a Diplomatic action, you receive 1 extra =diplo= that you may spend on shifting non-Prestige Political spaces.\n\nOnce per turn, you may pay 2 =mil= to construct a new Squadron (instead of the usual 4)." },
+    { "num": 16, "side": 1, "era": { 1 },       "name": "Charles Hanbury Williams",    "keywords": { 3 },    "keylabel": "Style",                "effect": "Once per turn, FR-flagged spaces in Prussia, German States, and Russia cost you 1 less =diplo= to unflag for one Action Round." },
+    { "num": 17, "side": 1, "era": { 1, 2 },    "name": "Merchant Banks",              "keywords": { 0 },    "keylabel": "Finance",              "effect": "Ignore the first 2 Debt you take as =econ= each Peace turn, provided you use the Debt. (If this ability is available, you may use it even while at your Debt Limit.)" },
+    { "num": 18, "side": 1, "era": { 1, 2 },    "name": "Samuel Johnson",              "keywords": { 4 },    "keylabel": "Scholarship",          "effect": "The Award for Europe is worth 1 extra VP to you, and 1 less VP to France (minimum 0)." },
 
+    { "num": 19, "side": 1, "era": { 2 },       "name": "James Watt",                  "keywords": { 4 },    "keylabel": "Scholarship",          "effect": "If you are forced to take Debt in excess of your Debt Limit, your opponent scores no VP.\n\nThe first time each Action Round your opponent exhausts an Advantage, gain 1 TRP." },
+    { "num": 20, "side": 1, "era": { 2 },       "name": "Papacy-Hanover Negotiations", "keywords": { 3 },    "keylabel": "Style",                "effect": "Remove the Jacobite Uprisings Ministry card from the game.\n\nOnce per turn, when taking a Diplomatic action, you receive 2 =diplo= usable only to shift spaces in Scotland and Ireland." },
+    { "num": 21, "side": 1, "era": { 2 },       "name": "Townshend Acts",              "keywords": { 1 },    "keylabel": "Mercantilism",         "effect": "Once per turn, at the start of an Action Round, place the Townshend Acts marker on a commodity on the Global Demand display. You may use Minor Actions to unflag that commodity's Markets this turn." },
+    { "num": 22, "side": 1, "era": { 2 },       "name": "Edmund Burke",                "keywords": { 2 },    "keylabel": "Governance",           "effect": "Major Diplomatic Actions spent entirely in Europe are worth up to 2 extra =diplo=: one for each Ireland space you control.\n\nSons of Liberty and USA spaces cost 1 less =diplo= for you to shift." },
+    { "num": 23, "side": 0, "era": { 2 },       "name": "Turgot",                      "keywords": { 0, 3 }, "keylabel": "Finance, Style",       "effect": "The first Debt you take each Action Round is worth 1 extra Action Point, provided you have more Available Debt than the British." },
+    { "num": 24, "side": 0, "era": { 2 },       "name": "North American Trade",        "keywords": { 1 },    "keylabel": "Mercantilism",         "effect": "If you control more Fur and Fish Markets (combined) than your opponent at the start of your Action Round, your Economic Major and Minor Actions are worth 1 extra =econ=.\n\nRefresh your Huguenots markers, if you have any on the map." },
+    { "num": 25, "side": 0, "era": { 2 },       "name": "Marquis de Condorcet",        "keywords": { 2 },    "keylabel": "Governance",           "effect": "Once per turn, at the start of your Action Round, you can play an Event even if your selected Investment Tile does not have an event symbol. You must still match the Event's type, if it has one, to the Major Action on your Investment Tile." },
+    { "num": 26, "side": 0, "era": { 2 },       "name": "Lavoisier",                   "keywords": { 4 },    "keylabel": "Scholarship",          "effect": "On any Action Round you play an Event with a Bonus effect, and you receive that Bonus effect, your Major and Minor Actions from Investment tiles are worth 1 extra Action Point." },
 ]
 
 data.investments = [
@@ -88,22 +124,22 @@ data.basic_war_tiles = [
     { "num" : 15, "side": 0, "val": -1, "type": 3 },
 
     // British basic war tiles
-    { "num" :  0, "side": 1, "val":  2, "type": 0 }, // +2 tile, x3
-    { "num" :  1, "side": 1, "val":  2, "type": 0 },
-    { "num" :  2, "side": 1, "val":  2, "type": 0 },
-    { "num" :  3, "side": 1, "val":  1, "type": 0 }, // +1 tile, x4
-    { "num" :  4, "side": 1, "val":  1, "type": 0 },
-    { "num" :  5, "side": 1, "val":  1, "type": 0 },
-    { "num" :  6, "side": 1, "val":  1, "type": 0 },
-    { "num" :  7, "side": 1, "val":  0, "type": 1 }, // 0 w/ Debt, x4
-    { "num" :  8, "side": 1, "val":  0, "type": 1 },
-    { "num" :  9, "side": 1, "val":  0, "type": 1 },
-    { "num" : 10, "side": 1, "val":  0, "type": 1 },
-    { "num" : 11, "side": 1, "val":  0, "type": 2 }, // 0 w/ Fort, x2
-    { "num" : 12, "side": 1, "val":  0, "type": 2 },
-    { "num" : 13, "side": 1, "val": -1, "type": 3 }, // -1 w/ Flag x3
-    { "num" : 14, "side": 1, "val": -1, "type": 3 },
-    { "num" : 15, "side": 1, "val": -1, "type": 3 }
+    { "num" : 16, "side": 1, "val":  2, "type": 0 }, // +2 tile, x3
+    { "num" : 17, "side": 1, "val":  2, "type": 0 },
+    { "num" : 18, "side": 1, "val":  2, "type": 0 },
+    { "num" : 19, "side": 1, "val":  1, "type": 0 }, // +1 tile, x4
+    { "num" : 20, "side": 1, "val":  1, "type": 0 },
+    { "num" : 21, "side": 1, "val":  1, "type": 0 },
+    { "num" : 22, "side": 1, "val":  1, "type": 0 },
+    { "num" : 23, "side": 1, "val":  0, "type": 1 }, // 0 w/ Debt, x4
+    { "num" : 24, "side": 1, "val":  0, "type": 1 },
+    { "num" : 25, "side": 1, "val":  0, "type": 1 },
+    { "num" : 26, "side": 1, "val":  0, "type": 1 },
+    { "num" : 27, "side": 1, "val":  0, "type": 2 }, // 0 w/ Fort, x2
+    { "num" : 28, "side": 1, "val":  0, "type": 2 },
+    { "num" : 29, "side": 1, "val": -1, "type": 3 }, // -1 w/ Flag x3
+    { "num" : 30, "side": 1, "val": -1, "type": 3 },
+    { "num" : 31, "side": 1, "val": -1, "type": 3 }
 ]
 
 data.bonus_war_tiles = [
@@ -116,8 +152,8 @@ data.bonus_war_tiles = [
     { "num" :  5, "side", 0, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Musketeers" },
     { "num" :  6, "side", 0, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "d'Artagnan" },            // +1
     { "num" :  7, "side", 0, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "Maison du Roi" },
-    { "num" :  9, "side", 0, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "Boufflers" },             // +1, Debt
-    { "num" :  8, "side", 0, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "de Tessé" },
+    { "num" :  8, "side", 0, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "Boufflers" },             // +1, Debt
+    { "num" :  9, "side", 0, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "de Tessé" },
     { "num" : 10, "side", 0, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Crack Troops" },          // +1, Fort
     { "num" : 11, "side", 0, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Ultima Ratio Regum" },
 
@@ -185,7 +221,7 @@ data.bonus_war_tiles = [
     { "num" : 64, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Morta la Bestia" },
     { "num" : 65, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Wolfe" },
     { "num" : 66, "side", 1, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Granby" },                // +1
-    { "num" : 67, "side", 1, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Sepoy Volunteers" },
+    { "num" : 67, "side", 1, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Sepoy Veterans" },
     { "num" : 68, "side", 1, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Damned Audacity" },       // +1, Debt
     { "num" : 69, "side", 1, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Johnson" },
     { "num" : 70, "side", 1, "val": 1, "type": 2, "war" : 2, "warid", "7YW", "name": "Bradstreet" },            // +1, Fort

@@ -19,6 +19,8 @@ const NUM_BASE_WAR_TILES    = 16 // per side
 const NUM_BONUS_WAR_TILES   = 12 // per side, per war
 const NUM_WARS              = 4
 const NUM_MINISTRY_KEYWORDS = 5
+const NUM_DEMANDS           = 6
+const NUM_AWARD_TILES       = 8
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -38,6 +40,14 @@ const MERCANTILISM = 1
 const GOVERNANCE   = 2
 const STYLE        = 3
 const SCHOLARSHIP  = 4
+
+// Global Demand
+const FISH = 0
+const FURS = 1
+const SPICE = 2
+const SUGAR = 3
+const TOBACCO = 4
+const COTTON = 5
 
 // Advantages
 const BALTIC_TRADE = 0                  // EUROPE
