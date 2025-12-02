@@ -39,6 +39,30 @@ const GOVERNANCE   = 2
 const STYLE        = 3
 const SCHOLARSHIP  = 4
 
+// Advantages
+const BALTIC_TRADE = 0                  // EUROPE
+const CENTRAL_EUROPE_CONFLICT = 1
+const GERMAN_DIPLOMACY = 2
+const ITALY_INFLUENCE = 3
+const MEDITERRANEAN_INTRIGUE = 4
+const NAVAL_BASTION = 5
+const SILESIA_NEGOTIATIONS = 6
+const ALGONQUIN_RAIDS = 7               // NORTH AMERICA
+const FUR_TRADE = 8
+const IROQUOIS_RAIDS = 9
+const PATRIOT_AGITATION = 10
+const WHEAT = 11
+const FRUIT = 12                        // CARIBBEAN
+const LETTERS_OF_MARQUE = 13
+const PIRATE_HAVENS = 14
+const RUM = 15
+const SLAVING_CONTRACTS = 16
+const POWER_STRUGGLE = 17               // INDIA
+const RAIDS_AND_INCURSIONS = 18
+const SEPARATIST_WARS = 19
+const SILK = 20
+const TEXTILES = 21
+
 // Event Deck Eras
 const SUCCESSION_ERA_CARDS = 15
 const EMPIRE_ERA_CARDS = 30
