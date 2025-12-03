@@ -3,7 +3,7 @@ const data = require("./data.js")
 
 const ROLES = [ "None", "France", "Britain" ]
 
-var G, L, R, V, P = {}
+var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
 // FLAGS
 const NONE    = 0
@@ -18,11 +18,14 @@ const DIP   = 1
 const MIL   = 2
 const WILD  = 3
 
+const NUM_REGIONS                   = 4
 const NUM_INVESTMENT_TILES  = 24
 const NUM_BASE_WAR_TILES    = 16 // per side
 const NUM_BONUS_WAR_TILES   = 12 // per side, per war
 const NUM_WARS              = 4
+const NUM_EVENT_CARDS       = 41
 const NUM_MINISTRY_KEYWORDS = 5
+const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 
@@ -175,24 +178,99 @@ const FORT      = 4
 const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
 
 
+function draw_awards() {
+    if (G.award_chits.length < NUM_REGIONS) { // Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
+        for (i = 0; i < NUM_AWARD_TILES; i++) {
+            G.awards.push(i);
+        }
+        shuffle(G.awards)
+    }
+
+    // Deal one per region
+    for (var i = 0; i < NUM_REGIONS; i++) {
+       G.current_awards[i] = G.award_chits.pop();
+    }
+}
+
+function blank_game_state (scenario, options) {
+    G.active     = FRANCE
+    G.hand       = [ [], [], [] ]
+    G.turn       = 0
+    G.next_war   = WSS
+    G.initiative = FRANCE
+
+    G.debt = []
+    G.debt_limit = []
+    G.treaty_points = []
+
+    for (var i = FRANCE; i <= BRITAIN; i++) {
+        G.debt_limit[i]    = 6
+        G.debt[i]          = 0
+        G.treaty_points[i] = 0
+    }
+
+    G.deck = []
+    for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i) {
+        G.deck.push(i)
+    }
+    shuffle(G.deck)
+
+    G.investments = []
+    G.current_investments = []
+    G.used_investments = []
+    for (i = 0; i <= NUM_INVESTMENT_TILES; i++) {
+        G.investments.push(i)
+    }
+    shuffle(G.investments)
+
+    G.basic_war_tiles = [ [],[],[] ]
+    for (i = 0; i <= NUM_BASE_WAR_TILES; i++) {
+        G.basic_war_tiles[FRANCE].push(i);
+        G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES);
+    }
+    shuffle (G.basic_war_tiles[FRANCE])
+    shuffle (G.basic_war_tiles[BRITAIN])
+
+    G.global_demand_chits = []
+    G.global_demand = []
+    for (i = 0; i <= NUM_DEMANDS; i++) {
+        G.global_demand_chits.push(i);
+    }
+    shuffle(G.global_demand_chits);
+
+    G.current_awards = []
+    G.award_chits = []
+
+    draw_awards()
+
+    G.flags = [] // All the flags on the map
+    // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
+    for (i = 0; i < data.spaces.length; i++) {
+        if (data.spaces[i].flag === undefined) continue;
+        G.flags[i] = data.spaces[i].flag
+
+        G.flags[i] = data.spaces[i]?.flag
+    }
+
+    // Gives each player a "hand" of all the available ministry cards for their side.
+    G.ministry = [ [], [], [] ];
+    for (i = 1; i <= NUM_MINISTRY_CARDS; i++) {
+        let whose = data.ministries[i].side
+        G.ministry[whose].push(i)
+    }
+
+}
 
 function on_setup(scenario, options) {
 	var i
 
-	G.active = FRANCE
+    blank_game_state(scenario, options);
 
-	G.hand = [ [], [] ]
 
-	G.deck = []
-	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
-		G.deck.push(i)
-
-	shuffle(G.deck)
-
-	for (i = 0; i < 8; ++i) {
-		G.hand[FRANCE].push(G.deck.pop())
-		G.hand[BRITAIN].push(G.deck.pop())
-	}
+	//for (i = 0; i < 8; ++i) {
+	//	G.hand[FRANCE].push(G.deck.pop())
+	//	G.hand[BRITAIN].push(G.deck.pop())
+	//}
 
 	call("main")
 }
@@ -202,6 +280,24 @@ function on_view() {
 		V.hand = G.hand[FRANCE]
 	if (R === BRITAIN)
 		V.hand = G.hand[BRITAIN]
+
+    // Player debts/TRPs always visible
+    V.debt          = G.debt;
+    V.debt_limit    = G.debt_limit;
+    V.treaty_points = G.treaty_points;
+
+    // Current available investments, and used investment pile, are public. Shuffled investment deck is not.
+    V.current_investments = G.current_investments;
+    V.used_investments    = G.used_investments;
+
+    // Flags on the board are always visible
+    V.flags = G.flags;
+
+    // Currently selected global demand chits are visible; shuffled chits are not
+    V.global_demand = G.global_demand;
+
+
+
 }
 
 /* FRAMEWORK */
