@@ -13,6 +13,7 @@ const BRITAIN = 1
 const ECON  = 0
 const DIP   = 1
 const MIL   = 2
+const WILD  = 3
 
 const NUM_INVESTMENT_TILES  = 24
 const NUM_BASE_WAR_TILES    = 16 // per side
