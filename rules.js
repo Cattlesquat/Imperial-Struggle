@@ -35,6 +35,14 @@ const WAS = 1
 const 7YW = 2
 const AWI = 3
 
+// Turn Track (it's unusual)
+const TURN1 = 1
+const TURN2 = 2
+const TURN3 = 3
+const TURN4 = 4
+const TURN5 = 5
+const TURN6 = 6
+
 // Ministry keywords
 const FINANCE      = 0
 const MERCANTILISM = 1

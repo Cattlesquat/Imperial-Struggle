@@ -20,6 +20,19 @@ data.awards = [
     { "num": 7, "vp": 0, "by2": false, "trp": 1 },
 ]
 
+data.turns = [
+    { "id": "1",   "type": "peace", "name": "1: PEACE",                       "dates": "1697-1701" },
+    { "id": "WSS", "type": "war", , "name": "War of the Spanish Succession",  "dates": "1702-1713" },
+    { "id": "2",   "type": "peace", "name": "2: PEACE",                       "dates": "1714-1722" },
+    { "id": "3",   "type": "peace", "name": "3: PEACE",                       "dates": "1722-1739" },
+    { "id": "WAS", "type": "war",   "name": "War of the Austrian Succession", "dates": "1740-1748" },
+    { "id": "4",   "type": "peace", "name": "4: PEACE",                       "dates": "1749-1753" },
+    { "id": "7YW", "type": "war",   "name": "Seven Years War",                "dates": "1754-1763" },
+    { "id": "5",   "type": "peace", "name": "5: PEACE",                       "dates": "1764-1774" },
+    { "id": "AWI", "type": "war",   "name": "American War of Independence",   "dates": "1775-1783" },
+    { "id": "6",   "type": "peace", "name": "6: PEACE",                       "dates": "1784-1789" }
+]
+
 data.cards = [
     {},
     { "num":  1, "era": 0, "name": "Carnatic War",                  "action":  3, "keywords": { 1 }, "keylabel": "BONUS: Mercantilism",                                                "label": "", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
