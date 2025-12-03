@@ -1,11 +1,11 @@
 "use strict"
 const data = require("./data.js")
 
-const ROLES = [ "France", "Britain" ]
+const ROLES = [ "None", "France", "Britain" ]
 
 var G, L, R, V, P = {}
 
-// SIDES / FLAGS
+// FLAGS
 const NONE    = 0
 const FRANCE  = 1
 const BRITAIN = 2
@@ -33,10 +33,10 @@ const WAR_FORT = 2 // Fort/Fleet attack
 const WAR_FLAG = 3 // Diplomatic attack
 
 // Wars
-const WSS = 0
-const WAS = 1
-const 7YW = 2
-const AWI = 3
+const WSS = 1
+const WAS = 2
+const 7YW = 3
+const AWI = 4
 
 // Ministry keywords
 const FINANCE      = 0
@@ -159,6 +159,12 @@ const EUROPE        = 0
 const NORTH_AMERICA = 1
 const CARIBBEAN     = 2
 const INDIA         = 3
+
+// SUBREGIONS
+const CANADA         = 0
+const NORTHERN_COL   = 1
+const HOOGHLY_RIVER  = 2
+const CARNATIC_COAST = 3
 
 // SPACE TYPES
 const POLITICAL = 0
