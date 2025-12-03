@@ -1,12 +1,12 @@
 const data = {}
 
 data.demands = [
-    { "num": 0, "name": "Fish" },
-    { "num": 0, "name": "Furs" },
-    { "num": 0, "name": "Spice" },
-    { "num": 0, "name": "Sugar" },
-    { "num": 0, "name": "Tobacco" },
-    { "num": 0, "name": "Cotton" },
+    { "num": 0, "name": "Furs",    "awards": [ { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 1, "trp": 0, "debt":  0 } ] },
+    { "num": 1, "name": "Spice",   "awards": [ { "vp": 1, "trp": 0, "debt": -1 }, { "vp": 2, "trp": 1, "debt": -1 }, { "vp": 3, "trp": 0, "debt": -1 } ] },
+    { "num": 2, "name": "Fish",    "awards": [ { "vp": 2, "trp": 0, "debt":  1 }, { "vp": 2, "trp": 0, "debt":  0 }, { "vp": 2, "trp": 0, "debt":  0 } ] },
+    { "num": 3, "name": "Tobacco", "awards": [ { "vp": 3, "trp": 0, "debt":  1 }, { "vp": 2, "trp": 0, "debt":  1 }, { "vp": 1, "trp": 0, "debt":  1 } ] },
+    { "num": 4, "name": "Sugar",   "awards": [ { "vp": 2, "trp": 0, "debt":  0 }, { "vp": 3, "trp": 1, "debt":  0 }, { "vp": 3, "trp": 0, "debt":  0 } ] },
+    { "num": 5, "name": "Cotton",  "awards": [ { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 3, "trp": 0, "debt":  0 } ] }
 ]
 
 data.awards = [
@@ -21,16 +21,17 @@ data.awards = [
 ]
 
 data.turns = [
-    { "id": "1",   "type": "peace", "name": "1: PEACE",                       "dates": "1697-1701" },
-    { "id": "WSS", "type": "war", , "name": "War of the Spanish Succession",  "dates": "1702-1713" },
-    { "id": "2",   "type": "peace", "name": "2: PEACE",                       "dates": "1714-1722" },
-    { "id": "3",   "type": "peace", "name": "3: PEACE",                       "dates": "1722-1739" },
-    { "id": "WAS", "type": "war",   "name": "War of the Austrian Succession", "dates": "1740-1748" },
-    { "id": "4",   "type": "peace", "name": "4: PEACE",                       "dates": "1749-1753" },
-    { "id": "7YW", "type": "war",   "name": "Seven Years War",                "dates": "1754-1763" },
-    { "id": "5",   "type": "peace", "name": "5: PEACE",                       "dates": "1764-1774" },
-    { "id": "AWI", "type": "war",   "name": "American War of Independence",   "dates": "1775-1783" },
-    { "id": "6",   "type": "peace", "name": "6: PEACE",                       "dates": "1784-1789" }
+    {},
+    { "num": 1,  "id": "1",   "war": false, "name": "1: PEACE",                       "dates": "1697-1701" },
+    { "num": 2,  "id": "WSS", "war": true,  "name": "War of the Spanish Succession",  "dates": "1702-1713" },
+    { "num": 3,  "id": "2",   "war": false, "name": "2: PEACE",                       "dates": "1714-1722" },
+    { "num": 4,  "id": "3",   "war": false, "name": "3: PEACE",                       "dates": "1722-1739" },
+    { "num": 5,  "id": "WAS", "war": true,  "name": "War of the Austrian Succession", "dates": "1740-1748" },
+    { "num": 6,  "id": "4",   "war": false, "name": "4: PEACE",                       "dates": "1749-1753" },
+    { "num": 7,  "id": "7YW", "war": true,  "name": "Seven Years War",                "dates": "1754-1763" },
+    { "num": 8,  "id": "5",   "war": false, "name": "5: PEACE",                       "dates": "1764-1774" },
+    { "num": 9,  "id": "AWI", "war": true,  "name": "American War of Independence",   "dates": "1775-1783" },
+    { "num": 10, "id": "6",   "war": false, "name": "6: PEACE",                       "dates": "1784-1789" }
 ]
 
 data.cards = [
