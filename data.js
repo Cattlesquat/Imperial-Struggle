@@ -1,8 +1,20 @@
 const data = {}
 
+data.sides = [
+    { "num": 0, "id": "fr", "name": "France",  "adj": "French" },
+    { "num": 1, "id": "br", "name": "Britain", "adj": "British" }
+]
+
+data.flags = [
+    { "num": 0, "id": "fr", "name": "France",  "adj": "French" },
+    { "num": 1, "id": "br", "name": "Britain", "adj": "British" },
+    { "num": 2, "id": "sp", "name": "Spain",   "adj": "Spanish" },
+    { "num": 3, "id": "us", "name": "USA",     "adj": "US" }
+]
+
 data.demands = [
     { "num": 0, "name": "Furs",    "awards": [ { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 1, "trp": 0, "debt":  0 } ] },
-    { "num": 1, "name": "Spice",   "awards": [ { "vp": 1, "trp": 0, "debt": -1 }, { "vp": 2, "trp": 1, "debt": -1 }, { "vp": 3, "trp": 0, "debt": -1 } ] },
+    { "num": 1, "name": "Spice",   "awards": [ { "vp": 1, "trp": 0, "debt": -1 }, { "vp": 2, "trp": 0, "debt": -1 }, { "vp": 3, "trp": 0, "debt": -1 } ] },
     { "num": 2, "name": "Fish",    "awards": [ { "vp": 2, "trp": 0, "debt":  1 }, { "vp": 2, "trp": 0, "debt":  0 }, { "vp": 2, "trp": 0, "debt":  0 } ] },
     { "num": 3, "name": "Tobacco", "awards": [ { "vp": 3, "trp": 0, "debt":  1 }, { "vp": 2, "trp": 0, "debt":  1 }, { "vp": 1, "trp": 0, "debt":  1 } ] },
     { "num": 4, "name": "Sugar",   "awards": [ { "vp": 2, "trp": 0, "debt":  0 }, { "vp": 3, "trp": 1, "debt":  0 }, { "vp": 3, "trp": 0, "debt":  0 } ] },
@@ -293,3 +305,57 @@ data.bonus_war_tiles = [
     { "num" : 95, "side", 1, "val": 1, "type": 2, "war" : 3, "warid", "AWI", "name": "Arnold's Treason" }
 ]
 
+// SPACE TYPES
+const POLITICAL = 0
+const MARKET    = 1
+const NAVAL     = 2
+const TERRITORY = 3
+const FORT      = 4
+const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
+
+// REGIONS
+const EUROPE        = 0
+const NORTH_AMERICA = 1
+const CARIBBEAN     = 2
+const INDIA         = 3
+
+data.spaces = [
+    { "num":   0, "name": "Ireland",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0, "alliance": [ { 1, 4 }, { 2, 4 } ] },
+    { "num":   1, "name": "Ireland",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":   2, "name": "Scotland",                "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 4 }, { 2, 4 } ] },
+    { "num":   3, "name": "Scotland",                "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":   4, "name": "Scotland",                "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":   5, "name": "Denmark·Norway",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 } ] },
+    { "num":   6, "name": "Baltic Trade",            "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 5, 7 }, "advantage": 0  },
+    { "num":   7, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 2, 1 }, { 3, 4 } ] },
+    { "num":   8, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":   9, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 2, 1 }, { 3, 4 } ] },
+    { "num":  10, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":  11, "name": "German Diplomacy",        "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 10 }, "advantage": 2  },
+    { "num":  12, "name": "Sweden",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2,            "alliance": [ { 2, 1 }, { 3, 4 } ] },
+    { "num":  13, "name": "Russia",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": [ { 3, 4 } ] },
+    { "num":  14, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 1 }, { 1, 4 }, { 2, 1 }, { 3, 4 } ] },
+    { "num":  15, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 1, "alliance": { }, },
+    { "num":  16, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 }, { 4, 1 } ] },
+    { "num":  17, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 1, "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 }, { 4, 1 } ] },
+    { "num":  18, "name": "Central Europe Conflict", "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 17, 19 }, "advantage": 1  },
+    { "num":  19, "name": "Bavaria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 } ] },
+    { "num":  20, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 1, "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 } ] },
+    { "num":  21, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":  22, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3,            "alliance": [ { 1, 1 }, { 2, 1 }, { 3, 4 } ] },
+    { "num":  23, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 0, "alliance": { }, },
+    { "num":  24, "name": "Silesia Negotiations",    "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 21 }, "advantage": 6  },
+    { "num":  25, "name": "Italy Influence",         "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 22, 26 }, "advantage": 3  },
+    { "num":  26, "name": "Sardinia",                "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 2 } ] },
+    { "num":  27, "name": "Savoy",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2,            "alliance": [ { 1, 1 } ] },
+    { "num":  28, "name": "Mediterranean Intrigue",  "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 27, 32 }, "advantage": 4  },
+    { "num":  29, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ { 1, 2 }, { 3, 3 }, { 4, 1 }, { 4, 3 } ] },
+    { "num":  30, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2,            "alliance": { }, },
+    { "num":  31, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3,            "alliance": [ { 1, 2 }, { 3, 3 }, { 4, 1 }, { 4, 3 } ] },
+    { "num":  32, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3,            "alliance": { }, },
+    { "num":  33, "name": "Gibraltar",               "era": 0, "region": 0, "type": 3, "prestige": false, "cost": 1,            "alliance": { }, },
+    { "num":  34, "name": "Naval Bastion",           "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0, "advantagereq": { 33 }, "advantage": 5  },
+    { "num":  35, "name": "Minorca",                 "era": 0, "region": 0, "type": 3, "prestige": true,  "cost": 1,            "alliance": { }, },
+    { "num":  36, "name": "Biscay",                  "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0,            "alliance": [ { 1, 2 }, { 3, 1 } ] },
+    { "num":  36, "name": "Balearic",                "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0,            "alliance": [ { 1, 2 }, { 3, 1 } ] },
+]

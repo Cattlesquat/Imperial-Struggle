@@ -151,6 +151,20 @@ const MARQUIS_DE_CONDORCET        = 25  // F
 const LAVOISIER                   = 26  // F
 
 
+// REGIONS
+const EUROPE        = 0
+const NORTH_AMERICA = 1
+const CARIBBEAN     = 2
+const INDIA         = 3
+
+// SPACE TYPES
+const POLITICAL = 0
+const MARKET    = 1
+const NAVAL     = 2
+const TERRITORY = 3
+const FORT      = 4
+const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
+
 
 
 function on_setup(scenario, options) {
