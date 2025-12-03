@@ -5,9 +5,12 @@ const ROLES = [ "France", "Britain" ]
 
 var G, L, R, V, P = {}
 
-// SIDES
-const FRANCE = 0
-const BRITAIN = 1
+// SIDES / FLAGS
+const NONE    = 0
+const FRANCE  = 1
+const BRITAIN = 2
+const SPAIN   = 3
+const USA     = 4
 
 // Types of Action Point
 const ECON  = 0
