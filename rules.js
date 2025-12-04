@@ -36,10 +36,10 @@ const WAR_FORT = 2 // Fort/Fleet attack
 const WAR_FLAG = 3 // Diplomatic attack
 
 // Wars
-const WSS = 1
-const WAS = 2
-const 7YW = 3
-const AWI = 4
+const WAR_WSS = 1
+const WAR_WAS = 2
+const WAR_7YW = 3
+const WAR_AWI = 4
 
 // Ministry keywords
 const FINANCE      = 0
@@ -181,14 +181,14 @@ const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectiv
 function draw_awards() {
     if (G.award_chits.length < NUM_REGIONS) { // Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
         for (i = 0; i < NUM_AWARD_TILES; i++) {
-            G.awards.push(i);
+            G.awards_chits.push(i)
         }
-        shuffle(G.awards)
+        shuffle(G.awards_chits)
     }
 
     // Deal one per region
     for (var i = 0; i < NUM_REGIONS; i++) {
-       G.current_awards[i] = G.award_chits.pop();
+       G.awards[i] = G.awards_chits.pop()
     }
 }
 
@@ -238,8 +238,8 @@ function blank_game_state (scenario, options) {
     }
     shuffle(G.global_demand_chits);
 
-    G.current_awards = []
-    G.award_chits = []
+    G.awards = []
+    G.awards_chits = []
 
     draw_awards()
 
