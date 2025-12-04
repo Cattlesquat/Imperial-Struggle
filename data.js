@@ -529,14 +529,39 @@ data.spaces = [
 	{ "layout": "record track 36",         "num": 201, "name": "General track Record 36" },
 
 	// FRENCH PLAYER MAT
-	{ "layout": "fr_advantage_1",     "num": 201, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_2",     "num": 202, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_3",     "num": 203, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_4",     "num": 204, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_5",     "num": 205, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_6",     "num": 206, "name": "Advantage Tile"},
-	{ "layout": "fr_advantage_7",     "num": 207, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_1",          "num": 202, "name": "Advantage Tile"}, // Six tiles will lay out sanely, side by side, right in the nice mat area
+	{ "layout": "fr_advantage_2",          "num": 203, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_3",          "num": 204, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_4",          "num": 205, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_5",          "num": 206, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_6",          "num": 207, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_7",          "num": 208, "name": "Advantage Tile"}, // ... beyond 6 I dunno ... stack them all up? There are 21 total tiles though it's not realistic one player would get them *all*
+	{ "layout": "fr_advantage_8",          "num": 209, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_9",          "num": 210, "name": "Advantage Tile"},
+	{ "layout": "fr_advantage_10",         "num": 211, "name": "Advantage Tile"},
+	{ "layout": "fr_ministry_1",           "num": 212, "name": "Ministry Card 1"},
+	{ "layout": "fr_ministry_2",           "num": 213, "name": "Ministry Card 2"},
+	{ "layout": "fr_ministry_3",           "num": 214, "name": "Ministry Card 3"}, // Unfortunately there can occasionally be an extra ministry card, we can figure out how to display it. Under advantages? Under squadrons?
+	{ "layout": "fr_squadrons",            "num": 215, "name": "Squadrons"},
+	{ "layout": "fr_basic_war_tiles",      "num": 216, "name": "Basic War Tiles"},
+
+	// BRITISH PLAYER MAT
+	{ "layout": "br_advantage_1",          "num": 217, "name": "Advantage Tile"}, // Six tiles will lay out sanely, side by side, right in the nice mat area
+	{ "layout": "br_advantage_2",          "num": 218, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_3",          "num": 219, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_4",          "num": 220, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_5",          "num": 221, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_6",          "num": 222, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_7",          "num": 223, "name": "Advantage Tile"}, // ... beyond 6 I dunno ... stack them all up? There are 21 total tiles though it's not realistic one player would get them *all*
+	{ "layout": "br_advantage_8",          "num": 224, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_9",          "num": 225, "name": "Advantage Tile"},
+	{ "layout": "br_advantage_10",         "num": 226, "name": "Advantage Tile"},
+	{ "layout": "br_ministry_1",           "num": 227, "name": "Ministry Card 1"},
+	{ "layout": "br_ministry_2",           "num": 228, "name": "Ministry Card 2"},
+	{ "layout": "br_ministry_3",           "num": 229, "name": "Ministry Card 3"}, // Unfortunately there can occasionally be an extra ministry card, we can figure out how to display it. Under advantages? Under squadrons?
+	{ "layout": "br_squadrons",            "num": 230, "name": "Squadrons"},
+	{ "layout": "br_basic_war_tiles",      "num": 231, "name": "Basic War Tiles"},
 
 
-    //TODO:General Records track spaces?
+	
 ]
