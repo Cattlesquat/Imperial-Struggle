@@ -1,7 +1,7 @@
 "use strict"
 const data = require("./data.js")
 
-const ROLES = [ "None", "France", "Britain" ]
+const ROLES = [ "France", "Britain" ]
 
 var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
@@ -11,7 +11,7 @@ const FRANCE  = 0
 const BRITAIN = 1
 const SPAIN   = 2
 const USA     = 3
-const NONE    = 0
+const NONE    = 4
 
 // Types of Action Point
 const ECON  = 0
@@ -247,10 +247,7 @@ function blank_game_state (scenario, options) {
     G.flags = [] // All the flags on the map
     // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
     for (i = 0; i < data.spaces.length; i++) {
-        if (data.spaces[i].flag === undefined) continue;
-        G.flags[i] = data.spaces[i].flag
-
-        G.flags[i] = data.spaces[i]?.flag
+        G.flags[i] = data.spaces[i].flag ?? NONE
     }
 
     // Gives each player a "hand" of all the available ministry cards for their side.

@@ -3,12 +3,41 @@
 const FRANCE = 0
 const BRITAIN = 1
 
+function find_layout_node(name) {
+	console.log("looking for " + name)
+	for (var g in layout.nodes)
+		if (name in layout.nodes[g])
+			return layout.nodes[g]
+	return null
+}
+
+function find_space_layouts() {
+	var last_id = 0
+	var last_name = null
+	for (var s of data.spaces) {
+		var box = find_layout_node(s.name, last_name)
+		if (!box) {
+			if (s.name !== last_name)
+				last_id = 1
+			box = find_layout_node(s.name + "_" + (last_id++))
+			if (!box)
+				throw new Error("cannot find layout for " + s.name)
+		}
+		last_name = s.name
+		s.layout = box
+	}
+}
+
 function on_init() {
-	var i
+	var i, s
 
 	define_board("map", 1650, 1275)
 
 	// TODO: define spaces and layouts on map
+	find_space_layouts()
+	for (s of data.spaces) {
+		define_space("space", s.num, s.layout)
+	}
 
 	define_board("war_display", 825, 637)
 
