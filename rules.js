@@ -6,11 +6,12 @@ const ROLES = [ "None", "France", "Britain" ]
 var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
 // FLAGS
+
+const FRANCE  = 0
+const BRITAIN = 1
+const SPAIN   = 2
+const USA     = 3
 const NONE    = 0
-const FRANCE  = 1
-const BRITAIN = 2
-const SPAIN   = 3
-const USA     = 4
 
 // Types of Action Point
 const ECON  = 0
