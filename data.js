@@ -50,9 +50,9 @@ data.turns = [
 data.cards = [
     {},
     { "num":  1, "era": 0, "name": "Carnatic War",                  "action":  3, "keywords": [ 1 ], "keylabel": "BONUS: Mercantilism",                                                "label": "", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
-    { "num":  2, "era": 0, "name": "Acts of Union",                 "action":  3, "keywords": [   ], "keylabel": "BONUS: More Prestige spaces in Scotland and Ireland",                "label": "", "effect": "", "bonus": "", "britishlabel": "United Parliament reduces Scottish intrigue in Europe" "britisheffect": "1 =diplo= (unflagging in Europe only).", "britishbonus": "Bonus: Score 2 VP.", "frenchlabel": "Hapsburgs isolated", "frencheffect": "2 =diplo=", "frenchbonus": "Bonus: Unflag a Political space in Europe (not in Spain or Austria)." },
+    { "num":  2, "era": 0, "name": "Acts of Union",                 "action":  3, "keywords": [   ], "keylabel": "BONUS: More Prestige spaces in Scotland and Ireland",                "label": "", "effect": "", "bonus": "", "britishlabel": "United Parliament reduces Scottish intrigue in Europe", "britisheffect": "1 =diplo= (unflagging in Europe only).", "britishbonus": "Bonus: Score 2 VP.", "frenchlabel": "Hapsburgs isolated", "frencheffect": "2 =diplo=", "frenchbonus": "Bonus: Unflag a Political space in Europe (not in Spain or Austria)." },
     { "num":  3, "era": 0, "name": "Tropical Diseases",             "action":  3, "keywords": [ 4 ], "keylabel": "BONUS: Scholarship",                                                 "label": "", "effect": "Remove 1 enemy flag, then 1 friendly flag, from Markets in the Caribbean.", "bonus": "Bonus: Remove an additional flag from a Market in theh Caribbean.",  "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
-    { "num":  4, "era": 0, "name": "South Sea Speculation",         "action":  3, "keywords": [ 0 ], "keylabel": "BONUS: Finance",                                                     "label": "", "effect": "Unflag a Market whose removal does not Isolate any other Markets.", "bonus", "Bonus: -2=mil= to construct a new Squadron this AR. (This can result in the Construct Squadron action costing 0=mil=.)", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
+    { "num":  4, "era": 0, "name": "South Sea Speculation",         "action":  3, "keywords": [ 0 ], "keylabel": "BONUS: Finance",                                                     "label": "", "effect": "Unflag a Market whose removal does not Isolate any other Markets.", "bonus": "Bonus: -2=mil= to construct a new Squadron this AR. (This can result in the Construct Squadron action costing 0=mil=.)", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },
     { "num":  5, "era": 0, "name": "War of Jenkins' Ear",           "action":  2, "keywords": [ 1 ], "keylabel": "BONUS: Mercantilism",                                                "label": "", "effect": "", "bonus": "", "britishlabel": "Anson returns with Spanish gold", "britisheffect": "Reduce your Debt by 2.", "britishbonus": "Bonus: Add 1 FR Debt.", "frenchlabel": "Cartagena disaster", "frencheffect": "Place a Conflict marker in a BR-flagged Market in the Caribbean", "frenchbonus": "Bonus: 1=mil=." },
     { "num":  6, "era": 0, "name": "Native American Alliances",     "action":  1, "keywords": [ 1 ], "keylabel": "BONUS: Mercantilism",                                                "label": "", "effect": "", "bonus": "", "britishlabel": "Four Mohawk Kings", "britisheffect": "Shift a Local Alliance in North America.", "britishbonus": "Bonus: Immediately activate an Advantage you control in North America (ignoring Exhaustion).", "frenchlabel": "Alliance with natives", "frencheffect": "2=econ= (North America only).", "frenchbonus": "Bonus: Unflag a Local Alliance in North America." },
     { "num":  7, "era": 0, "name": "Austro-Spanish Rivalry",        "action":  3, "keywords": [ 2 ], "keylabel": "BONUS: Governance",                                                  "label": "", "effect": "", "bonus": "", "britishlabel": "Farnese clashes with France", "britisheffect": "Place 1 Conflict marker in Spain", "britishbonus": "Bonus: Remove a FR Bonus War tile from the next War (returning it to their pool).", "frenchlabel": "Charles VI invests in the Netherlands", "frencheffect": "Unflag a space in the Dutch Republic.", "frenchbonus": "Bonus: 2=diplo= or 2=econ= in India." },
@@ -107,7 +107,7 @@ data.ministries = [
     { "num":  9, "side": 1, "era": [ 0 ],       "name": "New World Huguenots",         "keywords": [ 1 ],    "keylabel": "Mercantilism",         "effect": "Once per turn, during a FR Action Round, place 1 Huguenots marker in one FR-flagged Territory in N. America or the Caribbean where there isn't one already. A Huguenots marker increases its space's CP cost by 1. It may be flipped once per game to reduce the =econ= cost of a Market in its Region by 1. It is permanently removed if its space becomes BR-flagged." },
     { "num": 10, "side": 2, "era": [ 0 ],       "name": "Edmond Halley",               "keywords": [ 4 ],    "keylabel": "Scholarship",          "effect": "Once per turn, you may spend 2=mil= to build a Squadron (instead of the usual 4).\n\nOnce per turn, if you have a Squadron in Europe, you may discard an Event card from your hand and take 1 TRP." },
 
-    { "num": 11, "side": 1, "era": [ 1 ],       "name": "Choiseul",                    "keywords": [ 2, 0 ]] "keylabel": "Governance, Finance",  "effect": "Once per turn, when taking a Military action, you receive 1 extra =mil= that you may spend on Bonus War Tiles or deploying Squadrons (only). Once per turn, if you have a Squadron in North America, you may may 2 =mil= to construct a new Squadron (instead of the usual 4)." },
+    { "num": 11, "side": 1, "era": [ 1 ],       "name": "Choiseul",                    "keywords": [ 2, 0 ],  "keylabel": "Governance, Finance",  "effect": "Once per turn, when taking a Military action, you receive 1 extra =mil= that you may spend on Bonus War Tiles or deploying Squadrons (only). Once per turn, if you have a Squadron in North America, you may may 2 =mil= to construct a new Squadron (instead of the usual 4)." },
     { "num": 12, "side": 1, "era": [ 1 ],       "name": "Dupleix",                     "keywords": [ 1 ],    "keylabel": "Mercantilism",         "effect": "The Awards for India, Cotton, and Spice are worth 1 extra TRP to you." },
     { "num": 13, "side": 1, "era": [ 1, 2 ],    "name": "Pompadour & Du Barry",        "keywords": [ 3 ],    "keylabel": "Style",                "effect": "The first time each Action Round that you exhaust an Advantage in Europe, gain 1 TRP." },
     { "num": 14, "side": 1, "era": [ 1, 2 ],    "name": "Voltaire",                    "keywords": [ 4 ],    "keylabel": "Scholarship",          "effect": "When the Europe Award is given, gain 1 TRP for each multi-space country in which you control a Prestige space (max 3)." },
@@ -195,116 +195,116 @@ data.basic_war_tiles = [
 
 data.bonus_war_tiles = [
     // French WSS bonus tiles
-    { "num" :  0, "side", 1, "val": 3, "type": 0, "war" : 0, "warid", "WSS", "name": "Vendôme" },               // +3
-    { "num" :  1, "side", 1, "val": 3, "type": 0, "war" : 0, "warid", "WSS", "name": "de Villars" },
-    { "num" :  2, "side", 1, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Berwick" },               // +2
-    { "num" :  3, "side", 1, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Cadiz Refused" },
-    { "num" :  4, "side", 1, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "d'Estrées" },
-    { "num" :  5, "side", 1, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Musketeers" },
-    { "num" :  6, "side", 1, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "d'Artagnan" },            // +1
-    { "num" :  7, "side", 1, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "Maison du Roi" },
-    { "num" :  8, "side", 1, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "Boufflers" },             // +1, Debt
-    { "num" :  9, "side", 1, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "de Tessé" },
-    { "num" : 10, "side", 1, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Crack Troops" },          // +1, Fort
-    { "num" : 11, "side", 1, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Ultima Ratio Regum" },
+    { "num" :  0, "side": 1, "val": 3, "type": 0, "war" : 0, "warid": "WSS", "name": "Vendôme" },               // +3
+    { "num" :  1, "side": 1, "val": 3, "type": 0, "war" : 0, "warid": "WSS", "name": "de Villars" },
+    { "num" :  2, "side": 1, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Berwick" },               // +2
+    { "num" :  3, "side": 1, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Cadiz Refused" },
+    { "num" :  4, "side": 1, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "d'Estrées" },
+    { "num" :  5, "side": 1, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Musketeers" },
+    { "num" :  6, "side": 1, "val": 1, "type": 0, "war" : 0, "warid": "WSS", "name": "d'Artagnan" },            // +1
+    { "num" :  7, "side": 1, "val": 1, "type": 0, "war" : 0, "warid": "WSS", "name": "Maison du Roi" },
+    { "num" :  8, "side": 1, "val": 1, "type": 1, "war" : 0, "warid": "WSS", "name": "Boufflers" },             // +1, Debt
+    { "num" :  9, "side": 1, "val": 1, "type": 1, "war" : 0, "warid": "WSS", "name": "de Tessé" },
+    { "num" : 10, "side": 1, "val": 1, "type": 2, "war" : 0, "warid": "WSS", "name": "Crack Troops" },          // +1, Fort
+    { "num" : 11, "side": 1, "val": 1, "type": 2, "war" : 0, "warid": "WSS", "name": "Ultima Ratio Regum" },
 
     // British WSS bonus tiles
-    { "num" : 12, "side", 2, "val": 3, "type": 0, "war" : 0, "warid", "WSS", "name": "Marlborough" },           // +3
-    { "num" : 13, "side", 2, "val": 3, "type": 0, "war" : 0, "warid", "WSS", "name": "Prince Eugene" },
-    { "num" : 14, "side", 2, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Church" },                // +2
-    { "num" : 15, "side", 2, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Galway" },
-    { "num" : 16, "side", 2, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Rooke" },
-    { "num" : 17, "side", 2, "val": 2, "type": 0, "war" : 0, "warid", "WSS", "name": "Savoy Defects" },
-    { "num" : 18, "side", 2, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "Foot Guards" },           // +1
-    { "num" : 19, "side", 2, "val": 1, "type": 0, "war" : 0, "warid", "WSS", "name": "United Parliament" },
-    { "num" : 20, "side", 2, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "Huguenot Rebels" },       // +1, Debt
-    { "num" : 21, "side", 2, "val": 1, "type": 1, "war" : 0, "warid", "WSS", "name": "Prize Hunting" },
-    { "num" : 22, "side", 2, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Leopold" },               // +1, Fort
-    { "num" : 23, "side", 2, "val": 1, "type": 2, "war" : 0, "warid", "WSS", "name": "Louis William" },
+    { "num" : 12, "side": 2, "val": 3, "type": 0, "war" : 0, "warid": "WSS", "name": "Marlborough" },           // +3
+    { "num" : 13, "side": 2, "val": 3, "type": 0, "war" : 0, "warid": "WSS", "name": "Prince Eugene" },
+    { "num" : 14, "side": 2, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Church" },                // +2
+    { "num" : 15, "side": 2, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Galway" },
+    { "num" : 16, "side": 2, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Rooke" },
+    { "num" : 17, "side": 2, "val": 2, "type": 0, "war" : 0, "warid": "WSS", "name": "Savoy Defects" },
+    { "num" : 18, "side": 2, "val": 1, "type": 0, "war" : 0, "warid": "WSS", "name": "Foot Guards" },           // +1
+    { "num" : 19, "side": 2, "val": 1, "type": 0, "war" : 0, "warid": "WSS", "name": "United Parliament" },
+    { "num" : 20, "side": 2, "val": 1, "type": 1, "war" : 0, "warid": "WSS", "name": "Huguenot Rebels" },       // +1, Debt
+    { "num" : 21, "side": 2, "val": 1, "type": 1, "war" : 0, "warid": "WSS", "name": "Prize Hunting" },
+    { "num" : 22, "side": 2, "val": 1, "type": 2, "war" : 0, "warid": "WSS", "name": "Leopold" },               // +1, Fort
+    { "num" : 23, "side": 2, "val": 1, "type": 2, "war" : 0, "warid": "WSS", "name": "Louis William" },
 
     // French WAS bonus tiles
-    { "num" : 24, "side", 1, "val": 3, "type": 0, "war" : 1, "warid", "WAS", "name": "Frederick" },             // +3
-    { "num" : 25, "side", 1, "val": 3, "type": 0, "war" : 1, "warid", "WAS", "name": "Saxe" },
-    { "num" : 26, "side", 1, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Bonny Prince Charlie" },  // +2
-    { "num" : 27, "side", 1, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Castries" },
-    { "num" : 28, "side", 1, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "de la Bourdonnais" },
-    { "num" : 29, "side", 1, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Murray" },
-    { "num" : 30, "side", 1, "val": 1, "type": 0, "war" : 1, "warid", "WAS", "name": "Contades" },              // +1
-    { "num" : 31, "side", 1, "val": 1, "type": 0, "war" : 1, "warid", "WAS", "name": "O'Sullivan" },
-    { "num" : 32, "side", 1, "val": 1, "type": 1, "war" : 1, "warid", "WAS", "name": "de Coigny" },             // +1, Debt
-    { "num" : 33, "side", 1, "val": 1, "type": 1, "war" : 1, "warid", "WAS", "name": "Nizam's Favor" },
-    { "num" : 34, "side", 1, "val": 1, "type": 2, "war" : 1, "warid", "WAS", "name": "Lowendal" },              // +1, Fort
-    { "num" : 35, "side", 1, "val": 1, "type": 2, "war" : 1, "warid", "WAS", "name": "von Schwerin" },
+    { "num" : 24, "side": 1, "val": 3, "type": 0, "war" : 1, "warid": "WAS", "name": "Frederick" },             // +3
+    { "num" : 25, "side": 1, "val": 3, "type": 0, "war" : 1, "warid": "WAS", "name": "Saxe" },
+    { "num" : 26, "side": 1, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Bonny Prince Charlie" },  // +2
+    { "num" : 27, "side": 1, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Castries" },
+    { "num" : 28, "side": 1, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "de la Bourdonnais" },
+    { "num" : 29, "side": 1, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Murray" },
+    { "num" : 30, "side": 1, "val": 1, "type": 0, "war" : 1, "warid": "WAS", "name": "Contades" },              // +1
+    { "num" : 31, "side": 1, "val": 1, "type": 0, "war" : 1, "warid": "WAS", "name": "O'Sullivan" },
+    { "num" : 32, "side": 1, "val": 1, "type": 1, "war" : 1, "warid": "WAS", "name": "de Coigny" },             // +1, Debt
+    { "num" : 33, "side": 1, "val": 1, "type": 1, "war" : 1, "warid": "WAS", "name": "Nizam's Favor" },
+    { "num" : 34, "side": 1, "val": 1, "type": 2, "war" : 1, "warid": "WAS", "name": "Lowendal" },              // +1, Fort
+    { "num" : 35, "side": 1, "val": 1, "type": 2, "war" : 1, "warid": "WAS", "name": "von Schwerin" },
 
     // British WAS bonus tiles
-    { "num" : 36, "side", 2, "val": 3, "type": 0, "war" : 1, "warid", "WAS", "name": "Clive" },                 // +3
-    { "num" : 37, "side", 2, "val": 3, "type": 0, "war" : 1, "warid", "WAS", "name": "Stair" },
-    { "num" : 38, "side", 2, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Boscawen" },              // +2
-    { "num" : 39, "side", 2, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Francois de Bussy" },
-    { "num" : 40, "side", 2, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Treaty of Warsaw" },
-    { "num" : 41, "side", 2, "val": 2, "type": 0, "war" : 1, "warid", "WAS", "name": "Warren" },
-    { "num" : 42, "side", 2, "val": 1, "type": 0, "war" : 1, "warid", "WAS", "name": "de Lorraine" },           // +1
-    { "num" : 43, "side", 2, "val": 1, "type": 0, "war" : 1, "warid", "WAS", "name": "King George II" },
-    { "num" : 44, "side", 2, "val": 1, "type": 1, "war" : 1, "warid", "WAS", "name": "Chaos in Bavaria" },      // +1, Debt
-    { "num" : 45, "side", 2, "val": 1, "type": 1, "war" : 1, "warid", "WAS", "name": "Hungarian Enthusiasm" },
-    { "num" : 46, "side", 2, "val": 1, "type": 2, "war" : 1, "warid", "WAS", "name": "Lawrence" },              // +1, Fort
-    { "num" : 47, "side", 2, "val": 1, "type": 2, "war" : 1, "warid", "WAS", "name": "Seckendorff" },
+    { "num" : 36, "side": 2, "val": 3, "type": 0, "war" : 1, "warid": "WAS", "name": "Clive" },                 // +3
+    { "num" : 37, "side": 2, "val": 3, "type": 0, "war" : 1, "warid": "WAS", "name": "Stair" },
+    { "num" : 38, "side": 2, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Boscawen" },              // +2
+    { "num" : 39, "side": 2, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Francois de Bussy" },
+    { "num" : 40, "side": 2, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Treaty of Warsaw" },
+    { "num" : 41, "side": 2, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Warren" },
+    { "num" : 42, "side": 2, "val": 1, "type": 0, "war" : 1, "warid": "WAS", "name": "de Lorraine" },           // +1
+    { "num" : 43, "side": 2, "val": 1, "type": 0, "war" : 1, "warid": "WAS", "name": "King George II" },
+    { "num" : 44, "side": 2, "val": 1, "type": 1, "war" : 1, "warid": "WAS", "name": "Chaos in Bavaria" },      // +1, Debt
+    { "num" : 45, "side": 2, "val": 1, "type": 1, "war" : 1, "warid": "WAS", "name": "Hungarian Enthusiasm" },
+    { "num" : 46, "side": 2, "val": 1, "type": 2, "war" : 1, "warid": "WAS", "name": "Lawrence" },              // +1, Fort
+    { "num" : 47, "side": 2, "val": 1, "type": 2, "war" : 1, "warid": "WAS", "name": "Seckendorff" },
 
     // French 7YW bonus tiles
-    { "num" : 48, "side", 1, "val": 3, "type": 0, "war" : 2, "warid", "7YW", "name": "Castries" },              // +3
-    { "num" : 49, "side", 1, "val": 3, "type": 0, "war" : 2, "warid", "7YW", "name": "Montcalm" },
-    { "num" : 50, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Bougainville" },          // +2
-    { "num" : 51, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Coureurs des bois" },
-    { "num" : 52, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Nawabs Rally" },
-    { "num" : 53, "side", 1, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Villiers" },
-    { "num" : 54, "side", 1, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Broglie" },               // +1
-    { "num" : 55, "side", 1, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Lally" },
-    { "num" : 56, "side", 1, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Beaujeu" },               // +1, Debt
-    { "num" : 57, "side", 1, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Hadik's Raid" },
-    { "num" : 58, "side", 1, "val": 1, "type": 2, "war" : 2, "warid", "7YW", "name": "Chevert" },               // +1, Fort
-    { "num" : 59, "side", 1, "val": 1, "type": 2, "war" : 2, "warid", "7YW", "name": "Monongahela Ambush" },
+    { "num" : 48, "side": 1, "val": 3, "type": 0, "war" : 2, "warid": "7YW", "name": "Castries" },              // +3
+    { "num" : 49, "side": 1, "val": 3, "type": 0, "war" : 2, "warid": "7YW", "name": "Montcalm" },
+    { "num" : 50, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Bougainville" },          // +2
+    { "num" : 51, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Coureurs des bois" },
+    { "num" : 52, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Nawabs Rally" },
+    { "num" : 53, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Villiers" },
+    { "num" : 54, "side": 1, "val": 1, "type": 0, "war" : 2, "warid": "7YW", "name": "Broglie" },               // +1
+    { "num" : 55, "side": 1, "val": 1, "type": 0, "war" : 2, "warid": "7YW", "name": "Lally" },
+    { "num" : 56, "side": 1, "val": 1, "type": 1, "war" : 2, "warid": "7YW", "name": "Beaujeu" },               // +1, Debt
+    { "num" : 57, "side": 1, "val": 1, "type": 1, "war" : 2, "warid": "7YW", "name": "Hadik's Raid" },
+    { "num" : 58, "side": 1, "val": 1, "type": 2, "war" : 2, "warid": "7YW", "name": "Chevert" },               // +1, Fort
+    { "num" : 59, "side": 1, "val": 1, "type": 2, "war" : 2, "warid": "7YW", "name": "Monongahela Ambush" },
 
     // British 7YW bonus tiles
-    { "num" : 60, "side", 2, "val": 3, "type": 0, "war" : 2, "warid", "7YW", "name": "Clive" },                 // +3
-    { "num" : 61, "side", 2, "val": 3, "type": 0, "war" : 2, "warid", "7YW", "name": "Old Fritz" },
-    { "num" : 62, "side", 2, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Amherst" },               // +2
-    { "num" : 63, "side", 2, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Coote" },
-    { "num" : 64, "side", 2, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Morta la Bestia" },
-    { "num" : 65, "side", 2, "val": 2, "type": 0, "war" : 2, "warid", "7YW", "name": "Wolfe" },
-    { "num" : 66, "side", 2, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Granby" },                // +1
-    { "num" : 67, "side", 2, "val": 1, "type": 0, "war" : 2, "warid", "7YW", "name": "Sepoy Veterans" },
-    { "num" : 68, "side", 2, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Damned Audacity" },       // +1, Debt
-    { "num" : 69, "side", 2, "val": 1, "type": 1, "war" : 2, "warid", "7YW", "name": "Johnson" },
-    { "num" : 70, "side", 2, "val": 1, "type": 2, "war" : 2, "warid", "7YW", "name": "Bradstreet" },            // +1, Fort
-    { "num" : 71, "side", 2, "val": 1, "type": 2, "war" : 2, "warid", "7YW", "name": "Monckton" },
+    { "num" : 60, "side": 2, "val": 3, "type": 0, "war" : 2, "warid": "7YW", "name": "Clive" },                 // +3
+    { "num" : 61, "side": 2, "val": 3, "type": 0, "war" : 2, "warid": "7YW", "name": "Old Fritz" },
+    { "num" : 62, "side": 2, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Amherst" },               // +2
+    { "num" : 63, "side": 2, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Coote" },
+    { "num" : 64, "side": 2, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Morta la Bestia" },
+    { "num" : 65, "side": 2, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Wolfe" },
+    { "num" : 66, "side": 2, "val": 1, "type": 0, "war" : 2, "warid": "7YW", "name": "Granby" },                // +1
+    { "num" : 67, "side": 2, "val": 1, "type": 0, "war" : 2, "warid": "7YW", "name": "Sepoy Veterans" },
+    { "num" : 68, "side": 2, "val": 1, "type": 1, "war" : 2, "warid": "7YW", "name": "Damned Audacity" },       // +1, Debt
+    { "num" : 69, "side": 2, "val": 1, "type": 1, "war" : 2, "warid": "7YW", "name": "Johnson" },
+    { "num" : 70, "side": 2, "val": 1, "type": 2, "war" : 2, "warid": "7YW", "name": "Bradstreet" },            // +1, Fort
+    { "num" : 71, "side": 2, "val": 1, "type": 2, "war" : 2, "warid": "7YW", "name": "Monckton" },
 
     // French AWI bonus tiles
-    { "num" : 72, "side", 1, "val": 3, "type": 0, "war" : 3, "warid", "AWI", "name": "Lafayette" },             // +3
-    { "num" : 73, "side", 1, "val": 3, "type": 0, "war" : 3, "warid", "AWI", "name": "Washington" },
-    { "num" : 74, "side", 1, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Arnold" },                // +2
-    { "num" : 75, "side", 1, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "East River Wind" },
-    { "num" : 76, "side", 1, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Greene" },
-    { "num" : 77, "side", 1, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "von Steuben" },
-    { "num" : 78, "side", 1, "val": 1, "type": 0, "war" : 3, "warid", "AWI", "name": "de Grasse" },             // +1
-    { "num" : 79, "side", 1, "val": 1, "type": 0, "war" : 3, "warid", "AWI", "name": "Rochambeau" },
-    { "num" : 80, "side", 1, "val": 1, "type": 1, "war" : 3, "warid", "AWI", "name": "Bunker Hill" },           // +1, Debt
-    { "num" : 81, "side", 1, "val": 1, "type": 1, "war" : 3, "warid", "AWI", "name": "Castelnau" },
-    { "num" : 82, "side", 1, "val": 1, "type": 2, "war" : 3, "warid", "AWI", "name": "Morgan's Rifles" },       // +1, Fort
-    { "num" : 83, "side", 1, "val": 1, "type": 2, "war" : 3, "warid", "AWI", "name": "de Suffren" },
+    { "num" : 72, "side": 1, "val": 3, "type": 0, "war" : 3, "warid": "AWI", "name": "Lafayette" },             // +3
+    { "num" : 73, "side": 1, "val": 3, "type": 0, "war" : 3, "warid": "AWI", "name": "Washington" },
+    { "num" : 74, "side": 1, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Arnold" },                // +2
+    { "num" : 75, "side": 1, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "East River Wind" },
+    { "num" : 76, "side": 1, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Greene" },
+    { "num" : 77, "side": 1, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "von Steuben" },
+    { "num" : 78, "side": 1, "val": 1, "type": 0, "war" : 3, "warid": "AWI", "name": "de Grasse" },             // +1
+    { "num" : 79, "side": 1, "val": 1, "type": 0, "war" : 3, "warid": "AWI", "name": "Rochambeau" },
+    { "num" : 80, "side": 1, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Bunker Hill" },           // +1, Debt
+    { "num" : 81, "side": 1, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Castelnau" },
+    { "num" : 82, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Morgan's Rifles" },       // +1, Fort
+    { "num" : 83, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "de Suffren" },
 
     // British AWI bonus tiles
-    { "num" : 84, "side", 2, "val": 3, "type": 0, "war" : 3, "warid", "AWI", "name": "Coote" },                 // +3
-    { "num" : 85, "side", 2, "val": 3, "type": 0, "war" : 3, "warid", "AWI", "name": "Rodney" },
-    { "num" : 86, "side", 2, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Anglo-Dutch Conflict" },  // +2
-    { "num" : 87, "side", 2, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Carleton" },
-    { "num" : 88, "side", 2, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Hessians" },
-    { "num" : 89, "side", 2, "val": 2, "type": 0, "war" : 3, "warid", "AWI", "name": "Howe" },
-    { "num" : 90, "side", 2, "val": 1, "type": 0, "war" : 3, "warid", "AWI", "name": "Cornplanter" },           // +1
-    { "num" : 91, "side", 2, "val": 1, "type": 0, "war" : 3, "warid", "AWI", "name": "Cornwallis" },
-    { "num" : 92, "side", 2, "val": 1, "type": 1, "war" : 3, "warid", "AWI", "name": "Brant's Volunteers" },    // +1, Debt
-    { "num" : 93, "side", 2, "val": 1, "type": 1, "war" : 3, "warid", "AWI", "name": "Stuart" },
-    { "num" : 94, "side", 2, "val": 1, "type": 2, "war" : 3, "warid", "AWI", "name": "André" },                 // +1, Fort
-    { "num" : 95, "side", 2, "val": 1, "type": 2, "war" : 3, "warid", "AWI", "name": "Arnold's Treason" }
+    { "num" : 84, "side": 2, "val": 3, "type": 0, "war" : 3, "warid": "AWI", "name": "Coote" },                 // +3
+    { "num" : 85, "side": 2, "val": 3, "type": 0, "war" : 3, "warid": "AWI", "name": "Rodney" },
+    { "num" : 86, "side": 2, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Anglo-Dutch Conflict" },  // +2
+    { "num" : 87, "side": 2, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Carleton" },
+    { "num" : 88, "side": 2, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Hessians" },
+    { "num" : 89, "side": 2, "val": 2, "type": 0, "war" : 3, "warid": "AWI", "name": "Howe" },
+    { "num" : 90, "side": 2, "val": 1, "type": 0, "war" : 3, "warid": "AWI", "name": "Cornplanter" },           // +1
+    { "num" : 91, "side": 2, "val": 1, "type": 0, "war" : 3, "warid": "AWI", "name": "Cornwallis" },
+    { "num" : 92, "side": 2, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Brant's Volunteers" },    // +1, Debt
+    { "num" : 93, "side": 2, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Stuart" },
+    { "num" : 94, "side": 2, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "André" },                 // +1, Fort
+    { "num" : 95, "side": 2, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Arnold's Treason" }
 ]
 
 // SPACE TYPES
@@ -369,29 +369,29 @@ data.spaces = [
     { "num":  41, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ 42 ], },
     { "num":  42, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 42 ], },
     { "num":  43, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 44, 65, 66 ],         "conquest": [ 46, 60, 64 ] },
-    { "num":  44, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 2, "connects": [ 43, 45, 46 ] },
-    { "num":  45, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 44, 46 ],                                           "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  46, "name": "Louisbourg",              "era": 0, "region": 1, "subreg": 0, "type", 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 44, 45, 47, 48, 50 ], "conquest": [ 43, 47, 49 ],   "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  47, "name": "Acadia",                  "era": 0, "region": 1, "subreg": 0, "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 46, 48 ],             "conquest": [ 46 ] },
-    { "num":  48, "name": "Northeast Channel",       "era": 0, "region": 1, "subreg": 0, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 2, "connects": [ 46, 47, 49, 50 ] },
-    { "num":  49, "name": "Halifax",                 "era": 0, "region": 1, "subreg": 1, "type", 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 48, 50, 51 ],        "conquest": [ 46, 54 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  50, "name": "Georges Bank",            "era": 0, "region": 1, "subreg": 0, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 2, "connects": [ 44, 46, 48, 49, 51, 52, 53 ] },
-    { "num":  51, "name": "Atlantic Passage",        "era": 0, "region": 1, "subreg": 1, "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 50 ],                                               "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  52, "name": "Gulf of Maine",           "era": 0, "region": 1, "subreg": 1, "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 50, 49, 53 ],                                       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  53, "name": "Massachusetts Bay",       "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 2, "flag": 2, "market": 2, "connects": [ 50, 52, 54 ] },
-    { "num":  54, "name": "Northern Colonies",       "era": 0, "region": 1, "subreg": 1, "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 53, 54, 57, 59 ],     "conquest": [ 49, 54, 64 ] },
-    { "num":  55, "name": "Chesapeake",              "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 3, "flag": 2,              "connects": [ 54 ] },
+    { "num":  44, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 2, "connects": [ 43, 45, 46 ] },
+    { "num":  45, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 44, 46 ],                                           "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  46, "name": "Louisbourg",              "era": 0, "region": 1, "subreg": 0, "type": 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 44, 45, 47, 48, 50 ], "conquest": [ 43, 47, 49 ],   "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  47, "name": "Acadia",                  "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 46, 48 ],             "conquest": [ 46 ] },
+    { "num":  48, "name": "Northeast Channel",       "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 2, "connects": [ 46, 47, 49, 50 ] },
+    { "num":  49, "name": "Halifax",                 "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 48, 50, 51 ],        "conquest": [ 46, 54 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  50, "name": "Georges Bank",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 2, "connects": [ 44, 46, 48, 49, 51, 52, 53 ] },
+    { "num":  51, "name": "Atlantic Passage",        "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 50 ],                                               "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  52, "name": "Gulf of Maine",           "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 50, 49, 53 ],                                       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  53, "name": "Massachusetts Bay",       "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 2, "connects": [ 50, 52, 54 ] },
+    { "num":  54, "name": "Northern Colonies",       "era": 0, "region": 1, "subreg": 1, "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 53, 54, 57, 59 ],     "conquest": [ 49, 54, 64 ] },
+    { "num":  55, "name": "Chesapeake",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 2,              "connects": [ 54 ] },
     { "num":  56, "name": "Wheat",                   "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 55 ], "advantage": 11 },
-    { "num":  57, "name": "Hudson Valley",           "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 3, "flag": 2, "market": 0, "connects": [ 54, 58, 59 ] },
-    { "num":  58, "name": "Albany",                  "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 0, "connects": [ 57, 59, 63, 64, 65 ] },
-    { "num":  59, "name": "Cumberland",              "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 54, 57, 58, 60 ] },
-    { "num":  60, "name": "Ohio Forks",              "era": 0, "region": 1, "subreg": 1, "type", 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 59, 61, 62  ],        "conquest": [ 54, 43 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  61, "name": "Allegheny",               "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 59, 60, 62 ] },
-    { "num":  62, "name": "Niagara",                 "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 60, 61, 63, 65, 66 ] },
-    { "num":  63, "name": "Oswego",                  "era": 0, "region": 1, "subreg": 1, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 58, 62, 64 ] },
-    { "num":  64, "name": "Champlain Valley",        "era": 0, "region": 1, "subreg": 1, "type", 4, "prestige": false, "cost": 4, "flag": 0,              "connects": [ 58, 53, 65 ],         "conquest": [ 43, 54 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "num":  65, "name": "Île aux Noix",            "era": 0, "region": 1, "subreg": 0, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 0, "connects": [ 43, 58, 62, 64 ] },
-    { "num":  66, "name": "Cataraqui",               "era": 0, "region": 1, "subreg": 0, "type", 1, "prestige": false, "cost": 2, "flag": 1, "market": 0, "connects": [ 43, 62 ] },
+    { "num":  57, "name": "Hudson Valley",           "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 2, "market": 0, "connects": [ 54, 58, 59 ] },
+    { "num":  58, "name": "Albany",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 0, "connects": [ 57, 59, 63, 64, 65 ] },
+    { "num":  59, "name": "Cumberland",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 54, 57, 58, 60 ] },
+    { "num":  60, "name": "Ohio Forks",              "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 0,              "connects": [ 59, 61, 62  ],        "conquest": [ 54, 43 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  61, "name": "Allegheny",               "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 59, 60, 62 ] },
+    { "num":  62, "name": "Niagara",                 "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 60, 61, 63, 65, 66 ] },
+    { "num":  63, "name": "Oswego",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ 58, 62, 64 ] },
+    { "num":  64, "name": "Champlain Valley",        "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 4, "flag": 0,              "connects": [ 58, 53, 65 ],         "conquest": [ 43, 54 ],       "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "num":  65, "name": "Île aux Noix",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 0, "connects": [ 43, 58, 62, 64 ] },
+    { "num":  66, "name": "Cataraqui",               "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 0, "connects": [ 43, 62 ] },
     { "num":  67, "name": "Iroquois Raids",          "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 68 ], "advantage": 9  },
     { "num":  68, "name": "Iroquois",                "era": 0, "region": 1, "subreg": 1, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                "alliance": [ ], },
     { "num":  69, "name": "Patriot Agitation",       "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 70 ], "advantage": 10 },
@@ -401,40 +401,40 @@ data.spaces = [
 
     // CARIBBEAN
     { "num":  73, "name": "Slaving Contracts",       "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 74 ], "advantage": 16 },
-    { "num":  74, "name": "Asiento",                 "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 3, },
+    { "num":  74, "name": "Asiento",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 3, },
     { "num":  75, "name": "Letters of Marque",       "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 76 ], "advantage": 13 },
     { "num":  76, "name": "Privateers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                "alliance": [ ]  },
     { "num":  77, "name": "Pirate Havens",           "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 78 ], "advantage": 14 },
     { "num":  78, "name": "Buccaneers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                "alliance": [ ], },
-    { "num":  79, "name": "Carolinas",               "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 80 ]                        "conquest": [ 81 ] },
-    { "num":  80, "name": "Georgia",                 "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 2, "market": 3, "connects": [ 79 ] },
-    { "num":  81, "name": "San Agustin",             "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 3,              "connects": [ XXX ]                       "conquest": [ 79,XXX ] },
+    { "num":  79, "name": "Carolinas",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 80 ],                       "conquest": [ 81 ] },
+    { "num":  80, "name": "Georgia",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 3, "connects": [ 79 ] },
+    { "num":  81, "name": "San Agustin",             "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 3,              "connects": [ XXX ],                      "conquest": [ 79,XXX ] },
     { "num":  82, "name": "Fruit",                   "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 81 ], "advantage": 12 },
-    { "num":  83, "name": "Panzacola",               "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ 81 ] },
-    { "num":  84, "name": "Bahamas Run West",        "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 79, 85, 86, 87, 104, 106 ] },
-    { "num":  85, "name": "Bahamas Run North",       "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 3, "connects": [ 84, 86, 87] },
-    { "num":  86, "name": "Caicos",                  "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 84, 85, 87, 88 ] },
-    { "num":  87, "name": "Bahamas Run",             "era": 0, "region": 2,              "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 84, 85, 86 ],               "conquest": [ 88 ],     "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "num":  88, "name": "St. Domingue",            "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 86, 89, 90 ],               "conquest": [ 81, 87 ] },
-    { "num":  89, "name": "Port de Paix",            "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 3, "flag": 1, "market": 4, "connects": [ 88 ], },
-    { "num":  90, "name": "Puerto Principe",         "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 88, 91, 99, 101 ], },
-    { "num":  91, "name": "Puerto Rico",             "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ 90, 93 ], },
+    { "num":  83, "name": "Panzacola",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ 81 ] },
+    { "num":  84, "name": "Bahamas Run West",        "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 79, 85, 86, 87, 104, 106 ] },
+    { "num":  85, "name": "Bahamas Run North",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 3, "connects": [ 84, 86, 87] },
+    { "num":  86, "name": "Caicos",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 84, 85, 87, 88 ] },
+    { "num":  87, "name": "Bahamas Run",             "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 84, 85, 86 ],               "conquest": [ 88 ],     "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "num":  88, "name": "St. Domingue",            "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 86, 89, 90 ],               "conquest": [ 81, 87 ] },
+    { "num":  89, "name": "Port de Paix",            "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 4, "connects": [ 88 ], },
+    { "num":  90, "name": "Puerto Principe",         "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 88, 91, 99, 101 ], },
+    { "num":  91, "name": "Puerto Rico",             "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ 90, 93 ], },
     { "num":  92, "name": "Rum",                     "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 91 ], "advantage": 15 },
-    { "num":  93, "name": "Antigua",                 "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 4, "connects": [ 91, 94, 95, 96 ], },
-    { "num":  94, "name": "Martinique",              "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 1, "market": 4, "connects": [ 93, 95, 96, 97 ], },
-    { "num":  95, "name": "St. Lucia",               "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ 93, 94, 96, 98 ], },
-    { "num":  96, "name": "Antilles Channel",        "era": 0, "region": 2,              "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 93, 94, 95 ],               "conquest": [ 97, 98 ], "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "num":  97, "name": "Guadeloupe",              "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 94 ],                       "conquest": [ 96 ] },
-    { "num":  98, "name": "Barbados",                "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 95 ],                       "conquest": [ 96 ] },
-    { "num":  99, "name": "Havana",                  "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 90, 100, 101 ], },
-    { "num": 100, "name": "Gulf of Cazones",         "era": 0, "region": 2,              "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 90, 99, 101 ],              "conquest": [ ],        "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "num": 101, "name": "Santiago",                "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 90, 99, 100, 101 ], },
-    { "num": 102, "name": "Jamaica",                 "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 101, 103 ],                 "conquest": [ 105 ] },
-    { "num": 103, "name": "Cayman Passage",          "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 102, 104, 105, 106 ] },
-    { "num": 104, "name": "Cuba Passage East",       "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 3, "connects": [ 103, 84,  105, 106 ] },
-    { "num": 105, "name": "Cuba Passage",            "era": 0, "region": 2,              "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 103, 104, 106 ],            "conquest": [ 102 ],    "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "num": 106, "name": "St. James",               "era": 0, "region": 2,              "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 84, 103, 104, 105 ] },
-    { "num": 107, "name": "Louisiana",               "era": 0, "region": 2,              "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 106 ],                      "conquest": [ 105 ] },
+    { "num":  93, "name": "Antigua",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 4, "connects": [ 91, 94, 95, 96 ], },
+    { "num":  94, "name": "Martinique",              "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 4, "connects": [ 93, 95, 96, 97 ], },
+    { "num":  95, "name": "St. Lucia",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ 93, 94, 96, 98 ], },
+    { "num":  96, "name": "Antilles Channel",        "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 93, 94, 95 ],               "conquest": [ 97, 98 ], "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "num":  97, "name": "Guadeloupe",              "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 94 ],                       "conquest": [ 96 ] },
+    { "num":  98, "name": "Barbados",                "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 95 ],                       "conquest": [ 96 ] },
+    { "num":  99, "name": "Havana",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 90, 100, 101 ], },
+    { "num": 100, "name": "Gulf of Cazones",         "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 90, 99, 101 ],              "conquest": [ ],        "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "num": 101, "name": "Santiago",                "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 3, "market": 4, "connects": [ 90, 99, 100, 101 ], },
+    { "num": 102, "name": "Jamaica",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 101, 103 ],                 "conquest": [ 105 ] },
+    { "num": 103, "name": "Cayman Passage",          "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 102, 104, 105, 106 ] },
+    { "num": 104, "name": "Cuba Passage East",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 3, "connects": [ 103, 84,  105, 106 ] },
+    { "num": 105, "name": "Cuba Passage",            "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 103, 104, 106 ],            "conquest": [ 102 ],    "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "num": 106, "name": "St. James",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 3, "connects": [ 84, 103, 104, 105 ] },
+    { "num": 107, "name": "Louisiana",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 106 ],                      "conquest": [ 105 ] },
 
     // INDIA
     { "num": 108, "name": "Raids & Incursions",      "era": 0, "region": 3, "subreg": 2, "type": 5, "prestige": false, "cost": 0,                                                                                                                  "advantagereq": [ 109 ], "advantage": 18 },
@@ -443,27 +443,27 @@ data.spaces = [
     { "num": 111, "name": "Nizam",                   "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                  "alliance": [ ]  },
     { "num": 112, "name": "Power Struggle",          "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                  "advantagereq": [ 113 ], "advantage": 17 },
     { "num": 113, "name": "Mysore",                  "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                  "alliance": [ ]  },
-    { "num": 114, "name": "Malacca Route",           "era": 0, "region": 3, "subreg": 2, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ 115, 117 ] },
-    { "num": 115, "name": "Hooghly River",           "era": 0, "region": 3, "subreg": 2, "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 114, 117, 118, 119 ],       "conquest": [ 116, 120 ], "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "num": 116, "name": "Chandernagore",           "era": 0, "region": 3, "subreg": 2, "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 117 ],                      "conquest": [ 115 ] },
-    { "num": 117, "name": "Plassey",                 "era": 0, "region": 3, "subreg": 2, "type", 1, "prestige": false, "cost": 3, "flag": 1, "market": 5, "connects": [ 114, 115, 116, 118 ] },
-    { "num": 118, "name": "West Bengal",             "era": 0, "region": 3, "subreg": 2, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 117, 115, 119, 133 ] },
-    { "num": 119, "name": "Midnapore",               "era": 0, "region": 3, "subreg": 2, "type", 1, "prestige": false, "cost": 3, "flag": 2, "market": 5, "connects": [ 118, 115, 120, 121 ] },
-    { "num": 120, "name": "Calcutta",                "era": 0, "region": 3, "subreg": 2, "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 119 ],                      "conquest": [ 115 ] },
-    { "num": 121, "name": "Kurpa",                   "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 119, 122, 123 ] },
-    { "num": 122, "name": "Arcot",                   "era": 0, "region": 3, "subreg": 3, "type", 4, "prestige": false, "cost": 2, "flag": 0,              "connects": [ 121, 123 ],                 "conquest": [ 125 ],      "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "num": 123, "name": "Vellore",                 "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 121, 122, 124, 129 ] },
-    { "num": 124, "name": "Kanchipuram",             "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 2, "flag": 2, "market": 1, "connects": [ 123, 125, 127, 128, 129 ] },
-    { "num": 125, "name": "Madras",                  "era": 0, "region": 3, "subreg": 3, "type", 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 124 ],                      "conquest": [ 122, 128 ] },
-    { "num": 126, "name": "Pondicherry",             "era": 0, "region": 3, "subreg": 3, "type", 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 127 ],                      "conquest": [ 128 ] },
-    { "num": 127, "name": "Karaikal",                "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 3, "flag": 1, "market": 1, "connects": [ 126, 124, 128, 129 ] },
-    { "num": 128, "name": "Vandavasi",               "era": 0, "region": 3, "subreg": 3, "type", 4, "prestige": false, "cost": 4, "flag": 0,              "connects": [ 124, 127, 129 ],            "conquest": [ 125, 126 ], "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "num": 129, "name": "Tiruchirappalli",         "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 1, "connects": [ 123, 124, 127, 128 ] },
+    { "num": 114, "name": "Malacca Route",           "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ 115, 117 ] },
+    { "num": 115, "name": "Hooghly River",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 114, 117, 118, 119 ],       "conquest": [ 116, 120 ], "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "num": 116, "name": "Chandernagore",           "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 117 ],                      "conquest": [ 115 ] },
+    { "num": 117, "name": "Plassey",                 "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 5, "connects": [ 114, 115, 116, 118 ] },
+    { "num": 118, "name": "West Bengal",             "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 117, 115, 119, 133 ] },
+    { "num": 119, "name": "Midnapore",               "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 2, "market": 5, "connects": [ 118, 115, 120, 121 ] },
+    { "num": 120, "name": "Calcutta",                "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 119 ],                      "conquest": [ 115 ] },
+    { "num": 121, "name": "Kurpa",                   "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 119, 122, 123 ] },
+    { "num": 122, "name": "Arcot",                   "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 2, "flag": 0,              "connects": [ 121, 123 ],                 "conquest": [ 125 ],      "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "num": 123, "name": "Vellore",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 5, "connects": [ 121, 122, 124, 129 ] },
+    { "num": 124, "name": "Kanchipuram",             "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 1, "connects": [ 123, 125, 127, 128, 129 ] },
+    { "num": 125, "name": "Madras",                  "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ 124 ],                      "conquest": [ 122, 128 ] },
+    { "num": 126, "name": "Pondicherry",             "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ 127 ],                      "conquest": [ 128 ] },
+    { "num": 127, "name": "Karaikal",                "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 1, "connects": [ 126, 124, 128, 129 ] },
+    { "num": 128, "name": "Vandavasi",               "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 4, "flag": 0,              "connects": [ 124, 127, 129 ],            "conquest": [ 125, 126 ], "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "num": 129, "name": "Tiruchirappalli",         "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 1, "connects": [ 123, 124, 127, 128 ] },
     { "num": 130, "name": "Textiles",                "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                  "advantagereq": [ 129 ], "advantage": 21 },
     { "num": 131, "name": "Silk",                    "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                  "advantagereq": [ 118 ], "advantage": 20 },
-    { "num": 132, "name": "Calicut",                 "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ 129, 133, 134 ] },
-    { "num": 133, "name": "Mangalore",               "era": 0, "region": 3, "subreg": 3, "type", 1, "prestige": false, "cost": 2, "flag": 0, "market": 1, "connects": [ 118, 132, 134 ] },
-    { "num": 134, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type", 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 132, 133 ],                 "conquest": [ ],          "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] }
+    { "num": 132, "name": "Calicut",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ 129, 133, 134 ] },
+    { "num": 133, "name": "Mangalore",               "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 1, "connects": [ 118, 132, 134 ] },
+    { "num": 134, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 0,              "connects": [ 132, 133 ],                 "conquest": [ ],          "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
 
     // BIZARRO SPACES
     { "num": 135, "name": "Navy Box (France)"  },
