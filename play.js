@@ -87,14 +87,21 @@ function on_update() {
 		populate_with_list("hand", 0, "event_card", V.hand)
 
 	for (s of data.spaces) {
-		if (V.flags[s.num] === FRANCE)
-			populate_generic("lout-space", s.num, "marker square-sm flag_fr")
-		if (V.flags[s.num] === BRITAIN)
-			populate_generic("lout-space", s.num, "marker square-sm flag_br")
-		if (V.flags[s.num] === SPAIN)
-			populate_generic("lout-space", s.num, "marker square-sm flag_spain")
-		if (V.flags[s.num] === USA)
-			populate_generic("lout-space", s.num, "marker square-sm flag_usa")
+		if (s.type === NAVAL) {
+			if (V.flags[s.num] === FRANCE)
+				populate_generic("lout-space", s.num, "marker hex fleet_fr")
+			if (V.flags[s.num] === BRITAIN)
+				populate_generic("lout-space", s.num, "marker hex fleet_br")
+		} else {
+			if (V.flags[s.num] === FRANCE)
+				populate_generic("lout-space", s.num, "marker square-sm flag_fr")
+			if (V.flags[s.num] === BRITAIN)
+				populate_generic("lout-space", s.num, "marker square-sm flag_br")
+			if (V.flags[s.num] === SPAIN)
+				populate_generic("lout-space", s.num, "marker square-sm flag_spain")
+			if (V.flags[s.num] === USA)
+				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
+		}
 	}
 
 	action_button("pass", "Pass")

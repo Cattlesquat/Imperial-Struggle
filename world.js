@@ -99,6 +99,10 @@ function toggle_pieces() {
 	document.body.classList.toggle("hide-pieces")
 }
 
+function toggle_markers() {
+	document.body.classList.toggle("hide-markers")
+}
+
 function toggle_markers_and_pieces() {
 	// cycle between showing everything, only pieces, and nothing.
 	let hidden_pieces = document.body.classList.contains("hide-pieces")

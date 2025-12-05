@@ -71,8 +71,6 @@ body.Britain header.your_turn { background-color: salmon }
 
 .space {
 	box-sizing: border-box;
-	background-color: #0004;
-	border: 4px solid white;
 }
 
 .space.political {
@@ -84,18 +82,71 @@ body.Britain header.your_turn { background-color: salmon }
 }
 
 .space.naval, .space.fort {
-	background-image: url(images/hexagon.svg);
 	background-size: 92px 92px;
 	border-radius: 50%;
 	border: none;
 }
 
+.space.market.action, .space.political.action, .space.territory.action {
+	border: 4px solid white;
+}
+
+.space.naval.action, .space.fort.action {
+	background-image: url(images/hexagon.svg);
+}
+
 .space.advantage {
-	background-image: url(images/pentagon.svg);
 	background-size: 88px 88px;
 	border-radius: 50%;
-	border: none;
 }
+
+.space.advantage.action {
+	background-image: url(images/pentagon.svg);
+}
+
+.marker.hex {
+	width: 69px;
+	height: 61px;
+	background-size: 69px 61px;
+}
+
+.marker.hex-sm {
+	width: 58px;
+	height: 51px;
+	background-size: 58px 51px;
+}
+
+.marker.square {
+	width: 74px;
+	height: 74px;
+	background-size: 74px 74px;
+	border-width: 2px;
+	border-style: solid;
+}
+
+.marker.square-sm {
+	width: 45px;
+	height: 45px;
+	background-size: 45px 45px;
+	border-width: 2px;
+	border-style: solid;
+}
+
+/* BORDERS */
+
+.square.advance { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
+.square.investment { background-color: #906d90; border-color: #b490b4 #6d4c6d #6d4c6d #b490b4; box-shadow: 0 0 0 1px #100012; }
+.square.investment.reverse { background-color: #5b255e; border-color: #713973 #461049 #461049 #713973; box-shadow: 0 0 0 1px #0b0010; }
+
+.square-sm { background-color: #eddbbc; border-color: #fffddd #b3a284 #b3a284 #fffddd; box-shadow: 0 0 0 1px #1b0f00; }
+.square-sm.black { background-color: #444444; border-color: #595959 #303030 #303030 #595959; box-shadow: 0 0 0 1px #020202; }
+.square-sm.br { background-color: #b7392c; border-color: #dc5b4b #930f07 #930f07 #dc5b4b; box-shadow: 0 0 0 1px #280000; }
+.square-sm.fr { background-color: #0069a5; border-color: #3287c6 #004c85 #004c85 #3287c6; box-shadow: 0 0 0 1px #00002c; }
+
+.square-sm.flag_fr { background-color: #306e8e; border-color: #4f8dae #0b516f #0b516f #4f8dae; box-shadow: 0 0 0 1px #00031b; }
+.square-sm.flag_br { background-color: #964c40; border-color: #b7695c #762f25 #762f25 #b7695c; box-shadow: 0 0 0 1px #1b0000; }
+.square-sm.flag_usa { background-color: #b383a7; border-color: #deacd2 #895c7e #895c7e #deacd2; box-shadow: 0 0 0 1px #180013; }
+.square-sm.flag_spain { background-color: #e09b26; border-color: #ffcb60 #af6d00 #af6d00 #ffcb60; box-shadow: 0 0 0 1px #280000; }
 
 /* IMAGES */
 
@@ -109,19 +160,8 @@ body.Britain header.your_turn { background-color: salmon }
 
 #tile_display { background-image: url(boards75/display_1.avif); }
 
-.marker.square {
-	width: 74px;
-	height: 74px;
-	background-size: 74px 74px;
-	border: 1px solid black;
-}
-
-.marker.square-sm {
-	width: 45px;
-	height: 45px;
-	background-size: 45px 45px;
-	border: 1px solid black;
-}
+.marker.fleet_fr { background-image: url(tiles75/hex/fleet_fr.png) }
+.marker.fleet_br { background-image: url(tiles75/hex/fleet_br.png) }
 
 .marker.flag_br { background-image: url(tiles75/square-sm/flag_br.png) }
 .marker.flag_fr { background-image: url(tiles75/square-sm/flag_fr.png) }
