@@ -1,5 +1,13 @@
 const data = {}
 
+const FRANCE = 0
+const BRITAIN = 1
+const SPAIN = 2
+const USA = 3
+const NONE = 4
+
+const XXX = -1
+
 data.flags = [
     { "num": 0, "id": "fr", "name": "France",  "adj": "French" },
     { "num": 1, "id": "br", "name": "Britain", "adj": "British" },
@@ -457,7 +465,9 @@ data.spaces = [
     { "layout": "Calicut",                 "num": 131, "name": "Calicut",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 1, "connects": [ 128, 132, 133 ] },
     { "layout": "Mongalore",               "num": 132, "name": "Mangalore",               "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 1, "connects": [ 117, 131, 133 ] },
     { "layout": "Malabar Coast",           "num": 133, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ 131, 132 ],                 "conquest": [ ],          "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+]
 
+data.bizzaro_spaces = [
     // BIZARRO SPACES
     { "layout": "Navy Box FR",             "num": 134, "name": "Navy Box (France)"  },
     { "layout": "Navy Box BR",             "num": 135, "name": "Navy Box (Britain)" },
@@ -558,3 +568,7 @@ data.spaces = [
 	{ "layout": "draw_pile",               "num": 223, "name": "Draw Pile" },
 	{ "layout": "discard_pile",            "num": 224, "name": "Discard Pile" },
 ]
+
+if (typeof module !== "undefined") module.exports = data
+
+// vim: set nowrap:
