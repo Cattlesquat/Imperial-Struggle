@@ -562,6 +562,19 @@ data.spaces = [
 	{ "layout": "br_squadrons",            "num": 230, "name": "Squadrons"},
 	{ "layout": "br_basic_war_tiles",      "num": 231, "name": "Basic War Tiles"},
 
+	// INVESTMENT TILE DISPLAY and EVENT DECK
 
-	
+	{ "layout": "available_investment_1",  "num": 232, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_2",  "num": 233, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_3",  "num": 234, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_4",  "num": 235, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_5",  "num": 236, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_6",  "num": 237, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_7",  "num": 238, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_8",  "num": 239, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_9",  "num": 240, "name": "Available Investment Tiles" },
+	{ "layout": "investment_tile_stack",   "num": 241, "name": "Investment Tile Stack" },
+	{ "layout": "used_investment_tiles",   "num": 242, "name": "Used Investment Tiles" },
+	{ "layout": "draw_pile",               "num": 243, "name": "Draw Pile" },
+	{ "layout": "discard_pile",            "num": 244, "name": "Discard Pile" },
 ]
