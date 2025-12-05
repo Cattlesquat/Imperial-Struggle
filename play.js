@@ -55,6 +55,9 @@ function on_init() {
 		else
 			register_tooltip("space", s.num, s.name)
 
+		if (s.type === TERRITORY)
+			lout = make_lout(x, y - 40, 80, 80)
+
 		define_layout("lout-space", s.num, lout)
 	}
 
