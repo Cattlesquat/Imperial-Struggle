@@ -249,7 +249,7 @@ function blank_game_state (scenario, options) {
     for (i = 0; i < data.spaces.length; i++) {
         G.flags[i] = data.spaces[i].flag ?? NONE
     }
-
+	
     // Gives each player a "hand" of all the available ministry cards for their side.
     G.ministry = [ [], [], [] ];
     for (i = 1; i <= NUM_MINISTRY_CARDS; i++) {
