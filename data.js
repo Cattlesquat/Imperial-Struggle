@@ -2,8 +2,10 @@ const data = {}
 
 const XXX = -1
 //
-// DANGER WILL ROBINSON! The constants below are copied-and-pasted from rules.js, which is the master copy.
-// Don't change any constants here -- change them in rules.js and then copy/paste the whole splort to here.
+// DANGER WILL ROBINSON!!!
+//
+// These are NOT the master copies of these const values. They are in rules.js.
+// So DON'T change things here -- change them in rules.js and then copy/paste on top of here.
 //
 
 // FLAGS
@@ -30,7 +32,7 @@ const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
-const NUM_SPACES            = 218
+const NUM_SPACES                    = 218
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -725,14 +727,14 @@ data.spaces = [
     { "layout": "Balearic",                "num":  36, "name": "Balearic",                "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
 
     // NORTH AMERICA
-    { "layout": "Algonquin Raids",         "num":  37, "name": "Algonquin Raids",         "era": 0, "region": 1, "subreg": 0, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 39 ], "advantage": 7  },
+    { "layout": "Algonquin Raids",         "num":  37, "name": "Algonquin Raids",         "era": 0, "region": 1, "subreg": 0, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ ALGONQUIN ], "advantage": ALGONQUIN_RAIDS  },
     { "layout": "Algonquin",               "num":  38, "name": "Algonquin",               "era": 0, "region": 1, "subreg": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                "alliance": [ ], },
     { "layout": "Fur Tade",                "num":  39, "name": "Fur Trade",               "era": 0, "region": 1, "subreg": 0, "type": 5, "prestige": false, "cost": 0,                                                                                                                "advantagereq": [ 41 ], "advantage": 8  },
-    { "layout": "Hudson Bay",              "num":  40, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4,              "connects": [ 42 ], },
-    { "layout": "York Factory",            "num":  41, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ 42 ], },
-    { "layout": "Quebec & Montreal",       "num":  42, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ 44, 65, 66 ],         "conquest": [ 46, 60, 64 ] },
-    { "layout": "Gulf of St. Lawrence",    "num":  43, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ 43, 45, 46 ] },
-    { "layout": "Cabot Strait",            "num":  44, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ 44, 46 ],                                           "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Hudson Bay",              "num":  40, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4,              "connects": [ YORK_FACTORY ], },
+    { "layout": "York Factory",            "num":  41, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ HUDSON_BAY ], },
+    { "layout": "Quebec & Montreal",       "num":  42, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ GULF_OF_ST_LAWRENCE, CATARAQUI, ILE_AUX_NOIX ],         "conquest": [ LOUISBOURG, CHAMPLAIN_VALLEY, OHIO_FORKS] },
+    { "layout": "Gulf of St. Lawrence",    "num":  43, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ QUEBEC_AND_MONTREAL, CABOT_STRAIT, LOUISBOURG ] },
+    { "layout": "Cabot Strait",            "num":  44, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ GULF_OF_ST_LAWRENCE, LOUISBOURG ],                                           "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
     { "layout": "Louisbourg",              "num":  45, "name": "Louisbourg",              "era": 0, "region": 1, "subreg": 0, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ 44, 45, 47, 48, 50 ], "conquest": [ 43, 47, 49 ],   "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
     { "layout": "Acadia",                  "num":  46, "name": "Acadia",                  "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ 46, 48 ],             "conquest": [ 46 ] },
     { "layout": "Northeast Channel",       "num":  47, "name": "Northeast Channel",       "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ 46, 47, 49, 50 ] },
