@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+	width="2550"
+	height="1650"
+>
+<image xlink:href="../boards75/map.png" x="0" y="0" width="2550" height="1650" image-rendering="pixelated" sodipodi:insensitive="true" />
+<rect inkscape:label="Ireland_1" fill-opacity="0.5" fill="red" x="2560" y="0" width="90" height="90"/>
+<rect inkscape:label="Ireland_2" fill-opacity="0.5" fill="red" x="2560" y="100" width="90" height="90"/>
+<rect inkscape:label="Scotland_1" fill-opacity="0.5" fill="red" x="2560" y="200" width="90" height="90"/>
+<rect inkscape:label="Scotland_2" fill-opacity="0.5" fill="red" x="2560" y="300" width="90" height="90"/>
+<rect inkscape:label="Denmark" fill-opacity="0.5" fill="red" x="2560" y="400" width="90" height="90"/>
+<rect inkscape:label="Baltic Trade" fill-opacity="0.5" fill="lime" x="2560" y="500" width="75" height="75"/>
+<rect inkscape:label="Prussia_1" fill-opacity="0.5" fill="red" x="2560" y="585" width="90" height="90"/>
+<rect inkscape:label="Prussia_2" fill-opacity="0.5" fill="red" x="2560" y="685" width="90" height="90"/>
+<rect inkscape:label="Empire_1" fill-opacity="0.5" fill="red" x="2560" y="785" width="90" height="90"/>
+<rect inkscape:label="Empire_2" fill-opacity="0.5" fill="red" x="2560" y="885" width="90" height="90"/>
+<rect inkscape:label="German Diplomacy" fill-opacity="0.5" fill="lime" x="2560" y="985" width="75" height="75"/>
+<rect inkscape:label="Sweden" fill-opacity="0.5" fill="red" x="2560" y="1070" width="90" height="90"/>
+<rect inkscape:label="Russia" fill-opacity="0.5" fill="red" x="2560" y="1170" width="90" height="90"/>
+<rect inkscape:label="Dutch_1" fill-opacity="0.5" fill="red" x="2560" y="1270" width="90" height="90"/>
+<rect inkscape:label="Dutch_1" fill-opacity="0.5" fill="red" x="2560" y="1370" width="90" height="90"/>
+<rect inkscape:label="Saxony_1" fill-opacity="0.5" fill="red" x="2560" y="1470" width="90" height="90"/>
+<rect inkscape:label="Saxony_2" fill-opacity="0.5" fill="red" x="2560" y="1570" width="90" height="90"/>
+<rect inkscape:label="Central Europe Conflict" fill-opacity="0.5" fill="lime" x="2660" y="0" width="75" height="75"/>
+<rect inkscape:label="Bavaria" fill-opacity="0.5" fill="red" x="2660" y="85" width="90" height="90"/>
+<rect inkscape:label="Austria_1" fill-opacity="0.5" fill="red" x="2660" y="185" width="90" height="90"/>
+<rect inkscape:label="Austria_2" fill-opacity="0.5" fill="red" x="2660" y="285" width="90" height="90"/>
+<rect inkscape:label="Austria_3" fill-opacity="0.5" fill="red" x="2660" y="385" width="90" height="90"/>
+<rect inkscape:label="Austria_4" fill-opacity="0.5" fill="red" x="2660" y="485" width="90" height="90"/>
+<rect inkscape:label="Silesia Negociations" fill-opacity="0.5" fill="lime" x="2660" y="585" width="75" height="75"/>
+<rect inkscape:label="Italy Influence" fill-opacity="0.5" fill="lime" x="2660" y="670" width="75" height="75"/>
+<rect inkscape:label="Sardinia" fill-opacity="0.5" fill="red" x="2660" y="755" width="90" height="90"/>
+<rect inkscape:label="Savoy" fill-opacity="0.5" fill="red" x="2660" y="855" width="90" height="90"/>
+<rect inkscape:label="Mediterranean Intrigue" fill-opacity="0.5" fill="lime" x="2660" y="955" width="75" height="75"/>
+<rect inkscape:label="Spain_1" fill-opacity="0.5" fill="red" x="2660" y="1040" width="90" height="90"/>
+<rect inkscape:label="Spain_2" fill-opacity="0.5" fill="red" x="2660" y="1140" width="90" height="90"/>
+<rect inkscape:label="Spain_3" fill-opacity="0.5" fill="red" x="2660" y="1240" width="90" height="90"/>
+<rect inkscape:label="Spain_4" fill-opacity="0.5" fill="red" x="2660" y="1340" width="90" height="90"/>
+<rect inkscape:label="Gibraltar" fill-opacity="0.5" fill="green" x="2660" y="1440" width="75" height="75"/>
+<rect inkscape:label="Naval Bastion" fill-opacity="0.5" fill="lime" x="2660" y="1525" width="75" height="75"/>
+<rect inkscape:label="Minorca" fill-opacity="0.5" fill="green" x="2660" y="1610" width="75" height="75"/>
+<rect inkscape:label="Biscay" fill-opacity="0.5" fill="cyan" x="2745" y="0" width="87" height="77"/>
+<rect inkscape:label="Balearic" fill-opacity="0.5" fill="cyan" x="2745" y="87" width="87" height="77"/>
+<rect inkscape:label="Algonquin Raids" fill-opacity="0.5" fill="lime" x="2745" y="174" width="75" height="75"/>
+<rect inkscape:label="Algonquin" fill-opacity="0.5" fill="red" x="2745" y="259" width="90" height="90"/>
+<rect inkscape:label="Fur Tade" fill-opacity="0.5" fill="lime" x="2745" y="359" width="75" height="75"/>
+<rect inkscape:label="Hudson Bay" fill-opacity="0.5" fill="green" x="2745" y="444" width="75" height="75"/>
+<rect inkscape:label="York Factory" fill-opacity="0.5" fill="yellow" x="2745" y="529" width="75" height="75"/>
+<rect inkscape:label="Quebec &amp; Montreal" fill-opacity="0.5" fill="green" x="2745" y="614" width="75" height="75"/>
+<rect inkscape:label="Gulf of St. Lawrence" fill-opacity="0.5" fill="yellow" x="2745" y="699" width="75" height="75"/>
+<rect inkscape:label="Cabot Strait" fill-opacity="0.5" fill="cyan" x="2745" y="784" width="87" height="77"/>
+<rect inkscape:label="Louisbourg" fill-opacity="0.5" fill="magenta" x="2745" y="871" width="87" height="77"/>
+<rect inkscape:label="Acadia" fill-opacity="0.5" fill="green" x="2745" y="958" width="75" height="75"/>
+<rect inkscape:label="Northeast Channel" fill-opacity="0.5" fill="yellow" x="2745" y="1043" width="75" height="75"/>
+<rect inkscape:label="Halifax" fill-opacity="0.5" fill="magenta" x="2745" y="1128" width="87" height="77"/>
+<rect inkscape:label="Georges Bank" fill-opacity="0.5" fill="yellow" x="2745" y="1215" width="75" height="75"/>
+<rect inkscape:label="Atlantic Passage" fill-opacity="0.5" fill="cyan" x="2745" y="1300" width="87" height="77"/>
+<rect inkscape:label="Gulf of Maine" fill-opacity="0.5" fill="cyan" x="2745" y="1387" width="87" height="77"/>
+<rect inkscape:label="Mass. Bay" fill-opacity="0.5" fill="yellow" x="2745" y="1474" width="75" height="75"/>
+<rect inkscape:label="Northern Colonies" fill-opacity="0.5" fill="green" x="2745" y="1559" width="75" height="75"/>
+<rect inkscape:label="Chesapeake" fill-opacity="0.5" fill="yellow" x="2745" y="1644" width="75" height="75"/>
+<rect inkscape:label="Wheat" fill-opacity="0.5" fill="lime" x="2830" y="0" width="75" height="75"/>
+<rect inkscape:label="Hudson Valley" fill-opacity="0.5" fill="yellow" x="2830" y="85" width="75" height="75"/>
+<rect inkscape:label="Albany" fill-opacity="0.5" fill="yellow" x="2830" y="170" width="75" height="75"/>
+<rect inkscape:label="Cumberland" fill-opacity="0.5" fill="yellow" x="2830" y="255" width="75" height="75"/>
+<rect inkscape:label="Ohio Forks" fill-opacity="0.5" fill="magenta" x="2830" y="340" width="87" height="77"/>
+<rect inkscape:label="Allagheny" fill-opacity="0.5" fill="yellow" x="2830" y="427" width="75" height="75"/>
+<rect inkscape:label="Niagara" fill-opacity="0.5" fill="yellow" x="2830" y="512" width="75" height="75"/>
+<rect inkscape:label="Oswego" fill-opacity="0.5" fill="yellow" x="2830" y="597" width="75" height="75"/>
+<rect inkscape:label="Champlain Valley" fill-opacity="0.5" fill="magenta" x="2830" y="682" width="87" height="77"/>
+<rect inkscape:label="Ile aux Noix" fill-opacity="0.5" fill="yellow" x="2830" y="769" width="75" height="75"/>
+<rect inkscape:label="Cataraqui" fill-opacity="0.5" fill="yellow" x="2830" y="854" width="75" height="75"/>
+<rect inkscape:label="Iroquois Raids" fill-opacity="0.5" fill="lime" x="2830" y="939" width="75" height="75"/>
+<rect inkscape:label="Iroquois" fill-opacity="0.5" fill="red" x="2830" y="1024" width="90" height="90"/>
+<rect inkscape:label="Patriot Agitation" fill-opacity="0.5" fill="lime" x="2830" y="1124" width="75" height="75"/>
+<rect inkscape:label="Usa_1" fill-opacity="0.5" fill="red" x="2830" y="1209" width="90" height="90"/>
+<rect inkscape:label="Usa_2" fill-opacity="0.5" fill="red" x="2830" y="1309" width="90" height="90"/>
+<rect inkscape:label="Usa_3" fill-opacity="0.5" fill="red" x="2830" y="1409" width="90" height="90"/>
+<rect inkscape:label="Slave Contracts" fill-opacity="0.5" fill="lime" x="2830" y="1509" width="75" height="75"/>
+<rect inkscape:label="Asciento" fill-opacity="0.5" fill="green" x="2830" y="1594" width="75" height="75"/>
+<rect inkscape:label="Lettres of Marque" fill-opacity="0.5" fill="lime" x="2915" y="0" width="75" height="75"/>
+<rect inkscape:label="Privateers" fill-opacity="0.5" fill="red" x="2915" y="85" width="90" height="90"/>
+<rect inkscape:label="Pirate Heavens" fill-opacity="0.5" fill="lime" x="2915" y="185" width="75" height="75"/>
+<rect inkscape:label="Buccaneers" fill-opacity="0.5" fill="red" x="2915" y="270" width="90" height="90"/>
+<rect inkscape:label="Carolinas" fill-opacity="0.5" fill="green" x="2915" y="370" width="75" height="75"/>
+<rect inkscape:label="Georgia" fill-opacity="0.5" fill="yellow" x="2915" y="455" width="75" height="75"/>
+<rect inkscape:label="San Agustin" fill-opacity="0.5" fill="green" x="2915" y="540" width="75" height="75"/>
+<rect inkscape:label="Fruit" fill-opacity="0.5" fill="lime" x="2915" y="625" width="75" height="75"/>
+<rect inkscape:label="Panzacola" fill-opacity="0.5" fill="yellow" x="2915" y="710" width="75" height="75"/>
+<rect inkscape:label="Bahamas Run West" fill-opacity="0.5" fill="yellow" x="2915" y="795" width="75" height="75"/>
+<rect inkscape:label="Bahamas Run North" fill-opacity="0.5" fill="yellow" x="2915" y="880" width="75" height="75"/>
+<rect inkscape:label="Caicos" fill-opacity="0.5" fill="yellow" x="2915" y="965" width="75" height="75"/>
+<rect inkscape:label="Bahamas Run" fill-opacity="0.5" fill="cyan" x="2915" y="1050" width="87" height="77"/>
+<rect inkscape:label="St. Domingue" fill-opacity="0.5" fill="green" x="2915" y="1137" width="75" height="75"/>
+<rect inkscape:label="Port de Paix" fill-opacity="0.5" fill="yellow" x="2915" y="1222" width="75" height="75"/>
+<rect inkscape:label="Puerto Principe" fill-opacity="0.5" fill="yellow" x="2915" y="1307" width="75" height="75"/>
+<rect inkscape:label="Puerto Rico" fill-opacity="0.5" fill="yellow" x="2915" y="1392" width="75" height="75"/>
+<rect inkscape:label="Rum" fill-opacity="0.5" fill="lime" x="2915" y="1477" width="75" height="75"/>
+<rect inkscape:label="Antigua" fill-opacity="0.5" fill="yellow" x="2915" y="1562" width="75" height="75"/>
+<rect inkscape:label="Martinique" fill-opacity="0.5" fill="yellow" x="2915" y="1647" width="75" height="75"/>
+<rect inkscape:label="St. Lucia" fill-opacity="0.5" fill="yellow" x="3000" y="0" width="75" height="75"/>
+<rect inkscape:label="Antilles Channel" fill-opacity="0.5" fill="cyan" x="3000" y="85" width="87" height="77"/>
+<rect inkscape:label="Guadeloupe" fill-opacity="0.5" fill="green" x="3000" y="172" width="75" height="75"/>
+<rect inkscape:label="Barbados" fill-opacity="0.5" fill="green" x="3000" y="257" width="75" height="75"/>
+<rect inkscape:label="Havana" fill-opacity="0.5" fill="yellow" x="3000" y="342" width="75" height="75"/>
+<rect inkscape:label="Gulf of Cazones" fill-opacity="0.5" fill="cyan" x="3000" y="427" width="87" height="77"/>
+<rect inkscape:label="Santiago" fill-opacity="0.5" fill="yellow" x="3000" y="514" width="75" height="75"/>
+<rect inkscape:label="Jamaica" fill-opacity="0.5" fill="green" x="3000" y="599" width="75" height="75"/>
+<rect inkscape:label="Cayman Passage" fill-opacity="0.5" fill="yellow" x="3000" y="684" width="75" height="75"/>
+<rect inkscape:label="Cuba Passage East" fill-opacity="0.5" fill="yellow" x="3000" y="769" width="75" height="75"/>
+<rect inkscape:label="Cuba Passage" fill-opacity="0.5" fill="cyan" x="3000" y="854" width="87" height="77"/>
+<rect inkscape:label="St. James" fill-opacity="0.5" fill="yellow" x="3000" y="941" width="75" height="75"/>
+<rect inkscape:label="Louisiana" fill-opacity="0.5" fill="green" x="3000" y="1026" width="75" height="75"/>
+<rect inkscape:label="Raids &amp; Incursions" fill-opacity="0.5" fill="lime" x="3000" y="1111" width="75" height="75"/>
+<rect inkscape:label="Maratha" fill-opacity="0.5" fill="red" x="3000" y="1196" width="90" height="90"/>
+<rect inkscape:label="Separatist Wars" fill-opacity="0.5" fill="lime" x="3000" y="1296" width="75" height="75"/>
+<rect inkscape:label="Nizam" fill-opacity="0.5" fill="red" x="3000" y="1381" width="90" height="90"/>
+<rect inkscape:label="Power Struggle" fill-opacity="0.5" fill="lime" x="3000" y="1481" width="75" height="75"/>
+<rect inkscape:label="Myrose" fill-opacity="0.5" fill="red" x="3000" y="1566" width="90" height="90"/>
+<rect inkscape:label="Malacca Route" fill-opacity="0.5" fill="yellow" x="3100" y="0" width="75" height="75"/>
+<rect inkscape:label="Hooghly River" fill-opacity="0.5" fill="cyan" x="3100" y="85" width="87" height="77"/>
+<rect inkscape:label="Chandernagore" fill-opacity="0.5" fill="green" x="3100" y="172" width="75" height="75"/>
+<rect inkscape:label="Plassey" fill-opacity="0.5" fill="yellow" x="3100" y="257" width="75" height="75"/>
+<rect inkscape:label="West Bengal" fill-opacity="0.5" fill="yellow" x="3100" y="342" width="75" height="75"/>
+<rect inkscape:label="Midnapore" fill-opacity="0.5" fill="yellow" x="3100" y="427" width="75" height="75"/>
+<rect inkscape:label="Calcutta" fill-opacity="0.5" fill="green" x="3100" y="512" width="75" height="75"/>
+<rect inkscape:label="Kurpa" fill-opacity="0.5" fill="yellow" x="3100" y="597" width="75" height="75"/>
+<rect inkscape:label="Arcot" fill-opacity="0.5" fill="magenta" x="3100" y="682" width="87" height="77"/>
+<rect inkscape:label="Vellore" fill-opacity="0.5" fill="yellow" x="3100" y="769" width="75" height="75"/>
+<rect inkscape:label="Kanchipuram" fill-opacity="0.5" fill="yellow" x="3100" y="854" width="75" height="75"/>
+<rect inkscape:label="Madras" fill-opacity="0.5" fill="green" x="3100" y="939" width="75" height="75"/>
+<rect inkscape:label="Pondicherry" fill-opacity="0.5" fill="green" x="3100" y="1024" width="75" height="75"/>
+<rect inkscape:label="Karaikal" fill-opacity="0.5" fill="yellow" x="3100" y="1109" width="75" height="75"/>
+<rect inkscape:label="Vandavasi" fill-opacity="0.5" fill="magenta" x="3100" y="1194" width="87" height="77"/>
+<rect inkscape:label="Tiruchirappalli" fill-opacity="0.5" fill="yellow" x="3100" y="1281" width="75" height="75"/>
+<rect inkscape:label="Textiles" fill-opacity="0.5" fill="lime" x="3100" y="1366" width="75" height="75"/>
+<rect inkscape:label="Silk" fill-opacity="0.5" fill="lime" x="3100" y="1451" width="75" height="75"/>
+<rect inkscape:label="Calicut" fill-opacity="0.5" fill="yellow" x="3100" y="1536" width="75" height="75"/>
+<rect inkscape:label="Mongalore" fill-opacity="0.5" fill="yellow" x="3100" y="1621" width="75" height="75"/>
+<rect inkscape:label="Malabar Coast" fill-opacity="0.5" fill="cyan" x="3185" y="0" width="87" height="77"/>
+<rect inkscape:label="Navy Box FR" fill-opacity="0.5" fill="black" x="3185" y="87" width="50" height="50"/>
+<rect inkscape:label="Navy Box BR" fill-opacity="0.5" fill="black" x="3185" y="147" width="50" height="50"/>
+<rect inkscape:label="Award Europe" fill-opacity="0.5" fill="black" x="3185" y="207" width="50" height="50"/>
+<rect inkscape:label="Award North America" fill-opacity="0.5" fill="black" x="3185" y="267" width="50" height="50"/>
+<rect inkscape:label="Award Caribbean" fill-opacity="0.5" fill="black" x="3185" y="327" width="50" height="50"/>
+<rect inkscape:label="Award India" fill-opacity="0.5" fill="black" x="3185" y="387" width="50" height="50"/>
+<rect inkscape:label="Global Demand" fill-opacity="0.5" fill="black" x="3185" y="447" width="50" height="50"/>
+<rect inkscape:label="Global Demand" fill-opacity="0.5" fill="black" x="3185" y="507" width="50" height="50"/>
+<rect inkscape:label="Global Demand" fill-opacity="0.5" fill="black" x="3185" y="567" width="50" height="50"/>
+<rect inkscape:label="Global Demand" fill-opacity="0.5" fill="black" x="3185" y="627" width="50" height="50"/>
+<rect inkscape:label="Initiative" fill-opacity="0.5" fill="black" x="3185" y="687" width="50" height="50"/>
+<rect inkscape:label="Turn 1" fill-opacity="0.5" fill="black" x="3185" y="747" width="50" height="50"/>
+<rect inkscape:label="War 1" fill-opacity="0.5" fill="black" x="3185" y="807" width="50" height="50"/>
+<rect inkscape:label="Turn 2" fill-opacity="0.5" fill="black" x="3185" y="867" width="50" height="50"/>
+<rect inkscape:label="Turn 3" fill-opacity="0.5" fill="black" x="3185" y="927" width="50" height="50"/>
+<rect inkscape:label="War 2" fill-opacity="0.5" fill="black" x="3185" y="987" width="50" height="50"/>
+<rect inkscape:label="Turn 4" fill-opacity="0.5" fill="black" x="3185" y="1047" width="50" height="50"/>
+<rect inkscape:label="War 3" fill-opacity="0.5" fill="black" x="3185" y="1107" width="50" height="50"/>
+<rect inkscape:label="Turn 5" fill-opacity="0.5" fill="black" x="3185" y="1167" width="50" height="50"/>
+<rect inkscape:label="War 4" fill-opacity="0.5" fill="black" x="3185" y="1227" width="50" height="50"/>
+<rect inkscape:label="Turn 6" fill-opacity="0.5" fill="black" x="3185" y="1287" width="50" height="50"/>
+<rect inkscape:label="start record track" fill-opacity="0.5" fill="black" x="3185" y="1347" width="50" height="50"/>
+</svg>

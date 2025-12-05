@@ -1,42 +1,61 @@
 "use strict"
 
-const FRANCE = 0
-const BRITAIN = 1
+const space_type_class = [
+	"political",
+	"market",
+	"naval",
+	"territory",
+	"fort",
+	"advantage"
+]
 
 function find_layout_node(name) {
-	console.log("looking for " + name)
-	for (var g in layout.nodes)
-		if (name in layout.nodes[g])
-			return layout.nodes[g]
+	for (var g in layout.nodes) {
+		var lout = layout.nodes[g][name]
+		if (lout)
+			return lout
+	}
 	return null
 }
 
-function find_space_layouts() {
-	var last_id = 0
-	var last_name = null
-	for (var s of data.spaces) {
-		var box = find_layout_node(s.name, last_name)
-		if (!box) {
-			if (s.name !== last_name)
-				last_id = 1
-			box = find_layout_node(s.name + "_" + (last_id++))
-			if (!box)
-				throw new Error("cannot find layout for " + s.name)
-		}
-		last_name = s.name
-		s.layout = box
-	}
+function make_lout(xc, yc, w, h) {
+	return [ xc - w/2, yc - h/2, w, h ]
 }
 
 function on_init() {
-	var i, s
+	var i, s, x, y, w, h, lout
 
-	define_board("map", 1650, 1275)
+	define_board("map", 2550, 1650)
 
-	// TODO: define spaces and layouts on map
-	find_space_layouts()
 	for (s of data.spaces) {
-		define_space("space", s.num, s.layout)
+		var lout = find_layout_node(s.layout ?? s.name)
+		if (!lout) {
+			console.error("no layout for " + s.name)
+			continue
+		}
+
+		;[ x, y, w, h ] = lout
+		x = x + w/2
+		y = y + h/2
+
+		if (s.type === POLITICAL)
+			lout = make_lout(x, y, 66, 66)
+		else if (s.type === MARKET)
+			lout = make_lout(x, y, 80, 80)
+		else if (s.type === TERRITORY)
+			lout = make_lout(x, y, 80, 80)
+		else if (s.type === NAVAL || s.type === FORT)
+			lout = make_lout(x, y, 92, 92)
+		else if (s.type === ADVANTAGE)
+			lout = make_lout(x, y, 88, 88)
+
+		define_space("space", s.num, lout, space_type_class[s.type])
+		if (s.name !== s.layout)
+			register_tooltip("space", s.num, s.name + " (" + s.layout + ")")
+		else
+			register_tooltip("space", s.num, s.name)
+
+		define_layout("lout-space", s.num, lout)
 	}
 
 	define_board("war_display", 825, 637)
@@ -55,12 +74,25 @@ function on_init() {
 }
 
 function on_update() {
+	var i, s
+
 	begin_update()
 
 	// TODO: update pieces, tiles, and cards
 
 	if (V.hand)
 		populate_with_list("hand", 0, "event_card", V.hand)
+
+	for (s of data.spaces) {
+		if (V.flags[s.num] === FRANCE)
+			populate_generic("lout-space", s.num, "marker square-sm flag_fr")
+		if (V.flags[s.num] === BRITAIN)
+			populate_generic("lout-space", s.num, "marker square-sm flag_br")
+		if (V.flags[s.num] === SPAIN)
+			populate_generic("lout-space", s.num, "marker square-sm flag_spain")
+		if (V.flags[s.num] === USA)
+			populate_generic("lout-space", s.num, "marker square-sm flag_usa")
+	}
 
 	action_button("pass", "Pass")
 	action_button("next", "Next")

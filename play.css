@@ -59,6 +59,46 @@ body.Britain header.your_turn { background-color: salmon }
 	height: 825px;
 }
 
+.card {
+	width: 250px;
+	height: 350px;
+	background-size: 250px 350px;
+	border: 1px solid black;
+	border-radius: 16px;
+}
+
+/* SPACES & PIECES */
+
+.space {
+	box-sizing: border-box;
+	background-color: #0004;
+	border: 4px solid white;
+}
+
+.space.political {
+	transform: rotate(45deg);
+}
+
+.space.market {
+	border-radius: 50%;
+}
+
+.space.naval, .space.fort {
+	background-image: url(images/hexagon.svg);
+	background-size: 92px 92px;
+	border-radius: 50%;
+	border: none;
+}
+
+.space.advantage {
+	background-image: url(images/pentagon.svg);
+	background-size: 88px 88px;
+	border-radius: 50%;
+	border: none;
+}
+
+/* IMAGES */
+
 .board.war-7yw { background-image: url(boards75/war_1.avif); }
 .board.war-wss { background-image: url(boards75/war_2.avif); }
 .board.war-was { background-image: url(boards75/war_3.avif); }
@@ -69,13 +109,24 @@ body.Britain header.your_turn { background-color: salmon }
 
 #tile_display { background-image: url(boards75/display_1.avif); }
 
-.card {
-	width: 250px;
-	height: 350px;
-	background-size: 250px 350px;
+.marker.square {
+	width: 74px;
+	height: 74px;
+	background-size: 74px 74px;
 	border: 1px solid black;
-	border-radius: 16px;
 }
+
+.marker.square-sm {
+	width: 45px;
+	height: 45px;
+	background-size: 45px 45px;
+	border: 1px solid black;
+}
+
+.marker.flag_br { background-image: url(tiles75/square-sm/flag_br.png) }
+.marker.flag_fr { background-image: url(tiles75/square-sm/flag_fr.png) }
+.marker.flag_spain { background-image: url(tiles75/square-sm/flag_spain.png) }
+.marker.flag_usa { background-image: url(tiles75/square-sm/flag_usa.png) }
 
 .card.event_card.c1 { background-image: url(cards100/event_01.avif) }
 .card.event_card.c2 { background-image: url(cards100/event_02.avif) }
