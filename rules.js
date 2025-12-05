@@ -6,7 +6,6 @@ const ROLES = [ "France", "Britain" ]
 var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
 // FLAGS
-
 const FRANCE  = 0
 const BRITAIN = 1
 const SPAIN   = 2
@@ -19,6 +18,7 @@ const DIP   = 1
 const MIL   = 2
 const WILD  = 3
 
+// Amounts of things!
 const NUM_REGIONS           = 4
 const NUM_INVESTMENT_TILES  = 24
 const NUM_BASE_WAR_TILES    = 16 // per side
@@ -29,6 +29,7 @@ const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
+const NUM_SPACES                    = 218
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -157,7 +158,6 @@ const NORTH_AMERICAN_TRADE        = 24  // F
 const MARQUIS_DE_CONDORCET        = 25  // F
 const LAVOISIER                   = 26  // F
 
-
 // REGIONS
 const EUROPE        = 0
 const NORTH_AMERICA = 1
@@ -178,6 +178,186 @@ const TERRITORY = 3
 const FORT      = 4
 const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
 
+// SPACES (advantage spaces get _SPACE to distinguish them from the advantage tile names)
+const IRELAND_1 = 0
+const IRELAND_2 = 1
+const SCOTLAND_1 = 2
+const SCOTLAND_2 = 3
+const DENMARK = 4
+const BALTIC_TRADE_SPACE = 5
+const PRUSSIA_1 = 6
+const PRUSSIA_2 = 7
+const PRUSSIA_3 = 8
+const PRUSSIA_4 = 9
+const GERMAN_DIPLOMACY_SPACE = 10
+const SWEDEN = 11
+const RUSSIA = 12
+const DUTCH_1 = 13
+const DUTCH_2 = 14
+const GERMAN_STATES_1 = 15
+const GERMAN_STATES_2 = 16
+const CENTRAL_EUROPEAN_CONFLICT_SPACE = 17
+const BAVARIA = 18
+const AUSTRIA_1 = 19
+const AUSTRIA_2 = 20
+const AUSTRIA_3 = 21
+const AUSTRIA_4 = 22
+const SILESIA_NEGOTIATIONS_SPACE = 23
+const ITALY_INFLUENCE_SPACE = 24
+const SARDINIA = 25
+const SAVOY = 26
+const MEDITERRANEAN_INTRIGUE_SPACE = 27
+const SPAIN_1 = 28
+const SPAIN_2 = 29
+const SPAIN_3 = 30
+const SPAIN_4 = 31
+const GIBRALTAR = 32
+const NAVAL_BASTION_SPACE = 33
+const MINORCA = 34
+const BISCAY = 35
+const BALEARIC = 36
+const ALGONQUIN_RAIDS_SPACE = 37
+const ALGONQUIN = 38
+const FUR_TRADE_SPACE = 39
+const HUDSON_BAY = 40
+const YORK_FACTORY = 41
+const QUEBEC_AND_MONTREAL = 42
+const GULF_OF_ST_LAWRENCE = 43
+const CABOT_STRAIT = 44
+const LOUISBOURG = 45
+const ACADIA = 46
+const NORTHEAST_CHANNEL = 47
+const HALIFAX = 48
+const GEORGES_BANK = 49
+const ATLANTIC_PASSAGE = 50
+const GULF_OF_MAINE = 51
+const MASS_BAY = 52
+const NORTHERN_COLONIES = 53
+const CHESAPEAKE = 54
+const WHEAT_SPACE = 55
+const HUDSON_VALLEY = 56
+const ALBANY = 57
+const CUMBERLAND = 58
+const OHIO_FORKS = 59
+const ALLEGHENY = 60
+const NIAGARA = 61
+const OSWEGO = 62
+const CHAMPLAIN_VALLEY = 63
+const ILE_AUX_NOIX = 64
+const CATARAQUI = 65
+const IROQUOIS_RAIDS_SPACE = 66
+const IROQUOIS = 67
+const PATRIOT_AGITATION_SPACE = 68
+const SONS_OF_LIBERTY = 69
+const USA_1 = 70
+const USA_2 = 71
+const SLAVE_CONTRACTS_SPACE = 72
+const ASIENTO = 73
+const LETTERS_OF_MARQUE_SPACE = 74
+const PRIVATEERS = 75
+const PIRATE_HAVENS_SPACE = 76
+const BUCCANEERS = 76
+const CAROLINAS = 78
+const GEORGIA = 79
+const SAN_AGUSTIN = 80
+const FRUIT_SPACE = 81
+const PANZACOLA = 82
+const BAHAMUS_RUN_WEST = 83
+const BAHAMAS_RUN_NORTH = 84
+const CAICOS = 85
+const BAHAMAS_RUN = 86
+const ST_DOMINGUE = 87
+const PORT_DE_PAIX = 88
+const PUERTO_PRINCIPE = 89
+const PUERTO_RICO = 90
+const RUM_SPACE = 91
+const ANTIGUA = 92
+const MARTINIQUE = 93
+const ST_LUCIA = 94
+const ANTILLES_CHANNEL = 95
+const GUADELOUPE = 96
+const BARBADOS = 97
+const HAVANA = 98
+const GULF_OF_CAZONES = 99
+const SANTIAGO = 100
+const JAMAICA = 101
+const CAYMAN_PASSAGE = 102
+const CUBA_PASSAGE_EAST = 103
+const CUBA_PASSAGE = 104
+const ST_JAMES = 105
+const LOUISIANA = 106
+const RAIDS_AND_INCURSIONS_SPACE = 107
+const MARATHA = 108
+const SEPARATIST_WARS_SPACE = 109
+const NIZAM = 110
+const POWER_STRUGGLE_SPACE = 111
+const MYSORE = 112
+const MALACCA_ROUTE = 113
+const HOOGHLY_RIVER_SPACE = 114
+const CHANDERNAGORE = 115
+const PLASSEY = 116
+const WEST_BENGAL = 117
+const MIDNAPORE = 118
+const CALCUTTA = 119
+const KURPA = 120
+const ARCOT = 121
+const VELLORE = 122
+const KANCHIPURAM = 123
+const MADRAS = 124
+const PONDICHERRY = 125
+const KARAIKAL = 126
+const VANDAVASI = 127
+const TIRUCHIRAPPALLI = 128
+const TEXTILES_SPACE = 129
+const SILK_SPACE = 130
+const CALICUT = 131
+const MANGALORE = 132
+const MALABAR_COAST = 133
+const NAVY_BOX = 134
+const AWARD_EUROPE = 135
+const AWARD_NORTH_AMERICA = 136
+const AWARD_CARIBBEAN = 137
+const AWARD_INDIA = 138
+const GLOBAL_DEMAND_SPACE = 139
+const INITIATIVE_SPACE = 140
+const TURN_1_SPACE = 141
+const WAR_WSS_SPACE = 142
+const TURN_2_SPACE = 143
+const TURN_3_SPACE = 144
+const WAR_WAS_SPACE = 145
+const TURN_4_SPACE = 146
+const WAR_7YW_SPACE = 147
+const TURN_5_SPACE = 148
+const WAR_AWI_SPACE = 149
+const TURN_6_SPACE = 150
+const GENERAL_RECORDS_NEGATIVE_7 = 151
+const GENERAL_RECORDS_0 = 158
+const FRANCE_ADVANTAGES = 195
+const FRANCE_MINISTRIES = 196
+const FRANCE_SQUADRONS = 197
+const FRANCE_BASIC_WAR_TILES = 198
+const FRANCE_BONUS_WAR_TILES = 199
+const BRITAIN_ADVANTAGES = 200
+const BRITAIN_MINISTRIES = 201
+const BRITAIN_SQUADRONS = 202
+const BRITAIN_BASIC_WAR_TILES = 203
+const BRITAIN_BONUS_WAR_TILES = 204
+const AVAILABLE_INVESTMENT_1 = 205
+const AVAILABLE_INVESTMENT_2 = 206
+const AVAILABLE_INVESTMENT_3 = 207
+const AVAILABLE_INVESTMENT_4 = 208
+const AVAILABLE_INVESTMENT_5 = 209
+const AVAILABLE_INVESTMENT_6 = 210
+const AVAILABLE_INVESTMENT_7 = 211
+const AVAILABLE_INVESTMENT_8 = 212
+const AVAILABLE_INVESTMENT_9 = 213
+const INVESTMENT_TILE_STACK = 214
+const USED_INVESTMENT_TILES = 215
+const DRAW_PILE = 216
+const DISCARD_PILE = 217
+const PLAYED_EVENTS = 218
+
+
 
 function draw_awards() {
     if (G.award_chits.length < NUM_REGIONS) { // Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
@@ -193,11 +373,29 @@ function draw_awards() {
     }
 }
 
+function draw_global_demands() {
+	G.global_demand_chits = []
+	G.global_demand = []
+	for (var i = 0; i <= NUM_DEMANDS; i++) {
+		G.global_demand_chits.push(i);
+	}
+	shuffle(G.global_demand_chits);
+
+	for (i = 0; i < 3; i++) {
+		G.global_demand.push(G.global_demand_chits.pop());
+	}
+}
+
+
+function update_advantages() {
+
+}
+
 function blank_game_state (scenario, options) {
     G.active     = FRANCE
     G.hand       = [ [], [], [] ]
     G.turn       = 0
-    G.next_war   = WSS
+    G.next_war   = WAR_WSS
     G.initiative = FRANCE
 
     G.debt = []
@@ -232,31 +430,28 @@ function blank_game_state (scenario, options) {
     shuffle (G.basic_war_tiles[FRANCE])
     shuffle (G.basic_war_tiles[BRITAIN])
 
-    G.global_demand_chits = []
-    G.global_demand = []
-    for (i = 0; i <= NUM_DEMANDS; i++) {
-        G.global_demand_chits.push(i);
-    }
-    shuffle(G.global_demand_chits);
-
     G.awards = []
     G.awards_chits = []
-
     draw_awards()
+
+	draw_global_demands()
 
     G.flags = [] // All the flags on the map
     // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
     for (i = 0; i < data.spaces.length; i++) {
         G.flags[i] = data.spaces[i].flag ?? NONE
     }
-	
-    // Gives each player a "hand" of all the available ministry cards for their side.
+
+	G.navy_box = []
+	G.navy_box[FRANCE]  = 1
+	G.navy_box[BRITAIN] = 1
+
+	// Gives each player a "hand" of all the available ministry cards for their side.
     G.ministry = [ [], [], [] ];
     for (i = 1; i <= NUM_MINISTRY_CARDS; i++) {
         let whose = data.ministries[i].side
         G.ministry[whose].push(i)
     }
-
 }
 
 function on_setup(scenario, options) {

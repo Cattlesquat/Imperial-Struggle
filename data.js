@@ -1,12 +1,362 @@
 const data = {}
 
-const FRANCE = 0
-const BRITAIN = 1
-const SPAIN = 2
-const USA = 3
-const NONE = 4
-
 const XXX = -1
+//
+// DANGER WILL ROBINSON! The constants below are copied-and-pasted from rules.js, which is the master copy.
+// Don't change any constants here -- change them in rules.js and then copy/paste the whole splort to here.
+//
+
+// FLAGS
+const FRANCE  = 0
+const BRITAIN = 1
+const SPAIN   = 2
+const USA     = 3
+const NONE    = 4
+
+// Types of Action Point
+const ECON  = 0
+const DIP   = 1
+const MIL   = 2
+const WILD  = 3
+
+// Amounts of things!
+const NUM_REGIONS           = 4
+const NUM_INVESTMENT_TILES  = 24
+const NUM_BASE_WAR_TILES    = 16 // per side
+const NUM_BONUS_WAR_TILES   = 12 // per side, per war
+const NUM_WARS              = 4
+const NUM_EVENT_CARDS       = 41
+const NUM_MINISTRY_KEYWORDS = 5
+const NUM_MINISTRY_CARDS    = 21
+const NUM_DEMANDS           = 6
+const NUM_AWARD_TILES       = 8
+const NUM_SPACES            = 218
+
+// Types of War Tile
+const WAR_DUDE = 0 // Just a soldier
+const WAR_DEBT = 1 // Debt attack
+const WAR_FORT = 2 // Fort/Fleet attack
+const WAR_FLAG = 3 // Diplomatic attack
+
+// Wars
+const WAR_WSS = 1
+const WAR_WAS = 2
+const WAR_7YW = 3
+const WAR_AWI = 4
+
+// Ministry keywords
+const FINANCE      = 0
+const MERCANTILISM = 1
+const GOVERNANCE   = 2
+const STYLE        = 3
+const SCHOLARSHIP  = 4
+
+// Global Demand
+const FURS    = 0
+const SPICE   = 1
+const FISH    = 2
+const TOBACCO = 3
+const SUGAR   = 4
+const COTTON  = 5
+
+// Advantages
+const BALTIC_TRADE            = 0   // EUROPE
+const CENTRAL_EUROPE_CONFLICT = 1
+const GERMAN_DIPLOMACY        = 2
+const ITALY_INFLUENCE         = 3
+const MEDITERRANEAN_INTRIGUE  = 4
+const NAVAL_BASTION           = 5
+const SILESIA_NEGOTIATIONS    = 6
+const ALGONQUIN_RAIDS         = 7   // NORTH AMERICA
+const FUR_TRADE               = 8
+const IROQUOIS_RAIDS          = 9
+const PATRIOT_AGITATION       = 10
+const WHEAT                   = 11
+const FRUIT                   = 12  // CARIBBEAN
+const LETTERS_OF_MARQUE       = 13
+const PIRATE_HAVENS           = 14
+const RUM                     = 15
+const SLAVING_CONTRACTS       = 16
+const POWER_STRUGGLE          = 17  // INDIA
+const RAIDS_AND_INCURSIONS    = 18
+const SEPARATIST_WARS         = 19
+const SILK                    = 20
+const TEXTILES                = 21
+
+// Event Deck Eras
+const SUCCESSION_ERA_CARDS = 15
+const EMPIRE_ERA_CARDS     = 30
+const REVOLUTION_ERA_CARDS = 41
+
+// Event Cards
+const CARNATIC_WAR                  = 1  // SUCCESSION ERA
+const ACTS_OF_UNION                 = 2
+const TROPICAL_DISEASES             = 3
+const SOUTH_SEA_SPECULATION         = 4
+const WAR_OF_JENKINS_EAR            = 5
+const NATIVE_AMERICAN_ALLIANCES     = 6
+const AUSTRO_SPANISH_RIVALRY        = 7
+const TAX_REFORM                    = 8
+const GREAT_NORTHERN_WAR            = 9
+const VATICAN_POLITICS              = 10
+const CALICO_ACTS                   = 11
+const MILITARY_SPENDING_OVERRUNS    = 12
+const ALBERONIS_AMBITION            = 13
+const FAMINE_IN_IRELAND             = 14
+const INTEREST_PAYMENTS             = 15
+const CARRIBEAN_SLAVE_UNREST        = 16 // EMPIRE ERA
+const PACTE_DE_FAMILLE              = 17
+const BYNGS_TRIAL                   = 18
+const LE_BEAU_MONDE                 = 19
+const HYDER_ALI                     = 20
+const CO_HONG_SYSTEM                = 21
+const CORSICAN_CRISIS               = 22
+const EUROPEAN_PANIC                = 23
+const WEST_AFRICAN_GOLD_MINING      = 24
+const WAR_OF_THE_QUADRUPLE_ALLIANCE = 25
+const SALON_D_HERCULE               = 26
+const BENGAL_FAMINE                 = 27
+const FATHER_LE_LOUTRE              = 28
+const WAR_OF_THE_POLISH_SUCCESSION  = 29
+const JONATHANS_COFFEE_HOUSE        = 30
+const NOOTKA_INCIDENT               = 31 // REVOLUTION ERA
+const HAITIAN_REVOLUTION            = 32
+const LOGE_DES_NEUF_SOEURS          = 33
+const LA_GABELLE                    = 34
+const JESUIT_ABOLITION              = 35
+const WEALTH_OF_NATIONS             = 36
+const DEBT_CRISIS                   = 37
+const EAST_ASIA_PIRACY              = 38
+const STAMP_ACT                     = 39
+const FALKLANDS_CRISIS              = 40
+const COOK_AND_BOUGAINVILLE         = 41
+
+// MINISTRY CARDS
+const THE_CARDINAL_MINISTERS      = 1   // F
+const JOHN_LAW                    = 2   // F
+const COURT_OF_THE_SUN_KING       = 3   // F
+const JACOBITE_UPRISINGS          = 4   // F
+const ROBERT_WALPOLE              = 5   //  B
+const JONATHAN_SWIFT              = 6   //  B
+const EAST_INDIA_COMPANY          = 7   //  B
+const BANK_OF_ENGLAND             = 8   //  B
+const NEW_WORLD_HUGUENOTS         = 9   // F
+const EDMOND_HALLEY               = 10  //  B
+const CHOISEUL                    = 11  // F
+const DUPLEIX                     = 12  // F
+const POMPADOUR_AND_DU_BARRY      = 13  // F
+const VOLTAIRE                    = 14  // F
+const PITT_THE_ELDER              = 15  //  B
+const CHARLES_HANBURY_WILLIAMS    = 16  //  B
+const MERCHANT_BANKS              = 17  //  B
+const SAMUEL_JOHNSON              = 18  //  B
+const JAMES_WATT                  = 19  //  B
+const PAPACY_HANOVER_NEGOTIATIONS = 20  //  B
+const TOWNSHEND_ACTS              = 21  //  B
+const EDMUND_BURKE                = 22  //  B
+const TURGOT                      = 23  // F
+const NORTH_AMERICAN_TRADE        = 24  // F
+const MARQUIS_DE_CONDORCET        = 25  // F
+const LAVOISIER                   = 26  // F
+
+// REGIONS
+const EUROPE        = 0
+const NORTH_AMERICA = 1
+const CARIBBEAN     = 2
+const INDIA         = 3
+
+// SUBREGIONS
+const CANADA         = 0
+const NORTHERN_COL   = 1
+const HOOGHLY_RIVER  = 2
+const CARNATIC_COAST = 3
+
+// SPACE TYPES
+const POLITICAL = 0
+const MARKET    = 1
+const NAVAL     = 2
+const TERRITORY = 3
+const FORT      = 4
+const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
+
+// SPACES (advantage spaces get _SPACE to distinguish them from the advantage tile names)
+const IRELAND_1 = 0
+const IRELAND_2 = 1
+const SCOTLAND_1 = 2
+const SCOTLAND_2 = 3
+const DENMARK = 4
+const BALTIC_TRADE_SPACE = 5
+const PRUSSIA_1 = 6
+const PRUSSIA_2 = 7
+const PRUSSIA_3 = 8
+const PRUSSIA_4 = 9
+const GERMAN_DIPLOMACY_SPACE = 10
+const SWEDEN = 11
+const RUSSIA = 12
+const DUTCH_1 = 13
+const DUTCH_2 = 14
+const GERMAN_STATES_1 = 15
+const GERMAN_STATES_2 = 16
+const CENTRAL_EUROPEAN_CONFLICT_SPACE = 17
+const BAVARIA = 18
+const AUSTRIA_1 = 19
+const AUSTRIA_2 = 20
+const AUSTRIA_3 = 21
+const AUSTRIA_4 = 22
+const SILESIA_NEGOTIATIONS_SPACE = 23
+const ITALY_INFLUENCE_SPACE = 24
+const SARDINIA = 25
+const SAVOY = 26
+const MEDITERRANEAN_INTRIGUE_SPACE = 27
+const SPAIN_1 = 28
+const SPAIN_2 = 29
+const SPAIN_3 = 30
+const SPAIN_4 = 31
+const GIBRALTAR = 32
+const NAVAL_BASTION_SPACE = 33
+const MINORCA = 34
+const BISCAY = 35
+const BALEARIC = 36
+const ALGONQUIN_RAIDS_SPACE = 37
+const ALGONQUIN = 38
+const FUR_TRADE_SPACE = 39
+const HUDSON_BAY = 40
+const YORK_FACTORY = 41
+const QUEBEC_AND_MONTREAL = 42
+const GULF_OF_ST_LAWRENCE = 43
+const CABOT_STRAIT = 44
+const LOUISBOURG = 45
+const ACADIA = 46
+const NORTHEAST_CHANNEL = 47
+const HALIFAX = 48
+const GEORGES_BANK = 49
+const ATLANTIC_PASSAGE = 50
+const GULF_OF_MAINE = 51
+const MASS_BAY = 52
+const NORTHERN_COLONIES = 53
+const CHESAPEAKE = 54
+const WHEAT_SPACE = 55
+const HUDSON_VALLEY = 56
+const ALBANY = 57
+const CUMBERLAND = 58
+const OHIO_FORKS = 59
+const ALLEGHENY = 60
+const NIAGARA = 61
+const OSWEGO = 62
+const CHAMPLAIN_VALLEY = 63
+const ILE_AUX_NOIX = 64
+const CATARAQUI = 65
+const IROQUOIS_RAIDS_SPACE = 66
+const IROQUOIS = 67
+const PATRIOT_AGITATION_SPACE = 68
+const SONS_OF_LIBERTY = 69
+const USA_1 = 70
+const USA_2 = 71
+const SLAVE_CONTRACTS_SPACE = 72
+const ASIENTO = 73
+const LETTERS_OF_MARQUE_SPACE = 74
+const PRIVATEERS = 75
+const PIRATE_HAVENS_SPACE = 76
+const BUCCANEERS = 76
+const CAROLINAS = 78
+const GEORGIA = 79
+const SAN_AGUSTIN = 80
+const FRUIT_SPACE = 81
+const PANZACOLA = 82
+const BAHAMUS_RUN_WEST = 83
+const BAHAMAS_RUN_NORTH = 84
+const CAICOS = 85
+const BAHAMAS_RUN = 86
+const ST_DOMINGUE = 87
+const PORT_DE_PAIX = 88
+const PUERTO_PRINCIPE = 89
+const PUERTO_RICO = 90
+const RUM_SPACE = 91
+const ANTIGUA = 92
+const MARTINIQUE = 93
+const ST_LUCIA = 94
+const ANTILLES_CHANNEL = 95
+const GUADELOUPE = 96
+const BARBADOS = 97
+const HAVANA = 98
+const GULF_OF_CAZONES = 99
+const SANTIAGO = 100
+const JAMAICA = 101
+const CAYMAN_PASSAGE = 102
+const CUBA_PASSAGE_EAST = 103
+const CUBA_PASSAGE = 104
+const ST_JAMES = 105
+const LOUISIANA = 106
+const RAIDS_AND_INCURSIONS_SPACE = 107
+const MARATHA = 108
+const SEPARATIST_WARS_SPACE = 109
+const NIZAM = 110
+const POWER_STRUGGLE_SPACE = 111
+const MYSORE = 112
+const MALACCA_ROUTE = 113
+const HOOGHLY_RIVER_SPACE = 114
+const CHANDERNAGORE = 115
+const PLASSEY = 116
+const WEST_BENGAL = 117
+const MIDNAPORE = 118
+const CALCUTTA = 119
+const KURPA = 120
+const ARCOT = 121
+const VELLORE = 122
+const KANCHIPURAM = 123
+const MADRAS = 124
+const PONDICHERRY = 125
+const KARAIKAL = 126
+const VANDAVASI = 127
+const TIRUCHIRAPPALLI = 128
+const TEXTILES_SPACE = 129
+const SILK_SPACE = 130
+const CALICUT = 131
+const MANGALORE = 132
+const MALABAR_COAST = 133
+const NAVY_BOX = 134
+const AWARD_EUROPE = 135
+const AWARD_NORTH_AMERICA = 136
+const AWARD_CARIBBEAN = 137
+const AWARD_INDIA = 138
+const GLOBAL_DEMAND_SPACE = 139
+const INITIATIVE_SPACE = 140
+const TURN_1_SPACE = 141
+const WAR_WSS_SPACE = 142
+const TURN_2_SPACE = 143
+const TURN_3_SPACE = 144
+const WAR_WAS_SPACE = 145
+const TURN_4_SPACE = 146
+const WAR_7YW_SPACE = 147
+const TURN_5_SPACE = 148
+const WAR_AWI_SPACE = 149
+const TURN_6_SPACE = 150
+const GENERAL_RECORDS_NEGATIVE_7 = 151
+const GENERAL_RECORDS_0 = 158
+const FRANCE_ADVANTAGES = 195
+const FRANCE_MINISTRIES = 196
+const FRANCE_SQUADRONS = 197
+const FRANCE_BASIC_WAR_TILES = 198
+const FRANCE_BONUS_WAR_TILES = 199
+const BRITAIN_ADVANTAGES = 200
+const BRITAIN_MINISTRIES = 201
+const BRITAIN_SQUADRONS = 202
+const BRITAIN_BASIC_WAR_TILES = 203
+const BRITAIN_BONUS_WAR_TILES = 204
+const AVAILABLE_INVESTMENT_1 = 205
+const AVAILABLE_INVESTMENT_2 = 206
+const AVAILABLE_INVESTMENT_3 = 207
+const AVAILABLE_INVESTMENT_4 = 208
+const AVAILABLE_INVESTMENT_5 = 209
+const AVAILABLE_INVESTMENT_6 = 210
+const AVAILABLE_INVESTMENT_7 = 211
+const AVAILABLE_INVESTMENT_8 = 212
+const AVAILABLE_INVESTMENT_9 = 213
+const INVESTMENT_TILE_STACK = 214
+const USED_INVESTMENT_TILES = 215
+const DRAW_PILE = 216
+const DISCARD_PILE = 217
+const PLAYED_EVENTS = 218
 
 data.flags = [
     { "num": 0, "id": "fr", "name": "France",  "adj": "French" },
@@ -309,19 +659,30 @@ data.bonus_war_tiles = [
     { "num" : 95, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Arnold's Treason" }
 ]
 
-// SPACE TYPES
-const POLITICAL = 0
-const MARKET    = 1
-const NAVAL     = 2
-const TERRITORY = 3
-const FORT      = 4
-const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
-
-// REGIONS
-const EUROPE        = 0
-const NORTH_AMERICA = 1
-const CARIBBEAN     = 2
-const INDIA         = 3
+// ADVANTAGE TILES
+data.advantages = [
+	{ "num":  0, "name": "Baltic Trade" },
+	{ "num":  1, "name": "Central Europe Conflict" },
+	{ "num":  2, "name": "German Diplomacy" },
+	{ "num":  3, "name": "Italy Influence" },
+	{ "num":  4, "name": "Mediterranean Intrigue" },
+	{ "num":  5, "name": "Naval Bastion" },
+	{ "num":  6, "name": "Silesia Negotiations" },
+	{ "num":  7, "name": "Algonquin Raids" },
+	{ "num":  8, "name": "Fur Trade" },
+	{ "num":  9, "name": "Iroquois Raids" },
+	{ "num": 11, "name": "Patriot Agitation" },
+	{ "num": 12, "name": "Fruit" },
+	{ "num": 13, "name": "Letters of Marque" },
+	{ "num": 14, "name": "Pirate Havens" },
+	{ "num": 15, "name": "Rum" },
+	{ "num": 16, "name": "Slaving Contracts" },
+	{ "num": 17, "name": "Power Struggle" },
+	{ "num": 18, "name": "Raids & Incursions" },
+	{ "num": 19, "name": "Separatist Wars" },
+	{ "num": 20, "name": "Silk" },
+	{ "num": 21, "name": "Textiles" }
+]
 
 data.spaces = [
     // EUROPE
@@ -339,7 +700,7 @@ data.spaces = [
     { "layout": "Sweden",                  "num":  11, "name": "Sweden",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
     { "layout": "Russia",                  "num":  12, "name": "Russia",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ [ 3, 4 ] ] },
     { "layout": "Dutch_1",                 "num":  13, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 1, 4 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Dutch_1",                 "num":  14, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 1, "alliance": [ ], },
+    { "layout": "Dutch_2",                 "num":  14, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 1, "alliance": [ ], },
     { "layout": "Saxony_1",                "num":  15, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
     { "layout": "Saxony_2",                "num":  16, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 1, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
     { "layout": "Central Europe Conflict", "num":  17, "name": "Central Europe Conflict", "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ 17, 19 ], "advantage": 1  },
@@ -469,91 +830,83 @@ data.spaces = [
 
 data.bizzaro_spaces = [
     // BIZARRO SPACES
-    { "layout": "Navy Box FR",             "num": 134, "name": "Navy Box (France)"  },
-    { "layout": "Navy Box BR",             "num": 135, "name": "Navy Box (Britain)" },
-    { "layout": "Award Europe",            "num": 136, "name": "Award (Europe)" },
-    { "layout": "Award North America",     "num": 137, "name": "Award (North America)" },
-    { "layout": "Award Caribbean",         "num": 138, "name": "Award (Caribbean)" },
-    { "layout": "Award India",             "num": 139, "name": "Award (India)" },
-    { "layout": "Demand1of3",              "num": 140, "name": "Global Demand" },
-	{ "layout": "Demand2of3",              "num": 141, "name": "Global Demand" },
-	{ "layout": "Demand3of3",              "num": 142, "name": "Global Demand" },
-	{ "layout": "Demand1of4",              "num": 143, "name": "Global Demand" },
-	{ "layout": "Demand2of4",              "num": 144, "name": "Global Demand" },
-	{ "layout": "Demand3of4",              "num": 145, "name": "Global Demand" },
-	{ "layout": "Demand4of4",              "num": 146, "name": "Global Demand" },
-    { "layout": "Initiative",              "num": 147, "name": "Initiative Box" },
-    { "layout": "Turn 1",                  "num": 148, "name": "Turn 1" },
-    { "layout": "War 1",                   "num": 149, "name": "War of the Spanish Succession" },
-    { "layout": "Turn 2",                  "num": 150, "name": "Turn 2" },
-    { "layout": "Turn 3",                  "num": 151, "name": "Turn 3" },
-    { "layout": "War 2",                   "num": 152, "name": "War of the Austrian Succession" },
-    { "layout": "Turn 4",                  "num": 153, "name": "Turn 4" },
-    { "layout": "War 3",                   "num": 154, "name": "Seven Years War" },
-    { "layout": "Turn 5",                  "num": 155, "name": "Turn 5" },
-    { "layout": "War 4",                   "num": 156, "name": "American War of Independence" },
-    { "layout": "Turn 6",                  "num": 157, "name": "Turn 6" },
-	{ "layout": "record track -7",         "num": 158, "name": "General track Record -7" },
-	{ "layout": "record track -6",         "num": 159, "name": "General track Record -6" },
-	{ "layout": "record track -5",         "num": 160, "name": "General track Record -5" },
-	{ "layout": "record track -4",         "num": 161, "name": "General track Record -4" },
-	{ "layout": "record track -3",         "num": 162, "name": "General track Record -3" },
-	{ "layout": "record track -2",         "num": 163, "name": "General track Record -2" },
-	{ "layout": "record track -1",         "num": 164, "name": "General track Record -1" },
-    { "layout": "start record track",      "num": 165, "name": "General track Record 0" },
-	{ "layout": "record track 1",          "num": 166, "name": "General track Record 1" },
-	{ "layout": "record track 2",          "num": 167, "name": "General track Record 2" },
-	{ "layout": "record track 3",          "num": 168, "name": "General track Record 3" },
-	{ "layout": "record track 4",          "num": 169, "name": "General track Record 4" },
-	{ "layout": "record track 5",          "num": 170, "name": "General track Record 5" },
-	{ "layout": "record track 6",          "num": 171, "name": "General track Record 6" },
-	{ "layout": "record track 7",          "num": 172, "name": "General track Record 7" },
-	{ "layout": "record track 8",          "num": 173, "name": "General track Record 8" },
-	{ "layout": "record track 9",          "num": 174, "name": "General track Record 9" },
-	{ "layout": "record track 10",         "num": 175, "name": "General track Record 10" },
-	{ "layout": "record track 11",         "num": 176, "name": "General track Record 11" },
-	{ "layout": "record track 12",         "num": 177, "name": "General track Record 12" },
-	{ "layout": "record track 13",         "num": 178, "name": "General track Record 13" },
-	{ "layout": "record track 14",         "num": 179, "name": "General track Record 14" },
-	{ "layout": "record track 15",         "num": 180, "name": "General track Record 15" },
-	{ "layout": "record track 16",         "num": 181, "name": "General track Record 16" },
-	{ "layout": "record track 17",         "num": 182, "name": "General track Record 17" },
-	{ "layout": "record track 18",         "num": 183, "name": "General track Record 18" },
-	{ "layout": "record track 19",         "num": 184, "name": "General track Record 19" },
-	{ "layout": "record track 20",         "num": 185, "name": "General track Record 10" },
-	{ "layout": "record track 21",         "num": 186, "name": "General track Record 21" },
-	{ "layout": "record track 22",         "num": 187, "name": "General track Record 22" },
-	{ "layout": "record track 23",         "num": 188, "name": "General track Record 23" },
-	{ "layout": "record track 24",         "num": 189, "name": "General track Record 24" },
-	{ "layout": "record track 25",         "num": 190, "name": "General track Record 25" },
-	{ "layout": "record track 26",         "num": 191, "name": "General track Record 26" },
-	{ "layout": "record track 27",         "num": 192, "name": "General track Record 27" },
-	{ "layout": "record track 28",         "num": 193, "name": "General track Record 28" },
-	{ "layout": "record track 29",         "num": 194, "name": "General track Record 29" },
-	{ "layout": "record track 30",         "num": 195, "name": "General track Record 30" },
-	{ "layout": "record track 31",         "num": 196, "name": "General track Record 31" },
-	{ "layout": "record track 32",         "num": 197, "name": "General track Record 32" },
-	{ "layout": "record track 33",         "num": 198, "name": "General track Record 33" },
-	{ "layout": "record track 34",         "num": 199, "name": "General track Record 34" },
-	{ "layout": "record track 35",         "num": 200, "name": "General track Record 35" },
-	{ "layout": "record track 36",         "num": 201, "name": "General track Record 36" },
+    { "layout": "Navy Box",                "num": 134, "name": "Navy Box"  },
+    { "layout": "Award Europe",            "num": 135, "name": "Award (Europe)" },
+    { "layout": "Award North America",     "num": 136, "name": "Award (North America)" },
+    { "layout": "Award Caribbean",         "num": 137, "name": "Award (Caribbean)" },
+    { "layout": "Award India",             "num": 138, "name": "Award (India)" },
+    { "layout": "Demand",                  "num": 139, "name": "Global Demand" },
+    { "layout": "Initiative",              "num": 140, "name": "Initiative Box" },
+    { "layout": "Turn 1",                  "num": 141, "name": "Turn 1" },
+    { "layout": "War 1",                   "num": 142, "name": "War of the Spanish Succession" },
+    { "layout": "Turn 2",                  "num": 143, "name": "Turn 2" },
+    { "layout": "Turn 3",                  "num": 144, "name": "Turn 3" },
+    { "layout": "War 2",                   "num": 145, "name": "War of the Austrian Succession" },
+    { "layout": "Turn 4",                  "num": 146, "name": "Turn 4" },
+    { "layout": "War 3",                   "num": 147, "name": "Seven Years War" },
+    { "layout": "Turn 5",                  "num": 148, "name": "Turn 5" },
+    { "layout": "War 4",                   "num": 149, "name": "American War of Independence" },
+    { "layout": "Turn 6",                  "num": 150, "name": "Turn 6" },
+	{ "layout": "record track -7",         "num": 151, "name": "General track Record -7" },
+	{ "layout": "record track -6",         "num": 152, "name": "General track Record -6" },
+	{ "layout": "record track -5",         "num": 153, "name": "General track Record -5" },
+	{ "layout": "record track -4",         "num": 154, "name": "General track Record -4" },
+	{ "layout": "record track -3",         "num": 155, "name": "General track Record -3" },
+	{ "layout": "record track -2",         "num": 156, "name": "General track Record -2" },
+	{ "layout": "record track -1",         "num": 157, "name": "General track Record -1" },
+    { "layout": "start record track",      "num": 158, "name": "General track Record 0" },
+	{ "layout": "record track 1",          "num": 159, "name": "General track Record 1" },
+	{ "layout": "record track 2",          "num": 160, "name": "General track Record 2" },
+	{ "layout": "record track 3",          "num": 161, "name": "General track Record 3" },
+	{ "layout": "record track 4",          "num": 162, "name": "General track Record 4" },
+	{ "layout": "record track 5",          "num": 163, "name": "General track Record 5" },
+	{ "layout": "record track 6",          "num": 164, "name": "General track Record 6" },
+	{ "layout": "record track 7",          "num": 165, "name": "General track Record 7" },
+	{ "layout": "record track 8",          "num": 166, "name": "General track Record 8" },
+	{ "layout": "record track 9",          "num": 167, "name": "General track Record 9" },
+	{ "layout": "record track 10",         "num": 168, "name": "General track Record 10" },
+	{ "layout": "record track 11",         "num": 169, "name": "General track Record 11" },
+	{ "layout": "record track 12",         "num": 170, "name": "General track Record 12" },
+	{ "layout": "record track 13",         "num": 171, "name": "General track Record 13" },
+	{ "layout": "record track 14",         "num": 172, "name": "General track Record 14" },
+	{ "layout": "record track 15",         "num": 173, "name": "General track Record 15" },
+	{ "layout": "record track 16",         "num": 174, "name": "General track Record 16" },
+	{ "layout": "record track 17",         "num": 175, "name": "General track Record 17" },
+	{ "layout": "record track 18",         "num": 176, "name": "General track Record 18" },
+	{ "layout": "record track 19",         "num": 177, "name": "General track Record 19" },
+	{ "layout": "record track 20",         "num": 178, "name": "General track Record 10" },
+	{ "layout": "record track 21",         "num": 179, "name": "General track Record 21" },
+	{ "layout": "record track 22",         "num": 180, "name": "General track Record 22" },
+	{ "layout": "record track 23",         "num": 181, "name": "General track Record 23" },
+	{ "layout": "record track 24",         "num": 182, "name": "General track Record 24" },
+	{ "layout": "record track 25",         "num": 183, "name": "General track Record 25" },
+	{ "layout": "record track 26",         "num": 184, "name": "General track Record 26" },
+	{ "layout": "record track 27",         "num": 185, "name": "General track Record 27" },
+	{ "layout": "record track 28",         "num": 186, "name": "General track Record 28" },
+	{ "layout": "record track 29",         "num": 187, "name": "General track Record 29" },
+	{ "layout": "record track 30",         "num": 188, "name": "General track Record 30" },
+	{ "layout": "record track 31",         "num": 189, "name": "General track Record 31" },
+	{ "layout": "record track 32",         "num": 190, "name": "General track Record 32" },
+	{ "layout": "record track 33",         "num": 191, "name": "General track Record 33" },
+	{ "layout": "record track 34",         "num": 192, "name": "General track Record 34" },
+	{ "layout": "record track 35",         "num": 193, "name": "General track Record 35" },
+	{ "layout": "record track 36",         "num": 194, "name": "General track Record 36" },
 
 	// FRENCH PLAYER MAT
-	{ "layout": "fr_advantages",           "num": 202, "name": "Advantage Tile"},
-	{ "layout": "fr_ministries",           "num": 203, "name": "Ministries"},
-	{ "layout": "fr_squadrons",            "num": 204, "name": "Squadrons"},
-	{ "layout": "fr_basic_war_tiles",      "num": 205, "name": "Basic War Tiles"},
-	{ "layout": "fr_bonus_war_tiles",      "num": 206, "name": "Bonus War Tiles"},
+	{ "layout": "fr_advantages",           "num": 195, "name": "Advantage Tile"},
+	{ "layout": "fr_ministries",           "num": 196, "name": "Ministries"},
+	{ "layout": "fr_squadrons",            "num": 197, "name": "Squadrons"},
+	{ "layout": "fr_basic_war_tiles",      "num": 198, "name": "Basic War Tiles"},
+	{ "layout": "fr_bonus_war_tiles",      "num": 199, "name": "Bonus War Tiles"},
 
 	// BRITISH PLAYER MAT
-	{ "layout": "br_advantages",           "num": 207, "name": "Advantage Tile"},
-	{ "layout": "br_ministries",           "num": 208, "name": "Ministry Card"},
-	{ "layout": "br_squadrons",            "num": 209, "name": "Squadrons"},
-	{ "layout": "br_basic_war_tiles",      "num": 210, "name": "Basic War Tiles"},
-	{ "layout": "br_bonus_war_tiles",      "num": 211, "name": "Bonus War Tiles"},
+	{ "layout": "br_advantages",           "num": 200, "name": "Advantage Tile"},
+	{ "layout": "br_ministries",           "num": 201, "name": "Ministry Card"},
+	{ "layout": "br_squadrons",            "num": 202, "name": "Squadrons"},
+	{ "layout": "br_basic_war_tiles",      "num": 203, "name": "Basic War Tiles"},
+	{ "layout": "br_bonus_war_tiles",      "num": 204, "name": "Bonus War Tiles"},
 
 	// INVESTMENT TILE DISPLAY and EVENT DECK
-
 	{ "layout": "available_investment_1",  "num": 212, "name": "Available Investment Tiles" },
 	{ "layout": "available_investment_2",  "num": 213, "name": "Available Investment Tiles" },
 	{ "layout": "available_investment_3",  "num": 214, "name": "Available Investment Tiles" },
@@ -567,8 +920,21 @@ data.bizzaro_spaces = [
 	{ "layout": "used_investment_tiles",   "num": 222, "name": "Used Investment Tiles" },
 	{ "layout": "draw_pile",               "num": 223, "name": "Draw Pile" },
 	{ "layout": "discard_pile",            "num": 224, "name": "Discard Pile" },
+
+	{ "layout": "available_investment_1",  "num": 205, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_2",  "num": 206, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_3",  "num": 207, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_4",  "num": 208, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_5",  "num": 209, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_6",  "num": 210, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_7",  "num": 211, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_8",  "num": 212, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_9",  "num": 213, "name": "Available Investment Tiles" },
+	{ "layout": "investment_tile_stack",   "num": 214, "name": "Investment Tile Stack" },
+	{ "layout": "used_investment_tiles",   "num": 215, "name": "Used Investment Tiles" },
+	{ "layout": "draw_pile",               "num": 216, "name": "Draw Pile" },
+	{ "layout": "discard_pile",            "num": 217, "name": "Discard Pile" },
+	{ "layout": "played_events_pile",      "num": 218, "name": "Played Events Pile" },
 ]
 
 if (typeof module !== "undefined") module.exports = data
-
-// vim: set nowrap:
