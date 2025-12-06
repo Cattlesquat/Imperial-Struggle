@@ -599,11 +599,12 @@ P.deal_cards_discard = {
 		L.discarded = [ [], [] ]
 	},
 	prompt() {
-		V.prompt = "Deal Cards Phase: Discard down to three cards."
 		if (G.hand[R].length > 3) {
+			V.prompt = "Deal Cards Phase: Discard down to three Event cards."
 			for (var c of G.hand[R])
 				action_event_card(c)
 		} else {
+			V.prompt = "Deal Cards Phase: Review newly drawn Event cards."
 			button("confirm")
 		}
 		if (L.discarded[R].length > 0)
