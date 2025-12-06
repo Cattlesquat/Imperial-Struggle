@@ -538,6 +538,11 @@ function on_view() {
 
 	V.ministry = [ null, null ]
 
+	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
+	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
+
+	// TODO: bonus war tiles?
+
 	if (R === FRANCE) {
 		V.hand = G.hand[FRANCE]
 		V.ministry[FRANCE] = G.ministry[FRANCE]

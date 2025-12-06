@@ -231,6 +231,9 @@ function on_update() {
 		NUM_INVESTMENT_TILES - (G.used_investments.length + G.current_investments.length)
 	)
 
+	populate_generic("lout-player-basic-war", FRANCE, "marker hex war-wss fr reverse", V.basic_war_tiles[FRANCE])
+	populate_generic("lout-player-basic-war", BRITAIN, "marker hex war-wss br reverse", V.basic_war_tiles[BRITAIN])
+
 	if (V.ministry[FRANCE])
 		populate_with_list("lout-player-ministry", FRANCE, "ministry_card", V.ministry[FRANCE])
 	if (V.ministry[BRITAIN])
