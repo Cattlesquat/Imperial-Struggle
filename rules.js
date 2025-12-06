@@ -40,6 +40,11 @@ const WAR_DEBT = 1 // Debt attack
 const WAR_FORT = 2 // Fort/Fleet attack
 const WAR_FLAG = 3 // Diplomatic attack
 
+// Eras
+const SUCCESSION_ERA = 0
+const EMPIRE_ERA = 1
+const REVOLUTION_ERA = 2
+
 // Wars
 const WAR_WSS = 1
 const WAR_WAS = 2
@@ -341,8 +346,6 @@ const PLAYED_EVENTS = 218
 /* TILES & CARDS */
 
 
-// Checks the status of all advantage tiles -- if one player controls all of the prerequisite spaces (has them flagged), the advantage goes to their player mat. Otherwise it goes to its advantage space.
-
 function player_has_advantage(p, a) {
 	for (var s of data.advantages.req)
 		if (G.flags[s] !== p)
@@ -359,6 +362,16 @@ function update_advantages() {
 		else
 			G.advantages[i] = NONE
 	}
+}
+
+function beginning_of_era() {
+	return ([PEACE_TURN_1, PEACE_TURN_3, PEACE_TURN_5].includes(G.turn))
+}
+
+function current_era() {
+	if (G.turn < PEACE_TURN_3) return SUCCESSION_ERA
+	if (G.turn < PEACE_TURN_5) return EMPIRE_ERA
+	return REVOLUTION_ERA
 }
 
 /* 4.0 - GAME SEQUENCE */
@@ -415,7 +428,32 @@ P.war_turn = script (`
 /* 4.1.1 - DECK PHASE */
 
 P.deck_phase = function () {
-	// TODO: shuffle empire era events into draw pile
+
+	if (beginning_of_era() && current_era() === EMPIRE_ERA) {
+		for (var card = SUCCESSION_ERA_CARDS + 1; i <= EMPIRE_ERA_CARDS; i++)
+			G.deck.push(i);
+		log("=Deck Phase")
+		log ("Empire Era events added to Event Deck")
+		log ("Shuffling Event Deck")
+		shuffle(G.deck)
+	}
+
+	if (beginning_of_era() && current_era() === REVOLUTION_ERA) {
+		log("=Deck Phase")
+
+		log ("Succession Era events REMOVED from Event Deck")
+		for (var index = G.deck.length - 1; index >= 0; index--) {
+			if (data.cards[index].era === SUCCESSION_ERA) {
+				G.deck.delete(index);
+			}
+		}
+
+		for (var card = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
+			G.deck.push(i);
+		log ("Revolution Era events added to Event Deck")
+		log ("Shuffling Event Deck")
+		shuffle(G.deck)
+	}
 	end()
 }
 
@@ -500,8 +538,25 @@ P.deal_cards_phase = function () {
 		G.available_investments.push(G.investment_tile_stack.pop())
 	}
 
+	if ((current_era() === REVOLUTION_ERA) && beginning_of_era()) {
+		var any = false
+		for (var who = FRANCE; who <= BRITAIN; who++) {
+			for (var index = G.hand[who].length - 1; index >= 0; index--) {
+				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
+					G.hand[who][index].delete()
+                    any = true
+				}
+			}
+		}
+		if (any) {
+			log ("Succession Era cards in players' hands removed from the game (see 4.1.6).")
+		}
+	}
+
+	log ("3 Event cards dealt to France")
+	log ("3 Event cards dealt to Britain")
+
 	for (var i = 0; i < 3; ++i) {
-		// TODO: remove wronge era cards
 		G.hand[FRANCE].push(G.deck.pop())
 		G.hand[BRITAIN].push(G.deck.pop())
 	}
@@ -534,29 +589,41 @@ P.deal_cards_discard = {
 	},
 	confirm() {
 		set_delete(G.active, R)
-		if (G.active.length === 0)
+		if (G.active.length === 0) {
+			// Only when both players are finished do we "reveal" the cards discarded (which are now public information). We also need to maintain a discard pile because it occasionally reshuffles late in the game
+			for (var who = FRANCE; who <= BRITAIN; who++) {
+				G.discard_pile.push(L.discarded[who]);
+			}
 			end()
+		}
 	},
 }
 
 /* 4.1.7 - MINISTRY PHASE */
 
 P.ministry_phase = function () {
-	G.ministry = [ [], [] ]
-	G.active = [ FRANCE, BRITAIN ]
-	goto("choose_ministry_cards")
+
+	if (!beginning_of_era()) {
+		goto ("replace_ministry_cards")
+	} else {
+		G.ministry          = [ [], [] ]
+		G.ministry_revealed = [ [], [] ]
+		G.active            = [ FRANCE, BRITAIN ]
+		goto("choose_ministry_cards")
+	}
 }
 
 P.choose_ministry_cards = {
 	prompt() {
-		V.prompt = "Ministry Phase: Choose two ministry cards to keep."
+		V.prompt = "Ministry Phase: Choose two ministry cards."
 		V.all_ministries = []
 		for (var m of data.ministries) {
-			// TODO: correct era
 			if (m.side === R && !G.ministry[R].includes(m.num)) {
-				V.all_ministries.push(m.num)
-				if (G.ministry[R].length < 2)
-					action_ministry_card(m.num)
+				if (m.era.includes(current_era())) {
+					V.all_ministries.push(m.num)
+					if (G.ministry[R].length < 2)
+						action_ministry_card(m.num)
+				}
 			}
 		}
 		if (G.ministry[R].length > 0)
@@ -566,9 +633,30 @@ P.choose_ministry_cards = {
 	},
 	ministry_card(c) {
 		G.ministry[R].push(c)
+		G.ministry_revealed[R].push(false)
 	},
 	undo() {
 		G.ministry[R].pop()
+		G.ministry_revealed[R].pop()
+	},
+	confirm() {
+		set_delete(G.active, R)
+		if (G.active.length === 0)
+			end()
+	},
+}
+
+P.replace_ministry_cards = {
+	prompt() {
+		if (!G.ministry_revealed[R].includes(false)) {
+			V.prompt = "Ministry Phase: No ministries eligible for mid-era replacement (see 4.1.7)."
+			button("confirm")
+		}
+		else {
+			//TODO: allow replacement of ministries mid-era
+			V.prompt = "Ministry Phase: Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)"
+			button("confirm")
+		}
 	},
 	confirm() {
 		set_delete(G.active, R)
@@ -600,7 +688,8 @@ function on_setup(scenario, options) {
 	}
 
 	G.deck = []
-	for (i = 1; i < SUCCESSION_ERA_CARDS; ++i)
+	G.discard_pile = []
+	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
 
@@ -686,12 +775,7 @@ function on_setup(scenario, options) {
 
 	G.navy_box = []
 	G.navy_box[FRANCE] = 1
-	G.navy_box[BRITAIN] = 1
-
-	for (i = 0; i < 3; ++i) {
-		G.hand[FRANCE].push(G.deck.pop())
-		G.hand[BRITAIN].push(G.deck.pop())
-	}
+	G.navy_box[BRITAIN] = 2
 
 	call("main")
 }
