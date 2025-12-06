@@ -694,6 +694,130 @@ P.replace_ministry_cards = {
 	},
 }
 
+/* 4.1.8 - INITIATIVE PHASE */
+
+P.initiative_phase = function () {
+	log("=Initiative Phase")
+	if (G.vp < 15) {
+		log("France has the initiative")
+		G.initiative = FRANCE
+	} else if (G.vp > 15) {
+		log("Britain has the initiative")
+		G.initiative = BRITAIN
+	} else {
+		log("No change")
+	}
+	end()
+}
+
+/* 4.1.9 - ACTION PHASE */
+
+P.action_phase = script (`
+	log ("=Action Phase")
+	set G.active G.initiative
+	call choose_first_player
+	for L.round in 1 to 4 {
+		call action_round
+		set G.active (1-G.active)
+		call action_round
+		set G.active (1-G.active)
+	}
+`)
+
+P.choose_first_player = {
+	prompt() {
+		V.prompt = "Initiative Phase: Choose the player to take the first action round."
+		button("france")
+		button("britain")
+	},
+	france() {
+		G.active = FRANCE
+		end()
+	},
+	britain() {
+		G.active = BRITAIN
+		end()
+	},
+}
+
+
+/* 4.1.10 - ACTION PHASE */
+
+P.reduce_treaty_points_phase = function () {
+	if (G.treaty_points[FRANCE] > 4) {
+		G.treaty_points[FRANCE] = 4
+	}
+	if (G.treaty_points[BRITAIN] > 4) {
+		G.treaty_points[BRITAIN] = 4
+	}
+	end()
+}
+
+/* 4.1.11 - ACTION PHASE */
+
+P.resolve_remaining_powers = function () {
+	// TODO
+	end()
+}
+
+/* 4.1.12 - SCORING PHASE */
+
+P.scoring_phase = function () {
+	log("=Scoring Phase")
+	// TODO
+	end()
+}
+
+/* 4.1.13 - VICTORY CHECK PHASE */
+
+P.scoring_phase = function () {
+	// TODO
+	end()
+}
+
+/* 4.1.14 - FINAL SCORING PHASE */
+
+P.scoring_phase = function () {
+	log("=Final Scoring Phase")
+	// TODO
+	end()
+}
+
+/* 5.0 - ACTION ROUNDS */
+
+P.action_round = script (`
+	call select_investment_tile
+	if (G.played_tile >= 0) {
+		if (data.investments[G.played_tile].event) {
+			call may_play_event_card
+		}
+		call may_spend_action_points
+	}
+	set G.played_tile -1
+`)
+
+P.select_investment_tile = {
+	prompt() {
+		V.prompt = "Action Round: Select an investment tile."
+		for (var tile of G.available_investments)
+			action_investment(tile)
+		button("pass", G.debt[R] > 0)
+	},
+	investment(tile) {
+		push_undo()
+		log("Played I" + tile)
+		array_delete_item(G.available_investments, tile)
+		G.played_tile = tile
+		end()
+	},
+	pass() {
+		push_undo()
+		log("Passed to reduce debt by 2")
+		G.debt[R] = Math.max(0, G.debt[R] - 2)
+		end()
+	},
+}
+
 /* SETUP */
 
 function on_setup(scenario, options) {
@@ -845,6 +969,8 @@ function on_view() {
 	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
 
 	// TODO: bonus war tiles?
+
+	V.played_tile = G.played_tile
 
 	if (R === FRANCE) {
 		V.hand = [

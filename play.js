@@ -204,29 +204,20 @@ function on_update() {
 	// populate_generic("panel-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
 	// populate_generic("panel-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
 
+	if (V.played_tile >= 0)
+		populate("panel-played", 0, "investment", V.played_tile)
+
 	if (V.all_ministries)
 		populate_with_list("panel-all-ministries", 0, "ministry_card", V.all_ministries)
 
 	populate_with_list("panel-available-investments", 0, "investment", G.available_investments)
 	populate_with_list("panel-used-investments", 0, "investment", G.used_investments)
-	/*
-	populate_generic("lout-inv-stack", 0, "marker square investment reverse",
-		NUM_INVESTMENT_TILES - (G.used_investments.length + G.available_investments.length)
-	)
-	 */
 
-	// populate_generic("lout-player-basic-war", FRANCE, "marker hex war-wss fr reverse", V.basic_war_tiles[FRANCE])
-	// populate_generic("lout-player-basic-war", BRITAIN, "marker hex war-wss br reverse", V.basic_war_tiles[BRITAIN])
+	populate_with_list("panel-ministry", FRANCE, "ministry_card", V.ministry[FRANCE], "card ministry_card deck_fr")
+	populate_with_list("panel-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN], "card ministry_card deck_br")
 
-	if (V.ministry[FRANCE])
-		populate_with_list("panel-ministry", FRANCE, "ministry_card", V.ministry[FRANCE], "card ministry_card deck_fr")
-	if (V.ministry[BRITAIN])
-		populate_with_list("panel-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN], "card ministry_card deck_br")
-
-	if (V.hand[FRANCE])
-		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
-	if (V.hand[BRITAIN])
-		populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
+	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)
@@ -234,6 +225,9 @@ function on_update() {
 		else
 			populate_generic("lout-award", r, "marker square-sm black award reverse")
 	}
+
+	action_button("france", "France")
+	action_button("britain", "Britain")
 
 	action_button("confirm", "Confirm")
 	action_button("pass", "Pass")

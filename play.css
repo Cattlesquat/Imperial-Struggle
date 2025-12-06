@@ -167,6 +167,10 @@ body.Britain #events_br { grid-row: 2 }
 	border-radius: 16px;
 }
 
+.marker.investment.action {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px white;
+}
+
 .card.action {
 	box-shadow: 0 0 0 3px white;
 }
