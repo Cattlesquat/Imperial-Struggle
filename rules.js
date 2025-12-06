@@ -31,7 +31,8 @@ const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
-const NUM_SPACES                    = 218
+const NUM_ADVANTAGES 		= 22
+const NUM_SPACES            = 218
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -390,8 +391,36 @@ function draw_global_demands() {
 }
 
 
+// Checks the status of all advantage tiles -- if one player controls all of the prerequisite spaces (has them flagged), the advantage goes to their player mat. Otherwise it goes to its advantage space.
 function update_advantages() {
+	for (var i = 0; i < NUM_ADVANTAGES; i++) {
+		if (advantages[i].req !== undefined) {
+			let who = NONE;
 
+			// If one player controls ALL of an advantages req spaces, then he controls the advantage, otherwise nobody does.
+			for (const req of advantages[i].req) {
+				let whom = G.flags[req]
+				if ((whom !== FRANCE) && (whom !== BRITAIN)) {
+					who = NONE;
+					break;
+				}
+				if (who === NONE) {
+					who = whom;
+				}
+				else if (who !== whom) {
+					who = NONE;
+					break;
+				}
+			}
+
+			if (who === NONE) {
+				advantages[i].current = advantages[i].home; // If nobody controls it, put advantage on its home spot
+			}
+			else {
+				advantages[i].current = (who === FRANCE) ? FRANCE_ADVANTAGES : BRITAIN_ADVANTAGES;
+			}
+		}
+	}
 }
 
 /* SETUP */
@@ -446,7 +475,15 @@ function blank_game_state (scenario, options) {
     // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
     for (i = 0; i < data.spaces.length; i++) {
         G.flags[i] = data.spaces[i].flag ?? NONE
+
+		// Advantages data
+		if (data.spaces[i].advantage !== undefined) {
+			advantages[data.spaces[i].advantage].req     = data.spaces[i].req.advantagereq
+			advantages[data.spaces[i].advantage].home    = i
+			advantages[data.spaces[i].advantage].current = i
+		}
     }
+	update_advantages()
 
 	G.navy_box = []
 	G.navy_box[FRANCE]  = 1
