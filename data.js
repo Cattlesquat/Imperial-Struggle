@@ -339,11 +339,18 @@ const DRAW_PILE = 216
 const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
 
+data.regions = [
+	{ num: 0, name: "Europe" },
+	{ num: 1, name: "North America" },
+	{ num: 2, name: "Caribbean" },
+	{ num: 3, name: "India" },
+]
+
 data.flags = [
-    { "num": 0, "id": "fr", "name": "France",  "adj": "French" },
-    { "num": 1, "id": "br", "name": "Britain", "adj": "British" },
-    { "num": 2, "id": "sp", "name": "Spain",   "adj": "Spanish" },
-    { "num": 3, "id": "us", "name": "USA",     "adj": "US" },
+	{ "num": 0, "id": "fr", "name": "France",  "adj": "French" },
+	{ "num": 1, "id": "br", "name": "Britain", "adj": "British" },
+	{ "num": 2, "id": "sp", "name": "Spain",   "adj": "Spanish" },
+	{ "num": 3, "id": "us", "name": "USA",     "adj": "US" },
 	{ "num": 4, "id": "no", "name": "No one",  "adj": "No one's" }
 ]
 
@@ -357,14 +364,14 @@ data.demands = [
 ]
 
 data.awards = [
-    { "num": 0, "vp": 3, "by2": true,  "trp": 0 },
-    { "num": 1, "vp": 2, "by2": true,  "trp": 0 },
-    { "num": 2, "vp": 1, "by2": false, "trp": 1 },
-    { "num": 3, "vp": 1, "by2": false, "trp": 1 },
-    { "num": 4, "vp": 1, "by2": false, "trp": 0 },
-    { "num": 5, "vp": 1, "by2": false, "trp": 0 },
-    { "num": 6, "vp": 0, "by2": false, "trp": 1 },
-    { "num": 7, "vp": 0, "by2": false, "trp": 1 },
+    { "num": 0, "vp": 3, "by2": true,  "trp": 0, name: "3 VP (2)" },
+    { "num": 1, "vp": 2, "by2": true,  "trp": 0, name: "2 VP (2)" },
+    { "num": 2, "vp": 1, "by2": false, "trp": 0, name: "1 VP" },
+    { "num": 3, "vp": 1, "by2": false, "trp": 0, name: "1 VP" },
+    { "num": 4, "vp": 1, "by2": false, "trp": 1, name: "1 VP (TRP)" },
+    { "num": 5, "vp": 1, "by2": false, "trp": 1, name: "1 VP (TRP)" },
+    { "num": 6, "vp": 0, "by2": false, "trp": 1, name: "0 VP (TRP)" },
+    { "num": 7, "vp": 0, "by2": false, "trp": 1, name: "0 VP (TRP)" },
 ]
 
 data.turns = [

@@ -341,34 +341,6 @@ const PLAYED_EVENTS = 218
 /* TILES & CARDS */
 
 
-function draw_awards() {
-    if (G.award_chits.length < NUM_REGIONS) { // Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
-        for (i = 0; i < NUM_AWARD_TILES; i++) {
-            G.award_chits.push(i)
-        }
-        shuffle(G.award_chits)
-    }
-
-    // Deal one per region
-    for (var i = 0; i < NUM_REGIONS; i++) {
-       G.awards[i] = G.award_chits.pop()
-    }
-}
-
-function draw_global_demands() {
-	G.global_demand_chits = []
-	G.global_demand = []
-	for (var i = 0; i < NUM_DEMANDS; i++) {
-		G.global_demand_chits.push(i);
-	}
-	shuffle(G.global_demand_chits);
-
-	for (i = 0; i < 3; i++) {
-		G.global_demand.push(G.global_demand_chits.pop());
-	}
-}
-
-
 // Checks the status of all advantage tiles -- if one player controls all of the prerequisite spaces (has them flagged), the advantage goes to their player mat. Otherwise it goes to its advantage space.
 
 function player_has_advantage(p, a) {
@@ -389,66 +361,274 @@ function update_advantages() {
 	}
 }
 
+/* 4.0 - GAME SEQUENCE */
+
+P.main = script (`
+	for G.turn in 0 to 9 {
+		if (data.turns[G.turn].war) {
+			call war_turn
+		} else {
+			call peace_turn
+		}
+	}
+`)
+
+const PEACE_TURN_1 = 0
+const PEACE_TURN_3 = 3
+const PEACE_TURN_5 = 7
+const PEACE_TURN_6 = 9
+
+const WAR_TURN_AWI = 8
+
+P.peace_turn = script (`
+	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
+		call deck_phase
+		call debt_limit_increase_phase
+	}
+	call award_phase
+	call global_demand_phase
+	call reset_phase
+	call deal_cards_phase
+	call ministry_phase
+	if (G.turn !== PEACE_TURN_1) {
+		call initiative_phase
+	}
+	call action_phase
+	call reduce_treaty_points_phase
+	call resolve_remaining_powers
+	call scoring_phase
+	call victory_check_phase
+	if (G.turn === PEACE_TURN_6) {
+		call final_scoring
+	}
+`)
+
+P.war_turn = script (`
+	call war_resolution_phase
+	call victory_check_phase
+	call reset_phase
+	if (G.turn <  WAR_TURN_AWI) {
+		call war_layout_phase
+	}
+`)
+
+/* 4.1.1 - DECK PHASE */
+
+P.deck_phase = function () {
+	// TODO: shuffle empire era events into draw pile
+	end()
+}
+
+/* 4.1.2 - DEBT LIMIT INCREASE PHASE */
+
+P.debt_limit_increase_phase = function () {
+	G.debt_limit[FRANCE] += 4
+	G.debt_limit[BRITAIN] += 4
+	end()
+}
+
+/* 4.1.3 - AWARD PHASE */
+
+P.award_phase = function () {
+	log("=Award Phase")
+
+	// Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
+	if (G.award_chits.length < NUM_REGIONS) {
+		for (var i = 0; i < NUM_AWARD_TILES; i++) {
+			G.award_chits.push(i)
+		}
+		shuffle(G.award_chits)
+	}
+
+	// Deal one per region
+	for (var i = 0; i < NUM_REGIONS; i++) {
+		var chit = G.award_chits.pop()
+		G.awards[i] = chit
+		log(data.awards[chit].name + " -> " + data.regions[i].name)
+	}
+
+	end()
+}
+
+/* 4.1.4 - GLOBAL DEMAND PHASE */
+
+P.global_demand_phase = function () {
+	log("=Global Demand Phase")
+
+	var global_demand_chits = []
+	for (var i = 0; i < NUM_DEMANDS; i++)
+		global_demand_chits.push(i)
+	shuffle(global_demand_chits)
+
+	G.global_demand = []
+	for (var i = 0; i < 3; i++) {
+		var chit = global_demand_chits.pop()
+		log(data.demands[chit].name)
+		G.global_demand.push(chit)
+	}
+
+	end()
+}
+
+/* 4.1.5 - RESET PHASE */
+
+P.reset_phase = function () {
+	// remove exhausted from advantage and ministry cards
+	G.exhausted_advantage = []
+	G.exhausted_ministry = []
+
+	// move investments to used
+	for (var i of G.available_investments)
+		G.used_investments.push(i)
+	G.available_investments = []
+
+	end()
+}
+
+/* 4.1.6 - DEAL CARDS PHASE */
+
+P.deal_cards_phase = function () {
+	log("=Deal Cards Phase")
+
+	while (G.available_investments.length < 9) {
+		if (G.investment_tile_stack.length === 0) {
+			log("Reshuffled investment tiles")
+			G.investment_tile_stack = G.used_investments
+			G.used_investments = []
+			shuffle(G.investment_tile_stack)
+		}
+		G.available_investments.push(G.investment_tile_stack.pop())
+	}
+
+	for (var i = 0; i < 3; ++i) {
+		// TODO: remove wronge era cards
+		G.hand[FRANCE].push(G.deck.pop())
+		G.hand[BRITAIN].push(G.deck.pop())
+	}
+
+	G.active = [ FRANCE, BRITAIN ]
+	goto("deal_cards_discard")
+}
+
+P.deal_cards_discard = {
+	_begin() {
+		L.discarded = [ [], [] ]
+	},
+	prompt() {
+		V.prompt = "Deal Cards Phase: Discard down to three cards."
+		if (G.hand[R].length > 3) {
+			for (var c of G.hand[R])
+				action_event_card(c)
+		} else {
+			button("confirm")
+		}
+		if (L.discarded[R].length > 0)
+			button("undo")
+	},
+	event_card(c) {
+		array_delete_item(G.hand[R], c)
+		L.discarded[R].push(c)
+	},
+	undo() {
+		G.hand[R].push(L.discarded[R].pop())
+	},
+	confirm() {
+		set_delete(G.active, R)
+		if (G.active.length === 0)
+			end()
+	},
+}
+
+/* 4.1.7 - MINISTRY PHASE */
+
+P.ministry_phase = function () {
+	G.ministry = [ [], [] ]
+	G.active = [ FRANCE, BRITAIN ]
+	goto("choose_ministry_cards")
+}
+
+P.choose_ministry_cards = {
+	prompt() {
+		V.prompt = "Ministry Phase: Choose two ministry cards to keep."
+		V.all_ministries = []
+		for (var m of data.ministries) {
+			// TODO: correct era
+			if (m.side === R && !G.ministry[R].includes(m.num)) {
+				V.all_ministries.push(m.num)
+				if (G.ministry[R].length < 2)
+					action_ministry_card(m.num)
+			}
+		}
+		if (G.ministry[R].length > 1)
+			button("undo")
+		if (G.ministry[R].length === 2)
+			button("confirm")
+	},
+	ministry_card(c) {
+		G.ministry[R].push(c)
+	},
+	undo() {
+		G.ministry[R].pop()
+	},
+	confirm() {
+		set_delete(G.active, R)
+		if (G.active.length === 0)
+			end()
+	},
+}
+
 /* SETUP */
 
-function blank_game_state (scenario, options) {
-    G.active     = FRANCE
-    G.hand       = [ [], [] ]
-    G.ministry = [ [], [] ]
-    G.unbuilt_squadrons = [ 7, 7 ]
-    G.vp = 0
-    G.turn       = 0
-    G.next_war   = WAR_WSS
-    G.initiative = FRANCE
+function on_setup(scenario, options) {
+	G.active = FRANCE
+	G.hand = [ [], [] ]
+	G.ministry = [ [], [] ]
+	G.unbuilt_squadrons = [ 7, 7 ]
+	G.vp = 0
+	G.turn = 0
+	G.next_war = WAR_WSS
+	G.initiative = FRANCE
 
-    G.debt = []
-    G.debt_limit = []
-    G.treaty_points = []
+	G.debt = []
+	G.debt_limit = []
+	G.treaty_points = []
 
-    for (var i = FRANCE; i <= BRITAIN; i++) {
-        G.debt_limit[i]    = 6
-        G.debt[i]          = 0
-        G.treaty_points[i] = 0
-    }
+	for (var i = FRANCE; i <= BRITAIN; i++) {
+		G.debt_limit[i] = 6
+		G.debt[i] = 0
+		G.treaty_points[i] = 0
+	}
 
-    G.deck = []
-    for (i = 1; i < SUCCESSION_ERA_CARDS; ++i) {
-        G.deck.push(i)
-    }
-    shuffle(G.deck)
+	G.deck = []
+	for (i = 1; i < SUCCESSION_ERA_CARDS; ++i)
+		G.deck.push(i)
+	shuffle(G.deck)
 
-    G.investments = []
-    G.current_investments = []
-    G.used_investments = []
-    for (i = 0; i < NUM_INVESTMENT_TILES; i++) {
-        G.investments.push(i)
-    }
-    shuffle(G.investments)
+	G.available_investments = []
+	G.used_investments = []
+	G.investment_tile_stack = []
+	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
+		G.investment_tile_stack.push(i)
+	shuffle(G.investment_tile_stack)
 
-    for (i = 0; i < 9; ++i)
-    	G.current_investments.push(G.investments.pop())
+	G.basic_war_tiles = [ [], [], [] ]
+	for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
+		G.basic_war_tiles[FRANCE].push(i)
+		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+	}
+	shuffle(G.basic_war_tiles[FRANCE])
+	shuffle(G.basic_war_tiles[BRITAIN])
 
-    G.basic_war_tiles = [ [],[],[] ]
-    for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
-        G.basic_war_tiles[FRANCE].push(i);
-        G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES);
-    }
-    shuffle (G.basic_war_tiles[FRANCE])
-    shuffle (G.basic_war_tiles[BRITAIN])
+	G.awards = []
+	G.award_chits = []
 
-    G.awards = []
-    G.award_chits = []
-    draw_awards()
+	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
 
-	draw_global_demands()
-
-    G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
-
-    G.flags = [] // All the flags on the map
-    // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
-    for (i = 0; i < data.spaces.length; i++) {
-        G.flags[i] = data.spaces[i].flag ?? NONE
-    }
+	G.flags = [] // All the flags on the map
+	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
+	for (i = 0; i < data.spaces.length; i++) {
+		G.flags[i] = data.spaces[i].flag ?? NONE
+	}
 
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].num !== i)
@@ -469,7 +649,13 @@ function blank_game_state (scenario, options) {
 					}
 				}
 				if (!connection) {
-					console.error("Space " + data.spaces[i].name + " specifies a connection to " + data.spaces[space].name + " but the reverse connection does not exist.");
+					console.error(
+						"Space " +
+							data.spaces[i].name +
+							" specifies a connection to " +
+							data.spaces[space].name +
+							" but the reverse connection does not exist."
+					)
 				}
 			}
 		}
@@ -486,30 +672,31 @@ function blank_game_state (scenario, options) {
 					}
 				}
 				if (!connection) {
-					console.error("Space " + data.spaces[i].name + " specifies a conquest line to " + data.spaces[space].name + " but the reverse conquest line does not exist.");
+					console.error(
+						"Space " +
+							data.spaces[i].name +
+							" specifies a conquest line to " +
+							data.spaces[space].name +
+							" but the reverse conquest line does not exist."
+					)
 				}
 			}
 		}
 	}
 
 	G.navy_box = []
-	G.navy_box[FRANCE]  = 1
+	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 1
-
-	// Gives each player a "hand" of all the available ministry cards for their side.
-	G.ministry[FRANCE] = [ 1 ]
-	G.ministry[BRITAIN] = [ 5, 6 ]
 
 	for (i = 0; i < 3; ++i) {
 		G.hand[FRANCE].push(G.deck.pop())
 		G.hand[BRITAIN].push(G.deck.pop())
 	}
-}
 
-function on_setup(scenario, options) {
-	blank_game_state(scenario, options)
 	call("main")
 }
+
+/* VIEW & ACTIONS */
 
 function on_view() {
 	V.turn = G.turn
@@ -523,7 +710,7 @@ function on_view() {
 
 	// Current available investments, and used investment pile, are public.
 	// Shuffled investment deck is not.
-	V.current_investments = G.current_investments
+	V.available_investments = G.available_investments
 	V.used_investments = G.used_investments
 
 	// Flags on the board are always visible
@@ -576,6 +763,22 @@ function on_view() {
 			G.ministry[BRITAIN].map(x => -1),
 		]
 	}
+}
+
+function action_event_card(c) {
+	action("event_card", c)
+}
+
+function action_ministry_card(c) {
+	action("ministry_card", c)
+}
+
+function action_investment(c) {
+	action("investment", c)
+}
+
+function action_advantage(c) {
+	action("advantage", c)
 }
 
 /* FRAMEWORK */
