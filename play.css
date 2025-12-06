@@ -51,20 +51,20 @@ body.Britain header.your_turn { background-color: salmon }
 
 #played .panel-body { width: 252px }
 #available_investment_tiles .panel-body { width: 516px }
+#used_investment_tiles .panel-body { width: 780px }
+
+body.Britain #advantage_br,
+body.Britain #ministry_br,
+body.Britain #events_br { grid-row: 2 }
 
 .board {
 	margin: 12px auto;
 	border: 1px solid black;
 }
 
-#war_display, #mat_fr, #mat_br {
+#war_display {
 	width: 825px;
 	height: 638px;
-}
-
-#tile_display {
-	width: 638px;
-	height: 825px;
 }
 
 /* TRACKS & LAYOUTS */
@@ -168,11 +168,6 @@ body.Britain header.your_turn { background-color: salmon }
 .board.war-wss { background-image: url(boards75/war_2.avif); }
 .board.war-was { background-image: url(boards75/war_3.avif); }
 .board.war-awi { background-image: url(boards75/war_4.avif); }
-
-.board.mat.br { background-image: url(boards75/mat_1.avif) }
-.board.mat.fr { background-image: url(boards75/mat_2.avif) }
-
-#tile_display { background-image: url(boards75/display_1.avif); }
 
 .marker.fleet_fr { background-image: url(tiles75/hex/fleet_fr.png) }
 .marker.fleet_br { background-image: url(tiles75/hex/fleet_br.png) }

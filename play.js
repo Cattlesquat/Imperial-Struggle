@@ -58,7 +58,8 @@ function on_init() {
 	define_panel("panel-advantage", BRITAIN, "advantage_br")
 
 	define_panel("panel-played", 0, "played")
-	define_panel("panel-investments", 0, "available_investment_tiles")
+	define_panel("panel-available-investments", 0, "available_investment_tiles")
+	define_panel("panel-used-investments", 0, "used_investment_tiles")
 
 	define_board("map", 2550, 1650)
 
@@ -202,8 +203,8 @@ function on_update() {
 	// populate_generic("panel-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
 	// populate_generic("panel-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
 
-	populate_with_list("panel-investments", 0, "investment", G.current_investments)
-	// populate_with_list("lout-inv-used", 0, "investment", G.used_investments)
+	populate_with_list("panel-available-investments", 0, "investment", G.current_investments)
+	populate_with_list("panel-used-investments", 0, "investment", G.used_investments)
 	/*
 	populate_generic("lout-inv-stack", 0, "marker square investment reverse",
 		NUM_INVESTMENT_TILES - (G.used_investments.length + G.current_investments.length)
