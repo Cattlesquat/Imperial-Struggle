@@ -394,11 +394,11 @@ function draw_global_demands() {
 // Checks the status of all advantage tiles -- if one player controls all of the prerequisite spaces (has them flagged), the advantage goes to their player mat. Otherwise it goes to its advantage space.
 function update_advantages() {
 	for (var i = 0; i < NUM_ADVANTAGES; i++) {
-		if (advantages[i].req !== undefined) {
+		if (G.advantages[i] && G.advantages[i].req !== undefined) {
 			let who = NONE;
 
 			// If one player controls ALL of an advantages req spaces, then he controls the advantage, otherwise nobody does.
-			for (const req of advantages[i].req) {
+			for (const req of G.advantages[i].req) {
 				let whom = G.flags[req]
 				if ((whom !== FRANCE) && (whom !== BRITAIN)) {
 					who = NONE;
@@ -414,10 +414,10 @@ function update_advantages() {
 			}
 
 			if (who === NONE) {
-				advantages[i].current = advantages[i].home; // If nobody controls it, put advantage on its home spot
+				G.advantages[i].current = G.advantages[i].home; // If nobody controls it, put advantage on its home spot
 			}
 			else {
-				advantages[i].current = (who === FRANCE) ? FRANCE_ADVANTAGES : BRITAIN_ADVANTAGES;
+				G.advantages[i].current = (who === FRANCE) ? FRANCE_ADVANTAGES : BRITAIN_ADVANTAGES;
 			}
 		}
 	}
@@ -472,15 +472,18 @@ function blank_game_state (scenario, options) {
 	draw_global_demands()
 
     G.flags = [] // All the flags on the map
+    G.advantages = []
     // Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
     for (i = 0; i < data.spaces.length; i++) {
         G.flags[i] = data.spaces[i].flag ?? NONE
 
 		// Advantages data
 		if (data.spaces[i].advantage !== undefined) {
-			advantages[data.spaces[i].advantage].req     = data.spaces[i].req.advantagereq
-			advantages[data.spaces[i].advantage].home    = i
-			advantages[data.spaces[i].advantage].current = i
+			G.advantages[data.spaces[i].advantage] = {
+				req: data.spaces[i].advantagereq,
+				home: i,
+				current: i,
+			}
 		}
     }
 	update_advantages()
@@ -562,6 +565,9 @@ function on_view() {
 
 	// Award tiles
 	V.awards = G.awards
+
+	// Advantage tiles
+	V.advantages = G.advantages.map(x => x.current)
 
 	V.navy_box = G.navy_box
 
