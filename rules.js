@@ -502,7 +502,7 @@ function blank_game_state (scenario, options) {
 					}
 				}
 				if (!connection) {
-					throw new Error("Space " + data.spaces[i].name + " specifies a connection to " + data.spaces[space].name + " but the reverse connection does not exist.");
+					console.error("Space " + data.spaces[i].name + " specifies a connection to " + data.spaces[space].name + " but the reverse connection does not exist.");
 				}
 			}
 		}
@@ -519,7 +519,7 @@ function blank_game_state (scenario, options) {
 					}
 				}
 				if (!connection) {
-					throw new Error("Space " + data.spaces[i].name + " specifies a conquest line to " + data.spaces[space].name + " but the reverse conquest line does not exist.");
+					console.error("Space " + data.spaces[i].name + " specifies a conquest line to " + data.spaces[space].name + " but the reverse conquest line does not exist.");
 				}
 			}
 		}
