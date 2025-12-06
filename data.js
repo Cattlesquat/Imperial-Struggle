@@ -33,7 +33,7 @@ const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22
-const NUM_SPACES                    = 218
+const NUM_SPACES                    = 112
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -163,16 +163,16 @@ const MARQUIS_DE_CONDORCET        = 25  // F
 const LAVOISIER                   = 26  // F
 
 // REGIONS
-const EUROPE        = 0
-const NORTH_AMERICA = 1
-const CARIBBEAN     = 2
-const INDIA         = 3
+const REGION_EUROPE        = 0
+const REGION_NORTH_AMERICA = 1
+const REGION_CARIBBEAN     = 2
+const REGION_INDIA         = 3
 
 // SUBREGIONS
-const CANADA         = 0
-const NORTHERN_COL   = 1
-const HOOGHLY_RIVER  = 2
-const CARNATIC_COAST = 3
+const SUBREGION_CANADA         = 0
+const SUBREGION_NORTHERN_COL   = 1
+const SUBREGION_HOOGHLY_RIVER  = 2
+const SUBREGION_CARNATIC_COAST = 3
 
 // SPACE TYPES
 const POLITICAL = 0
@@ -180,143 +180,121 @@ const MARKET    = 1
 const NAVAL     = 2
 const TERRITORY = 3
 const FORT      = 4
-const ADVANTAGE = 5 // Only advantage tiles go in these, but they have connectivity and stuff so I'm treating them as "spaces"
 
-// SPACES (advantage spaces get _SPACE to distinguish them from the advantage tile names)
+// SPACES
 const IRELAND_1 = 0
 const IRELAND_2 = 1
 const SCOTLAND_1 = 2
 const SCOTLAND_2 = 3
 const DENMARK = 4
-const BALTIC_TRADE_SPACE = 5
-const PRUSSIA_1 = 6
-const PRUSSIA_2 = 7
-const PRUSSIA_3 = 8
-const PRUSSIA_4 = 9
-const GERMAN_DIPLOMACY_SPACE = 10
-const SWEDEN = 11
-const RUSSIA = 12
-const DUTCH_1 = 13
-const DUTCH_2 = 14
-const GERMAN_STATES_1 = 15
-const GERMAN_STATES_2 = 16
-const CENTRAL_EUROPEAN_CONFLICT_SPACE = 17
-const BAVARIA = 18
-const AUSTRIA_1 = 19
-const AUSTRIA_2 = 20
-const AUSTRIA_3 = 21
-const AUSTRIA_4 = 22
-const SILESIA_NEGOTIATIONS_SPACE = 23
-const ITALY_INFLUENCE_SPACE = 24
-const SARDINIA = 25
-const SAVOY = 26
-const MEDITERRANEAN_INTRIGUE_SPACE = 27
-const SPAIN_1 = 28
-const SPAIN_2 = 29
-const SPAIN_3 = 30
-const SPAIN_4 = 31
-const GIBRALTAR = 32
-const NAVAL_BASTION_SPACE = 33
-const MINORCA = 34
-const BISCAY = 35
-const BALEARIC = 36
-const ALGONQUIN_RAIDS_SPACE = 37
-const ALGONQUIN = 38
-const FUR_TRADE_SPACE = 39
-const HUDSON_BAY = 40
-const YORK_FACTORY = 41
-const QUEBEC_AND_MONTREAL = 42
-const GULF_OF_ST_LAWRENCE = 43
-const CABOT_STRAIT = 44
-const LOUISBOURG = 45
-const ACADIA = 46
-const NORTHEAST_CHANNEL = 47
-const HALIFAX = 48
-const GEORGES_BANK = 49
-const ATLANTIC_PASSAGE = 50
-const GULF_OF_MAINE = 51
-const MASS_BAY = 52
-const NORTHERN_COLONIES = 53
-const CHESAPEAKE = 54
-const WHEAT_SPACE = 55
-const HUDSON_VALLEY = 56
-const ALBANY = 57
-const CUMBERLAND = 58
-const OHIO_FORKS = 59
-const ALLEGHENY = 60
-const NIAGARA = 61
-const OSWEGO = 62
-const CHAMPLAIN_VALLEY = 63
-const ILE_AUX_NOIX = 64
-const CATARAQUI = 65
-const IROQUOIS_RAIDS_SPACE = 66
-const IROQUOIS = 67
-const PATRIOT_AGITATION_SPACE = 68
-const SONS_OF_LIBERTY = 69
-const USA_1 = 70
-const USA_2 = 71
-const SLAVE_CONTRACTS_SPACE = 72
-const ASIENTO = 73
-const LETTERS_OF_MARQUE_SPACE = 74
-const PRIVATEERS = 75
-const PIRATE_HAVENS_SPACE = 76
-const BUCCANEERS = 76
-const CAROLINAS = 78
-const GEORGIA = 79
-const SAN_AGUSTIN = 80
-const FRUIT_SPACE = 81
-const PANZACOLA = 82
-const BAHAMAS_RUN_WEST = 83
-const BAHAMAS_RUN_NORTH = 84
-const CAICOS = 85
-const BAHAMAS_RUN = 86
-const ST_DOMINGUE = 87
-const PORT_DE_PAIX = 88
-const PUERTO_PRINCIPE = 89
-const PUERTO_RICO = 90
-const RUM_SPACE = 91
-const ANTIGUA = 92
-const MARTINIQUE = 93
-const ST_LUCIA = 94
-const ANTILLES_CHANNEL = 95
-const GUADELOUPE = 96
-const BARBADOS = 97
-const HAVANA = 98
-const GULF_OF_CAZONES = 99
-const SANTIAGO = 100
-const JAMAICA = 101
-const CAYMAN_PASSAGE = 102
-const CUBA_PASSAGE_EAST = 103
-const CUBA_PASSAGE = 104
-const ST_JAMES = 105
-const LOUISIANA = 106
-const RAIDS_AND_INCURSIONS_SPACE = 107
-const MARATHA = 108
-const SEPARATIST_WARS_SPACE = 109
-const NIZAM = 110
-const POWER_STRUGGLE_SPACE = 111
-const MYSORE = 112
-const MALACCA_ROUTE = 113
-const HOOGHLY_RIVER_SPACE = 114
-const CHANDERNAGORE = 115
-const PLASSEY = 116
-const WEST_BENGAL = 117
-const MIDNAPORE = 118
-const CALCUTTA = 119
-const KURPA = 120
-const ARCOT = 121
-const VELLORE = 122
-const KANCHIPURAM = 123
-const MADRAS = 124
-const PONDICHERRY = 125
-const KARAIKAL = 126
-const VANDAVASI = 127
-const TIRUCHIRAPPALLI = 128
-const TEXTILES_SPACE = 129
-const SILK_SPACE = 130
-const CALICUT = 131
-const MANGALORE = 132
-const MALABAR_COAST = 133
+const PRUSSIA_1 = 5
+const PRUSSIA_2 = 6
+const PRUSSIA_3 = 7
+const PRUSSIA_4 = 8
+const SWEDEN = 9
+const RUSSIA = 10
+const DUTCH_1 = 11
+const DUTCH_2 = 12
+const GERMAN_STATES_1 = 13
+const GERMAN_STATES_2 = 14
+const BAVARIA = 15
+const AUSTRIA_1 = 16
+const AUSTRIA_2 = 17
+const AUSTRIA_3 = 18
+const AUSTRIA_4 = 19
+const SARDINIA = 20
+const SAVOY = 21
+const SPAIN_1 = 22
+const SPAIN_2 = 23
+const SPAIN_3 = 24
+const SPAIN_4 = 25
+const GIBRALTAR = 26
+const MINORCA = 27
+const BISCAY = 28
+const BALEARIC = 29
+const ALGONQUIN = 30
+const HUDSON_BAY = 31
+const YORK_FACTORY = 32
+const QUEBEC_AND_MONTREAL = 33
+const GULF_OF_ST_LAWRENCE = 34
+const CABOT_STRAIT = 35
+const LOUISBOURG = 36
+const ACADIA = 37
+const NORTHEAST_CHANNEL = 38
+const HALIFAX = 39
+const GEORGES_BANK = 40
+const ATLANTIC_PASSAGE = 41
+const GULF_OF_MAINE = 42
+const MASS_BAY = 43
+const NORTHERN_COLONIES = 44
+const CHESAPEAKE = 45
+const HUDSON_VALLEY = 46
+const ALBANY = 47
+const CUMBERLAND = 48
+const OHIO_FORKS = 49
+const ALLEGHENY = 50
+const NIAGARA = 51
+const OSWEGO = 52
+const CHAMPLAIN_VALLEY = 53
+const ILE_AUX_NOIX = 54
+const CATARAQUI = 55
+const IROQUOIS = 56
+const SONS_OF_LIBERTY = 57
+const USA_1 = 58
+const USA_2 = 59
+const ASIENTO = 60
+const PRIVATEERS = 61
+const BUCCANEERS = 62
+const CAROLINAS = 63
+const GEORGIA = 64
+const SAN_AGUSTIN = 65
+const PANZACOLA = 66
+const BAHAMAS_RUN_WEST = 67
+const BAHAMAS_RUN_NORTH = 68
+const CAICOS = 69
+const BAHAMAS_RUN = 70
+const ST_DOMINGUE = 71
+const PORT_DE_PAIX = 72
+const PUERTO_PRINCIPE = 73
+const PUERTO_RICO = 74
+const ANTIGUA = 75
+const MARTINIQUE = 76
+const ST_LUCIA = 77
+const ANTILLES_CHANNEL = 78
+const GUADELOUPE = 79
+const BARBADOS = 80
+const HAVANA = 81
+const GULF_OF_CAZONES = 82
+const SANTIAGO = 83
+const JAMAICA = 84
+const CAYMAN_PASSAGE = 85
+const CUBA_PASSAGE_EAST = 86
+const CUBA_PASSAGE = 87
+const ST_JAMES = 88
+const LOUISIANA = 89
+const MARATHA = 90
+const NIZAM = 91
+const MYSORE = 92
+const MALACCA_ROUTE = 93
+const HOOGHLY_RIVER = 94
+const CHANDERNAGORE = 95
+const PLASSEY = 96
+const WEST_BENGAL = 97
+const MIDNAPORE = 98
+const CALCUTTA = 99
+const KURPA = 100
+const ARCOT = 101
+const VELLORE = 102
+const KANCHIPURAM = 103
+const MADRAS = 104
+const PONDICHERRY = 105
+const KARAIKAL = 106
+const VANDAVASI = 107
+const TIRUCHIRAPPALLI = 108
+const CALICUT = 109
+const MANGALORE = 110
+const MALABAR_COAST = 111
+
 const NAVY_BOX = 134
 const AWARD_EUROPE = 135
 const AWARD_NORTH_AMERICA = 136
@@ -695,141 +673,120 @@ data.spaces = [
     { "layout": "Scotland_1",              "num":   2, "name": "Scotland",                "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 4 ], [ 2, 4 ] ] },
     { "layout": "Scotland_2",              "num":   3, "name": "Scotland",                "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
     { "layout": "Denmark",                 "num":   4, "name": "Denmark·Norway",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Baltic Trade",            "num":   5, "name": "Baltic Trade",            "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ DENMARK, PRUSSIA_1 ], "advantage": BALTIC_TRADE  },
-    { "layout": "Prussia_1",               "num":   6, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Prussia_2",               "num":   7, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
-    { "layout": "Empire_1",                "num":   8, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Empire_2",                "num":   9, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
-    { "layout": "German Diplomacy",        "num":  10, "name": "German Diplomacy",        "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ PRUSSIA_4 ], "advantage": GERMAN_DIPLOMACY  },
-    { "layout": "Sweden",                  "num":  11, "name": "Sweden",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Russia",                  "num":  12, "name": "Russia",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ [ 3, 4 ] ] },
-    { "layout": "Dutch_1",                 "num":  13, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 1, 4 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Dutch_2",                 "num":  14, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 1, "alliance": [ ], },
-    { "layout": "Saxony_1",                "num":  15, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
-    { "layout": "Saxony_2",                "num":  16, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 1, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
-    { "layout": "Central Europe Conflict", "num":  17, "name": "Central Europe Conflict", "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ GERMAN_STATES_2, BAVARIA ], "advantage": CENTRAL_EUROPE_CONFLICT  },
-    { "layout": "Bavaria",                 "num":  18, "name": "Bavaria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Austria_1",               "num":  19, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 1, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Austria_2",               "num":  20, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
-    { "layout": "Austria_3",               "num":  21, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
-    { "layout": "Austria_4",               "num":  22, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 0, "alliance": [ ], },
-    { "layout": "Silesia Negociations",    "num":  23, "name": "Silesia Negotiations",    "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ AUSTRIA_2 ], "advantage": SILESIA_NEGOTIATIONS  },
-    { "layout": "Italy Influence",         "num":  24, "name": "Italy Influence",         "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ AUSTRIA_3 ], "advantage": SARDINIA  },
-    { "layout": "Sardinia",                "num":  25, "name": "Sardinia",                "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 2 ] ] },
-    { "layout": "Savoy",                   "num":  26, "name": "Savoy",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ] ] },
-    { "layout": "Mediterranean Intrigue",  "num":  27, "name": "Mediterranean Intrigue",  "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ SAVOY, SPAIN_4 ], "advantage": MEDITERRANEAN_INTRIGUE  },
-    { "layout": "Spain_1",                 "num":  28, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ [ 1, 2 ], [ 3, 3 ], [ 4, 1 ], [ 4, 3 ] ] },
-    { "layout": "Spain_2",                 "num":  29, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2, "flag": 4, "alliance": [ ], },
-    { "layout": "Spain_3",                 "num":  30, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 3 ], [ 4, 1 ], [ 4, 3 ] ] },
-    { "layout": "Spain_4",                 "num":  31, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
-    { "layout": "Gibraltar",               "num":  32, "name": "Gibraltar",               "era": 0, "region": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4, "alliance": [ ], },
-    { "layout": "Naval Bastion",           "num":  33, "name": "Naval Bastion",           "era": 0, "region": 0, "type": 5, "prestige": false, "cost": 0,                                                                         "advantagereq": [ GIBRALTAR ], "advantage": NAVAL_BASTION  },
-    { "layout": "Minorca",                 "num":  34, "name": "Minorca",                 "era": 0, "region": 0, "type": 3, "prestige": true,  "cost": 1, "flag": 4, "alliance": [ ], },
-    { "layout": "Biscay",                  "num":  35, "name": "Biscay",                  "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
-    { "layout": "Balearic",                "num":  36, "name": "Balearic",                "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
+    { "layout": "Prussia_1",               "num":   5, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Prussia_2",               "num":   6, "name": "Prussia",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
+    { "layout": "Empire_1",                "num":   7, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Empire_2",                "num":   8, "name": "Prussia",                 "era": 1, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
+    { "layout": "Sweden",                  "num":   9, "name": "Sweden",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2, "flag": 4, "alliance": [ [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Russia",                  "num":  10, "name": "Russia",                  "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ [ 3, 4 ] ] },
+    { "layout": "Dutch_1",                 "num":  11, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 1, 4 ], [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Dutch_2",                 "num":  12, "name": "Dutch Republic",          "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 1, "alliance": [ ], },
+    { "layout": "Saxony_1",                "num":  13, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
+    { "layout": "Saxony_2",                "num":  14, "name": "German States·Saxony",    "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 1, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ], [ 4, 1 ] ] },
+    { "layout": "Bavaria",                 "num":  15, "name": "Bavaria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Austria_1",               "num":  16, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 1, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Austria_2",               "num":  17, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
+    { "layout": "Austria_3",               "num":  18, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 4, "alliance": [ [ 1, 1 ], [ 2, 1 ], [ 3, 4 ] ] },
+    { "layout": "Austria_4",               "num":  19, "name": "Austria",                 "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 0, "alliance": [ ], },
+    { "layout": "Sardinia",                "num":  20, "name": "Sardinia",                "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 2 ] ] },
+    { "layout": "Savoy",                   "num":  21, "name": "Savoy",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 4, "alliance": [ [ 1, 1 ] ] },
+    { "layout": "Spain_1",                 "num":  22, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 0, "alliance": [ [ 1, 2 ], [ 3, 3 ], [ 4, 1 ], [ 4, 3 ] ] },
+    { "layout": "Spain_2",                 "num":  23, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 2, "flag": 4, "alliance": [ ], },
+    { "layout": "Spain_3",                 "num":  24, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 3, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 3 ], [ 4, 1 ], [ 4, 3 ] ] },
+    { "layout": "Spain_4",                 "num":  25, "name": "Spain",                   "era": 0, "region": 0, "type": 0, "prestige": true,  "cost": 3, "flag": 4, "alliance": [ ], },
+    { "layout": "Gibraltar",               "num":  26, "name": "Gibraltar",               "era": 0, "region": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4, "alliance": [ ], },
+    { "layout": "Minorca",                 "num":  27, "name": "Minorca",                 "era": 0, "region": 0, "type": 3, "prestige": true,  "cost": 1, "flag": 4, "alliance": [ ], },
+    { "layout": "Biscay",                  "num":  28, "name": "Biscay",                  "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
+    { "layout": "Balearic",                "num":  29, "name": "Balearic",                "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
 
     // NORTH AMERICA
-    { "layout": "Algonquin Raids",         "num":  37, "name": "Algonquin Raids",         "era": 0, "region": 1, "subreg": 0, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                               "advantagereq": [ ALGONQUIN ], "advantage": ALGONQUIN_RAIDS  },
-    { "layout": "Algonquin",               "num":  38, "name": "Algonquin",               "era": 0, "region": 1, "subreg": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                                                                                                                      "alliance": [ ], },
-    { "layout": "Fur Tade",                "num":  39, "name": "Fur Trade",               "era": 0, "region": 1, "subreg": 0, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                               "advantagereq": [ 41 ], "advantage": 8  },
-    { "layout": "Hudson Bay",              "num":  40, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4,              "connects": [ YORK_FACTORY ], },
-    { "layout": "York Factory",            "num":  41, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ HUDSON_BAY ], },
-    { "layout": "Quebec & Montreal",       "num":  42, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ GULF_OF_ST_LAWRENCE, CATARAQUI, ILE_AUX_NOIX ],                               "conquest": [ LOUISBOURG, CHAMPLAIN_VALLEY, OHIO_FORKS] },
-    { "layout": "Gulf of St. Lawrence",    "num":  43, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ QUEBEC_AND_MONTREAL, CABOT_STRAIT, LOUISBOURG ] },
-    { "layout": "Cabot Strait",            "num":  44, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ GULF_OF_ST_LAWRENCE, LOUISBOURG ],                                                                                                                         "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Louisbourg",              "num":  45, "name": "Louisbourg",              "era": 0, "region": 1, "subreg": 0, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ GULF_OF_ST_LAWRENCE, CABOT_STRAIT, ACADIA, NORTHEAST_CHANNEL, GEORGES_BANK ], "conquest": [ QUEBEC_AND_MONTREAL, HALIFAX, ACADIA ],                        "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Acadia",                  "num":  46, "name": "Acadia",                  "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ LOUISBOURG, NORTHEAST_CHANNEL ],                                              "conquest": [ LOUISBOURG ] },
-    { "layout": "Northeast Channel",       "num":  47, "name": "Northeast Channel",       "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ LOUISBOURG, ACADIA, HALIFAX, GEORGES_BANK ] },
-    { "layout": "Halifax",                 "num":  48, "name": "Halifax",                 "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ NORTHEAST_CHANNEL, GEORGES_BANK, GULF_OF_MAINE ],                             "conquest": [ LOUISBOURG, NORTHERN_COLONIES ],                               "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Georges Bank",            "num":  49, "name": "Georges Bank",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 2, "connects": [ GULF_OF_ST_LAWRENCE, LOUISBOURG, NORTHEAST_CHANNEL, HALIFAX, GULF_OF_MAINE, MASS_BAY, ATLANTIC_PASSAGE ] },
-    { "layout": "Atlantic Passage",        "num":  50, "name": "Atlantic Passage",        "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ GEORGES_BANK ],                                                                                                                                            "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Gulf of Maine",           "num":  51, "name": "Gulf of Maine",           "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ HALIFAX, GEORGES_BANK, MASS_BAY ],                                                                                                                         "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Mass. Bay",               "num":  52, "name": "Massachusetts Bay",       "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 2, "connects": [ GULF_OF_MAINE, GEORGES_BANK, NORTHERN_COLONIES ] },
-    { "layout": "Northern Colonies",       "num":  53, "name": "Northern Colonies",       "era": 0, "region": 1, "subreg": 1, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ MASS_BAY, HUDSON_VALLEY, CHESAPEAKE, CUMBERLAND ],                            "conquest": [ HALIFAX, CHAMPLAIN_VALLEY, OHIO_FORKS ] },
-    { "layout": "Chesapeake",              "num":  54, "name": "Chesapeake",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 1,              "connects": [ NORTHERN_COLONIES ] },
-    { "layout": "Wheat",                   "num":  55, "name": "Wheat",                   "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ CHESAPEAKE ], "advantage": WHEAT },
-    { "layout": "Hudson Valley",           "num":  56, "name": "Hudson Valley",           "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 0, "connects": [ NORTHERN_COLONIES, CUMBERLAND, ALBANY ] },
-    { "layout": "Albany",                  "num":  57, "name": "Albany",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 0, "connects": [ HUDSON_VALLEY, CUMBERLAND, OSWEGO, CHAMPLAIN_VALLEY, ILE_AUX_NOIX ] },
-    { "layout": "Cumberland",              "num":  58, "name": "Cumberland",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ NORTHERN_COLONIES, HUDSON_VALLEY, ALBANY, OHIO_FORKS, ALLEGHENY ] },
-    { "layout": "Ohio Forks",              "num":  59, "name": "Ohio Forks",              "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ CUMBERLAND, ALLEGHENY, NIAGARA  ],                                            "conquest": [ NORTHERN_COLONIES, QUEBEC_AND_MONTREAL ],                      "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Allagheny",               "num":  60, "name": "Allegheny",               "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ CUMBERLAND, OHIO_FORKS, NIAGARA ] },
-    { "layout": "Niagara",                 "num":  61, "name": "Niagara",                 "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ ALLEGHENY, OHIO_FORKS, OSWEGO, CHAMPLAIN_VALLEY, CATARAQUI ] },
-    { "layout": "Oswego",                  "num":  62, "name": "Oswego",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ ALBANY, NIAGARA, CHAMPLAIN_VALLEY ] },
-    { "layout": "Champlain Valley",        "num":  63, "name": "Champlain Valley",        "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 4, "flag": 4,              "connects": [ ALBANY, OSWEGO, ILE_AUX_NOIX ],                                               "conquest": [ NORTHERN_COLONIES, QUEBEC_AND_MONTREAL ],                      "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
-    { "layout": "Ile aux Noix",            "num":  64, "name": "Île aux Noix",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 0, "connects": [ QUEBEC_AND_MONTREAL, NIAGARA, CHAMPLAIN_VALLEY, ALBANY ] },
-    { "layout": "Cataraqui",               "num":  65, "name": "Cataraqui",               "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ NIAGARA, QUEBEC_AND_MONTREAL ] },
-    { "layout": "Iroquois Raids",          "num":  66, "name": "Iroquois Raids",          "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ IROQUOIS ], "advantage": IROQUOIS_RAIDS  },
-    { "layout": "Iroquois",                "num":  67, "name": "Iroquois",                "era": 0, "region": 1, "subreg": 1, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ], },
-    { "layout": "Patriot Agitation",       "num":  68, "name": "Patriot Agitation",       "era": 0, "region": 1, "subreg": 1, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ SONS_OF_LIBERTY ], "advantage": PATRIOT_AGITATION },
-    { "layout": "Usa_1",                   "num":  69, "name": "Sons of Liberty",         "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": false, "cost": 3, "flag": 4,                                                                                                                                                                                       "alliance": [ [ 4, 1 ] ], },
-    { "layout": "Usa_2",                   "num":  70, "name": "USA",                     "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": true,  "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ] },
-    { "layout": "Usa_3",                   "num":  71, "name": "USA",                     "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": true,  "cost": 3, "flag": 4,                                                                                                                                                                                       "alliance": [ ] },
+    { "layout": "Algonquin",               "num":  30, "name": "Algonquin",               "era": 0, "region": 1, "subreg": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                                                                                                                      "alliance": [ ], },
+    { "layout": "Hudson Bay",              "num":  31, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4,              "connects": [ YORK_FACTORY ], },
+    { "layout": "York Factory",            "num":  32, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ HUDSON_BAY ], },
+    { "layout": "Quebec & Montreal",       "num":  33, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ GULF_OF_ST_LAWRENCE, CATARAQUI, ILE_AUX_NOIX ],                               "conquest": [ LOUISBOURG, CHAMPLAIN_VALLEY, OHIO_FORKS] },
+    { "layout": "Gulf of St. Lawrence",    "num":  34, "name": "Gulf of St. Lawrence",    "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ QUEBEC_AND_MONTREAL, CABOT_STRAIT, LOUISBOURG ] },
+    { "layout": "Cabot Strait",            "num":  35, "name": "Cabot Strait",            "era": 0, "region": 1, "subreg": 0, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ GULF_OF_ST_LAWRENCE, LOUISBOURG ],                                                                                                                         "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Louisbourg",              "num":  36, "name": "Louisbourg",              "era": 0, "region": 1, "subreg": 0, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ GULF_OF_ST_LAWRENCE, CABOT_STRAIT, ACADIA, NORTHEAST_CHANNEL, GEORGES_BANK ], "conquest": [ QUEBEC_AND_MONTREAL, HALIFAX, ACADIA ],                        "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Acadia",                  "num":  37, "name": "Acadia",                  "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ LOUISBOURG, NORTHEAST_CHANNEL ],                                              "conquest": [ LOUISBOURG ] },
+    { "layout": "Northeast Channel",       "num":  38, "name": "Northeast Channel",       "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 2, "connects": [ LOUISBOURG, ACADIA, HALIFAX, GEORGES_BANK ] },
+    { "layout": "Halifax",                 "num":  39, "name": "Halifax",                 "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ NORTHEAST_CHANNEL, GEORGES_BANK, GULF_OF_MAINE ],                             "conquest": [ LOUISBOURG, NORTHERN_COLONIES ],                               "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Georges Bank",            "num":  40, "name": "Georges Bank",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 2, "connects": [ GULF_OF_ST_LAWRENCE, LOUISBOURG, NORTHEAST_CHANNEL, HALIFAX, GULF_OF_MAINE, MASS_BAY, ATLANTIC_PASSAGE ] },
+    { "layout": "Atlantic Passage",        "num":  41, "name": "Atlantic Passage",        "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ GEORGES_BANK ],                                                                                                                                            "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Gulf of Maine",           "num":  42, "name": "Gulf of Maine",           "era": 0, "region": 1, "subreg": 1, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ HALIFAX, GEORGES_BANK, MASS_BAY ],                                                                                                                         "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 1 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Mass. Bay",               "num":  43, "name": "Massachusetts Bay",       "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 2, "connects": [ GULF_OF_MAINE, GEORGES_BANK, NORTHERN_COLONIES ] },
+    { "layout": "Northern Colonies",       "num":  44, "name": "Northern Colonies",       "era": 0, "region": 1, "subreg": 1, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ MASS_BAY, HUDSON_VALLEY, CHESAPEAKE, CUMBERLAND ],                            "conquest": [ HALIFAX, CHAMPLAIN_VALLEY, OHIO_FORKS ] },
+    { "layout": "Chesapeake",              "num":  45, "name": "Chesapeake",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 1,              "connects": [ NORTHERN_COLONIES ] },
+    { "layout": "Hudson Valley",           "num":  46, "name": "Hudson Valley",           "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 0, "connects": [ NORTHERN_COLONIES, CUMBERLAND, ALBANY ] },
+    { "layout": "Albany",                  "num":  47, "name": "Albany",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 0, "connects": [ HUDSON_VALLEY, CUMBERLAND, OSWEGO, CHAMPLAIN_VALLEY, ILE_AUX_NOIX ] },
+    { "layout": "Cumberland",              "num":  48, "name": "Cumberland",              "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ NORTHERN_COLONIES, HUDSON_VALLEY, ALBANY, OHIO_FORKS, ALLEGHENY ] },
+    { "layout": "Ohio Forks",              "num":  49, "name": "Ohio Forks",              "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 3, "flag": 4,              "connects": [ CUMBERLAND, ALLEGHENY, NIAGARA  ],                                            "conquest": [ NORTHERN_COLONIES, QUEBEC_AND_MONTREAL ],                      "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Allagheny",               "num":  50, "name": "Allegheny",               "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ CUMBERLAND, OHIO_FORKS, NIAGARA ] },
+    { "layout": "Niagara",                 "num":  51, "name": "Niagara",                 "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ ALLEGHENY, OHIO_FORKS, OSWEGO, CHAMPLAIN_VALLEY, CATARAQUI ] },
+    { "layout": "Oswego",                  "num":  52, "name": "Oswego",                  "era": 0, "region": 1, "subreg": 1, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ ALBANY, NIAGARA, CHAMPLAIN_VALLEY ] },
+    { "layout": "Champlain Valley",        "num":  53, "name": "Champlain Valley",        "era": 0, "region": 1, "subreg": 1, "type": 4, "prestige": false, "cost": 4, "flag": 4,              "connects": [ ALBANY, OSWEGO, ILE_AUX_NOIX ],                                               "conquest": [ NORTHERN_COLONIES, QUEBEC_AND_MONTREAL ],                      "alliance": [ [ 1, 3 ], [ 2, 2 ], [ 3, 3 ], [ 4, 1 ] ] },
+    { "layout": "Ile aux Noix",            "num":  54, "name": "Île aux Noix",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 0, "connects": [ QUEBEC_AND_MONTREAL, NIAGARA, CHAMPLAIN_VALLEY, ALBANY ] },
+    { "layout": "Cataraqui",               "num":  55, "name": "Cataraqui",               "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 0, "connects": [ NIAGARA, QUEBEC_AND_MONTREAL ] },
+    { "layout": "Iroquois",                "num":  56, "name": "Iroquois",                "era": 0, "region": 1, "subreg": 1, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ], },
+    { "layout": "Usa_1",                   "num":  57, "name": "Sons of Liberty",         "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": false, "cost": 3, "flag": 4,                                                                                                                                                                                       "alliance": [ [ 4, 1 ] ], },
+    { "layout": "Usa_2",                   "num":  58, "name": "USA",                     "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": true,  "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ] },
+    { "layout": "Usa_3",                   "num":  59, "name": "USA",                     "era": 2, "region": 1, "subreg": 1, "type": 0, "prestige": true,  "cost": 3, "flag": 4,                                                                                                                                                                                       "alliance": [ ] },
+
 
     // CARIBBEAN
-    { "layout": "Slave Contracts",         "num":  72, "name": "Slaving Contracts",       "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ ASIENTO ], "advantage": SLAVING_CONTRACTS },
-    { "layout": "Asciento",                "num":  73, "name": "Asiento",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2, },
-    { "layout": "Lettres of Marque",       "num":  74, "name": "Letters of Marque",       "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ PRIVATEERS ], "advantage": LETTERS_OF_MARQUE },
-    { "layout": "Privateers",              "num":  75, "name": "Privateers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
-    { "layout": "Pirate Heavens",          "num":  76, "name": "Pirate Havens",           "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ BUCCANEERS ], "advantage": PIRATE_HAVENS },
-    { "layout": "Buccaneers",              "num":  77, "name": "Buccaneers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ], },
-    { "layout": "Carolinas",               "num":  78, "name": "Carolinas",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ GEORGIA, BAHAMAS_RUN_WEST ],                                                  "conquest": [ SAN_AGUSTIN ] },
-    { "layout": "Georgia",                 "num":  79, "name": "Georgia",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 3, "connects": [ CAROLINAS ] },
-    { "layout": "San Agustin",             "num":  80, "name": "San Agustin",             "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ PANZACOLA ],                                                                  "conquest": [ CAROLINAS, ST_DOMINGUE ] },
-    { "layout": "Fruit",                   "num":  81, "name": "Fruit",                   "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ SAN_AGUSTIN ], "advantage": FRUIT },
-    { "layout": "Panzacola",               "num":  82, "name": "Panzacola",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 4, "connects": [ SAN_AGUSTIN ] },
-    { "layout": "Bahamas Run West",        "num":  83, "name": "Bahamas Run West",        "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ CAROLINAS, BAHAMAS_RUN_NORTH, BAHAMAS_RUN, CAICOS, CUBA_PASSAGE_EAST, ST_JAMES ] },
-    { "layout": "Bahamas Run North",       "num":  84, "name": "Bahamas Run North",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 3, "connects": [ BAHAMAS_RUN_WEST, BAHAMAS_RUN, CAICOS] },
-    { "layout": "Caicos",                  "num":  85, "name": "Caicos",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ BAHAMAS_RUN, BAHAMAS_RUN_NORTH, BAHAMAS_RUN_WEST ] },
-    { "layout": "Bahamas Run",             "num":  86, "name": "Bahamas Run",             "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ BAHAMAS_RUN_WEST, BAHAMAS_RUN_NORTH, CAICOS ],                                "conquest": [ ST_DOMINGUE ],                                                 "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "layout": "St. Domingue",            "num":  87, "name": "St. Domingue",            "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ CAICOS, PORT_DE_PAIX, PUERTO_PRINCIPE ],                                      "conquest": [ SAN_AGUSTIN, BAHAMAS_RUN ] },
-    { "layout": "Port de Paix",            "num":  88, "name": "Port de Paix",            "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ ST_DOMINGUE ], },
-    { "layout": "Puerto Principe",         "num":  89, "name": "Puerto Principe",         "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ ST_DOMINGUE, PUERTO_RICO, HAVANA, SANTIAGO ], },
-    { "layout": "Puerto Rico",             "num":  90, "name": "Puerto Rico",             "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 4, "connects": [ PUERTO_PRINCIPE, ANTIGUA ], },
-    { "layout": "Rum",                     "num":  91, "name": "Rum",                     "era": 0, "region": 2,              "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ PUERTO_RICO ], "advantage": RUM },
-    { "layout": "Antigua",                 "num":  92, "name": "Antigua",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 4, "connects": [ PUERTO_RICO, MARTINIQUE, ST_LUCIA, ANTILLES_CHANNEL ], },
-    { "layout": "Martinique",              "num":  93, "name": "Martinique",              "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 4, "connects": [ ANTIGUA, GUADELOUPE, ST_LUCIA, ANTILLES_CHANNEL ], },
-    { "layout": "St. Lucia",               "num":  94, "name": "St. Lucia",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 4, "connects": [ ANTIGUA, MARTINIQUE, BARBADOS, ANTILLES_CHANNEL ], },
-    { "layout": "Antilles Channel",        "num":  95, "name": "Antilles Channel",        "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ ANTIGUA, MARTINIQUE, ST_LUCIA ],                                              "conquest": [ GUADELOUPE, BARBADOS ],                                        "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "layout": "Guadeloupe",              "num":  96, "name": "Guadeloupe",              "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ MARTINIQUE ],                                                                 "conquest": [ ANTILLES_CHANNEL ] },
-    { "layout": "Barbados",                "num":  97, "name": "Barbados",                "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ BARBADOS ],                                                                   "conquest": [ ANTILLES_CHANNEL ] },
-    { "layout": "Havana",                  "num":  98, "name": "Havana",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ PUERTO_PRINCIPE, SANTIAGO, GULF_OF_CAZONES ], },
-    { "layout": "Gulf of Cazones",         "num":  99, "name": "Gulf of Cazones",         "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ HAVANA, PUERTO_PRINCIPE, SANTIAGO ],                                          "conquest": [ ],                                                             "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "layout": "Santiago",                "num": 100, "name": "Santiago",                "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ HAVANA, PUERTO_PRINCIPE, GULF_OF_CAZONES, JAMAICA ], },
-    { "layout": "Jamaica",                 "num": 101, "name": "Jamaica",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ SANTIAGO, CAYMAN_PASSAGE ],                                                   "conquest": [ CUBA_PASSAGE ] },
-    { "layout": "Cayman Passage",          "num": 102, "name": "Cayman Passage",          "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ JAMAICA, CUBA_PASSAGE, CUBA_PASSAGE_EAST, ST_JAMES ] },
-    { "layout": "Cuba Passage East",       "num": 103, "name": "Cuba Passage East",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 3, "connects": [ CAYMAN_PASSAGE, BAHAMAS_RUN_WEST, CUBA_PASSAGE, ST_JAMES ] },
-    { "layout": "Cuba Passage",            "num": 104, "name": "Cuba Passage",            "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ CUBA_PASSAGE_EAST, CAYMAN_PASSAGE, ST_JAMES ],                                "conquest": [ JAMAICA, LOUISIANA ],                                          "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
-    { "layout": "St. James",               "num": 105, "name": "St. James",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ LOUISIANA, BAHAMAS_RUN_WEST, CUBA_PASSAGE, CUBA_PASSAGE_EAST, CAYMAN_PASSAGE, ST_JAMES ] },
-    { "layout": "Louisiana",               "num": 106, "name": "Louisiana",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ ST_JAMES ],                                                                   "conquest": [ CUBA_PASSAGE ] },
+    { "layout": "Asciento",                "num":  60, "name": "Asiento",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2, },
+    { "layout": "Privateers",              "num":  61, "name": "Privateers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
+    { "layout": "Buccaneers",              "num":  62, "name": "Buccaneers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ], },
+    { "layout": "Carolinas",               "num":  63, "name": "Carolinas",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ GEORGIA, BAHAMAS_RUN_WEST ],                                                  "conquest": [ SAN_AGUSTIN ] },
+    { "layout": "Georgia",                 "num":  64, "name": "Georgia",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 3, "connects": [ CAROLINAS ] },
+    { "layout": "San Agustin",             "num":  65, "name": "San Agustin",             "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2,              "connects": [ PANZACOLA ],                                                                  "conquest": [ CAROLINAS, ST_DOMINGUE ] },
+    { "layout": "Panzacola",               "num":  66, "name": "Panzacola",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 4, "connects": [ SAN_AGUSTIN ] },
+    { "layout": "Bahamas Run West",        "num":  67, "name": "Bahamas Run West",        "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ CAROLINAS, BAHAMAS_RUN_NORTH, BAHAMAS_RUN, CAICOS, CUBA_PASSAGE_EAST, ST_JAMES ] },
+    { "layout": "Bahamas Run North",       "num":  68, "name": "Bahamas Run North",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 3, "connects": [ BAHAMAS_RUN_WEST, BAHAMAS_RUN, CAICOS] },
+    { "layout": "Caicos",                  "num":  69, "name": "Caicos",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ BAHAMAS_RUN, BAHAMAS_RUN_NORTH, BAHAMAS_RUN_WEST ] },
+    { "layout": "Bahamas Run",             "num":  70, "name": "Bahamas Run",             "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ BAHAMAS_RUN_WEST, BAHAMAS_RUN_NORTH, CAICOS ],                                "conquest": [ ST_DOMINGUE ],                                                 "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "layout": "St. Domingue",            "num":  71, "name": "St. Domingue",            "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ CAICOS, PORT_DE_PAIX, PUERTO_PRINCIPE ],                                      "conquest": [ SAN_AGUSTIN, BAHAMAS_RUN ] },
+    { "layout": "Port de Paix",            "num":  72, "name": "Port de Paix",            "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 4, "connects": [ ST_DOMINGUE ], },
+    { "layout": "Puerto Principe",         "num":  73, "name": "Puerto Principe",         "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ ST_DOMINGUE, PUERTO_RICO, HAVANA, SANTIAGO ], },
+    { "layout": "Puerto Rico",             "num":  74, "name": "Puerto Rico",             "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 4, "connects": [ PUERTO_PRINCIPE, ANTIGUA ], },
+    { "layout": "Antigua",                 "num":  75, "name": "Antigua",                 "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 4, "connects": [ PUERTO_RICO, MARTINIQUE, ST_LUCIA, ANTILLES_CHANNEL ], },
+    { "layout": "Martinique",              "num":  76, "name": "Martinique",              "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 0, "market": 4, "connects": [ ANTIGUA, GUADELOUPE, ST_LUCIA, ANTILLES_CHANNEL ], },
+    { "layout": "St. Lucia",               "num":  77, "name": "St. Lucia",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 4, "connects": [ ANTIGUA, MARTINIQUE, BARBADOS, ANTILLES_CHANNEL ], },
+    { "layout": "Antilles Channel",        "num":  78, "name": "Antilles Channel",        "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ ANTIGUA, MARTINIQUE, ST_LUCIA ],                                              "conquest": [ GUADELOUPE, BARBADOS ],                                        "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "layout": "Guadeloupe",              "num":  79, "name": "Guadeloupe",              "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ MARTINIQUE ],                                                                 "conquest": [ ANTILLES_CHANNEL ] },
+    { "layout": "Barbados",                "num":  80, "name": "Barbados",                "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ BARBADOS ],                                                                   "conquest": [ ANTILLES_CHANNEL ] },
+    { "layout": "Havana",                  "num":  81, "name": "Havana",                  "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ PUERTO_PRINCIPE, SANTIAGO, GULF_OF_CAZONES ], },
+    { "layout": "Gulf of Cazones",         "num":  82, "name": "Gulf of Cazones",         "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ HAVANA, PUERTO_PRINCIPE, SANTIAGO ],                                          "conquest": [ ],                                                             "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "layout": "Santiago",                "num":  83, "name": "Santiago",                "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 2, "market": 4, "connects": [ HAVANA, PUERTO_PRINCIPE, GULF_OF_CAZONES, JAMAICA ], },
+    { "layout": "Jamaica",                 "num":  84, "name": "Jamaica",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ SANTIAGO, CAYMAN_PASSAGE ],                                                   "conquest": [ CUBA_PASSAGE ] },
+    { "layout": "Cayman Passage",          "num":  85, "name": "Cayman Passage",          "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ JAMAICA, CUBA_PASSAGE, CUBA_PASSAGE_EAST, ST_JAMES ] },
+    { "layout": "Cuba Passage East",       "num":  86, "name": "Cuba Passage East",       "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 3, "connects": [ CAYMAN_PASSAGE, BAHAMAS_RUN_WEST, CUBA_PASSAGE, ST_JAMES ] },
+    { "layout": "Cuba Passage",            "num":  87, "name": "Cuba Passage",            "era": 0, "region": 2,              "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ CUBA_PASSAGE_EAST, CAYMAN_PASSAGE, ST_JAMES ],                                "conquest": [ JAMAICA, LOUISIANA ],                                          "alliance": [ [ 3, 1 ], [ 3, 3 ], [ 4, 3 ] ] },
+    { "layout": "St. James",               "num":  88, "name": "St. James",               "era": 0, "region": 2,              "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 3, "connects": [ LOUISIANA, BAHAMAS_RUN_WEST, CUBA_PASSAGE, CUBA_PASSAGE_EAST, CAYMAN_PASSAGE, ST_JAMES ] },
+    { "layout": "Louisiana",               "num":  89, "name": "Louisiana",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ ST_JAMES ],                                                                   "conquest": [ CUBA_PASSAGE ] },
 
     // INDIA
-    { "layout": "Raids & Incursions",      "num": 107, "name": "Raids & Incursions",      "era": 0, "region": 3, "subreg": 2, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ MARATHA ], "advantage": RAIDS_AND_INCURSIONS },
-    { "layout": "Maratha",                 "num": 108, "name": "Maratha",                 "era": 0, "region": 3, "subreg": 2, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
-    { "layout": "Separatist Wars",         "num": 109, "name": "Separatist Wars",         "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ NIZAM ], "advantage": SEPARATIST_WARS },
-    { "layout": "Nizam",                   "num": 110, "name": "Nizam",                   "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
-    { "layout": "Power Struggle",          "num": 111, "name": "Power Struggle",          "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ MYSORE ], "advantage": POWER_STRUGGLE },
-    { "layout": "Myrose",                  "num": 112, "name": "Mysore",                  "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
-    { "layout": "Malacca Route",           "num": 113, "name": "Malacca Route",           "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 1, "connects": [ PLASSEY, HOOGHLY_RIVER_SPACE ] },
-    { "layout": "Hooghly River",           "num": 114, "name": "Hooghly River",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ PLASSEY, MALACCA_ROUTE, WEST_BENGAL, MIDNAPORE,  ],                           "conquest": [ CHANDERNAGORE, CALCUTTA ],                                     "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "layout": "Chandernagore",           "num": 115, "name": "Chandernagore",           "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ PLASSEY ],                                                                    "conquest": [ HOOGHLY_RIVER_SPACE ] },
-    { "layout": "Plassey",                 "num": 116, "name": "Plassey",                 "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 5, "connects": [ MALACCA_ROUTE, CHANDERNAGORE, HOOGHLY_RIVER_SPACE, WEST_BENGAL ] },
-    { "layout": "West Bengal",             "num": 117, "name": "West Bengal",             "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ PLASSEY, HOOGHLY_RIVER_SPACE, MIDNAPORE, MANGALORE ] },
-    { "layout": "Midnapore",               "num": 118, "name": "Midnapore",               "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 5, "connects": [ CALCUTTA, HOOGHLY_RIVER_SPACE, WEST_BENGAL, KURPA ] },
-    { "layout": "Calcutta",                "num": 119, "name": "Calcutta",                "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ MIDNAPORE ],                                                                  "conquest": [ HOOGHLY_RIVER_SPACE ] },
-    { "layout": "Kurpa",                   "num": 120, "name": "Kurpa",                   "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ MIDNAPORE, VELLORE, ARCOT ] },
-    { "layout": "Arcot",                   "num": 121, "name": "Arcot",                   "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 2, "flag": 4,              "connects": [ KURPA, VELLORE ],                                                             "conquest": [ MADRAS ],                                                      "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "layout": "Vellore",                 "num": 122, "name": "Vellore",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ KURPA, ARCOT, KANCHIPURAM, TIRUCHIRAPPALLI ] },
-    { "layout": "Kanchipuram",             "num": 123, "name": "Kanchipuram",             "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 1, "connects": [ MADRAS, KARAIKAL, VANDAVASI, TIRUCHIRAPPALLI, VELLORE ] },
-    { "layout": "Madras",                  "num": 124, "name": "Madras",                  "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ KANCHIPURAM ],                                                                "conquest": [ ARCOT, VANDAVASI ] },
-    { "layout": "Pondicherry",             "num": 125, "name": "Pondicherry",             "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ KARAIKAL ],                                                                   "conquest": [ VANDAVASI ] },
-    { "layout": "Karaikal",                "num": 126, "name": "Karaikal",                "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ PONDICHERRY, KANCHIPURAM, TIRUCHIRAPPALLI, VANDAVASI ] },
-    { "layout": "Vandavasi",               "num": 127, "name": "Vandavasi",               "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 4, "flag": 4,              "connects": [ KANCHIPURAM, KARAIKAL, TIRUCHIRAPPALLI ],                                     "conquest": [ MADRAS, PONDICHERRY ],                                         "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
-    { "layout": "Tiruchirappalli",         "num": 128, "name": "Tiruchirappalli",         "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 1, "connects": [ KARAIKAL, VANDAVASI, KANCHIPURAM, VELLORE, CALICUT ] },
-    { "layout": "Textiles",                "num": 129, "name": "Textiles",                "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ TIRUCHIRAPPALLI ], "advantage": TEXTILES },
-    { "layout": "Silk",                    "num": 130, "name": "Silk",                    "era": 0, "region": 3, "subreg": 3, "type": 5, "prestige": false, "cost": 0,                                                                                                                                                                                                                                                                                 "advantagereq": [ WEST_BENGAL ], "advantage": SILK },
-    { "layout": "Calicut",                 "num": 131, "name": "Calicut",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 1, "connects": [ TIRUCHIRAPPALLI, MALABAR_COAST, MANGALORE ] },
-    { "layout": "Mongalore",               "num": 132, "name": "Mangalore",               "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 1, "connects": [ MALABAR_COAST, CALICUT, WEST_BENGAL ] },
-    { "layout": "Malabar Coast",           "num": 133, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ MANGALORE, CALICUT ],                                                         "conquest": [ ],                                                             "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "layout": "Maratha",                 "num":  90, "name": "Maratha",                 "era": 0, "region": 3, "subreg": 2, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
+    { "layout": "Nizam",                   "num":  91, "name": "Nizam",                   "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
+    { "layout": "Myrose",                  "num":  92, "name": "Mysore",                  "era": 0, "region": 3, "subreg": 3, "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
+    { "layout": "Malacca Route",           "num":  93, "name": "Malacca Route",           "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 1, "connects": [ PLASSEY, HOOGHLY_RIVER ] },
+    { "layout": "Hooghly River",           "num":  94, "name": "Hooghly River",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ PLASSEY, MALACCA_ROUTE, WEST_BENGAL, MIDNAPORE,  ],                           "conquest": [ CHANDERNAGORE, CALCUTTA ],                                     "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "layout": "Chandernagore",           "num":  95, "name": "Chandernagore",           "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ PLASSEY ],                                                                    "conquest": [ HOOGHLY_RIVER ] },
+    { "layout": "Plassey",                 "num":  96, "name": "Plassey",                 "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 5, "connects": [ MALACCA_ROUTE, CHANDERNAGORE, HOOGHLY_RIVER, WEST_BENGAL ] },
+    { "layout": "West Bengal",             "num":  97, "name": "West Bengal",             "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ PLASSEY, HOOGHLY_RIVER, MIDNAPORE, MANGALORE ] },
+    { "layout": "Midnapore",               "num":  98, "name": "Midnapore",               "era": 0, "region": 3, "subreg": 2, "type": 1, "prestige": false, "cost": 3, "flag": 1, "market": 5, "connects": [ CALCUTTA, HOOGHLY_RIVER, WEST_BENGAL, KURPA ] },
+    { "layout": "Calcutta",                "num":  99, "name": "Calcutta",                "era": 0, "region": 3, "subreg": 2, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ MIDNAPORE ],                                                                  "conquest": [ HOOGHLY_RIVER ] },
+    { "layout": "Kurpa",                   "num": 100, "name": "Kurpa",                   "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ MIDNAPORE, VELLORE, ARCOT ] },
+    { "layout": "Arcot",                   "num": 101, "name": "Arcot",                   "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 2, "flag": 4,              "connects": [ KURPA, VELLORE ],                                                             "conquest": [ MADRAS ],                                                      "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "layout": "Vellore",                 "num": 102, "name": "Vellore",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 5, "connects": [ KURPA, ARCOT, KANCHIPURAM, TIRUCHIRAPPALLI ] },
+    { "layout": "Kanchipuram",             "num": 103, "name": "Kanchipuram",             "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 1, "market": 1, "connects": [ MADRAS, KARAIKAL, VANDAVASI, TIRUCHIRAPPALLI, VELLORE ] },
+    { "layout": "Madras",                  "num": 104, "name": "Madras",                  "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ KANCHIPURAM ],                                                                "conquest": [ ARCOT, VANDAVASI ] },
+    { "layout": "Pondicherry",             "num": 105, "name": "Pondicherry",             "era": 0, "region": 3, "subreg": 3, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ KARAIKAL ],                                                                   "conquest": [ VANDAVASI ] },
+    { "layout": "Karaikal",                "num": 106, "name": "Karaikal",                "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 0, "market": 1, "connects": [ PONDICHERRY, KANCHIPURAM, TIRUCHIRAPPALLI, VANDAVASI ] },
+    { "layout": "Vandavasi",               "num": 107, "name": "Vandavasi",               "era": 0, "region": 3, "subreg": 3, "type": 4, "prestige": false, "cost": 4, "flag": 4,              "connects": [ KANCHIPURAM, KARAIKAL, TIRUCHIRAPPALLI ],                                     "conquest": [ MADRAS, PONDICHERRY ],                                         "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
+    { "layout": "Tiruchirappalli",         "num": 108, "name": "Tiruchirappalli",         "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 1, "connects": [ KARAIKAL, VANDAVASI, KANCHIPURAM, VELLORE, CALICUT ] },
+    { "layout": "Calicut",                 "num": 109, "name": "Calicut",                 "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 3, "flag": 4, "market": 1, "connects": [ TIRUCHIRAPPALLI, MALABAR_COAST, MANGALORE ] },
+    { "layout": "Mongalore",               "num": 110, "name": "Mangalore",               "era": 0, "region": 3, "subreg": 3, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 1, "connects": [ MALABAR_COAST, CALICUT, WEST_BENGAL ] },
+    { "layout": "Malabar Coast",           "num": 111, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ MANGALORE, CALICUT ],                                                         "conquest": [ ],                                                             "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
 ]
 
 data.bizzaro_spaces = [
