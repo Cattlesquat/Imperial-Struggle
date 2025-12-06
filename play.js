@@ -46,8 +46,6 @@ function on_init() {
 			lout = make_lout(x, y, 80, 80)
 		else if (s.type === NAVAL || s.type === FORT)
 			lout = make_lout(x, y, 92, 92)
-		else if (s.type === ADVANTAGE)
-			lout = make_lout(x, y, 88, 88)
 
 		define_space("space", s.num, lout, space_type_class[s.type])
 		if (s.name !== s.layout)
@@ -73,10 +71,10 @@ function on_init() {
 	define_layout("lout-navy", 0, find_layout_node("Navy Box"))
 	define_layout("lout-initiative", 0, find_layout_node("Initiative"))
 
-	define_layout("lout-region", EUROPE, find_layout_node("Award Europe"))
-	define_layout("lout-region", NORTH_AMERICA, find_layout_node("Award North America"))
-	define_layout("lout-region", CARIBBEAN, find_layout_node("Award Caribbean"))
-	define_layout("lout-region", INDIA, find_layout_node("Award India"))
+	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))
+	define_layout("lout-award", REGION_NORTH_AMERICA, find_layout_node("Award North America"))
+	define_layout("lout-award", REGION_CARIBBEAN, find_layout_node("Award Caribbean"))
+	define_layout("lout-award", REGION_INDIA, find_layout_node("Award India"))
 
 	define_marker("game-turn", 0, "square-sm")
 	define_marker("victory-points", 0, "square-sm black")
@@ -95,8 +93,14 @@ function on_init() {
 	for (a of data.awards)
 		define_marker("award", a.num, "square-sm black a" + a.num)
 
-	for (a of data.advantages)
+	for (a of data.advantages) {
+		var [ x, y, w, h ] = find_layout_node(a.name)
+		x = x + w/2
+		y = y + h/2
+		define_layout("lout-advantage", a.num, make_lout(x, y, 88, 88))
 		define_marker("advantage", a.num, "square advantage a" + a.num)
+		register_tooltip("advantage", a.num, a.name)
+	}
 
 	for (a of data.investments)
 		define_marker("investment", a.num, "square investment i" + a.num)
@@ -160,16 +164,15 @@ function on_update() {
 	}
 
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {
-		s = V.advantages[a]
-		if (s !== null && s < data.spaces.length)
-			populate("lout-space", s, "advantage", a)
+		if (V.advantages[a] === NONE)
+			populate("lout-advantage", a, "advantage", a)
 	}
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)
-			populate("lout-region", r, "award", V.awards[r])
+			populate("lout-award", r, "award", V.awards[r])
 		else
-			populate_generic("lout-region", r, "marker square-sm black award reverse")
+			populate_generic("lout-award", r, "marker square-sm black award reverse")
 	}
 
 	action_button("pass", "Pass")
