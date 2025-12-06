@@ -460,8 +460,13 @@ P.deck_phase = function () {
 /* 4.1.2 - DEBT LIMIT INCREASE PHASE */
 
 P.debt_limit_increase_phase = function () {
-	G.debt_limit[FRANCE] += 4
-	G.debt_limit[BRITAIN] += 4
+	if (beginning_of_era() && (current_era() !== SUCCESSION_ERA)) {
+		log("=Debt Limit Increase Phase")
+		log ("French DEBT LIMIT increased by 4")
+		log ("British DEBT LIMIT increased by 4")
+		G.debt_limit[FRANCE]  += 4
+		G.debt_limit[BRITAIN] += 4
+	}
 	end()
 }
 
@@ -511,6 +516,13 @@ P.global_demand_phase = function () {
 /* 4.1.5 - RESET PHASE */
 
 P.reset_phase = function () {
+	if (G.turn !== PEACE_TURN_1) {
+		log("=Global Demand Phase")
+		log ("All exhausted advantages refreshed")
+		log ("All exhausted ministries refreshed")
+		log ("Remaining investments from previous turn moved to Used Investments")
+	}
+
 	// remove exhausted from advantage and ministry cards
 	G.exhausted_advantage = []
 	G.exhausted_ministry = []
@@ -553,12 +565,29 @@ P.deal_cards_phase = function () {
 		}
 	}
 
-	log ("3 Event cards dealt to France")
-	log ("3 Event cards dealt to Britain")
-
-	for (var i = 0; i < 3; ++i) {
-		G.hand[FRANCE].push(G.deck.pop())
-		G.hand[BRITAIN].push(G.deck.pop())
+	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
+	for (who = FRANCE; who <= BRITAIN; who++) {
+		var dealt = 0;
+		for (var i = 0; i < 3; ++i) {
+			if (G.deck.length === 0) {
+				if (dealt > 0) {
+					log (dealt + " cards dealt to " + data.flags[who].name)
+				}
+				log ("Discard Pile shuffled to form new Event Deck")
+				G.deck = G.discard_pile
+				shuffle(G.deck)
+			}
+			if (G.deck.length > 0) {
+				G.hand[who].push(G.deck.pop())
+				dealt++
+			} else {
+				log ("Event deck is EMPTY.")
+				break;
+			}
+		}
+		if (dealt > 0) {
+			log (dealt + " cards dealt to " + data.flags[who].name)
+		}
 	}
 
 	G.active = [ FRANCE, BRITAIN ]
