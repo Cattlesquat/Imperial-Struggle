@@ -567,7 +567,7 @@ function on_view() {
 	V.awards = G.awards
 
 	// Advantage tiles
-	V.advantages = G.advantages.map(x => x.current)
+	V.advantages = G.advantages.map(x => x?.current)
 
 	V.navy_box = G.navy_box
 

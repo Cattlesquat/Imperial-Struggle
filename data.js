@@ -32,6 +32,7 @@ const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
+const NUM_ADVANTAGES 		= 22
 const NUM_SPACES                    = 218
 
 // Types of War Tile
@@ -673,7 +674,8 @@ data.advantages = [
 	{ "num":  7, "name": "Algonquin Raids" },
 	{ "num":  8, "name": "Fur Trade" },
 	{ "num":  9, "name": "Iroquois Raids" },
-	{ "num": 11, "name": "Patriot Agitation" },
+	{ "num": 10, "name": "Patriot Agitation" },
+	{ "num": 11, "name": "Wheat" },
 	{ "num": 12, "name": "Fruit" },
 	{ "num": 13, "name": "Letters of Marque" },
 	{ "num": 14, "name": "Pirate Havens" },

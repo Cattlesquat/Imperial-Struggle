@@ -159,8 +159,11 @@ function on_update() {
 		}
 	}
 
-	for (a = 0; a < NUM_ADVANTAGES; ++a)
-		populate("lout-space", V.advantages[a], "advantage", a)
+	for (a = 0; a < NUM_ADVANTAGES; ++a) {
+		s = V.advantages[a]
+		if (s !== null && s < data.spaces.length)
+			populate("lout-space", s, "advantage", a)
+	}
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)
