@@ -67,6 +67,12 @@ body.Britain header.your_turn { background-color: salmon }
 	border-radius: 16px;
 }
 
+/* TRACKS & LAYOUTS */
+
+.layout {
+	gap: 5px;
+}
+
 /* SPACES & PIECES */
 
 .space {
@@ -167,6 +173,81 @@ body.Britain header.your_turn { background-color: salmon }
 .marker.flag_fr { background-image: url(tiles75/square-sm/flag_fr.png) }
 .marker.flag_spain { background-image: url(tiles75/square-sm/flag_spain.png) }
 .marker.flag_usa { background-image: url(tiles75/square-sm/flag_usa.png) }
+
+.marker.award.a0 { background-image: url(tiles75/square-sm/award00_3.png) }
+.marker.award.a1 { background-image: url(tiles75/square-sm/award01_2.png) }
+.marker.award.a2 { background-image: url(tiles75/square-sm/award02_1.png) }
+.marker.award.a3 { background-image: url(tiles75/square-sm/award03_1.png) }
+.marker.award.a4 { background-image: url(tiles75/square-sm/award04_1trp.png) }
+.marker.award.a5 { background-image: url(tiles75/square-sm/award05_1trp.png) }
+.marker.award.a6 { background-image: url(tiles75/square-sm/award06_0trp.png) }
+.marker.award.a7 { background-image: url(tiles75/square-sm/award07_0trp.png) }
+.marker.award.reverse { background-image: url(tiles75/square-sm/award_reverse.png) }
+
+.marker.game-turn { background-image: url(tiles75/square-sm/game_turn.png) }
+.marker.victory-points { background-image: url(tiles75/square-sm/victory_points.png) }
+.marker.debt.br { background-image: url(tiles75/square-sm/debt_br.png) }
+.marker.debt.fr { background-image: url(tiles75/square-sm/debt_fr.png) }
+.marker.debt-limit.br { background-image: url(tiles75/square-sm/debt_limit_br.png) }
+.marker.debt-limit.fr { background-image: url(tiles75/square-sm/debt_limit_fr.png) }
+.marker.treaty-points-br { background-image: url(tiles75/square-sm/treaty_points_br.png) }
+.marker.treaty-points-fr { background-image: url(tiles75/square-sm/treaty_points_fr.png) }
+.marker.initiative-br { background-image: url(tiles75/square-sm/initiative_br.png) }
+.marker.initiative-fr { background-image: url(tiles75/square-sm/initiative_fr.png) }
+
+.marker.war-7yw.br { background-image: url(tiles75/hex/war_7yw_br_reverse.png) }
+.marker.war-7yw.fr { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) }
+.marker.war-awi.br { background-image: url(tiles75/hex/war_awi_br_reverse.png) }
+.marker.war-awi.fr { background-image: url(tiles75/hex/war_awi_fr_reverse.png) }
+.marker.war-was.br { background-image: url(tiles75/hex/war_was_br_reverse.png) }
+.marker.war-was.fr { background-image: url(tiles75/hex/war_was_fr_reverse.png) }
+.marker.war-wss.br { background-image: url(tiles75/hex/war_wss_br_reverse.png) }
+.marker.war-wss.fr { background-image: url(tiles75/hex/war_wss_fr_reverse.png) }
+
+.marker.demand.cotton { background-image: url(tiles75/square-sm/demand_cotton.png) }
+.marker.demand.fish { background-image: url(tiles75/square-sm/demand_fish.png) }
+.marker.demand.furs { background-image: url(tiles75/square-sm/demand_furs.png) }
+.marker.demand.spice { background-image: url(tiles75/square-sm/demand_spice.png) }
+.marker.demand.sugar { background-image: url(tiles75/square-sm/demand_sugar.png) }
+.marker.demand.tobacco { background-image: url(tiles75/square-sm/demand_tobacco.png) }
+.marker.demand.reverse { background-image: url(tiles75/square-sm/demand_reverse.png) }
+
+/*
+tiles75/square-sm/action_br_1.png
+tiles75/square-sm/action_br_2.png
+tiles75/square-sm/action_br_3.png
+tiles75/square-sm/action_br_4.png
+tiles75/square-sm/action_br_reverse.png
+tiles75/square-sm/action_fr_1.png
+tiles75/square-sm/action_fr_2.png
+tiles75/square-sm/action_fr_3.png
+tiles75/square-sm/action_fr_4.png
+tiles75/square-sm/action_fr_reverse.png
+tiles75/square-sm/exhausted.png
+tiles75/square-sm/exhausted_reverse.png
+tiles75/square-sm/jacobite_defeat.png
+tiles75/square-sm/jacobite_defeat_reverse.png
+tiles75/square-sm/jacobite_victory.png
+tiles75/square-sm/jacobite_victory_reverse.png
+tiles75/square-sm/new_world_huguenots.png
+tiles75/square-sm/new_world_huguenots_spent.png
+tiles75/square-sm/townshend_acts.png
+tiles75/square-sm/townshend_acts_reverse.png
+tiles75/square-sm/treaty_points_br_reverse.png
+tiles75/square-sm/treaty_points_fr_reverse.png
+
+tiles75/hex/war_7yw_br_reverse.png
+tiles75/hex/war_7yw_fr_reverse.png
+tiles75/hex/war_awi_br_reverse.png
+tiles75/hex/war_awi_fr_reverse.png
+tiles75/hex/war_was_br_reverse.png
+tiles75/hex/war_was_fr_reverse.png
+tiles75/hex/war_wss_br_reverse.png
+tiles75/hex/war_wss_fr_reverse.png
+
+*/
+
+
 
 .card.event_card.c1 { background-image: url(cards100/event_01.avif) }
 .card.event_card.c2 { background-image: url(cards100/event_02.avif) }

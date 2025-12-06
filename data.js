@@ -389,16 +389,16 @@ data.awards = [
 ]
 
 data.turns = [
-    { "num": 0, "id": "1",   "war": false, "name": "1: PEACE",                       "dates": "1697-1701" },
-    { "num": 1, "id": "WSS", "war": true,  "name": "War of the Spanish Succession",  "dates": "1702-1713" },
-    { "num": 2, "id": "2",   "war": false, "name": "2: PEACE",                       "dates": "1714-1722" },
-    { "num": 3, "id": "3",   "war": false, "name": "3: PEACE",                       "dates": "1722-1739" },
-    { "num": 4, "id": "WAS", "war": true,  "name": "War of the Austrian Succession", "dates": "1740-1748" },
-    { "num": 5, "id": "4",   "war": false, "name": "4: PEACE",                       "dates": "1749-1753" },
-    { "num": 6, "id": "7YW", "war": true,  "name": "Seven Years War",                "dates": "1754-1763" },
-    { "num": 7, "id": "5",   "war": false, "name": "5: PEACE",                       "dates": "1764-1774" },
-    { "num": 8, "id": "AWI", "war": true,  "name": "American War of Independence",   "dates": "1775-1783" },
-    { "num": 9, "id": "6",   "war": false, "name": "6: PEACE",                       "dates": "1784-1789" }
+    { "num": 0, "id": "1",   "war": false, "name": "1: PEACE",                       "dates": "1697-1701", layout: "Turn 1" },
+    { "num": 1, "id": "WSS", "war": true,  "name": "War of the Spanish Succession",  "dates": "1702-1713", layout: "War 1" },
+    { "num": 2, "id": "2",   "war": false, "name": "2: PEACE",                       "dates": "1714-1722", layout: "Turn 2" },
+    { "num": 3, "id": "3",   "war": false, "name": "3: PEACE",                       "dates": "1722-1739", layout: "Turn 3" },
+    { "num": 4, "id": "WAS", "war": true,  "name": "War of the Austrian Succession", "dates": "1740-1748", layout: "War 2" },
+    { "num": 5, "id": "4",   "war": false, "name": "4: PEACE",                       "dates": "1749-1753", layout: "Turn 4" },
+    { "num": 6, "id": "7YW", "war": true,  "name": "Seven Years War",                "dates": "1754-1763", layout: "War 3" },
+    { "num": 7, "id": "5",   "war": false, "name": "5: PEACE",                       "dates": "1764-1774", layout: "Turn 5" },
+    { "num": 8, "id": "AWI", "war": true,  "name": "American War of Independence",   "dates": "1775-1783", layout: "War 4" },
+    { "num": 9, "id": "6",   "war": false, "name": "6: PEACE",                       "dates": "1784-1789", layout: "Turn 6" }
 ]
 
 data.cards = [
