@@ -445,6 +445,11 @@ function blank_game_state (scenario, options) {
         G.flags[i] = data.spaces[i].flag ?? NONE
     }
 
+	for (i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].num !== i)
+			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
+	}
+
 	// Unit test to confirm two-way connections
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].connects !== undefined) {
