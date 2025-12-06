@@ -499,6 +499,11 @@ function blank_game_state (scenario, options) {
 	// Gives each player a "hand" of all the available ministry cards for their side.
 	G.ministry[FRANCE] = [ 1 ]
 	G.ministry[BRITAIN] = [ 5, 6 ]
+
+	for (i = 0; i < 3; ++i) {
+		G.hand[FRANCE].push(G.deck.pop())
+		G.hand[BRITAIN].push(G.deck.pop())
+	}
 }
 
 function on_setup(scenario, options) {
@@ -536,20 +541,40 @@ function on_view() {
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
 
-	V.ministry = [ null, null ]
-
 	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
 	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
 
 	// TODO: bonus war tiles?
 
 	if (R === FRANCE) {
-		V.hand = G.hand[FRANCE]
-		V.ministry[FRANCE] = G.ministry[FRANCE]
+		V.hand = [
+			G.hand[FRANCE],
+			G.hand[BRITAIN].map(x => -1),
+		]
+		V.ministry = [
+			G.ministry[FRANCE],
+			G.ministry[BRITAIN].map(x => -1),
+		]
 	}
 	if (R === BRITAIN) {
-		V.hand = G.hand[BRITAIN]
-		V.ministry[BRITAIN] = G.ministry[BRITAIN]
+		V.hand = [
+			G.hand[FRANCE].map(x => -1),
+			G.hand[BRITAIN],
+		]
+		V.ministry = [
+			G.ministry[FRANCE].map(x => -1),
+			G.ministry[BRITAIN],
+		]
+	}
+	if (R < 0) {
+		V.hand = [
+			G.hand[FRANCE].map(x => -1),
+			G.hand[BRITAIN].map(x => -1),
+		]
+		V.ministry = [
+			G.ministry[FRANCE].map(x => -1),
+			G.ministry[BRITAIN].map(x => -1),
+		]
 	}
 }
 

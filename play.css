@@ -7,9 +7,10 @@ body.Britain header.your_turn { background-color: salmon }
 #role_France { background-color: skyblue }
 #role_Britain { background-color: salmon }
 
-.panel {
-	background-color: #0002;
-}
+.panel.br .panel-head { background-color: #c004; }
+.panel.fr .panel-head { background-color: #00c4; }
+
+.panel { background-color: #0002; }
 
 .panel-head {
 	background-color: #0002;
@@ -32,17 +33,24 @@ body.Britain header.your_turn { background-color: salmon }
 }
 
 #panels {
-	margin: 12px;
-}
-
-.panel {
-	max-width: 1650px;
-	margin: 12px auto;
+	display: grid;
+	max-width: fit-content;
+	grid-template-columns: repeat(3, min-content);
+	margin: 20px auto;
+	gap: 20px;
 }
 
 .panel-body {
-	min-height: 350px;
+	min-height: 352px;
+	align-content: start;
 }
+
+#advantage_fr .panel-body, #advantage_br .panel-body { width: 252px }
+#ministry_fr .panel-body, #ministry_br .panel-body { width: 516px }
+#events_fr .panel-body, #events_br .panel-body { width: 780px }
+
+#played .panel-body { width: 252px }
+#available_investment_tiles .panel-body { width: 516px }
 
 .board {
 	margin: 12px auto;
@@ -59,37 +67,10 @@ body.Britain header.your_turn { background-color: salmon }
 	height: 825px;
 }
 
-.card {
-	width: 250px;
-	height: 350px;
-	background-size: 250px 350px;
-	border: 1px solid black;
-	border-radius: 16px;
-}
-
 /* TRACKS & LAYOUTS */
 
 .layout {
 	gap: 5px;
-}
-
-.board.mat .layout .hex.marker {
-	margin: -15px;
-}
-
-.board.mat .card {
-	width: 187.5px;
-	height: 262.5px;
-	background-size: 187.5px 262.5px;
-	border-radius: 12px;
-}
-
-.board.mat .lout-player-ministry {
-	gap: 20px;
-}
-
-.board .marker.investment {
-	margin: -10px;
 }
 
 /* SPACES & PIECES */
@@ -155,6 +136,14 @@ body.Britain header.your_turn { background-color: salmon }
 	background-size: 45px 45px;
 	border-width: 2px;
 	border-style: solid;
+}
+
+.card {
+	width: 250px;
+	height: 350px;
+	background-size: 250px 350px;
+	border: 1px solid black;
+	border-radius: 16px;
 }
 
 /* BORDERS */
@@ -365,8 +354,7 @@ tiles75/square/investment_reverse.png
 
 */
 
-
-
+.card.event_card.deck { background-image: url(cards100/deck_1.avif) }
 .card.event_card.c1 { background-image: url(cards100/event_01.avif) }
 .card.event_card.c2 { background-image: url(cards100/event_02.avif) }
 .card.event_card.c3 { background-image: url(cards100/event_03.avif) }
@@ -409,6 +397,8 @@ tiles75/square/investment_reverse.png
 .card.event_card.c40 { background-image: url(cards100/event_40.avif) }
 .card.event_card.c41 { background-image: url(cards100/event_41.avif) }
 
+.card.ministry_card.deck_br { background-image: url(cards100/deck_2.avif) }
+.card.ministry_card.deck_fr { background-image: url(cards100/deck_3.avif) }
 .card.ministry_card.c1 { background-image: url(cards100/ministry_01.avif) }
 .card.ministry_card.c2 { background-image: url(cards100/ministry_02.avif) }
 .card.ministry_card.c3 { background-image: url(cards100/ministry_03.avif) }

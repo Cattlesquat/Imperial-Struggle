@@ -49,6 +49,17 @@ function make_lout(xc, yc, w, h) {
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
+	define_panel("panel-events", FRANCE, "events_fr")
+	define_panel("panel-ministry", FRANCE, "ministry_fr")
+	define_panel("panel-advantage", FRANCE, "advantage_fr")
+
+	define_panel("panel-events", BRITAIN, "events_br")
+	define_panel("panel-ministry", BRITAIN, "ministry_br")
+	define_panel("panel-advantage", BRITAIN, "advantage_br")
+
+	define_panel("panel-played", 0, "played")
+	define_panel("panel-investments", 0, "available_investment_tiles")
+
 	define_board("map", 2550, 1650)
 
 	for (s of data.spaces) {
@@ -135,46 +146,14 @@ function on_init() {
 		define_card("ministry_card", i, "c" + i)
 
 	define_board("war_display", 825, 637)
-
 	// TODO: define spaces and layouts on war display
 
-	define_panel("played", 0, "played")
-	define_panel("hand", 0, "hand")
-
-	// TODO: define pieces, tiles, and cards
-
-	define_board("war_display", 825, 638)
-
-	define_board("mat_fr", 825, 638)
-	define_layout("lout-player-advantage", FRANCE, mat_layout.advantage_tiles)
-	define_layout("lout-player-basic-war", FRANCE, mat_layout.basic_war_tiles)
-	define_layout("lout-player-bonus-war", FRANCE, mat_layout.bonus_war_tiles)
-	define_layout("lout-player-unbuilt-squadrons", FRANCE, mat_layout.unbuilt_squadrons)
-	define_layout("lout-player-ministry", FRANCE, mat_layout.ministry_card, "grav-w")
-
-	define_board("mat_br", 825, 638)
-	define_layout("lout-player-advantage", BRITAIN, mat_layout.advantage_tiles)
-	define_layout("lout-player-basic-war", BRITAIN, mat_layout.basic_war_tiles)
-	define_layout("lout-player-bonus-war", BRITAIN, mat_layout.bonus_war_tiles)
-	define_layout("lout-player-unbuilt-squadrons", BRITAIN, mat_layout.unbuilt_squadrons)
-	define_layout("lout-player-ministry", BRITAIN, mat_layout.ministry_card, "grav-w")
-
-	define_board("tile_display", 638, 825)
-	define_layout("lout-inv-stack", 0, mat_layout.investment_tile_stack)
-	define_layout("lout-inv-used", 0, mat_layout.used_investment_tiles)
-	define_layout_track_h("track-investment", 1, 5, mat_layout.available_investment_1_5, 20)
-	define_layout_track_h("track-investment", 6, 9, mat_layout.available_investment_6_9, 20)
 }
 
 function on_update() {
 	var i, r, s, a
 
 	begin_update()
-
-	if (V.hand)
-		populate_with_list("hand", 0, "event_card", V.hand)
-
-	populate_with_list("lout-demand", 0, "demand", V.global_demand)
 
 	populate("general-track", V.vp, "victory-points", 0)
 
@@ -187,6 +166,8 @@ function on_update() {
 
 	populate("turn-track", V.turn, "game-turn", 0)
 	populate("lout-initiative", 0, "initiative", V.initiative)
+
+	populate_with_list("lout-demand", 0, "demand", V.global_demand)
 
 	populate_generic("lout-navy", 0, "marker hex fleet_fr", V.navy_box[FRANCE])
 	populate_generic("lout-navy", 0, "marker hex fleet_br", V.navy_box[BRITAIN])
@@ -213,31 +194,34 @@ function on_update() {
 		if (V.advantages[a] === NONE)
 			populate("lout-advantage", a, "advantage", a)
 		if (V.advantages[a] === FRANCE)
-			populate("lout-player-advantage", FRANCE, "advantage", a)
+			populate("panel-advantage", FRANCE, "advantage", a)
 		if (V.advantages[a] === BRITAIN)
-			populate("lout-player-advantage", BRITAIN, "advantage", a)
+			populate("panel-advantage", BRITAIN, "advantage", a)
 	}
 
-	populate_generic("lout-player-unbuilt-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
-	populate_generic("lout-player-unbuilt-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
+	// populate_generic("panel-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
+	// populate_generic("panel-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
 
-	i = 0
-	for (a of G.current_investments)
-		populate("track-investment", ++i, "investment", a)
-
-	populate_with_list("lout-inv-used", 0, "investment", G.used_investments)
-
+	populate_with_list("panel-investments", 0, "investment", G.current_investments)
+	// populate_with_list("lout-inv-used", 0, "investment", G.used_investments)
+	/*
 	populate_generic("lout-inv-stack", 0, "marker square investment reverse",
 		NUM_INVESTMENT_TILES - (G.used_investments.length + G.current_investments.length)
 	)
+	 */
 
-	populate_generic("lout-player-basic-war", FRANCE, "marker hex war-wss fr reverse", V.basic_war_tiles[FRANCE])
-	populate_generic("lout-player-basic-war", BRITAIN, "marker hex war-wss br reverse", V.basic_war_tiles[BRITAIN])
+	// populate_generic("lout-player-basic-war", FRANCE, "marker hex war-wss fr reverse", V.basic_war_tiles[FRANCE])
+	// populate_generic("lout-player-basic-war", BRITAIN, "marker hex war-wss br reverse", V.basic_war_tiles[BRITAIN])
 
 	if (V.ministry[FRANCE])
-		populate_with_list("lout-player-ministry", FRANCE, "ministry_card", V.ministry[FRANCE])
+		populate_with_list("panel-ministry", FRANCE, "ministry_card", V.ministry[FRANCE], "card ministry_card deck_fr")
 	if (V.ministry[BRITAIN])
-		populate_with_list("lout-player-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN])
+		populate_with_list("panel-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN], "card ministry_card deck_br")
+
+	if (V.hand[FRANCE])
+		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
+	if (V.hand[BRITAIN])
+		populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)

@@ -419,10 +419,13 @@ function define_marker_list(action, a, b, keywords) {
 		define_marker(action, i, keywords)
 }
 
-function populate_with_list(parent_action, parent_id, child_action, child_id_list) {
+function populate_with_list(parent_action, parent_id, child_action, child_id_list, fallback) {
 	var parent = lookup_thing(parent_action, parent_id)
 	for (var child_id of child_id_list)
-		parent.appendChild(lookup_thing(child_action, child_id))
+		if (child_id < 0)
+			populate_generic(parent_action, parent_id, fallback, 1)
+		else
+			parent.appendChild(lookup_thing(child_action, child_id))
 }
 
 function populate(parent_action, parent_id, child_action, child_id) {
