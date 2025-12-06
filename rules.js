@@ -393,7 +393,9 @@ function update_advantages() {
 
 function blank_game_state (scenario, options) {
     G.active     = FRANCE
-    G.hand       = [ [], [], [] ]
+    G.hand       = [ [], [] ]
+    G.ministry = [ [], [] ]
+    G.unbuilt_squadrons = [ 7, 7 ]
     G.vp = 0
     G.turn       = 0
     G.next_war   = WAR_WSS
@@ -410,7 +412,7 @@ function blank_game_state (scenario, options) {
     }
 
     G.deck = []
-    for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i) {
+    for (i = 1; i < SUCCESSION_ERA_CARDS; ++i) {
         G.deck.push(i)
     }
     shuffle(G.deck)
@@ -418,13 +420,16 @@ function blank_game_state (scenario, options) {
     G.investments = []
     G.current_investments = []
     G.used_investments = []
-    for (i = 0; i <= NUM_INVESTMENT_TILES; i++) {
+    for (i = 0; i < NUM_INVESTMENT_TILES; i++) {
         G.investments.push(i)
     }
     shuffle(G.investments)
 
+    for (i = 0; i < 9; ++i)
+    	G.current_investments.push(G.investments.pop())
+
     G.basic_war_tiles = [ [],[],[] ]
-    for (i = 0; i <= NUM_BASE_WAR_TILES; i++) {
+    for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
         G.basic_war_tiles[FRANCE].push(i);
         G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES);
     }
@@ -492,11 +497,8 @@ function blank_game_state (scenario, options) {
 	G.navy_box[BRITAIN] = 1
 
 	// Gives each player a "hand" of all the available ministry cards for their side.
-    G.ministry = [ [], [], [] ];
-    for (i = 1; i <= NUM_MINISTRY_CARDS; i++) {
-        let whose = data.ministries[i].side
-        G.ministry[whose].push(i)
-    }
+	G.ministry[FRANCE] = [ 1 ]
+	G.ministry[BRITAIN] = [ 5, 6 ]
 }
 
 function on_setup(scenario, options) {
@@ -532,6 +534,7 @@ function on_view() {
 	V.advantages = G.advantages
 
 	V.navy_box = G.navy_box
+	V.unbuilt_squadrons = G.unbuilt_squadrons
 
 	V.ministry = [ null, null ]
 

@@ -49,7 +49,7 @@ body.Britain header.your_turn { background-color: salmon }
 	border: 1px solid black;
 }
 
-#war_display, #mat_1, #mat_2 {
+#war_display, #mat_fr, #mat_br {
 	width: 825px;
 	height: 638px;
 }
@@ -71,6 +71,25 @@ body.Britain header.your_turn { background-color: salmon }
 
 .layout {
 	gap: 5px;
+}
+
+.board.mat .layout .hex.marker {
+	margin: -15px;
+}
+
+.board.mat .card {
+	width: 187.5px;
+	height: 262.5px;
+	background-size: 187.5px 262.5px;
+	border-radius: 12px;
+}
+
+.board.mat .lout-player-ministry {
+	gap: 20px;
+}
+
+.board .marker.investment {
+	margin: -10px;
 }
 
 /* SPACES & PIECES */
@@ -161,8 +180,8 @@ body.Britain header.your_turn { background-color: salmon }
 .board.war-was { background-image: url(boards75/war_3.avif); }
 .board.war-awi { background-image: url(boards75/war_4.avif); }
 
-.board.britain { background-image: url(boards75/mat_1.avif) }
-.board.france { background-image: url(boards75/mat_2.avif) }
+.board.mat.br { background-image: url(boards75/mat_1.avif) }
+.board.mat.fr { background-image: url(boards75/mat_2.avif) }
 
 #tile_display { background-image: url(boards75/display_1.avif); }
 

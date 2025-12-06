@@ -1,12 +1,36 @@
 "use strict"
 
+const mat_layout = {
+	"unbuilt_squadrons": [255,222,185,107],
+	"advantage_tiles": [43,75,188,255],
+	"basic_war_tiles": [257,77,260,122],
+	"bonus_war_tiles": [527,78,258,122],
+	"ministry_card": [41,341,405,268],
+
+	/* actions */
+	"bonus_war_tile": [485,366,82,72],
+	"repair_seize_fort": [592,469,82,72],
+	"remove_conflict": [697,469,82,72],
+	"construct_fort": [486,469,82,72],
+	"construct_squadron": [593,367,82,72],
+	"deploy_squadron": [698,366,82,72],
+	"draw_event": [484,229,85,85],
+	"shift_political_space": [589,230,85,85],
+	"shift_market": [696,227,85,85],
+
+	/* investment tile display */
+	"investment_tile_stack": [47,192,263,281],
+	"used_investment_tiles": [328,192,263,281],
+	"available_investment_1_5": [67,527,505,84],
+	"available_investment_6_9": [119,629,400,84],
+}
+
 const space_type_class = [
 	"political",
 	"market",
 	"naval",
 	"territory",
 	"fort",
-	"advantage"
 ]
 
 function find_layout_node(name) {
@@ -105,6 +129,11 @@ function on_init() {
 	for (a of data.investments)
 		define_marker("investment", a.num, "square investment i" + a.num)
 
+	for (i = 1; i <= 41; ++i)
+		define_card("event_card", i, "c" + i)
+	for (i = 1; i <= 26; ++i)
+		define_card("ministry_card", i, "c" + i)
+
 	define_board("war_display", 825, 637)
 
 	// TODO: define spaces and layouts on war display
@@ -114,10 +143,27 @@ function on_init() {
 
 	// TODO: define pieces, tiles, and cards
 
-	for (i = 1; i <= 41; ++i)
-		define_card("event_card", i, "c" + i)
-	for (i = 1; i <= 26; ++i)
-		define_card("ministry_card", i, "c" + i)
+	define_board("war_display", 825, 638)
+
+	define_board("mat_fr", 825, 638)
+	define_layout("lout-player-advantage", FRANCE, mat_layout.advantage_tiles)
+	define_layout("lout-player-basic-war", FRANCE, mat_layout.basic_war_tiles)
+	define_layout("lout-player-bonus-war", FRANCE, mat_layout.bonus_war_tiles)
+	define_layout("lout-player-unbuilt-squadrons", FRANCE, mat_layout.unbuilt_squadrons)
+	define_layout("lout-player-ministry", FRANCE, mat_layout.ministry_card, "grav-w")
+
+	define_board("mat_br", 825, 638)
+	define_layout("lout-player-advantage", BRITAIN, mat_layout.advantage_tiles)
+	define_layout("lout-player-basic-war", BRITAIN, mat_layout.basic_war_tiles)
+	define_layout("lout-player-bonus-war", BRITAIN, mat_layout.bonus_war_tiles)
+	define_layout("lout-player-unbuilt-squadrons", BRITAIN, mat_layout.unbuilt_squadrons)
+	define_layout("lout-player-ministry", BRITAIN, mat_layout.ministry_card, "grav-w")
+
+	define_board("tile_display", 638, 825)
+	define_layout("lout-inv-stack", 0, mat_layout.investment_tile_stack)
+	define_layout("lout-inv-used", 0, mat_layout.used_investment_tiles)
+	define_layout_track_h("track-investment", 1, 5, mat_layout.available_investment_1_5, 20)
+	define_layout_track_h("track-investment", 6, 9, mat_layout.available_investment_6_9, 20)
 }
 
 function on_update() {
@@ -166,7 +212,29 @@ function on_update() {
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {
 		if (V.advantages[a] === NONE)
 			populate("lout-advantage", a, "advantage", a)
+		if (V.advantages[a] === FRANCE)
+			populate("lout-player-advantage", FRANCE, "advantage", a)
+		if (V.advantages[a] === BRITAIN)
+			populate("lout-player-advantage", BRITAIN, "advantage", a)
 	}
+
+	populate_generic("lout-player-unbuilt-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
+	populate_generic("lout-player-unbuilt-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
+
+	i = 0
+	for (a of G.current_investments)
+		populate("track-investment", ++i, "investment", a)
+
+	populate_with_list("lout-inv-used", 0, "investment", G.used_investments)
+
+	populate_generic("lout-inv-stack", 0, "marker square investment reverse",
+		NUM_INVESTMENT_TILES - (G.used_investments.length + G.current_investments.length)
+	)
+
+	if (V.ministry[FRANCE])
+		populate_with_list("lout-player-ministry", FRANCE, "ministry_card", V.ministry[FRANCE])
+	if (V.ministry[BRITAIN])
+		populate_with_list("lout-player-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN])
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)
