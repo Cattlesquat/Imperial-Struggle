@@ -485,6 +485,43 @@ function blank_game_state (scenario, options) {
     }
 	update_advantages()
 
+	// Unit test to confirm two-way connections
+	for (i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].connects !== undefined) {
+			for (const space of data.spaces[i].connects) {
+				let connection = false
+				if (data.spaces[space].connects !== undefined) {
+					for (const space2 of data.spaces[space].connects) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					throw new Error("Space " + data.spaces[i].name + " specifies a connection to " + data.spaces[space].name + " but the reverse connection does not exist.");
+				}
+			}
+		}
+
+		if (data.spaces[i].conquest !== undefined) {
+			for (const space of data.spaces[i].conquest) {
+				let connection = false
+				if (data.spaces[space].conquest !== undefined) {
+					for (const space2 of data.spaces[space].conquest) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					throw new Error("Space " + data.spaces[i].name + " specifies a conquest line to " + data.spaces[space].name + " but the reverse conquest line does not exist.");
+				}
+			}
+		}
+	}
+
 	G.navy_box = []
 	G.navy_box[FRANCE]  = 1
 	G.navy_box[BRITAIN] = 1
