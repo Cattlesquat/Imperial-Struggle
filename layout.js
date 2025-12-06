@@ -71,7 +71,7 @@ layout.nodes = {
 	},
 	"North America/Investment Tiles": {
 		"Algonquin Raids": [47,250,75,75],
-		"Fur Tade": [227,46,75,75],
+		"Fur Trade": [227,46,75,75],
 		"Wheat": [138,798,75,75],
 		"Iroquois Raids": [52,1007,75,75],
 		"Patriot Agitation": [372,693,75,75],
@@ -188,7 +188,7 @@ layout.nodes = {
 		"Italy Influence": [2179,646,75,75],
 		"Central Europe Conflict": [2283,365,75,75],
 		"German Diplomacy": [2290,261,75,75],
-		"Silesia Negociations": [2421,381,75,75],
+		"Silesia Negotiations": [2421,381,75,75],
 		"Baltic Trade": [1911,117,75,75],
 	},
 	"Europe/Territories": {
@@ -207,11 +207,11 @@ layout.nodes = {
 		"Privateers": [925,1128,90,90],
 	},
 	"Caribbean/Investment Tiles": {
-		"Slave Contracts": [870,720,75,75],
+		"Slaving Contracts": [870,720,75,75],
 		"Fruit": [446,785,75,75],
-		"Lettres of Marque": [1085,1099,75,75],
+		"Letters of Marque": [1085,1099,75,75],
 		"Rum": [989,1239,75,75],
-		"Pirate Heavens": [666,1555,75,75],
+		"Pirate Havens": [666,1555,75,75],
 	},
 	"Caribbean/Territories": {
 		"Louisiana": [326,849,75,75],
@@ -255,7 +255,7 @@ layout.nodes = {
 layout.edges = {
 	"North America/Connection": [
 		["Usa_3","Usa_3",1081,633,1081,633],
-		["Hudson Bay","Fur Tade",330,94,302,89],
+		["Hudson Bay","Fur Trade",330,94,302,89],
 		["Hudson Bay","York Factory",332,146,317,164],
 		["Algonquin Raids","Algonquin",113,249,141,214],
 		["Atlantic Passage","Georges Bank",693,605,741,568],
@@ -336,7 +336,7 @@ layout.edges = {
 		["Gibraltar","Naval Bastion",1381,699,1407,699],
 		["Italy Influence","Austria_3",2254,667,2334,633],
 		["Italy Influence","Sardinia",2218,721,2220,781],
-		["Austria_2","Silesia Negociations",2458,481,2458,455],
+		["Austria_2","Silesia Negotiations",2458,481,2458,455],
 		["Bavaria","Central Europe Conflict",2270,471,2293,440],
 		["Saxony_2","Central Europe Conflict",2162,482,2282,421],
 		["Savoy","Mediterranean Intrigue",1970,640,1865,631],
@@ -396,9 +396,9 @@ layout.edges = {
 		["St. Lucia","Martinique",1007,1549,1015,1519],
 		["Barbados","St. Lucia",1084,1572,1035,1580],
 		["Guadeloupe","Martinique",1090,1437,1053,1462],
-		["Pirate Heavens","Buccaneers",666,1588,610,1582],
+		["Pirate Havens","Buccaneers",666,1588,610,1582],
 		["Jamaica","Cayman Passage",453,1438,385,1413],
-		["Privateers","Lettres of Marque",1014,1160,1084,1144],
+		["Privateers","Letters of Marque",1014,1160,1084,1144],
 	],
 	"Caribbean/Conquest Lines": [
 		["St. Domingue","San Agustin",772,1236,624,900],
