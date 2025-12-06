@@ -5,6 +5,8 @@ const ROLES = [ "France", "Britain" ]
 
 var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
+/* CONSTANTS */
+
 // FLAGS
 const FRANCE  = 0
 const BRITAIN = 1
@@ -357,26 +359,27 @@ const DRAW_PILE = 216
 const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
 
+/* TILES & CARDS */
 
 
 function draw_awards() {
     if (G.award_chits.length < NUM_REGIONS) { // Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
         for (i = 0; i < NUM_AWARD_TILES; i++) {
-            G.awards_chits.push(i)
+            G.award_chits.push(i)
         }
-        shuffle(G.awards_chits)
+        shuffle(G.award_chits)
     }
 
     // Deal one per region
     for (var i = 0; i < NUM_REGIONS; i++) {
-       G.awards[i] = G.awards_chits.pop()
+       G.awards[i] = G.award_chits.pop()
     }
 }
 
 function draw_global_demands() {
 	G.global_demand_chits = []
 	G.global_demand = []
-	for (var i = 0; i <= NUM_DEMANDS; i++) {
+	for (var i = 0; i < NUM_DEMANDS; i++) {
 		G.global_demand_chits.push(i);
 	}
 	shuffle(G.global_demand_chits);
@@ -391,9 +394,12 @@ function update_advantages() {
 
 }
 
+/* SETUP */
+
 function blank_game_state (scenario, options) {
     G.active     = FRANCE
     G.hand       = [ [], [], [] ]
+    G.vp = 0
     G.turn       = 0
     G.next_war   = WAR_WSS
     G.initiative = FRANCE
@@ -431,7 +437,7 @@ function blank_game_state (scenario, options) {
     shuffle (G.basic_war_tiles[BRITAIN])
 
     G.awards = []
-    G.awards_chits = []
+    G.award_chits = []
     draw_awards()
 
 	draw_global_demands()
@@ -455,42 +461,46 @@ function blank_game_state (scenario, options) {
 }
 
 function on_setup(scenario, options) {
-	var i
-
-    blank_game_state(scenario, options);
-
-
-	//for (i = 0; i < 8; ++i) {
-	//	G.hand[FRANCE].push(G.deck.pop())
-	//	G.hand[BRITAIN].push(G.deck.pop())
-	//}
-
+	blank_game_state(scenario, options)
 	call("main")
 }
 
 function on_view() {
-	if (R === FRANCE)
+	V.turn = G.turn
+	V.vp = G.vp
+	V.initiative = G.initiative
+
+	// Player debts/TRPs always visible
+	V.debt = G.debt
+	V.debt_limit = G.debt_limit
+	V.treaty_points = G.treaty_points
+
+	// Current available investments, and used investment pile, are public.
+	// Shuffled investment deck is not.
+	V.current_investments = G.current_investments
+	V.used_investments = G.used_investments
+
+	// Flags on the board are always visible
+	V.flags = G.flags
+
+	// Currently selected global demand chits are visible; shuffled chits are not
+	V.global_demand = G.global_demand
+
+	// Award tiles
+	V.awards = G.awards
+
+	V.navy_box = G.navy_box
+
+	V.ministry = [ null, null ]
+
+	if (R === FRANCE) {
 		V.hand = G.hand[FRANCE]
-	if (R === BRITAIN)
+		V.ministry[FRANCE] = G.ministry[FRANCE]
+	}
+	if (R === BRITAIN) {
 		V.hand = G.hand[BRITAIN]
-
-    // Player debts/TRPs always visible
-    V.debt          = G.debt;
-    V.debt_limit    = G.debt_limit;
-    V.treaty_points = G.treaty_points;
-
-    // Current available investments, and used investment pile, are public. Shuffled investment deck is not.
-    V.current_investments = G.current_investments;
-    V.used_investments    = G.used_investments;
-
-    // Flags on the board are always visible
-    V.flags = G.flags;
-
-    // Currently selected global demand chits are visible; shuffled chits are not
-    V.global_demand = G.global_demand;
-
-
-
+		V.ministry[BRITAIN] = G.ministry[BRITAIN]
+	}
 }
 
 /* FRAMEWORK */
