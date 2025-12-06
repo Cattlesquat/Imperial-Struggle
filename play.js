@@ -95,6 +95,12 @@ function on_init() {
 	for (a of data.awards)
 		define_marker("award", a.num, "square-sm black a" + a.num)
 
+	for (a of data.advantages)
+		define_marker("advantage", a.num, "square advantage a" + a.num)
+
+	for (a of data.investments)
+		define_marker("investment", a.num, "square investment i" + a.num)
+
 	define_board("war_display", 825, 637)
 
 	// TODO: define spaces and layouts on war display
@@ -152,6 +158,9 @@ function on_update() {
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
 		}
 	}
+
+	for (a = 0; a < NUM_ADVANTAGES; ++a)
+		populate("lout-space", V.advantages[a], "advantage", a)
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)

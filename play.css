@@ -140,7 +140,7 @@ body.Britain header.your_turn { background-color: salmon }
 
 /* BORDERS */
 
-.square.advance { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
+.square.advantage { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
 .square.investment { background-color: #906d90; border-color: #b490b4 #6d4c6d #6d4c6d #b490b4; box-shadow: 0 0 0 1px #100012; }
 .square.investment.reverse { background-color: #5b255e; border-color: #713973 #461049 #461049 #713973; box-shadow: 0 0 0 1px #0b0010; }
 
@@ -212,6 +212,78 @@ body.Britain header.your_turn { background-color: salmon }
 .marker.demand.tobacco { background-image: url(tiles75/square-sm/demand_tobacco.png) }
 .marker.demand.reverse { background-image: url(tiles75/square-sm/demand_reverse.png) }
 
+.marker.advantage.a0 { background-image: url(tiles75/square/adv00f_baltic_trade.png) }
+.marker.advantage.a1 { background-image: url(tiles75/square/adv01f_central_europe_conflict.png) }
+.marker.advantage.a2 { background-image: url(tiles75/square/adv02f_german_diplomacy.png) }
+.marker.advantage.a3 { background-image: url(tiles75/square/adv03f_italy_influence.png) }
+.marker.advantage.a4 { background-image: url(tiles75/square/adv04f_mediterranean_intrigue.png) }
+.marker.advantage.a5 { background-image: url(tiles75/square/adv05f_naval_bastion.png) }
+.marker.advantage.a6 { background-image: url(tiles75/square/adv06f_silesia_negotiations.png) }
+.marker.advantage.a7 { background-image: url(tiles75/square/adv07f_algonquin_raids.png) }
+.marker.advantage.a8 { background-image: url(tiles75/square/adv08f_fur_trade.png) }
+.marker.advantage.a9 { background-image: url(tiles75/square/adv09f_iroquois_raids.png) }
+.marker.advantage.a10 { background-image: url(tiles75/square/adv10f_patriot_agitation.png) }
+.marker.advantage.a11 { background-image: url(tiles75/square/adv11f_wheat.png) }
+.marker.advantage.a12 { background-image: url(tiles75/square/adv12f_fruit.png) }
+.marker.advantage.a13 { background-image: url(tiles75/square/adv13f_letters_of_marque.png) }
+.marker.advantage.a14 { background-image: url(tiles75/square/adv14f_pirate_havens.png) }
+.marker.advantage.a15 { background-image: url(tiles75/square/adv15f_rum.png) }
+.marker.advantage.a16 { background-image: url(tiles75/square/adv16f_slaving_contracts.png) }
+.marker.advantage.a17 { background-image: url(tiles75/square/adv17f_power_struggle.png) }
+.marker.advantage.a18 { background-image: url(tiles75/square/adv18f_raids_and_incursions.png) }
+.marker.advantage.a19 { background-image: url(tiles75/square/adv19f_separatist_wars.png) }
+.marker.advantage.a20 { background-image: url(tiles75/square/adv20f_silk.png) }
+.marker.advantage.a21 { background-image: url(tiles75/square/adv21f_textiles.png) }
+
+.marker.advantage.a0.reverse { background-image: url(tiles75/square/adv00r_baltic_trade.png) }
+.marker.advantage.a1.reverse { background-image: url(tiles75/square/adv01r_central_europe_conflict.png) }
+.marker.advantage.a2.reverse { background-image: url(tiles75/square/adv02r_german_diplomacy.png) }
+.marker.advantage.a3.reverse { background-image: url(tiles75/square/adv03r_italy_influence.png) }
+.marker.advantage.a4.reverse { background-image: url(tiles75/square/adv04r_mediterranean_intrigue.png) }
+.marker.advantage.a5.reverse { background-image: url(tiles75/square/adv05r_naval_bastion.png) }
+.marker.advantage.a6.reverse { background-image: url(tiles75/square/adv06r_silesia_negotiations.png) }
+.marker.advantage.a7.reverse { background-image: url(tiles75/square/adv07r_algonquin_raids.png) }
+.marker.advantage.a8.reverse { background-image: url(tiles75/square/adv08r_fur_trade.png) }
+.marker.advantage.a9.reverse { background-image: url(tiles75/square/adv09r_iroquois_raids.png) }
+.marker.advantage.a10.reverse { background-image: url(tiles75/square/adv10r_patriot_agitation.png) }
+.marker.advantage.a11.reverse { background-image: url(tiles75/square/adv11r_wheat.png) }
+.marker.advantage.a12.reverse { background-image: url(tiles75/square/adv12r_fruit.png) }
+.marker.advantage.a13.reverse { background-image: url(tiles75/square/adv13r_letters_of_marque.png) }
+.marker.advantage.a14.reverse { background-image: url(tiles75/square/adv14r_pirate_havens.png) }
+.marker.advantage.a15.reverse { background-image: url(tiles75/square/adv15r_rum.png) }
+.marker.advantage.a16.reverse { background-image: url(tiles75/square/adv16r_slaving_contracts.png) }
+.marker.advantage.a17.reverse { background-image: url(tiles75/square/adv17r_power_struggle.png) }
+.marker.advantage.a18.reverse { background-image: url(tiles75/square/adv18r_raids_and_incursions.png) }
+.marker.advantage.a19.reverse { background-image: url(tiles75/square/adv19r_separatist_wars.png) }
+.marker.advantage.a20.reverse { background-image: url(tiles75/square/adv20r_silk.png) }
+.marker.advantage.a21.reverse { background-image: url(tiles75/square/adv21r_textiles.png) }
+
+.marker.investment.i0 { background-image: url(tiles75/square/investment00_4e_2d.png) }
+.marker.investment.i1 { background-image: url(tiles75/square/investment01_4e_2d.png) }
+.marker.investment.i2 { background-image: url(tiles75/square/investment02_4e_2m.png) }
+.marker.investment.i3 { background-image: url(tiles75/square/investment03_4e_2m.png) }
+.marker.investment.i4 { background-image: url(tiles75/square/investment04_3e_2d.png) }
+.marker.investment.i5 { background-image: url(tiles75/square/investment05_3e_2m.png) }
+.marker.investment.i6 { background-image: url(tiles75/square/investment06_2e_2d.png) }
+.marker.investment.i7 { background-image: url(tiles75/square/investment07_2e_2m.png) }
+.marker.investment.i8 { background-image: url(tiles75/square/investment08_4d_2e.png) }
+.marker.investment.i9 { background-image: url(tiles75/square/investment09_4d_2e.png) }
+.marker.investment.i10 { background-image: url(tiles75/square/investment10_4d_2m.png) }
+.marker.investment.i11 { background-image: url(tiles75/square/investment11_4d_2m.png) }
+.marker.investment.i12 { background-image: url(tiles75/square/investment12_3d_2e.png) }
+.marker.investment.i13 { background-image: url(tiles75/square/investment13_3d_2m.png) }
+.marker.investment.i14 { background-image: url(tiles75/square/investment14_2d_2e.png) }
+.marker.investment.i15 { background-image: url(tiles75/square/investment15_2d_2m.png) }
+.marker.investment.i16 { background-image: url(tiles75/square/investment16_4m_2e.png) }
+.marker.investment.i17 { background-image: url(tiles75/square/investment17_4m_2e.png) }
+.marker.investment.i18 { background-image: url(tiles75/square/investment18_4m_2d.png) }
+.marker.investment.i19 { background-image: url(tiles75/square/investment19_4m_2d.png) }
+.marker.investment.i20 { background-image: url(tiles75/square/investment20_3m_2e.png) }
+.marker.investment.i21 { background-image: url(tiles75/square/investment21_3m_2d.png) }
+.marker.investment.i22 { background-image: url(tiles75/square/investment22_2m_2e.png) }
+.marker.investment.i23 { background-image: url(tiles75/square/investment23_2m_2d.png) }
+.marker.investment.reverse { background-image: url(tiles75/square/investment_reverse.png) }
+
 /*
 tiles75/square-sm/action_br_1.png
 tiles75/square-sm/action_br_2.png
@@ -244,6 +316,33 @@ tiles75/hex/war_was_br_reverse.png
 tiles75/hex/war_was_fr_reverse.png
 tiles75/hex/war_wss_br_reverse.png
 tiles75/hex/war_wss_fr_reverse.png
+
+
+tiles75/square/investment00_4e_2d.png
+tiles75/square/investment01_4e_2d.png
+tiles75/square/investment02_4e_2m.png
+tiles75/square/investment03_4e_2m.png
+tiles75/square/investment04_3e_2d.png
+tiles75/square/investment05_3e_2m.png
+tiles75/square/investment06_2e_2d.png
+tiles75/square/investment07_2e_2m.png
+tiles75/square/investment08_4d_2e.png
+tiles75/square/investment09_4d_2e.png
+tiles75/square/investment10_4d_2m.png
+tiles75/square/investment11_4d_2m.png
+tiles75/square/investment12_3d_2e.png
+tiles75/square/investment13_3d_2m.png
+tiles75/square/investment14_2d_2e.png
+tiles75/square/investment15_2d_2m.png
+tiles75/square/investment16_4m_2e.png
+tiles75/square/investment17_4m_2e.png
+tiles75/square/investment18_4m_2d.png
+tiles75/square/investment19_4m_2d.png
+tiles75/square/investment20_3m_2e.png
+tiles75/square/investment21_3m_2d.png
+tiles75/square/investment22_2m_2e.png
+tiles75/square/investment23_2m_2d.png
+tiles75/square/investment_reverse.png
 
 */
 

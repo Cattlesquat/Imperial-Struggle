@@ -4,7 +4,7 @@ function b(s,c) {
 	console.log(oklab.css_bevel(s,c))
 }
 
-b(".marker.advance", "#6c6257")
+b(".marker.advantage", "#6c6257")
 b(".marker.investment", "#906d90")
 b(".marker.investment.reverse", "#5b255e")
 
