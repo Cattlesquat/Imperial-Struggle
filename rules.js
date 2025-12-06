@@ -559,7 +559,7 @@ P.choose_ministry_cards = {
 					action_ministry_card(m.num)
 			}
 		}
-		if (G.ministry[R].length > 1)
+		if (G.ministry[R].length > 0)
 			button("undo")
 		if (G.ministry[R].length === 2)
 			button("confirm")
