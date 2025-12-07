@@ -16,7 +16,7 @@ const NONE    = 4
 
 // Types of Action Point
 const ECON  = 0
-const DIPLO   = 1
+const DIPLO = 1
 const MIL   = 2
 const WILD  = 3
 
@@ -346,6 +346,201 @@ const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
 
 /* TILES & CARDS */
+
+
+/* SETUP */
+function on_setup(scenario, options) {
+	G.active = FRANCE
+	G.hand = [ [], [] ]
+	G.ministry = [ [], [] ]
+	G.unbuilt_squadrons = [ 7, 7 ]
+	G.vp = 0
+	G.turn = 0
+	G.next_war = WAR_WSS
+	G.initiative = FRANCE
+
+	G.debt = []
+	G.debt_limit = []
+	G.treaty_points = []
+
+	for (var i = FRANCE; i <= BRITAIN; i++) {
+		G.debt_limit[i] = 6
+		G.debt[i] = 0
+		G.treaty_points[i] = 0
+	}
+
+	G.deck = []
+	G.discard_pile = []
+	G.played_events = []
+	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
+		G.deck.push(i)
+	shuffle(G.deck)
+
+	G.available_investments = []
+	G.used_investments = []
+	G.investment_tile_stack = []
+	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
+		G.investment_tile_stack.push(i)
+	shuffle(G.investment_tile_stack)
+
+	G.basic_war_tiles = [ [], [] ]
+	for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
+		G.basic_war_tiles[FRANCE].push(i)
+		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+	}
+	shuffle(G.basic_war_tiles[FRANCE])
+	shuffle(G.basic_war_tiles[BRITAIN])
+
+	add_next_war_bonus_tiles()
+
+	G.awards = []
+	G.award_chits = []
+
+	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
+
+	G.flags = [] // All the flags on the map
+	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
+	for (i = 0; i < data.spaces.length; i++) {
+		G.flags[i] = data.spaces[i].flag ?? NONE
+	}
+
+	G.conflicts = [] // map of conflict markers
+
+	for (i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].num !== i)
+			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
+	}
+
+	// Unit test to confirm two-way connections
+	for (i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].connects !== undefined) {
+			for (const space of data.spaces[i].connects) {
+				let connection = false
+				if (data.spaces[space].connects !== undefined) {
+					for (const space2 of data.spaces[space].connects) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					console.error(
+						"Space " +
+						data.spaces[i].name +
+						" specifies a connection to " +
+						data.spaces[space].name +
+						" but the reverse connection does not exist."
+					)
+				}
+			}
+		}
+
+		if (data.spaces[i].conquest !== undefined) {
+			for (const space of data.spaces[i].conquest) {
+				let connection = false
+				if (data.spaces[space].conquest !== undefined) {
+					for (const space2 of data.spaces[space].conquest) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					console.error(
+						"Space " +
+						data.spaces[i].name +
+						" specifies a conquest line to " +
+						data.spaces[space].name +
+						" but the reverse conquest line does not exist."
+					)
+				}
+			}
+		}
+	}
+
+	G.navy_box = []
+	G.navy_box[FRANCE] = 1
+	G.navy_box[BRITAIN] = 2
+
+	call("main")
+}
+
+/* VIEW & ACTIONS */
+
+function on_view() {
+	V.turn = G.turn
+	V.vp = G.vp
+	V.initiative = G.initiative
+
+	// Player debts/TRPs always visible
+	V.debt = G.debt
+	V.debt_limit = G.debt_limit
+	V.treaty_points = G.treaty_points
+
+	// Current available investments, and used investment pile, are public.
+	// Shuffled investment deck is not.
+	V.available_investments = G.available_investments
+	V.used_investments = G.used_investments
+
+	// Flags on the board are always visible
+	V.flags = G.flags
+	V.conflicts = G.conflicts
+
+	// Currently selected global demand chits are visible; shuffled chits are not
+	V.global_demand = G.global_demand
+
+	// Award tiles
+	V.awards = G.awards
+
+	// Advantage tiles
+	V.advantages = G.advantages
+
+	V.navy_box = G.navy_box
+	V.unbuilt_squadrons = G.unbuilt_squadrons
+
+	//BR// I'm not sure why this statement repeats twice w/ no overt FRANCE/BRITAIN distinction, but I have wisely/foolishly duplicated it below for the bonus war tiles
+	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
+	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
+
+	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
+	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
+
+	V.played_tile = G.played_tile
+
+	if (R === FRANCE) {
+		V.hand = [
+			G.hand[FRANCE],
+			G.hand[BRITAIN].map(x => -1),
+		]
+		V.ministry = [
+			G.ministry[FRANCE],
+			G.ministry[BRITAIN].map(x => -1),
+		]
+	}
+	if (R === BRITAIN) {
+		V.hand = [
+			G.hand[FRANCE].map(x => -1),
+			G.hand[BRITAIN],
+		]
+		V.ministry = [
+			G.ministry[FRANCE].map(x => -1),
+			G.ministry[BRITAIN],
+		]
+	}
+	if (R < 0) {
+		V.hand = [
+			G.hand[FRANCE].map(x => -1),
+			G.hand[BRITAIN].map(x => -1),
+		]
+		V.ministry = [
+			G.ministry[FRANCE].map(x => -1),
+			G.ministry[BRITAIN].map(x => -1),
+		]
+	}
+}
+
 
 
 function player_has_advantage(p, a) {
@@ -1040,8 +1235,11 @@ P.may_spend_action_points = {
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
 		if (G.flags[s] === NONE) {
 			G.flags[s] = R
+			log (data.flags[R].name + " FLAGS " + data.spaces[s].name)
 		} else {
+			var former = G.flags[s]
 			G.flags[s] = NONE
+			log (data.flags[R].name + " UNFLAGS " + data.spaces[s].name + "(formerly " + data.flags[former].name + ")")
 		}
 	}
 }
@@ -1055,200 +1253,6 @@ function add_next_war_bonus_tiles() {
 	}
 	shuffle(G.bonus_war_tiles[FRANCE])
 	shuffle(G.bonus_war_tiles[BRITAIN])
-}
-
-
-/* SETUP */
-function on_setup(scenario, options) {
-	G.active = FRANCE
-	G.hand = [ [], [] ]
-	G.ministry = [ [], [] ]
-	G.unbuilt_squadrons = [ 7, 7 ]
-	G.vp = 0
-	G.turn = 0
-	G.next_war = WAR_WSS
-	G.initiative = FRANCE
-
-	G.debt = []
-	G.debt_limit = []
-	G.treaty_points = []
-
-	for (var i = FRANCE; i <= BRITAIN; i++) {
-		G.debt_limit[i] = 6
-		G.debt[i] = 0
-		G.treaty_points[i] = 0
-	}
-
-	G.deck = []
-	G.discard_pile = []
-	G.played_events = []
-	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
-		G.deck.push(i)
-	shuffle(G.deck)
-
-	G.available_investments = []
-	G.used_investments = []
-	G.investment_tile_stack = []
-	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
-		G.investment_tile_stack.push(i)
-	shuffle(G.investment_tile_stack)
-
-	G.basic_war_tiles = [ [], [] ]
-	for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
-		G.basic_war_tiles[FRANCE].push(i)
-		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
-	}
-	shuffle(G.basic_war_tiles[FRANCE])
-	shuffle(G.basic_war_tiles[BRITAIN])
-
-	add_next_war_bonus_tiles()
-
-	G.awards = []
-	G.award_chits = []
-
-	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
-
-	G.flags = [] // All the flags on the map
-	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
-	for (i = 0; i < data.spaces.length; i++) {
-		G.flags[i] = data.spaces[i].flag ?? NONE
-	}
-
-	G.conflicts = [] // map of conflict markers
-
-	for (i = 0; i < data.spaces.length; i++) {
-		if (data.spaces[i].num !== i)
-			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
-	}
-
-	// Unit test to confirm two-way connections
-	for (i = 0; i < data.spaces.length; i++) {
-		if (data.spaces[i].connects !== undefined) {
-			for (const space of data.spaces[i].connects) {
-				let connection = false
-				if (data.spaces[space].connects !== undefined) {
-					for (const space2 of data.spaces[space].connects) {
-						if (space2 === i) {
-							connection = true
-							break
-						}
-					}
-				}
-				if (!connection) {
-					console.error(
-						"Space " +
-							data.spaces[i].name +
-							" specifies a connection to " +
-							data.spaces[space].name +
-							" but the reverse connection does not exist."
-					)
-				}
-			}
-		}
-
-		if (data.spaces[i].conquest !== undefined) {
-			for (const space of data.spaces[i].conquest) {
-				let connection = false
-				if (data.spaces[space].conquest !== undefined) {
-					for (const space2 of data.spaces[space].conquest) {
-						if (space2 === i) {
-							connection = true
-							break
-						}
-					}
-				}
-				if (!connection) {
-					console.error(
-						"Space " +
-							data.spaces[i].name +
-							" specifies a conquest line to " +
-							data.spaces[space].name +
-							" but the reverse conquest line does not exist."
-					)
-				}
-			}
-		}
-	}
-
-	G.navy_box = []
-	G.navy_box[FRANCE] = 1
-	G.navy_box[BRITAIN] = 2
-
-	call("main")
-}
-
-/* VIEW & ACTIONS */
-
-function on_view() {
-	V.turn = G.turn
-	V.vp = G.vp
-	V.initiative = G.initiative
-
-	// Player debts/TRPs always visible
-	V.debt = G.debt
-	V.debt_limit = G.debt_limit
-	V.treaty_points = G.treaty_points
-
-	// Current available investments, and used investment pile, are public.
-	// Shuffled investment deck is not.
-	V.available_investments = G.available_investments
-	V.used_investments = G.used_investments
-
-	// Flags on the board are always visible
-	V.flags = G.flags
-	V.conflicts = G.conflicts
-
-	// Currently selected global demand chits are visible; shuffled chits are not
-	V.global_demand = G.global_demand
-
-	// Award tiles
-	V.awards = G.awards
-
-	// Advantage tiles
-	V.advantages = G.advantages
-
-	V.navy_box = G.navy_box
-	V.unbuilt_squadrons = G.unbuilt_squadrons
-
-	//BR// I'm not sure why this statement repeats twice w/ no overt FRANCE/BRITAIN distinction, but I have wisely/foolishly duplicated it below for the bonus war tiles
-	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
-	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
-
-	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
-	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
-
-	V.played_tile = G.played_tile
-
-	if (R === FRANCE) {
-		V.hand = [
-			G.hand[FRANCE],
-			G.hand[BRITAIN].map(x => -1),
-		]
-		V.ministry = [
-			G.ministry[FRANCE],
-			G.ministry[BRITAIN].map(x => -1),
-		]
-	}
-	if (R === BRITAIN) {
-		V.hand = [
-			G.hand[FRANCE].map(x => -1),
-			G.hand[BRITAIN],
-		]
-		V.ministry = [
-			G.ministry[FRANCE].map(x => -1),
-			G.ministry[BRITAIN],
-		]
-	}
-	if (R < 0) {
-		V.hand = [
-			G.hand[FRANCE].map(x => -1),
-			G.hand[BRITAIN].map(x => -1),
-		]
-		V.ministry = [
-			G.ministry[FRANCE].map(x => -1),
-			G.ministry[BRITAIN].map(x => -1),
-		]
-	}
 }
 
 function action_event_card(c) {
