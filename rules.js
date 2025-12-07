@@ -1244,15 +1244,14 @@ P.may_spend_action_points = {
 		}
 
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
+		var former = G.flags[s]
 		if (G.flags[s] === NONE) {
 			G.flags[s] = R
-			log (data.flags[R].name + " FLAGS " + data.spaces[s].name)
 		} else {
-			var former = G.flags[s]
 			G.flags[s] = NONE
-			log (data.flags[R].name + " UNFLAGS " + data.spaces[s].name + "(formerly " + data.flags[former].name + ")")
 		}
 		G.dirty[s] = true // We've now changed this space. Highlight it until next investment tile.
+		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[R].name)
 	}
 }
 

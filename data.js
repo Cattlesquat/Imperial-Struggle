@@ -351,7 +351,7 @@ data.flags = [
 	{ "num": 1, "id": "br", "name": "Britain", "adj": "British" },
 	{ "num": 2, "id": "sp", "name": "Spain",   "adj": "Spanish" },
 	{ "num": 3, "id": "us", "name": "USA",     "adj": "US" },
-	{ "num": 4, "id": "no", "name": "No one",  "adj": "No one's" }
+	{ "num": 4, "id": "no", "name": "No Flag", "adj": "Unflagged" }
 ]
 
 data.action_points = [
