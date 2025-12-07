@@ -96,6 +96,14 @@ body.Britain #events_br { grid-row: 2 }
 
 /* SPACES & PIECES */
 
+.marker {
+	pointer-events: none;
+}
+
+.marker.action {
+	pointer-events: auto;
+}
+
 .space {
 	box-sizing: border-box;
 }
