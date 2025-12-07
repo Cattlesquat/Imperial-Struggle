@@ -132,24 +132,15 @@ body.Britain #events_br { grid-row: 2 }
 }
 
 .marker.hex {
-	width: 69px;
-	height: 61px;
-	background-size: 69px 61px;
+	width: 77px;
+	height: 69px;
+	background-size: 77px 69px;
 }
 
 .marker.hex-sm {
-	width: 58px;
-	height: 51px;
-	background-size: 58px 51px;
-}
-
-.marker.hex.action, .marker.hex-sm.action {
-	filter:
-		drop-shadow(-2px -2px 0 white)
-		drop-shadow(+2px -2px 0 white)
-		drop-shadow(-2px +2px 0 white)
-		drop-shadow(+2px +2px 0 white)
-	;
+	width: 66px;
+	height: 60px;
+	background-size: 66px 60px;
 }
 
 .marker.square {
@@ -199,6 +190,12 @@ body.Britain #events_br { grid-row: 2 }
 .square-sm.flag_br { background-color: #964c40; border-color: #b7695c #762f25 #762f25 #b7695c; box-shadow: 0 0 0 1px #1b0000; }
 .square-sm.flag_usa { background-color: #b383a7; border-color: #deacd2 #895c7e #895c7e #deacd2; box-shadow: 0 0 0 1px #180013; }
 .square-sm.flag_spain { background-color: #e09b26; border-color: #ffcb60 #af6d00 #af6d00 #ffcb60; box-shadow: 0 0 0 1px #280000; }
+
+
+/* IMAGES + ACTION OUTLINE */
+
+.marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png), url(images/hex-sm-yellow.svg) }
+.marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png), url(images/hex-sm-yellow.svg) }
 
 /* IMAGES */
 

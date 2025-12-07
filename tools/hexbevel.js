@@ -31,8 +31,8 @@ function make_hex_with_bevel(output, img_file, img_w, img_h, color) {
 	var img_url = "data:image/png;base64," + fs.readFileSync(img_file).toString("base64")
 
 	var r = img_w / 2
-	var w = 48 + r * 2
-	var h = 48 + Math.ceil(r * 2 * Math.cos(d30))
+	var w = 48 + r * 2 + 64
+	var h = 48 + Math.ceil((r/8) * 2 * Math.cos(d30)) * 8 + 64
 	var xc = w / 2
 	var yc = h / 2
 
