@@ -485,14 +485,14 @@ data.investments = [
     { "num" : 14, "majortype" : 1, "majorval": 2, "minortype" : 0, "minorval" : 2}, // 2 diplo, 2 econ
     { "num" : 15, "majortype" : 1, "majorval": 2, "minortype" : 2, "minorval" : 2}, // 2 diplo, 2 mil
 
-    { "num" : 16, "majortype" : 2, "majorval": 4, "minortype" : 1, "minorval" : 2}, // 4 mil, 2 econ
-    { "num" : 17, "majortype" : 2, "majorval": 4, "minortype" : 1, "minorval" : 2},
-    { "num" : 18, "majortype" : 2, "majorval": 4, "minortype" : 2, "minorval" : 2}, // 4 mil, 2 diplo
-    { "num" : 19, "majortype" : 2, "majorval": 4, "minortype" : 2, "minorval" : 2},
-    { "num" : 20, "majortype" : 2, "majorval": 3, "minortype" : 1, "minorval" : 2}, // 3 mil, 2 econ
-    { "num" : 21, "majortype" : 2, "majorval": 3, "minortype" : 2, "minorval" : 2}, // 3 mil, 2 diplo
-    { "num" : 22, "majortype" : 2, "majorval": 2, "minortype" : 1, "minorval" : 2}, // 2 mil, 2 econ
-    { "num" : 23, "majortype" : 2, "majorval": 2, "minortype" : 2, "minorval" : 2}  // 2 mil, 2 diplo
+    { "num" : 16, "majortype" : 2, "majorval": 4, "minortype" : 0, "minorval" : 2}, // 4 mil, 2 econ
+    { "num" : 17, "majortype" : 2, "majorval": 4, "minortype" : 0, "minorval" : 2},
+    { "num" : 18, "majortype" : 2, "majorval": 4, "minortype" : 1, "minorval" : 2}, // 4 mil, 2 diplo
+    { "num" : 19, "majortype" : 2, "majorval": 4, "minortype" : 1, "minorval" : 2},
+    { "num" : 20, "majortype" : 2, "majorval": 3, "minortype" : 0, "minorval" : 2}, // 3 mil, 2 econ
+    { "num" : 21, "majortype" : 2, "majorval": 3, "minortype" : 1, "minorval" : 2}, // 3 mil, 2 diplo
+    { "num" : 22, "majortype" : 2, "majorval": 2, "minortype" : 0, "minorval" : 2}, // 2 mil, 2 econ
+    { "num" : 23, "majortype" : 2, "majorval": 2, "minortype" : 1, "minorval" : 2}  // 2 mil, 2 diplo
 ]
 
 data.basic_war_tiles = [
