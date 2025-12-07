@@ -239,6 +239,10 @@ function on_update() {
 
 	action_button("confirm", "Confirm")
 	action_button("pass", "Pass")
+
+	action_button("draw_event", "Draw Event")
+	action_button("construct_squadron", "Construct Squadron")
+
 	action_button("undo", "Undo")
 
 	end_update()

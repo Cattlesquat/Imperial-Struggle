@@ -954,7 +954,6 @@ function action_eligible_spaces(type, region)
 function action_all_eligible_spaces() {
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 		if (!G.action_points_eligible[i]) continue
-		log ("all eligible spaces, type: " + i)
 		action_eligible_spaces(i, REGION_ALL)
 	}
 }
@@ -988,22 +987,33 @@ P.may_spend_action_points = {
 		action_all_eligible_spaces()
 
 		/*
-        if (G.action_points_major[ECON] > 0) action("Economic (Major)")
-		if (G.action_points_major[DIP] > 0) action("Diplomatic (Major)")
-		if (G.action_points_major[MIL] > 0) action("Military (Major)")
-		if (G.action_points_major[ECON] > 0) action("Economic (Minor)")
-		if (G.action_points_major[DIP] > 0) action("Diplomatic (Minor)")
-		if (G.action_points_major[MIL] > 0) action("Military (Minor)")
+        if (G.action_points_major[ECON] > 0) button("Economic (Major)")
+		if (G.action_points_major[DIP] > 0) button("Diplomatic (Major)")
+		if (G.action_points_major[MIL] > 0) button("Military (Major)")
+		if (G.action_points_major[ECON] > 0) button("Economic (Minor)")
+		if (G.action_points_major[DIP] > 0) button("Diplomatic (Minor)")
+		if (G.action_points_major[MIL] > 0) button("Military (Minor)")
 		*/
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
-		if (G.action_points_eligible[DIPLO]) action ("Draw Event")
-		if (G.action_points_eligible[MIL]) action ("Construct Fleet")
+		if (G.action_points_eligible[DIPLO]) {
+			button ("draw_event")
+		}
+		if (G.action_points_eligible[MIL]) {
+			button ("construct_squadron")
+		}
 
 		// I'm presently undecided whether to have these here (or only when you try to spend extra)
-		if (G.debt[R] < G.debt_limit[R]) action ("Spend Debt")
-		if (G.treaty_points[R] > 0) action ("Spend Treaty Points")
+		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
+		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
 	},
+	draw_event() {
+		log ("draw event!")
+	},
+	construct_squadron() {
+		log ("construct squadron!")
+	}
+
 }
 
 function add_next_war_bonus_tiles() {
