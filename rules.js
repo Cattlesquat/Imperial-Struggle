@@ -803,7 +803,7 @@ P.action_round = script (`
 		if (data.investments[G.played_tile].majorval <= 3) { // We get an event if we picked a tile with major action strength <= 3
 			call may_play_event_card
 		}
-		establish_action_point_categories() // I hope I'm allowed to call this from here? 
+		eval establish_action_point_categories() // I hope I'm allowed to call this from here? 
 		call may_spend_action_points
 	}
 	set G.played_tile -1
