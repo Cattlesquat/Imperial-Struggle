@@ -375,6 +375,27 @@ function current_era() {
 	return REVOLUTION_ERA
 }
 
+/* 3.8 - CONFLICT MARKERS */
+
+const CONFLICT_NONE = 0
+const CONFLICT_NORMAL = 1
+const CONFLICT_PLUS_ONE = 2
+
+function get_conflict_marker(s) {
+	return map_get(G.conflicts, s, 0)
+}
+
+function set_conflict_marker(s, n = 1) {
+	if (n === 0)
+		map_delete(G.conflicts, s)
+	else
+		map_set(G.conflicts, s, n)
+}
+
+function remove_conflict_marker(s) {
+	map_delete(G.conflicts, s)
+}
+
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
@@ -969,6 +990,8 @@ function on_setup(scenario, options) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
 	}
 
+	G.conflicts = [] // map of conflict markers
+
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].num !== i)
 			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
@@ -1049,6 +1072,7 @@ function on_view() {
 
 	// Flags on the board are always visible
 	V.flags = G.flags
+	V.conflicts = G.conflicts
 
 	// Currently selected global demand chits are visible; shuffled chits are not
 	V.global_demand = G.global_demand
@@ -1121,12 +1145,12 @@ function action_space(s) {
 	action("space", s)
 }
 
-function action_conflict_marker(cm) {
-	//TODO: action ("conflict_marker", cm)
+function action_conflict(s) {
+	action("conflict", s)
 }
 
-function action_navy_box(who) {
-	action ("navy", who)
+function action_navy(who) {
+	action("navy", who)
 }
 
 /* FRAMEWORK */

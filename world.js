@@ -603,3 +603,8 @@ function map_get(map, key, missing) {
 	}
 	return missing
 }
+
+function map_for_each(map, f) {
+	for (var i = 0; i < map.length; i += 2)
+		f(map[i], map[i+1])
+}

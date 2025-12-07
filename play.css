@@ -143,6 +143,15 @@ body.Britain #events_br { grid-row: 2 }
 	background-size: 58px 51px;
 }
 
+.marker.hex.action, .marker.hex-sm.action {
+	filter:
+		drop-shadow(-2px -2px 0 white)
+		drop-shadow(+2px -2px 0 white)
+		drop-shadow(-2px +2px 0 white)
+		drop-shadow(+2px +2px 0 white)
+	;
+}
+
 .marker.square {
 	width: 74px;
 	height: 74px;
@@ -315,6 +324,14 @@ body.Britain #events_br { grid-row: 2 }
 .marker.investment.i22 { background-image: url(tiles75/square/investment22_2m_2e.png) }
 .marker.investment.i23 { background-image: url(tiles75/square/investment23_2m_2d.png) }
 .marker.investment.reverse { background-image: url(tiles75/square/investment_reverse.png) }
+
+.marker.atlantic-dominance.br { background-image: url(tiles75/hex-sm/atlantic_dominance_br.png) }
+.marker.atlantic-dominance.fr { background-image: url(tiles75/hex-sm/atlantic_dominance_fr.png) }
+.marker.byng { background-image: url(tiles75/hex-sm/byng.png) }
+.marker.byng.reverse { background-image: url(tiles75/hex-sm/byng_reverse.png) }
+.marker.conflict { background-image: url(tiles75/hex-sm/conflict.png) }
+.marker.conflict.plus-one { background-image: url(tiles75/hex-sm/conflict_plus_one.png) }
+.marker.fort-damaged { background-image: url(tiles75/hex-sm/fort_damaged.png) }
 
 /*
 tiles75/square-sm/action_br_1.png

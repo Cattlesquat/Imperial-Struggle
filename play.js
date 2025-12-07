@@ -127,6 +127,9 @@ function on_init() {
 	for (i = 0; i < NUM_DEMANDS; ++i)
 		define_marker("demand", i, [ "square-sm", data.demands[i].name.toLowerCase() ])
 
+	for (i = 0; i < NUM_SPACES; ++i)
+		define_marker("conflict", i, "hex-sm")
+
 	for (a of data.awards)
 		define_marker("award", a.num, "square-sm black a" + a.num)
 
@@ -218,6 +221,11 @@ function on_update() {
 
 	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+
+	map_for_each(V.conflicts, (s, n) => {
+		populate("lout-space", s, "conflict", s)
+		toggle_keyword("conflict", s, "plus-one", n > 1)
+	})
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)
