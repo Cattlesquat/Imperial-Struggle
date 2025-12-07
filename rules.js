@@ -960,8 +960,8 @@ function action_all_eligible_spaces() {
 
 
 function space_action_type(s) {
-	if (data.spaces.type === POLITICAL) return DIPLO
-	if (data.spaces.type === MARKET) return ECON
+	if (data.spaces[s].type === POLITICAL) return DIPLO
+	if (data.spaces[s].type === MARKET) return ECON
 	return MIL
 }
 
