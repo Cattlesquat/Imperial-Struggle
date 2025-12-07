@@ -355,9 +355,9 @@ data.flags = [
 ]
 
 data.action_points = [
-	{ "num": 0, "name": "Economic", "short": "Econ" },
-	{ "num": 1, "name": "Diplomatic", "short": "Diplo" },
-	{ "num": 2, "name": "Military", "short": "Mil" }
+	{ "num": 0, "name": "Economic",   "short": "Econ",  "letter": "E" },
+	{ "num": 1, "name": "Diplomatic", "short": "Diplo", "letter": "D" },
+	{ "num": 2, "name": "Military",   "short": "Mil",   "letter": "M" }
 ]
 
 data.demands = [

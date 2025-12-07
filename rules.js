@@ -16,7 +16,7 @@ const NONE    = 4
 
 // Types of Action Point
 const ECON  = 0
-const DIP   = 1
+const DIPLO   = 1
 const MIL   = 2
 const WILD  = 3
 
@@ -172,6 +172,7 @@ const REGION_EUROPE        = 0
 const REGION_NORTH_AMERICA = 1
 const REGION_CARIBBEAN     = 2
 const REGION_INDIA         = 3
+const REGION_ALL           = -1
 
 // SUBREGIONS
 const SUBREGION_CANADA         = 0
@@ -850,7 +851,10 @@ P.select_investment_tile = {
 	},
 	investment(tile) {
 		push_undo()
-		log("Played I" + tile)
+		log (data.flags[R].name + " selects investment tile: ");
+		log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
+		log ("")
+
 		array_delete_item(G.available_investments, tile)
 		G.played_tile = tile
 		G.military_upgrade = data.investments[G.played_tile].majorval <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
@@ -859,12 +863,13 @@ P.select_investment_tile = {
 		G.action_points_minor = [ 0, 0, 0 ]
 		G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
 		G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
+		establish_action_point_categories()
 		end()
 	},
 	pass() {
 		push_undo()
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		log("Passed to reduce debt by " + debt_reduction + ".")
+		log(data.flags[R].name + " passes to reduce debt by " + debt_reduction + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
 	},
@@ -880,7 +885,8 @@ P.may_play_event_card = {
 	},
 	event_card(c) {
 		push_undo()
-		log ("Event: " +  data.cards[c].name);
+		log (data.flags[R].name + " plays Event: ")
+		log (data.cards[c].name);
 		G.played_events.push(c)
 		//TODO: Here we branch to an unholy number of possible events
 	},
@@ -890,6 +896,68 @@ P.may_play_event_card = {
 		end()
 	}
 }
+
+
+
+function action_eligible_spaces_econ(region)
+{
+	for (const space in data.spaces) {
+		if ((region !== REGION_ALL) && (region !== space.region)) continue
+		if (space.type !== MARKET) continue
+		if (G.flags[space.num] === R) continue // can't shift our own spaces
+
+		//TODO: all the connected-market rules, etc.
+
+		action_space(space.num)
+	}
+}
+
+function action_eligible_spaces_diplo(region)
+{
+	for (const space in data.spaces) {
+		if ((region !== REGION_ALL) && (region !== space.region)) continue
+		if (space.type !== POLITICAL) continue
+		if (G.flags[space.num] === R) continue // can't shift our own spaces
+		action_space(space.num)
+	}
+}
+
+function action_eligible_spaces_mil(region)
+{
+	for (const space in data.spaces) {
+		if ((region !== REGION_ALL) && (region !== space.region)) continue
+		if ((space.type !== NAVAL) && (space.type !== FORT)) continue
+		if (G.flags[space.num] === R) {
+			//TODO: repair my own fort (otherwise can't do anything to a fort I already own)
+			//TODO: move my existing ship
+		}
+		//TODO: seize damaged forts
+		action_space(space.num)
+	}
+}
+
+function action_eligible_spaces(type, region)
+{
+	switch (type) {
+		case ECON:
+			action_eligible_spaces_econ(region)
+			break;
+		case DIPLO:
+			action_eligible_spaces_diplo(region)
+			break;
+		case MIL:
+			action_eligible_spaces_mil(region)
+			break;
+	}
+}
+
+function action_all_eligible_spaces() {
+	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		if (!G.action_points_eligible[i]) continue
+		action_eligible_spaces(i, -1)
+	}
+}
+
 
 P.may_spend_action_points = {
 	prompt() {
@@ -904,7 +972,7 @@ P.may_spend_action_points = {
 				need_comma = true;
 				if (G.action_points_eligible_major[i]) {
 					prompt += G.action_points_major[i] + "M"
-					if (G.action_points_eligible_minor[i]) {
+					if (G.action_points_minor[i]) {
 						prompt += "/"
 					}
 				}
@@ -916,6 +984,8 @@ P.may_spend_action_points = {
 		prompt += ") or activate Advantage / Ministry"
 		V.prompt = prompt;
 
+		action_all_eligible_spaces()
+
 		/*
         if (G.action_points_major[ECON] > 0) action("Economic (Major)")
 		if (G.action_points_major[DIP] > 0) action("Diplomatic (Major)")
@@ -926,7 +996,7 @@ P.may_spend_action_points = {
 		*/
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
-		if (G.action_points_eligible[DIP]) action ("Draw Event")
+		if (G.action_points_eligible[DIPLO]) action ("Draw Event")
 		if (G.action_points_eligible[MIL]) action ("Construct Fleet")
 
 		// I'm presently undecided whether to have these here (or only when you try to spend extra)
@@ -935,8 +1005,19 @@ P.may_spend_action_points = {
 	},
 }
 
-/* SETUP */
+function add_next_war_bonus_tiles() {
+	G.bonus_war_tiles = [ [], [] ]
+	let base = G.next_war * (NUM_BONUS_WAR_TILES * 2)
+	for (var i = 0; i < NUM_BONUS_WAR_TILES; i++) {
+		G.bonus_war_tiles[FRANCE].push(base + i)
+		G.bonus_war_tiles[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
+	}
+	shuffle(G.bonus_war_tiles[FRANCE])
+	shuffle(G.bonus_war_tiles[BRITAIN])
+}
 
+
+/* SETUP */
 function on_setup(scenario, options) {
 	G.active = FRANCE
 	G.hand = [ [], [] ]
@@ -971,13 +1052,15 @@ function on_setup(scenario, options) {
 		G.investment_tile_stack.push(i)
 	shuffle(G.investment_tile_stack)
 
-	G.basic_war_tiles = [ [], [], [] ]
+	G.basic_war_tiles = [ [], [] ]
 	for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
 		G.basic_war_tiles[FRANCE].push(i)
 		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
 	}
 	shuffle(G.basic_war_tiles[FRANCE])
 	shuffle(G.basic_war_tiles[BRITAIN])
+
+	add_next_war_bonus_tiles()
 
 	G.awards = []
 	G.award_chits = []
@@ -1086,10 +1169,12 @@ function on_view() {
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
 
+	//BR// I'm not sure why this statement repeats twice w/ no overt FRANCE/BRITAIN distinction, but I have wisely/foolishly duplicated it below for the bonus war tiles
 	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
 	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
 
-	// TODO: bonus war tiles?
+	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
+	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
 
 	V.played_tile = G.played_tile
 
