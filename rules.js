@@ -892,15 +892,23 @@ P.may_spend_action_points = {
 				}
 			}
 		}
-		prompt += ")"
+		prompt += ") or activate Advantage / Ministry"
 		V.prompt = prompt;
 
+		/*
         if (G.action_points_major[ECON] > 0) action("Economic (Major)")
 		if (G.action_points_major[DIP] > 0) action("Diplomatic (Major)")
 		if (G.action_points_major[MIL] > 0) action("Military (Major)")
 		if (G.action_points_major[ECON] > 0) action("Economic (Minor)")
 		if (G.action_points_major[DIP] > 0) action("Diplomatic (Minor)")
 		if (G.action_points_major[MIL] > 0) action("Military (Minor)")
+		*/
+
+		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
+		if (G.action_points_eligible[DIP]) action ("Draw Event")
+		if (G.action_points_eligible[MIL]) action ("Construct Fleet")
+
+		// I'm presently undecided whether to have these here (or only when you try to spend extra)
 		if (G.debt[R] < G.debt_limit[R]) action ("Spend Debt")
 		if (G.treaty_points[R] > 0) action ("Spend Treaty Points")
 	},
@@ -1107,6 +1115,18 @@ function action_investment(c) {
 
 function action_advantage(c) {
 	action("advantage", c)
+}
+
+function action_space(c) {
+	action("space", c)
+}
+
+function action_conflict_marker(c) {
+	action ("conflict_marker", c)
+}
+
+function action_navy_box(who) {
+	action ("navy_box", who)
 }
 
 /* FRAMEWORK */
