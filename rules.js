@@ -825,11 +825,23 @@ P.deal_cards_discard = {
 	},
 	prompt() {
 		if (G.hand[R].length > 3) {
-			V.prompt = "Deal Cards Phase: Discard down to three Event cards."
+			V.prompt = "DEAL CARDS PHASE: Discard down to three Event cards."
 			for (var c of G.hand[R])
 				action_event_card(c)
 		} else {
-			V.prompt = "Deal Cards Phase: Review newly drawn Event cards."
+			V.prompt = "DEAL CARDS PHASE: Review newly drawn Event cards"
+			var any = false
+			for (const c of G.hand[R]) {
+				if (any) {
+					V.prompt += ", "
+				} else {
+					V.prompt += " ("
+				}
+				V.prompt += data.cards[c].name
+				any = true
+			}
+			if (any) V.prompt += ")"
+
 			button("confirm")
 		}
 		if (L.discarded[R].length > 0)
@@ -869,7 +881,7 @@ P.ministry_phase = function () {
 
 P.choose_ministry_cards = {
 	prompt() {
-		V.prompt = "Ministry Phase: Choose two ministry cards."
+		V.prompt = "MINISTRY PHASE: Choose two ministry cards."
 		V.all_ministries = []
 		for (var m of data.ministries) {
 			if (m.side === R && !G.ministry[R].includes(m.num)) {
@@ -903,12 +915,12 @@ P.choose_ministry_cards = {
 P.replace_ministry_cards = {
 	prompt() {
 		if (!G.ministry_revealed[R].includes(false)) {
-			V.prompt = "Ministry Phase: No ministries eligible for mid-era replacement (see 4.1.7)."
+			V.prompt = "MINISTRY PHASE: No ministries eligible for mid-era replacement (see 4.1.7)."
 			button("confirm")
 		}
 		else {
 			//TODO: allow replacement of ministries mid-era
-			V.prompt = "Ministry Phase: Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)"
+			V.prompt = "MINISTRY PHASE: Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)"
 			button("confirm")
 		}
 	},
@@ -946,7 +958,8 @@ P.action_phase = script (`
 	log ("=Action Phase")
 	set G.active G.initiative
 	call choose_first_player
-	for L.round in 1 to 4 {
+	call confirm_first_player
+	for G.round in 1 to 4 {
 		call action_round
 		set G.active (1-G.active)
 		call action_round
@@ -954,18 +967,38 @@ P.action_phase = script (`
 	}
 `)
 
+function tell_first_player_choice()
+{
+	log ("First player: " + data.flags[G.first_player].name)
+}
+
 P.choose_first_player = {
 	prompt() {
-		V.prompt = "Initiative Phase: Choose the player to take the first action round."
+		V.prompt = "INITIATIVE PHASE: Choose the player to go first in each action round this turn."
 		button("france")
 		button("britain")
 	},
 	france() {
-		G.active = FRANCE
+		push_undo()
+		G.first_player = FRANCE
+		tell_first_player_choice()
 		end()
 	},
 	britain() {
-		G.active = BRITAIN
+		push_undo()
+		G.first_player = BRITAIN
+		tell_first_player_choice()
+		end()
+	},
+}
+
+P.confirm_first_player = {
+	prompt() {
+		V.prompt = "INITIATIVE PHASE: Confirm choice of first player: " + data.flags[G.first_player].name
+		button("confirm")
+	},
+	confirm() {
+		G.active = G.first_player
 		end()
 	},
 }
@@ -1027,7 +1060,6 @@ P.action_round = script (`
 		if (data.investments[G.played_tile].majorval <= 3) { // We get an event if we picked a tile with major action strength <= 3
 			call may_play_event_card
 		}
-		eval establish_action_point_categories() // I hope I'm allowed to call this from here? 
 		call may_spend_action_points
 	}
 	set G.played_tile -1
@@ -1058,13 +1090,14 @@ function establish_action_point_categories()
 P.select_investment_tile = {
 	prompt() {
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		V.prompt = "Action Round: Select an investment tile (or pass to reduce Debt by " + debt_reduction + ")."
+		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile (or pass to reduce Debt by " + debt_reduction + ")."
 		for (var tile of G.available_investments)
 			action_investment(tile)
 		button("pass", G.debt[R] > 0)
 	},
 	investment(tile) {
 		push_undo()
+		log ("=Action Round " + G.round + " (" + data.flags[R].adj + ")")
 		log (data.flags[R].name + " selects investment tile: ");
 		log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
 		var major = data.investments[tile].majorval
@@ -1092,12 +1125,12 @@ P.select_investment_tile = {
 		log(data.flags[R].name + " passes to reduce debt by " + debt_reduction + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
-	},
+	}
 }
 
 P.may_play_event_card = {
 	prompt() {
-		V.prompt = "Play event card or pass to skip to actions"
+		V.prompt = "ACTION ROUND " + G.round + ": Play event card or pass to skip to actions"
 		for (var card of G.hand[R]) {
 			action_event_card(card)
 		}
@@ -1188,7 +1221,7 @@ function space_action_type(s) {
 
 P.may_spend_action_points = {
 	prompt() {
-		var prompt = "Spend Action Points ("
+		var prompt = "ACTION ROUND " + G.round + ": Spend Action Points ("
 		var need_comma = false;
 		var early = [ false, false, false ]
 		for (var level = MAJOR; level <= MINOR; level++) {
