@@ -370,14 +370,14 @@ data.demands = [
 ]
 
 data.awards = [
-    { "num": 0, "vp": 3, "by2": true,  "trp": 0, name: "3 VP (2)" },
-    { "num": 1, "vp": 2, "by2": true,  "trp": 0, name: "2 VP (2)" },
+    { "num": 0, "vp": 3, "by2": true,  "trp": 0, name: "3 VP (if won by 2 flags)" },
+    { "num": 1, "vp": 2, "by2": true,  "trp": 0, name: "2 VP (if won by 2 flags)" },
     { "num": 2, "vp": 1, "by2": false, "trp": 0, name: "1 VP" },
     { "num": 3, "vp": 1, "by2": false, "trp": 0, name: "1 VP" },
-    { "num": 4, "vp": 1, "by2": false, "trp": 1, name: "1 VP (TRP)" },
-    { "num": 5, "vp": 1, "by2": false, "trp": 1, name: "1 VP (TRP)" },
-    { "num": 6, "vp": 0, "by2": false, "trp": 1, name: "0 VP (TRP)" },
-    { "num": 7, "vp": 0, "by2": false, "trp": 1, name: "0 VP (TRP)" },
+    { "num": 4, "vp": 1, "by2": false, "trp": 1, name: "1 VP, 1 TRP" },
+    { "num": 5, "vp": 1, "by2": false, "trp": 1, name: "1 VP, 1 TRP" },
+    { "num": 6, "vp": 0, "by2": false, "trp": 1, name: "0 VP, 1 TRP" },
+    { "num": 7, "vp": 0, "by2": false, "trp": 1, name: "0 VP, 1 TRP" },
 ]
 
 data.turns = [
