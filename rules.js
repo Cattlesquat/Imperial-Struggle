@@ -901,14 +901,10 @@ P.may_play_event_card = {
 
 function action_eligible_spaces_econ(region)
 {
-    log ("all eligible econ/market spaces in region: " + region)
 	for (const space of data.spaces) {
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
-		log ("found space in region: " + space.name)
 		if (space.type !== MARKET) continue
-		log ("found MARKET in region: " + space.name + " flag: " + G.flags[space.num])
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
-		log ("found ELIGIBLE MARKET: " + space.name)
 
 		//TODO: all the connected-market rules, etc.
 
@@ -918,32 +914,24 @@ function action_eligible_spaces_econ(region)
 
 function action_eligible_spaces_diplo(region)
 {
-	log ("all eligible political spaces in region: " + region)
 	for (const space of data.spaces) {
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
-		log ("found space in region: " + space.name)
 		if (space.type !== POLITICAL) continue
-		log ("found POLITICAL in region: " + space.name + " flag: " + G.flags[space.num])
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
-		log ("found ELIGIBLE POLITICAL: " + space.name)
 		action_space(space.num)
 	}
 }
 
 function action_eligible_spaces_mil(region)
 {
-	log ("all eligible military spaces in region: " + region)
 	for (const space of data.spaces) {
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
-		log ("found space in region: " + space.name)
 		if ((space.type !== NAVAL) && (space.type !== FORT)) continue
-		log ("found MILITARY in region: " + space.name + " flag: " + G.flags[space.num])
 		if (G.flags[space.num] === R) {
 			//TODO: repair my own fort (otherwise can't do anything to a fort I already own)
 			//TODO: move my existing ship
 		}
 		//TODO: seize damaged forts
-		log ("found ELIGIBLE MILITARY: " + space.name)
 		action_space(space.num)
 	}
 }
