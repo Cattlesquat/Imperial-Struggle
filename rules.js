@@ -959,6 +959,13 @@ function action_all_eligible_spaces() {
 }
 
 
+function space_action_type(s) {
+	if (data.spaces.type === POLITICAL) return DIPLO
+	if (data.spaces.type === MARKET) return ECON
+	return MIL
+}
+
+
 P.may_spend_action_points = {
 	prompt() {
 		var prompt = "Spend Action Points ("
@@ -1012,8 +1019,31 @@ P.may_spend_action_points = {
 	},
 	construct_squadron() {
 		log ("construct squadron!")
-	}
+	},
+	space(s) {
+		var type = space_action_type(s)
+		var cost = data.spaces[s].cost
 
+		//TODO forts and navies different behaviors
+
+		push_undo()
+
+		//TODO this is just a bare roughin of paying costs
+		if (G.action_points_major[type] >= cost) {
+			G.action_points_major[type] -= cost
+		} else if (G.action_points_minor[type] > 0) {
+			G.action_points_minor[type] = 0
+		} else if (G.action_points_major[type] > 0) {
+			G.action_points_major[type] = 0
+		}
+
+		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
+		if (G.flags[s] === NONE) {
+			G.flags[s] = R
+		} else {
+			G.flags[s] = NONE
+		}
+	}
 }
 
 function add_next_war_bonus_tiles() {
