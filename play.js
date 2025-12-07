@@ -105,7 +105,7 @@ function on_init() {
 	}
 
 	define_layout("lout-demand", 0, find_layout_node("Demand"))
-	define_layout("lout-navy", 0, find_layout_node("Navy Box"))
+	define_layout("lout-navy", 	0, find_layout_node("Navy Box"))
 	define_layout("lout-initiative", 0, find_layout_node("Initiative"))
 
 	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))

@@ -1109,24 +1109,24 @@ function action_ministry_card(c) {
 	action("ministry_card", c)
 }
 
-function action_investment(c) {
-	action("investment", c)
+function action_investment(i) {
+	action("investment", i)
 }
 
-function action_advantage(c) {
-	action("advantage", c)
+function action_advantage(a) {
+	action("advantage", a)
 }
 
-function action_space(c) {
-	action("space", c)
+function action_space(s) {
+	action("space", s)
 }
 
-function action_conflict_marker(c) {
-	action ("conflict_marker", c)
+function action_conflict_marker(cm) {
+	//TODO: action ("conflict_marker", cm)
 }
 
 function action_navy_box(who) {
-	action ("navy_box", who)
+	action ("navy", who)
 }
 
 /* FRAMEWORK */
