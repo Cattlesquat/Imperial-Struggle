@@ -20,6 +20,10 @@ const DIPLO = 1
 const MIL   = 2
 const WILD  = 3
 
+// Magnitudes of Action
+const MAJOR = 0
+const MINOR = 1
+
 // Amounts of things!
 const NUM_REGIONS           = 4
 const NUM_INVESTMENT_TILES  = 24
@@ -1037,6 +1041,12 @@ function clear_dirty() {
 
 function establish_action_point_categories()
 {
+	// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
+	G.action_points_major = [ 0, 0, 0 ]
+	G.action_points_minor = [ 0, 0, 0 ]
+	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
+	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
+
 	G.action_points_eligible       = []
 	G.action_points_eligible_major = []
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
@@ -1057,18 +1067,22 @@ P.select_investment_tile = {
 		push_undo()
 		log (data.flags[R].name + " selects investment tile: ");
 		log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
+		var major = data.investments[tile].majorval
+
+		//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
+		if (major === 3) {
+			log ("Event allowed")
+		} else if (major === 2) {
+			log ("Event allowed + Military Upgrade")
+		}
+
 		log ("")
 
 		clear_dirty()
 
 		array_delete_item(G.available_investments, tile)
 		G.played_tile = tile
-		G.military_upgrade = data.investments[G.played_tile].majorval <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
-		// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
-		G.action_points_major = [ 0, 0, 0 ]
-		G.action_points_minor = [ 0, 0, 0 ]
-		G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
-		G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
+		G.military_upgrade = major <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
 		establish_action_point_categories()
 		end()
 	},
@@ -1176,21 +1190,38 @@ P.may_spend_action_points = {
 	prompt() {
 		var prompt = "Spend Action Points ("
 		var need_comma = false;
-		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			if (G.action_points_eligible[i]) {
-				if (need_comma) {
-					prompt += ", "
-				}
-				prompt += data.action_points[i].short + ": "
-				need_comma = true;
-				if (G.action_points_eligible_major[i]) {
-					prompt += G.action_points_major[i] + "M"
-					if (G.action_points_minor[i]) {
-						prompt += "/"
+		var early = [ false, false, false ]
+		for (var level = MAJOR; level <= MINOR; level++) {
+			for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+				if (G.action_points_eligible[i]) {
+					if ((level === MAJOR) && G.action_points_eligible_major[i]) {
+
+						if (need_comma) {
+							prompt += ", "
+						}
+						prompt += data.action_points[i].short + ": "
+						need_comma = true;
+
+						prompt += G.action_points_major[i] + "M"
+						if (G.action_points_minor[i]) {
+							prompt += "/"
+							early[i] = true
+						}
 					}
-				}
-				if (G.action_points_minor[i]) {
-					prompt += G.action_points_minor[i] + "m"
+
+					if ((level === MAJOR) === early[i]) {
+						if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+							if (level === MINOR) {
+								if (need_comma) {
+									prompt += ", "
+								}
+								prompt += data.action_points[i].short + ": "
+								need_comma = true;
+							}
+
+							prompt += G.action_points_minor[i] + "m"
+						}
+					}
 				}
 			}
 		}
@@ -1234,7 +1265,7 @@ P.may_spend_action_points = {
 
 		push_undo()
 
-		//TODO this is just a bare roughin of paying costs
+		//TODO this is just the barest rough-in of paying costs
 		if (G.action_points_major[type] >= cost) {
 			G.action_points_major[type] -= cost
 		} else if (G.action_points_minor[type] > 0) {

@@ -17,9 +17,13 @@ const NONE    = 4
 
 // Types of Action Point
 const ECON  = 0
-const DIP   = 1
+const DIPLO = 1
 const MIL   = 2
 const WILD  = 3
+
+// Magnitudes of Action
+const MAJOR = 0
+const MINOR = 1
 
 // Amounts of things!
 const NUM_REGIONS           = 4
@@ -33,13 +37,19 @@ const NUM_MINISTRY_CARDS    = 21
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22
-const NUM_SPACES                    = 112
+const NUM_SPACES            = 112
+const NUM_ACTION_POINTS_TYPES       = 3
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
 const WAR_DEBT = 1 // Debt attack
 const WAR_FORT = 2 // Fort/Fleet attack
 const WAR_FLAG = 3 // Diplomatic attack
+
+// Eras
+const SUCCESSION_ERA = 0
+const EMPIRE_ERA = 1
+const REVOLUTION_ERA = 2
 
 // Wars
 const WAR_WSS = 1
@@ -167,6 +177,7 @@ const REGION_EUROPE        = 0
 const REGION_NORTH_AMERICA = 1
 const REGION_CARIBBEAN     = 2
 const REGION_INDIA         = 3
+const REGION_ALL           = -1
 
 // SUBREGIONS
 const SUBREGION_CANADA         = 0
@@ -338,6 +349,8 @@ const USED_INVESTMENT_TILES = 215
 const DRAW_PILE = 216
 const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
+
+/* TILES & CARDS */
 
 data.regions = [
 	{ num: 0, name: "Europe" },
