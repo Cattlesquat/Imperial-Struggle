@@ -399,9 +399,11 @@ function on_setup(scenario, options) {
 	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
 
 	G.flags = [] // All the flags on the map
+	G.dirty = [] // Any changes since last investment tile? If so, highlight them!
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
+		G.dirty[i] = false
 	}
 
 	G.conflicts = [] // map of conflict markers
@@ -486,6 +488,7 @@ function on_view() {
 
 	// Flags on the board are always visible
 	V.flags = G.flags
+	V.dirty = G.dirty
 	V.conflicts = G.conflicts
 
 	// Currently selected global demand chits are visible; shuffled chits are not
@@ -1026,6 +1029,12 @@ P.action_round = script (`
 	set G.played_tile -1
 `)
 
+function clear_dirty() {
+	for (var i = 0; i < data.spaces.length; i++) {
+		G.dirty[i] = false
+	}
+}
+
 function establish_action_point_categories()
 {
 	G.action_points_eligible       = []
@@ -1049,6 +1058,8 @@ P.select_investment_tile = {
 		log (data.flags[R].name + " selects investment tile: ");
 		log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
 		log ("")
+
+		clear_dirty()
 
 		array_delete_item(G.available_investments, tile)
 		G.played_tile = tile
@@ -1241,6 +1252,7 @@ P.may_spend_action_points = {
 			G.flags[s] = NONE
 			log (data.flags[R].name + " UNFLAGS " + data.spaces[s].name + "(formerly " + data.flags[former].name + ")")
 		}
+		G.dirty[s] = true // We've now changed this space. Highlight it until next investment tile.
 	}
 }
 
