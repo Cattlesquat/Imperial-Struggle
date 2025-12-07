@@ -354,6 +354,12 @@ data.flags = [
 	{ "num": 4, "id": "no", "name": "No one",  "adj": "No one's" }
 ]
 
+data.action_points = [
+	{ "num": 0, "name": "Economic", "short": "Econ" },
+	{ "num": 1, "name": "Diplomatic", "short": "Diplo" },
+	{ "num": 2, "name": "Military", "short": "Mil" }
+]
+
 data.demands = [
     { "num": 0, "name": "Furs",    "awards": [ { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 2, "trp": 1, "debt":  0 }, { "vp": 1, "trp": 0, "debt":  0 } ] },
     { "num": 1, "name": "Spice",   "awards": [ { "vp": 1, "trp": 0, "debt": -1 }, { "vp": 2, "trp": 0, "debt": -1 }, { "vp": 3, "trp": 0, "debt": -1 } ] },

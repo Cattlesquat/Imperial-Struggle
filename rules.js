@@ -33,6 +33,7 @@ const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22
 const NUM_SPACES            = 112
+const NUM_ACTION_POINTS_TYPES       = 3
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -632,7 +633,6 @@ P.deal_cards_discard = {
 /* 4.1.7 - MINISTRY PHASE */
 
 P.ministry_phase = function () {
-
 	if (!beginning_of_era()) {
 		goto ("replace_ministry_cards")
 	} else {
@@ -699,14 +699,19 @@ P.replace_ministry_cards = {
 
 P.initiative_phase = function () {
 	log("=Initiative Phase")
-	if (G.vp < 15) {
+	if ((G.vp < 15) || (G.turn === PEACE_TURN_1)) {
 		log("France has the initiative")
 		G.initiative = FRANCE
 	} else if (G.vp > 15) {
 		log("Britain has the initiative")
 		G.initiative = BRITAIN
 	} else {
-		log("No change")
+		if (G.initiative === FRANCE) {
+			log("France retains the initiative")
+		}
+		else {
+			log ("Britain retains the initiative")
+		}
 	}
 	end()
 }
@@ -745,10 +750,16 @@ P.choose_first_player = {
 /* 4.1.10 - ACTION PHASE */
 
 P.reduce_treaty_points_phase = function () {
+	var any = false
 	if (G.treaty_points[FRANCE] > 4) {
+		log ("=Reduce Treaty Points Phase")
+		log ("French treaty points reduced from " + G.treaty_points[FRANCE] + " to 4.")
 		G.treaty_points[FRANCE] = 4
+		any = true;
 	}
 	if (G.treaty_points[BRITAIN] > 4) {
+		if (!any) log ("=Reduce Treaty Points Phase")
+		log ("British treaty points reduced from " + G.treaty_points[BRITAIN] + " to 4.")
 		G.treaty_points[BRITAIN] = 4
 	}
 	end()
@@ -789,17 +800,29 @@ P.scoring_phase = function () {
 P.action_round = script (`
 	call select_investment_tile
 	if (G.played_tile >= 0) {
-		if (data.investments[G.played_tile].event) {
+		if (data.investments[G.played_tile].majorval <= 3) { // We get an event if we picked a tile with major action strength <= 3
 			call may_play_event_card
 		}
+		establish_action_point_categories() // I hope I'm allowed to call this from here? 
 		call may_spend_action_points
 	}
 	set G.played_tile -1
 `)
 
+function establish_action_point_categories()
+{
+	G.action_points_eligible       = []
+	G.action_points_eligible_major = []
+	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		G.action_points_eligible[i]       = (G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)
+		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0)
+	}
+}
+
 P.select_investment_tile = {
 	prompt() {
-		V.prompt = "Action Round: Select an investment tile."
+		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
+		V.prompt = "Action Round: Select an investment tile (or pass to reduce Debt by " + debt_reduction + ")."
 		for (var tile of G.available_investments)
 			action_investment(tile)
 		button("pass", G.debt[R] > 0)
@@ -809,13 +832,77 @@ P.select_investment_tile = {
 		log("Played I" + tile)
 		array_delete_item(G.available_investments, tile)
 		G.played_tile = tile
+		G.military_upgrade = data.investments[G.played_tile].majorval <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
+		// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
+		G.action_points_major = [ 0, 0, 0 ]
+		G.action_points_minor = [ 0, 0, 0 ]
+		G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
+		G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
 		end()
 	},
 	pass() {
 		push_undo()
-		log("Passed to reduce debt by 2")
+		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
+		log("Passed to reduce debt by " + debt_reduction + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
+	},
+}
+
+P.may_play_event_card = {
+	prompt() {
+		V.prompt = "Play event card or pass to skip to actions"
+		for (var card of G.hand[R]) {
+			action_event_card(card)
+		}
+		button ("pass")
+	},
+	event_card(c) {
+		push_undo()
+		log ("Event: " +  data.cards[c].name);
+		G.played_events.push(c)
+		//TODO: Here we branch to an unholy number of possible events
+	},
+	pass () {
+		push_undo()
+		log ("No event card played.")
+		end()
+	}
+}
+
+P.may_spend_action_points = {
+	prompt() {
+		var prompt = "Spend Action Points ("
+		var need_comma = false;
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			if (G.action_points_eligible[i]) {
+				if (need_comma) {
+					prompt += ", "
+				}
+				prompt += data.action_points[i].short + ": "
+				need_comma = true;
+				if (G.action_points_eligible_major[i]) {
+					prompt += G.action_points_major[i] + "M"
+					if (G.action_points_eligible_minor[i]) {
+						prompt += "/"
+					}
+				}
+				if (G.action_points_minor[i]) {
+					prompt += G.action_points_minor[i] + "m"
+				}
+			}
+		}
+		prompt += ")"
+		V.prompt = prompt;
+
+        if (G.action_points_major[ECON] > 0) action("Economic (Major)")
+		if (G.action_points_major[DIP] > 0) action("Diplomatic (Major)")
+		if (G.action_points_major[MIL] > 0) action("Military (Major)")
+		if (G.action_points_major[ECON] > 0) action("Economic (Minor)")
+		if (G.action_points_major[DIP] > 0) action("Diplomatic (Minor)")
+		if (G.action_points_major[MIL] > 0) action("Military (Minor)")
+		if (G.debt[R] < G.debt_limit[R]) action ("Spend Debt")
+		if (G.treaty_points[R] > 0) action ("Spend Treaty Points")
 	},
 }
 
@@ -843,6 +930,7 @@ function on_setup(scenario, options) {
 
 	G.deck = []
 	G.discard_pile = []
+	G.played_events = []
 	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
