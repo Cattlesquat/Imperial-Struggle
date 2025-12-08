@@ -1066,8 +1066,12 @@ P.action_round = script (`
 	set G.played_tile -1
 `)
 
+function mark_dirty(s) {
+	set_add(G.dirty, s)
+}
+
 function clear_dirty() {
-	G.dirty = []
+	set_clear(G.dirty)
 }
 
 function establish_action_point_categories()
@@ -1316,7 +1320,7 @@ P.may_spend_action_points = {
 		} else {
 			G.flags[s] = NONE
 		}
-		set_has(G.dirty, s) // We've now changed this space. Highlight it until next investment tile.
+		mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 	}
 }
