@@ -367,6 +367,8 @@ function on_setup(scenario, options) {
 	G.debt_limit = []
 	G.treaty_points = []
 
+	G.played_tiles = [ [], [] ]
+
 	for (var i = FRANCE; i <= BRITAIN; i++) {
 		G.debt_limit[i] = 6
 		G.debt[i] = 0
@@ -381,6 +383,7 @@ function on_setup(scenario, options) {
 	shuffle(G.deck)
 
 	G.available_investments = []
+	G.played_investments = []
 	G.used_investments = []
 	G.investment_tile_stack = []
 	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
@@ -488,6 +491,7 @@ function on_view() {
 	// Current available investments, and used investment pile, are public.
 	// Shuffled investment deck is not.
 	V.available_investments = G.available_investments
+	V.played_investments = G.played_investments
 	V.used_investments = G.used_investments
 
 	// Flags on the board are always visible
@@ -507,14 +511,8 @@ function on_view() {
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
 
-	//BR// I'm not sure why this statement repeats twice w/ no overt FRANCE/BRITAIN distinction, but I have wisely/foolishly duplicated it below for the bonus war tiles
-	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
-	V.basic_war_tiles = G.basic_war_tiles.map(pile => pile.length)
-
-	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
-	V.bonus_war_tiles = G.bonus_war_tiles.map(pile => pile.length)
-
-	V.played_tile = G.played_tile
+	V.played_tile  = G.played_tile
+	V.played_tiles = G.played_tiles
 
 	if (R === FRANCE) {
 		V.hand = [
@@ -679,6 +677,7 @@ P.deck_phase = function () {
 		log ("Shuffling Event Deck")
 		shuffle(G.deck)
 	}
+
 	end()
 }
 
@@ -756,6 +755,9 @@ P.reset_phase = function () {
 	for (var i of G.available_investments)
 		G.used_investments.push(i)
 	G.available_investments = []
+	G.played_investments = []
+
+	G.played_tiles = [ [], [] ]
 
 	end()
 }
@@ -1091,8 +1093,10 @@ P.select_investment_tile = {
 	prompt() {
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
 		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile (or pass to reduce Debt by " + debt_reduction + ")."
-		for (var tile of G.available_investments)
+		for (var tile of G.available_investments) {
+			if (tile in G.played_investments) continue;
 			action_investment(tile)
+		}
 		button("pass", G.debt[R] > 0)
 	},
 	investment(tile) {
@@ -1113,7 +1117,8 @@ P.select_investment_tile = {
 
 		clear_dirty()
 
-		array_delete_item(G.available_investments, tile)
+		G.played_investments.push(tile)    //BR// We leave it in available_investments but mark it played
+		G.played_tiles[R][G.round] = tile  //BR// Mark the tile we played, the round we played it
 		G.played_tile = tile
 		G.military_upgrade = major <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
 		establish_action_point_categories()
