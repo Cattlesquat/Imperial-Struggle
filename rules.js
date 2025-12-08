@@ -1317,7 +1317,7 @@ P.may_spend_action_points = {
 			G.flags[s] = NONE
 		}
 		set_has(G.dirty, s) // We've now changed this space. Highlight it until next investment tile.
-		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[R].name)
+		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 	}
 }
 
