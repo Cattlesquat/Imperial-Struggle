@@ -1062,6 +1062,7 @@ P.action_round = script (`
 			call may_play_event_card
 		}
 		call may_spend_action_points
+		call end_of_action_round
 	}
 	set G.played_tile -1
 `)
@@ -1269,15 +1270,6 @@ P.may_spend_action_points = {
 
 		action_all_eligible_spaces()
 
-		/*
-        if (G.action_points_major[ECON] > 0) button("Economic (Major)")
-		if (G.action_points_major[DIP] > 0) button("Diplomatic (Major)")
-		if (G.action_points_major[MIL] > 0) button("Military (Major)")
-		if (G.action_points_major[ECON] > 0) button("Economic (Minor)")
-		if (G.action_points_major[DIP] > 0) button("Diplomatic (Minor)")
-		if (G.action_points_major[MIL] > 0) button("Military (Minor)")
-		*/
-
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
 		if (G.action_points_eligible[DIPLO]) {
 			button ("draw_event")
@@ -1286,15 +1278,29 @@ P.may_spend_action_points = {
 			button ("construct_squadron")
 		}
 
-		// I'm presently undecided whether to have these here (or only when you try to spend extra)
+		// I'm presently undecided whether to have these here (or only when you try to spend extra, or just have you click on the debt counters)
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
+
+		var left = 0
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			left += G.action_points_major[i] + G.action_points_minor[i]
+		}
+		button( (left > 0) ? "confirm_end_action_round" : "end_action_round")
+
 	},
 	draw_event() {
 		log ("draw event!")
 	},
 	construct_squadron() {
 		log ("construct squadron!")
+	},
+	confirm_end_action_round() {
+		this.end_action_round()
+	},
+	end_action_round() {
+		push_undo()
+		end()
 	},
 	space(s) {
 		var type = space_action_type(s)
@@ -1322,6 +1328,17 @@ P.may_spend_action_points = {
 		}
 		mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+	}
+}
+
+
+P.end_of_action_round = {
+	prompt() {
+		V.prompt = "End of Action Round"
+		button("done")
+	},
+	done() {
+		end()
 	}
 }
 

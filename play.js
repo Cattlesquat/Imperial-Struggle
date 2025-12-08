@@ -252,6 +252,11 @@ function on_update() {
 	action_button("draw_event", "Draw Event")
 	action_button("construct_squadron", "Construct Squadron")
 
+	action_button("end_action_round", "End Action Round")
+	confirm_action_button("confirm_end_action_round", "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
+
+	action_button("done", "Done")
+
 	action_button("undo", "Undo")
 
 	end_update()
