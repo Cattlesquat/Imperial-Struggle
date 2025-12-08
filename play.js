@@ -214,9 +214,6 @@ function on_update() {
 	// populate_generic("panel-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
 	// populate_generic("panel-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
 
-	if (V.played_tile >= 0)
-		populate("panel-played", 0, "investment", V.played_tile)
-
 	if (V.all_ministries)
 		populate_with_list("panel-all-ministries", 0, "ministry_card", V.all_ministries)
 
