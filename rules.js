@@ -12,7 +12,7 @@ const FRANCE  = 0
 const BRITAIN = 1
 const SPAIN   = 2
 const USA     = 3
-const NONE    = 4
+const NONE    = 4   // HO HO HO! WHAT COULD POSSIBLY GO WRONG!
 
 // Types of Action Point
 const ECON  = 0
@@ -412,7 +412,8 @@ function on_setup(scenario, options) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
 	}
 
-	G.conflicts = [] // map of conflict markers
+	G.conflicts = []     // map of conflict markers
+	G.damaged_forts = [] // map of damaged forts
 
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].num !== i)
@@ -497,6 +498,7 @@ function on_view() {
 	V.flags = G.flags
 	V.dirty = G.dirty
 	V.conflicts = G.conflicts
+	V.damaged_forts = G.damaged_forts
 
 	// Currently selected global demand chits are visible; shuffled chits are not
 	V.global_demand = G.global_demand
@@ -593,6 +595,10 @@ const CONFLICT_NONE = 0
 const CONFLICT_NORMAL = 1
 const CONFLICT_PLUS_ONE = 2
 
+function has_conflict_marker(s) {
+	return get_conflict_marker(s) > 0
+}
+
 function get_conflict_marker(s) {
 	return map_get(G.conflicts, s, 0)
 }
@@ -607,6 +613,35 @@ function set_conflict_marker(s, n = 1) {
 function remove_conflict_marker(s) {
 	map_delete(G.conflicts, s)
 }
+
+
+/* 3.2.5 DAMAGED FORTS */
+function is_damaged_fort(s) {
+	return set_has(G.damaged_forts, s)
+}
+
+function set_damaged_fort(s, damage = true)
+{
+	if (!damage) {
+		set_delete(G.damaged_forts, s)
+	} else {
+		set_add(G.damaged_forts, s)
+	}
+}
+
+function is_isolated_market(s) {
+	return set_has (G.isolated_markets, s)
+}
+
+function set_isolated_market(s, isolated = true)
+{
+	if (!isolated) {
+		set_delete(G.isolated_markets, s)
+	} else {
+		set_add(G.isolated_markets, s)
+	}
+}
+
 
 /* 4.0 - GAME SEQUENCE */
 
@@ -1081,7 +1116,7 @@ function clear_dirty() {
 	set_clear(G.dirty)
 }
 
-function establish_action_point_categories()
+function start_action_round()
 {
 	// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
 	G.action_points_major = [ 0, 0, 0 ]
@@ -1095,6 +1130,16 @@ function establish_action_point_categories()
 		G.action_points_eligible[i]       = (G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)
 		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0)
 	}
+
+	G.action_point_regions = [ [], [], [] ] // For each flavor of action points (though only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
+
+	G.controlled_start_of_round = [] // Certain effects care if we controlled this space from beginning of action round
+	for (var s = 0; s < NUM_SPACES; s++) {
+		if (G.flags[s] !== R) continue
+		set_add(G.controlled_start_of_round, s)
+	}
+
+	G.isolated_markets   = [] //TODO - identify isolated markets and flags them for the turn (5.4.1)
 }
 
 P.select_investment_tile = {
@@ -1129,7 +1174,7 @@ P.select_investment_tile = {
 		G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 		G.played_tile = tile
 		G.military_upgrade = major <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
-		establish_action_point_categories()
+		start_action_round()
 		end()
 	},
 	pass() {
@@ -1232,6 +1277,57 @@ function space_action_type(s) {
 }
 
 
+/* Purchases in multiple regions - 5.3.4 */
+function charge_region_switching_penalty(type, region) {
+	if (set_has(G.action_point_regions[type], region)) return false // We've already spent this type of points in this region, so don't charge again
+
+	for (var r = 0; r < NUM_REGIONS; r++) {
+		if (r === region) continue
+		if (set_has(G.action_point_regions[type], r)) return true   // We've spent this type of points in a different region this round, so the region-switching penalty applies
+	}
+
+	return false // This is the first region we've spent points on this time, so no charge
+}
+
+
+/* 3.2.8 and 5.6.2 - protected spaces: adjacent to friendly squadron or undamaged fort */
+function is_protected(s)
+{
+	var whose = G.flags[s]
+	if (whose === NONE) return false
+	for (const adjacent of data.spaces[s].connects) {
+		if (G.flags[adjacent] === whose) {
+			if (data.spaces[s].type === NAVAL) return true
+			if (data.spaces[s].type === FORT) {
+				if (!is_damaged_fort(s)) return true
+			}
+		}
+	}
+	return false
+}
+
+function action_point_cost (s, type)
+{
+	var cost = data.spaces[s].cost
+
+	if (type === MIL) return cost // We probably won't ultimately use this function for Military operations, but one way or another let's get the hell out of here
+
+	// General Rule: Apply all reductions before any increases (5.4.2, 5.5.2)
+
+	//TODO apply discounts from event cards, advantages, etc
+
+	if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
+
+	if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
+	if (type === ECON) {
+		if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
+		if (is_protected(s))       cost++   // Protected markets cost +1 to shift
+	}
+
+	return cost
+}
+
+
 P.may_spend_action_points = {
 	prompt() {
 		var prompt = "ACTION ROUND " + G.round + ": Spend Action Points ("
@@ -1310,7 +1406,7 @@ P.may_spend_action_points = {
 	},
 	space(s) {
 		var type = space_action_type(s)
-		var cost = data.spaces[s].cost
+		var cost   = action_point_cost(s, type)
 
 		//TODO forts and navies different behaviors
 
@@ -1334,6 +1430,8 @@ P.may_spend_action_points = {
 		}
 		mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+
+		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 	}
 }
 
