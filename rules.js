@@ -410,7 +410,6 @@ function on_setup(scenario, options) {
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
-		G.dirty[i] = false
 	}
 
 	G.conflicts = [] // map of conflict markers
@@ -1068,9 +1067,7 @@ P.action_round = script (`
 `)
 
 function clear_dirty() {
-	for (var i = 0; i < data.spaces.length; i++) {
-		G.dirty[i] = false
-	}
+	G.dirty = []
 }
 
 function establish_action_point_categories()
@@ -1319,7 +1316,7 @@ P.may_spend_action_points = {
 		} else {
 			G.flags[s] = NONE
 		}
-		G.dirty[s] = true // We've now changed this space. Highlight it until next investment tile.
+		set_has(G.dirty, s) // We've now changed this space. Highlight it until next investment tile.
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[R].name)
 	}
 }
