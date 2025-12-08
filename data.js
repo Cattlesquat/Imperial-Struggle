@@ -406,6 +406,13 @@ data.turns = [
     { "num": 9, "id": "6",   "war": false, "name": "6: PEACE",                       "dates": "1784-1789", layout: "Turn 6" }
 ]
 
+data.wars = [
+	{ "num": 0, "id": "WSS", "name": "War of the Spanish Succession" },
+	{ "num": 1, "id": "WAS", "name": "War of the Austrian Succession" },
+	{ "num": 2, "id": "7YW", "name": "Seven Years War" },
+	{ "num": 3, "id": "AWI", "name": "American War of Independence" }
+]
+
 data.cards = [
     {},
     { "num":  1, "era": 0, "name": "Carnatic War",                  "action":  3, "keywords": [ 1 ], "keylabel": "BONUS: Mercantilism",                                                "label": "", "effect": "Place 1 Conflict marker in India for each Local Alliance you control there.", "bonus": "Bonus: Damage an enemy Fort or shift a Cotton market in India.", "britishlabel": "", "britisheffect": "", "britishbonus": "", "frenchlabel": "", "frencheffect": "", "frenchbonus": "" },

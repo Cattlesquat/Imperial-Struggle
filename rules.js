@@ -575,6 +575,18 @@ function current_era() {
 	return REVOLUTION_ERA
 }
 
+/* 7.6 and Setup - BONUS WAR TILE LAYOUT */
+function add_next_war_bonus_tiles() {
+	G.bonus_war_tiles = [ [], [] ]
+	let base = G.next_war * (NUM_BONUS_WAR_TILES * 2)
+	for (var i = 0; i < NUM_BONUS_WAR_TILES; i++) {
+		G.bonus_war_tiles[FRANCE].push(base + i)
+		G.bonus_war_tiles[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
+	}
+	shuffle(G.bonus_war_tiles[FRANCE])
+	shuffle(G.bonus_war_tiles[BRITAIN])
+}
+
 /* 3.8 - CONFLICT MARKERS */
 
 const CONFLICT_NONE = 0
@@ -615,6 +627,9 @@ const PEACE_TURN_6 = 9
 
 const WAR_TURN_AWI = 8
 
+
+/* 4.1 - PEACE TURNS */
+
 P.peace_turn = script (`
 	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
 		call deck_phase
@@ -635,15 +650,6 @@ P.peace_turn = script (`
 	call victory_check_phase
 	if (G.turn === PEACE_TURN_6) {
 		call final_scoring
-	}
-`)
-
-P.war_turn = script (`
-	call war_resolution_phase
-	call victory_check_phase
-	call reset_phase
-	if (G.turn <  WAR_TURN_AWI) {
-		call war_layout_phase
 	}
 `)
 
@@ -1040,14 +1046,14 @@ P.scoring_phase = function () {
 
 /* 4.1.13 - VICTORY CHECK PHASE */
 
-P.scoring_phase = function () {
+P.victory_check_phase = function () {
 	// TODO
 	end()
 }
 
 /* 4.1.14 - FINAL SCORING PHASE */
 
-P.scoring_phase = function () {
+P.final_scoring_phase = function () {
 	log("=Final Scoring Phase")
 	// TODO
 	end()
@@ -1342,16 +1348,59 @@ P.end_of_action_round = {
 	}
 }
 
-function add_next_war_bonus_tiles() {
-	G.bonus_war_tiles = [ [], [] ]
-	let base = G.next_war * (NUM_BONUS_WAR_TILES * 2)
-	for (var i = 0; i < NUM_BONUS_WAR_TILES; i++) {
-		G.bonus_war_tiles[FRANCE].push(base + i)
-		G.bonus_war_tiles[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
+
+/* 7.0 WAR TURNS */
+
+P.war_turn = script (`
+	call war_resolution_phase
+	call war_victory_check_phase
+	call war_reset_phase
+	if (G.turn < WAR_TURN_AWI) {
+		call war_layout_phase
 	}
-	shuffle(G.bonus_war_tiles[FRANCE])
-	shuffle(G.bonus_war_tiles[BRITAIN])
+`)
+
+
+/* 7.1 - WAR RESOLUTION PHASE */
+
+P.war_resolution_phase = function() {
+	log ("=War Turn: " + data.wars[G.next_war].name)
+	//TODO One theater at a time, in numberical order:
+	//TODO   Flip up all war tiles for both players in that theater
+	//TODO   Display initial Total Theater Strength
+	//TODO   Apply "war tile effects" (e.g. damage-a-fleet, unflag-a-space) - order is exotic, see 7.1.2 - updating Total Theater Strength
+	//TODO	 Resolve "Theater Spoils" 7.2
+	end()
 }
+
+
+/* 7.4 - WAR RESOLUTION PHASE */
+
+P.war_victory_check_phase = function() {
+	//TODO If one player won all theaters by maximum level, they immediately win the game
+	end()
+}
+
+
+/* 7.5 - WAR RESET PHASE */
+
+P.war_reset_phase = function () {
+	//TODO remove all the current bonus war tiles
+	//TODO remove any conflict markers that generated strength in this war
+	end()
+}
+
+
+/* 7.6 - WAR LAYOUT PHASE */
+
+P.war_layout_phase = function () {
+	G.next_war++;
+	log ("=War Layout Phase")
+	add_next_war_bonus_tiles()
+	log (data.wars[G.next_war].name + " mat and Bonus War Tiles added")
+	end()
+}
+
 
 function action_event_card(c) {
 	action("event_card", c)
