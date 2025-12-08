@@ -124,6 +124,11 @@ function on_init() {
 	define_marker("initiative", FRANCE, "square-sm initiative-fr")
 	define_marker("initiative", BRITAIN, "square-sm initiative-br")
 
+	for (i = 0; i < 4; ++i) {
+		define_marker("action-br", i, `square-sm action_${i+1} br`)
+		define_marker("action-fr", i, `square-sm action_${i+1} fr`)
+	}
+
 	for (i = 0; i < NUM_DEMANDS; ++i)
 		define_marker("demand", i, [ "square-sm", data.demands[i].name.toLowerCase() ])
 
@@ -226,6 +231,11 @@ function on_update() {
 		populate("lout-space", s, "conflict", s)
 		toggle_keyword("conflict", s, "plus-one", n > 1)
 	})
+
+	for (i = 0; i < G.played_tiles[FRANCE].length; ++i)
+		populate("investment", G.played_tiles[FRANCE][i], "action-fr", i)
+	for (i = 0; i < G.played_tiles[BRITAIN].length; ++i)
+		populate("investment", G.played_tiles[BRITAIN][i], "action-br", i)
 
 	for (r = 0; r < NUM_REGIONS; ++r) {
 		if (V.awards[r] >= 0)

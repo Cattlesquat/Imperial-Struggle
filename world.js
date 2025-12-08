@@ -383,6 +383,7 @@ function define_piece(action, id, keywords) {
 function define_marker(action, id, keywords) {
 	var e = _create_element("marker", action, id, keywords)
 	register_action(action, id, e)
+	world.parent_list.push(e)
 	world.animate_list.push(e)
 	return e
 }

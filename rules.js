@@ -1115,7 +1115,7 @@ P.select_investment_tile = {
 		clear_dirty()
 
 		G.played_investments.push(tile)    //BR// We leave it in available_investments but mark it played
-		G.played_tiles[R][G.round] = tile  //BR// Mark the tile we played, the round we played it
+		G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 		G.played_tile = tile
 		G.military_upgrade = major <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
 		establish_action_point_categories()
