@@ -198,6 +198,8 @@ function on_update() {
 			if (V.flags[s.num] === USA)
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
 		}
+
+		toggle_keyword("space", s.num, "dirty", set_has(V.dirty, s.num))
 	}
 
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {

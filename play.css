@@ -132,6 +132,10 @@ body.Britain #events_br { grid-row: 2 }
 	border: none;
 }
 
+.space.market.dirty, .space.political.dirty, .space.territory.dirty {
+	border: 4px solid firebrick;
+}
+
 .space.market.action, .space.political.action, .space.territory.action {
 	border: 4px solid white;
 }
