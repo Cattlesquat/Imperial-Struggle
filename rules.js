@@ -1128,7 +1128,7 @@ function check_if_market_isolated(market)
 
 	while (!connected && L.connection_queue.length > 0) {
 		var s = L.connection_queue.pop()
-		if (data.spaces[s].type === NAVAL) {
+		if ((data.spaces[s].type === NAVAL) || (data.spaces[s].type === TERRITORY)) {
 			if (G.flags[s] === who) connected = true
 		}
 		else if (data.spaces[s].type === FORT) {
@@ -1136,9 +1136,9 @@ function check_if_market_isolated(market)
 			if (G.flags[s] === who) connected = true
 		}
 		else if (data.spaces[s].type === MARKET) {
-			if (G.flags[s] !== who) continue                       // Only trace through our own flagged markets
-			if ((s !== market) && has_conflict_marker(s)) continue // Can't trace through conflict marker, but original starting point can have conflict
-			for (const connection in data.spaces[s].connect) {
+			if (G.flags[s] !== who) continue                           // Only trace through our own flagged markets
+			if ((s !== market) && has_conflict_marker(s)) continue     // Can't trace through conflict marker, but original starting point can have conflict
+			for (const connection of data.spaces[s].connects) {
 				if (L.already_traversed.includes(connection)) continue // Don't traverse things twice
 				L.already_traversed.push(connection)
 				L.connection_queue.unshift(connection)
@@ -1148,7 +1148,6 @@ function check_if_market_isolated(market)
 
     if (!connected) {
 		set_isolated_market(market)
-		log ("Isolated: " + data.spaces[market].name)
 	}
 }
 
