@@ -1116,6 +1116,54 @@ function clear_dirty() {
 	set_clear(G.dirty)
 }
 
+
+function check_if_market_isolated(market)
+{
+	let who = G.flags[market]
+	if ((who !== FRANCE) && (who !== BRITAIN)) return false // Ignore unflagged markets, Spain, etc.
+
+	L.connection_queue  = [ market ]
+	L.already_traversed = [ market ]
+	let connected = false
+
+	while (!connected && L.connection_queue.length > 0) {
+		var s = L.connection_queue.pop()
+		if (data.spaces[s].type === NAVAL) {
+			if (G.flags[s] === who) connected = true
+		}
+		else if (data.spaces[s].type === FORT) {
+			if (is_damaged_fort(s)) continue
+			if (G.flags[s] === who) connected = true
+		}
+		else if (data.spaces[s].type === MARKET) {
+			if (G.flags[s] !== who) continue                       // Only trace through our own flagged markets
+			if ((s !== market) && has_conflict_marker(s)) continue // Can't trace through conflict marker, but original starting point can have conflict
+			for (const connection in data.spaces[s].connect) {
+				if (L.already_traversed.includes(connection)) continue // Don't traverse things twice
+				L.already_traversed.push(connection)
+				L.connection_queue.unshift(connection)
+			}
+		}
+	}
+
+    if (!connected) {
+		set_isolated_market(market)
+		log ("Isolated: " + data.spaces[market].name)
+	}
+}
+
+/* 5.4.1 - Identify Isolated Markets, and flag them for the Action Round */
+function find_isolated_markets()
+{
+	G.isolated_markets = []
+
+	for (var s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== MARKET) continue
+		check_if_market_isolated(s)
+	}
+}
+
+
 function start_action_round()
 {
 	// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
@@ -1139,7 +1187,7 @@ function start_action_round()
 		set_add(G.controlled_start_of_round, s)
 	}
 
-	G.isolated_markets   = [] //TODO - identify isolated markets and flags them for the turn (5.4.1)
+	find_isolated_markets()
 }
 
 P.select_investment_tile = {
@@ -1432,6 +1480,8 @@ P.may_spend_action_points = {
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
+
+		find_isolated_markets() ////TODO take this out, it's only here for debug
 	}
 }
 
