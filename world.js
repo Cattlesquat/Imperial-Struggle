@@ -1,98 +1,16 @@
 "use strict"
 
-/*
-	We build a set of custom elements and keep a registry of "things":
+var G, V, R // convenient aliases so that we can share bits of code verbatim from rules.js
 
-		- board (primarily the map, and any extra boards like battle boards etc)
-		- space -- a fixed location on a board that you can interact with
-		- layout -- a location on a board that contains other things
-		- piece -- a piece that you can interact with, positioned in a layout
-		- marker -- a piece that you cannot interact with, positioned in a layout
-		- static marker -- a piece that you cannot interact with, position directly on a board
+/* MISC */
 
-	In on_init you should define all the boards, spaces, layouts, pieces and markers you will use.
-	In on_update you should update all the positions and populate the layouts with the necessary pieces.
-
-	Each time on_update is called, we recreate the entire layout from scratch to guarantee that we
-	never show stale data in case we forget to update something.
-
-	// TODO: my_rotate + block rotation
-	// TODO: common keyword set for layouts (grid, flex, flood-fill)
-	// TODO: overlay (battle boxes)
-*/
-
-var G, V, R // convenience aliases
-
-const world = {
-	things: {},
-	favicon: document.querySelector("link[rel='icon']"),
-	header: document.querySelector("header"),
-	status: document.getElementById("status"),
-	mapwrap: document.getElementById("mapwrap"),
-	panzoom: document.getElementById("pan_zoom_main"),
-	parent_list: [],
-	action_list: [],
-	animate_list: [],
-	parent: document.getElementById("map"),
+function assert(exp, msg) {
+	if (!exp)
+		throw new Error("ASSERT: " + msg)
 }
 
-function get_preference(name, fallback) {
-	var key = params.title_id + "/" + name
-	var value = window.localStorage.getItem(key)
-	if (value)
-		return JSON.parse(value)
-	return fallback
-}
-
-function set_preference(name, value) {
-	var key = params.title_id + "/" + name
-	window.localStorage.setItem(key, JSON.stringify(value))
-	return value
-}
-
-function define_preference_checkbox(name, initial) {
-	var input = document.getElementById(name)
-	var value = get_preference(name, initial)
-	input.checked = value
-	input.onchange = function () {
-		_update_preference_checkbox(name)
-		close_toolbar_menus()
-		on_update()
-	}
-	document.body.classList.toggle(name, value)
-}
-
-function _update_preference_checkbox(name) {
-	var input = document.getElementById(name)
-	var value = input.checked
-	set_preference(name, value)
-	document.body.classList.toggle(name, value)
-}
-
-function define_preference_radio(name, initial) {
-	var value = get_preference(name, initial)
-	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
-		if (value === input.value) {
-			input.checked = true
-			document.body.dataset[name] = value
-		} else {
-			input.checked = false
-		}
-		input.onchange = function () {
-			_update_preference_radio(name)
-			close_toolbar_menus()
-			on_update()
-		}
-	}
-}
-
-function _update_preference_radio(name) {
-	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
-		if (input.checked) {
-			set_preference(name, input.value)
-			document.body.dataset[name] = input.value
-		}
-	}
+function $(x) {
+	return x instanceof HTMLElement ? x : document.querySelector(x)
 }
 
 function toggle_pieces() {
@@ -117,8 +35,17 @@ function toggle_markers_and_pieces() {
 	}
 }
 
-function set_favicon(url) {
-	world.favicon.href = url
+function escape_typography(text) {
+	text = String(text)
+	// TODO: smart quotes
+	text = text.replace(/---/g, "\u2014")
+	text = text.replace(/--/g, "\u2013")
+	text = text.replace(/->/g, "\u2192")
+	text = text.replace(/-( ?[\d])/g, "\u2212$1")
+	text = text.replace(/&/g, "&amp;")
+	text = text.replace(/</g, "&lt;")
+	text = text.replace(/>/g, "&gt;")
+	return text
 }
 
 function is_action(action, id) {
@@ -134,19 +61,177 @@ function is_action(action, id) {
 	return false
 }
 
-function on_click_action(evt) {
-	if (evt.button === 0)
-		if (send_action(evt.target.my_action, evt.target.my_id))
-			evt.stopPropagation()
+/* WORLD */
+
+const world = {
+	things: {},
+	favicon: $("link[rel='icon']"),
+	header: $("header"),
+	status: $("#status"),
+	mapwrap: $("#mapwrap"),
+	panzoom: $("#pan_zoom_main"),
+	parent_list: [],
+	action_list: [],
+	animate_list: [],
+	keyword_list: [],
+	text_list: [],
+	generic_unused: {},
+	generic_used: {},
+	parent: $("#map"),
+	parent_w: 1920,
+	parent_h: 1080,
 }
 
-function register_thing(action, id, e) {
-	if (!world.things[action])
-		world.things[action] = {}
-	world.things[action][id] = e
-	e.my_action = action
-	e.my_id = id
-	return e
+class Thing {
+	constructor(element, action, id) {
+		assert(element, "thing without an html element")
+
+		this.element = element
+		this.my_action = action
+		this.my_id = id
+		this.my_keywords = [ action ]
+
+		this.is_parent = false
+		this.is_action = false
+		this.is_keyword = false
+		this.is_text = false
+		this.is_animate = false
+		this.is_rotate = false
+
+		element.thing = this
+
+		element.classList.add(action)
+
+		if (!world.things[action])
+			world.things[action] = []
+		world.things[action][id] = this
+	}
+
+	action() {
+		if (!this.is_action) {
+			this.element.onmousedown = _on_click_action
+			world.action_list.push(this)
+		}
+		return this
+	}
+
+	animate(time = 300) {
+		if (!this.is_animate) {
+			this.is_animate = true
+			world.animate_list.push(this)
+		}
+		this.my_time = time
+		return this
+	}
+
+	ensure_parent() {
+		if (!this.is_parent) {
+			this.is_parent = true
+			world.parent_list.push(this)
+		}
+		return this
+	}
+
+	ensure_keyword() {
+		if (!this.is_keyword) {
+			this.is_keyword = true
+			this.my_dynamic_keywords = []
+			world.keyword_list.push(this)
+		}
+		return this
+	}
+
+	ensure_text() {
+		if (!this.is_text) {
+			this.is_text = true
+			this.my_text = null
+			this.my_text_html = null
+			world.text_list.push(this)
+		}
+		return this
+	}
+
+	ensure_rotate() {
+		if (!this.is_rotate) {
+			this.is_rotate = true
+			this.my_old_angle = 0
+			this.my_new_angle = 0
+		}
+		return this
+	}
+
+	tooltip(tip) {
+		this.element.onmouseenter = function () {
+			if (typeof tip === "function")
+				world.status.textContent = tip(id)
+			else
+				world.status.textContent = tip
+		}
+		this.element.onmouseleave = function () {
+			world.status.textContent = ""
+		}
+		return this
+	}
+
+	layout(rect, keywords) {
+		var e = this.element
+
+		world.parent.appendChild(this.element)
+
+		this.keyword(keywords)
+
+		if (Array.isArray(rect))
+			var [ x, y, w, h ] = rect
+		else
+			var { x, y, w, h } = rect
+		x = Math.round(x)
+		y = Math.round(y)
+		w = Math.round(w ?? 0)
+		h = Math.round(h ?? 0)
+
+		var r = world.parent_w - (x + w)
+		var b = world.parent_h - (y + h)
+
+		var grow_n = this.my_keywords.includes("grow-n")
+		var grow_e = this.my_keywords.includes("grow-e")
+		var grow_s = this.my_keywords.includes("grow-s")
+		var grow_w = this.my_keywords.includes("grow-w")
+
+		if (!grow_n) e.style.top = Math.round(y) + "px"
+		if (!grow_s) e.style.bottom = Math.round(b) + "px"
+		if (!grow_e) e.style.right = Math.round(r) + "px"
+		if (!grow_w) e.style.left = Math.round(x) + "px"
+		if (grow_w || grow_e)
+			this.keyword("grow-h")
+
+		e.style.minHeight = Math.round(h) + "px"
+		e.style.minWidth = Math.round(w) + "px"
+
+		return this
+	}
+
+	keyword(keywords, on = true) {
+		if (keywords && on) {
+			if (typeof keywords === "string")
+				keywords = keywords.trim().split(" ")
+			for (var word of keywords) {
+				set_add(this.my_keywords, word)
+				this.element.classList.add(word)
+			}
+		}
+		return this
+	}
+
+	// style({ key: value, ... }) or style(key, value)
+	style(dict_or_key, value) {
+		if (typeof dict_or_key === "string") {
+			this.element.style.setProperty(dict_or_key, value)
+		} else {
+			for (var key in dict_or_key)
+				this.element.style.setProperty(key, styles[key])
+		}
+		return this
+	}
 }
 
 function lookup_thing(action, id) {
@@ -159,109 +244,25 @@ function lookup_thing(action, id) {
 	return thing
 }
 
-function register_action(action, id, e) {
-	e.onmousedown = on_click_action
-	world.action_list.push(e)
+function _on_click_action(evt) {
+	if (evt.button === 0 && send_action(evt.target.thing.my_action, evt.target.thing.my_id))
+		evt.stopPropagation()
 }
 
-function register_tooltip(action, id, tip) {
-	var e = lookup_thing(action, id)
-	e.onmouseenter = function () {
-		if (typeof tip === "function")
-			world.status.textContent = tip(id)
-		else
-			world.status.textContent = tip
-	}
-	e.onmouseleave = function () {
-		world.status.textContent = ""
-	}
+/* DEFINE THINGS */
+
+function define_thing(action, id) {
+	return new Thing(document.createElement("div"), action, id)
 }
 
-function _add_keywords(e, keywords) {
-	if (keywords) {
-		if (typeof keywords === "string")
-			keywords = keywords.trim().split(" ")
-		for (var word of keywords)
-			e.classList.add(word)
-	}
-}
-
-function _define_element(e, tag, action, id, keywords) {
-	if (tag)
-		e.classList.add(tag)
-	e.classList.add(action)
-	_add_keywords(e, keywords)
-	e.my_className = e.className
-	e.my_action = action
-	e.my_id = id
-	register_thing(action, id, e)
-	return e
-}
-
-function _create_element(tag, action, id, keywords) {
-	return _define_element(document.createElement("div"), tag, action, id, keywords)
-}
-
-function _find_element(tag, action, id, selector, keywords) {
-	return _define_element(document.getElementById(selector), tag, action, id, keywords)
-}
-
-function _apply_layout(e, layout) {
-	if (Array.isArray(layout))
-		var [ x, y, w, h ] = layout
-	else
-		var { x, y, w, h } = layout
-
-	e.my_x = x = Math.round(x)
-	e.my_y = y = Math.round(y)
-	e.my_w = w = Math.round(w ?? 0)
-	e.my_h = h = Math.round(h ?? 0)
-
-	var r = world.parent_w - (x + w)
-	var b = world.parent_h - (y + h)
-
-	var grow_n = e.classList.contains("grow-n")
-	var grow_e = e.classList.contains("grow-e")
-	var grow_s = e.classList.contains("grow-s")
-	var grow_w = e.classList.contains("grow-w")
-
-	if (!grow_n) e.style.top = Math.round(y) + "px"
-	if (!grow_s) e.style.bottom = Math.round(b) + "px"
-	if (!grow_e) e.style.right = Math.round(r) + "px"
-	if (!grow_w) e.style.left = Math.round(x) + "px"
-
-	if (grow_w || grow_e) {
-		e.classList.add("grow-h")
-		e.my_className = e.className
-	}
-
-	e.style.minHeight = Math.round(h) + "px"
-	e.style.minWidth = Math.round(w) + "px"
-}
-
-function _apply_styles(e, styles) {
-	if (styles) {
-		for (var key in styles)
-			e.style.setProperty(key, styles[key])
-	}
-}
-
-function _init_parent(tag) {
-	var parent = world.parent.querySelector("." + tag)
-	if (!parent) {
-		parent = document.createElement("div")
-		parent.className = tag
-		world.parent.appendChild(parent)
-	}
-	return parent
-}
-
-function _append_element(tag, e) {
-	_init_parent(tag).appendChild(e)
+function define_html_thing(selector, action, id) {
+	return new Thing($(selector), action, id)
 }
 
 function define_board(selector, w, h) {
-	world.parent = document.getElementById(selector)
+	world.parent = $(selector)
+	assert(world.parent, "board not found: " + selector)
+	world.parent.classList.add("board")
 	if (!w || !h) {
 		var rect = world.parent.getBoundingClientRect()
 		w = rect.width
@@ -269,29 +270,29 @@ function define_board(selector, w, h) {
 	}
 	world.parent_w = w
 	world.parent_h = h
-	_init_parent("space-parent")
-	_init_parent("decor-parent")
-	_init_parent("layout-parent")
 }
 
-function define_panel(action, id, selector) {
-	var panel = document.getElementById(selector)
-	var head = panel.querySelector(".panel-head")
-	var body = panel.querySelector(".panel-body")
-	body.my_panel = panel
-	body.my_head = head
-	register_thing(action, id, body)
-	world.parent_list.push(body)
-	return body
+function sort_board_children() {
+	var parent = world.parent
+	var list = Array.from(parent.childNodes)
+	list.sort((a,b) => {
+		var ra = a.getBoundingClientRect()
+		var rb = b.getBoundingClientRect()
+		var za = ra.top * 2 + ra.left
+		var zb = rb.top * 2 + rb.left
+		return za - zb
+	})
+	parent.replaceChildren()
+	for (var e of list)
+		parent.appendChild(e)
 }
 
-function define_layout(action, id, layout, keywords, styles) {
-	var e = _create_element("layout", action, id, keywords)
-	world.parent_list.push(e)
-	_append_element("layout-parent", e)
-	_apply_layout(e, layout)
-	_apply_styles(e, styles)
-	return e
+function define_layout(action, id, rect, keywords, styles) {
+	return define_thing(action, id)
+		.keyword("layout")
+		.keyword(keywords)
+		.style(styles)
+		.layout(rect)
 }
 
 function define_layout_track_h(action, a, b, layout, gap=0, keywords, styles) {
@@ -344,70 +345,37 @@ function define_layout_grid(action, order, cols, rows, layout, gapx, gapy, keywo
 	}
 }
 
-function define_html(action, id, selector, keywords) {
-	var e = _find_element(null, action, id, selector, keywords)
-	register_action(action, id, e)
-	return e
-}
+/* PREDEFINED THINGS - SPACE, PIECE, MARKER, CARD */
 
-function define_html_parent(action, id, selector, keywords) {
-	var e = _find_element(null, action, id, selector, keywords)
-	world.parent_list.push(e)
-	return e
-}
-
-function define_space(action, id, layout, keywords) {
-	var e = _create_element("space", action, id, keywords)
-	register_action(action, id, e)
-	_append_element("space-parent", e)
-	_apply_layout(e, layout)
-	return e
-}
-
-function define_card(action, id, keywords) {
-	var e = _create_element("card", action, id, keywords)
-	register_action(action, id, e)
-	world.parent_list.push(e)
-	// world.animate_list.push(e)
-	return e
+function define_space(action, id, rect, keywords) {
+	return define_thing(action, id)
+		.keyword("space")
+		.action()
+		.keyword(keywords)
+		.layout(rect)
 }
 
 function define_piece(action, id, keywords) {
-	var e = _create_element("piece", action, id, keywords)
-	register_action(action, id, e)
-	world.parent_list.push(e)
-	world.animate_list.push(e)
-	return e
+	return define_thing(action, id)
+		.keyword("piece")
+		.action()
+		.animate()
+		.keyword(keywords)
 }
 
 function define_marker(action, id, keywords) {
-	var e = _create_element("marker", action, id, keywords)
-	register_action(action, id, e)
-	world.parent_list.push(e)
-	world.animate_list.push(e)
-	return e
+	return define_thing(action, id)
+		.keyword("marker")
+		.action()
+		.animate()
+		.keyword(keywords)
 }
 
-function define_decor(action, id, [x, y, w, h], keywords) {
-	if (typeof keywords === "string")
-		keywords = keywords.split(" ")
-	if (typeof keywords === "undefined")
-		keywords = []
-	var e = _create_element("decor", action, id, keywords)
-	e.classList.add("hide")
-	e.style.left = Math.round(x + (w|0)/2) + "px"
-	e.style.top = Math.round(y + (h|0)/2) + "px"
-	_append_element("decor-parent", e)
-	return e
-}
-
-function show_decor(action, id, visible) {
-	lookup_thing(action, id).classList.toggle("hide", !visible)
-}
-
-function define_card_list(action, a, b, keywords_with_prefix) {
-	for (var i = a; i <= b; ++i)
-		define_card(action, i, keywords_with_prefix + i)
+function define_card(action, id, keywords) {
+	return define_thing(action, id)
+		.keyword("card")
+		.action()
+		.keyword(keywords)
 }
 
 function define_piece_list(action, a, b, keywords) {
@@ -420,72 +388,181 @@ function define_marker_list(action, a, b, keywords) {
 		define_marker(action, i, keywords)
 }
 
-function populate_with_list(parent_action, parent_id, child_action, child_id_list, fallback) {
-	var parent = lookup_thing(parent_action, parent_id)
-	for (var child_id of child_id_list)
-		if (child_id < 0)
-			populate_generic(parent_action, parent_id, fallback, 1)
-		else
-			parent.appendChild(lookup_thing(child_action, child_id))
+function define_card_list(action, a, b, keywords_with_prefix) {
+	for (var i = a; i <= b; ++i)
+		define_card(action, i, keywords_with_prefix + i)
 }
 
-function populate(parent_action, parent_id, child_action, child_id) {
+/* UPDATE THINGS */
+
+function update_favicon(url) {
+	world.favicon.href = url
+}
+
+// populate(parent_action, [parent_id], child_action, [child_id])
+function populate(parent_action, arg2, arg3, arg4) {
+	var parent_id, child_action, child_id
+	if (typeof arg2 === "string") {
+		parent_id = undefined
+		child_action = arg2
+		child_id = arg3
+	} else {
+		parent_id = arg2
+		child_action = arg3
+		child_id = arg4
+	}
 	var parent = lookup_thing(parent_action, parent_id)
 	var child = lookup_thing(child_action, child_id)
-	parent.appendChild(child)
+	parent.ensure_parent()
+	parent.element.appendChild(child.element)
 }
 
-function populate_generic(parent_action, parent_id, keywords, n=1) {
+// populate_with_list(parent_action, [parent_id], child_action, child_id_list, fallback)
+function populate_with_list(parent_action, arg2, arg3, arg4, arg5) {
+	var parent_id, child_action, child_id_list, fallback
+	if (typeof arg2 === "string") {
+		parent_id = undefined
+		child_action = arg2
+		child_id_list = arg3
+		fallback = arg4
+	} else {
+		parent_id = arg2
+		child_action = arg3
+		child_id_list = arg4
+		fallback = arg5
+	}
 	var parent = lookup_thing(parent_action, parent_id)
-	while (n-- > 0) {
-		// TODO: use generic marker cache ?
-		var child = document.createElement("div")
-		child.className = keywords
-		parent.appendChild(child)
+	parent.ensure_parent()
+	for (var child_id of child_id_list) {
+		if (child_id < 0)
+			parent.element.appendChild(_create_generic(fallback))
+		else
+			parent.element.appendChild(lookup_thing(child_action, child_id).element)
 	}
 }
 
+function _create_generic(keywords) {
+	var unused = world.generic_unused[keywords] ??= []
+	var used = world.generic_used[keywords] ??= []
+	var e
+	if (unused.length > 0) {
+		e = unused.pop()
+	} else {
+		e = document.createElement("div")
+		e.className = keywords
+	}
+	used.push(e)
+	return e
+}
+
+// populate_generic(parent_action, [parent_id], keywords, n=1)
+function populate_generic(parent_action, arg2, arg3, arg4) {
+	var parent_id, keywords, n
+	if (typeof arg2 === "string" || Array.isArray(arg2)) {
+		parent_id = undefined
+		keywords = arg2
+		n = arg4
+	} else {
+		parent_id = arg2
+		keywords = arg3
+		n = arg4
+	}
+	n = n ?? 1
+	var parent = lookup_thing(parent_action, parent_id)
+	parent.ensure_parent()
+	while (n-- > 0)
+		parent.element.appendChild(_create_generic(keywords))
+}
+
 function update_position(action, id, x, y) {
-	var e = lookup_thing(action, id)
-	e.style.left = Math.round(x) + "px"
-	e.style.top = Math.round(y) + "px"
+	var thing = lookup_thing(action, id)
+	thing.element.style.left = Math.round(x) + "px"
+	thing.element.style.top = Math.round(y) + "px"
 }
 
-function update_transform(action, id, transform) {
-	var e = lookup_thing(action, id)
-	e.style.transform = transform
+function update_style(action, id, key, value) {
+	var thing = lookup_thing(action, id)
+	thing.element.style.setProperty(key, value)
 }
 
-function update_keywords(action, id, keywords) {
-	var e = lookup_thing(action, id)
-	if (e instanceof SVGElement)
-		throw new Error("cannot update keywords on SVG elements")
-	e.className = e.my_className
-	_add_keywords(e, keywords)
+function update_rotation(action, id, angle) {
+	var thing = lookup_thing(action, id)
+	thing.ensure_rotate()
+	thing.my_new_angle = angle
+	thing.element.style.transform = `rotate(${angle}deg)`
 }
 
-function toggle_keyword(action, id, keyword, on) {
-	var e = lookup_thing(action, id)
-	e.classList.toggle(keyword, !!on)
+function update_keyword(action, id, keyword, on = true) {
+	var thing = lookup_thing(action, id)
+	thing.ensure_keyword()
+	if (on)
+		thing.my_dynamic_keywords.push(keyword)
 }
 
 function update_text(action, id, text) {
-	var e = lookup_thing(action, id)
-	if (e.my_head)
-		e.my_head.textContent = text
-	else
-		e.textContent = text
+	var thing = lookup_thing(action, id)
+	thing.ensure_text()
+	thing.my_text = text
 }
 
-function update_html(action, id, text) {
-	var e = lookup_thing(action, id)
-	if (e.my_head)
-		e.my_head.innerHTML = text
-	else
-		e.innerHTML = text
+function update_text_html(action, id, text) {
+	var thing = lookup_thing(action, id)
+	thing.ensure_text()
+	thing.my_text_html = text
 }
 
-function _remember_position(e) {
+/* ENGINE */
+
+function begin_update() {
+	G = V = view
+	R = player
+
+	// reset unused element cache
+	for (var key in world.generic_used) {
+		var unused = world.generic_unused[key]
+		var used = world.generic_used[key]
+		while (used.length > 0)
+			unused.push(used.pop())
+	}
+
+	for (var thing of world.animate_list)
+		_remember_position(thing)
+	for (var thing of world.parent_list)
+		thing.element.replaceChildren()
+	for (var thing of world.keyword_list)
+		thing.my_dynamic_keywords = []
+	for (var thing of world.text_list)
+		thing.my_text = thing.my_text_html = null
+}
+
+function end_update() {
+	for (var e of document.querySelectorAll(".layout.square"))
+		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
+
+	for (var thing of world.keyword_list)
+		thing.element.setAttribute("class", [ ...thing.my_keywords, ...thing.my_dynamic_keywords ].join(" "))
+
+	for (var thing of world.text_list) {
+		if (thing.my_text_html !== null)
+			thing.element.innerHTML = thing.my_text_html
+		else if (thing.my_text !== null)
+			thing.element.textContent = thing.my_text
+		else
+			thing.element.textContent = ""
+	}
+
+	for (var thing of world.action_list)
+		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
+
+	var scale1 = Number(world.mapwrap?.dataset?.scale ?? 1)
+	var scale2 = Number(world.panzoom?.dataset?.scale ?? 1)
+	var inv_scale = 1 / (scale1 * scale2)
+	for (var thing of world.animate_list)
+		_animate_position(thing, inv_scale)
+}
+
+function _remember_position(thing) {
+	var e = thing.element
 	if (e.offsetParent) {
 		let prect = e.offsetParent.getBoundingClientRect()
 		e.my_parent = e.offsetParent
@@ -493,18 +570,23 @@ function _remember_position(e) {
 		e.my_py = prect.y
 		e.my_x = prect.x + e.offsetLeft
 		e.my_y = prect.y + e.offsetTop
+		if (thing.is_rotate)
+			thing.my_old_angle = thing.my_new_angle
 	} else {
 		e.my_parent = null
 		e.my_px = e.my_py = e.my_x = e.my_y = 0
+		if (thing.is_rotate)
+			thing.my_old_angle = 0
 	}
 }
 
-function _animate_position(e, inv_scale) {
+function _animate_position(thing, inv_scale) {
+	var e = thing.element
 	if (e.offsetParent && e.my_parent) {
 		let prect = e.offsetParent.getBoundingClientRect()
 		let new_x = prect.x + e.offsetLeft
 		let new_y = prect.y + e.offsetTop
-		let dx, dy
+		let dx, dy, da
 		// TODO: fix dx,dy calculation with nested transform
 		if (e.offsetParent === e.my_parent) {
 			// animate pieces on pieces
@@ -514,64 +596,152 @@ function _animate_position(e, inv_scale) {
 			dx = e.my_x - new_x
 			dy = e.my_y - new_y
 		}
-		if (dx !== 0 || dy !== 0) {
+		if (thing.is_rotate) {
+			da = thing.my_new_angle - thing.my_old_angle
+		} else {
+			da = 0
+		}
+		if (dx !== 0 || dy !== 0 || da !== 0) {
 			dx *= inv_scale
 			dy *= inv_scale
-			let dist = Math.hypot(dx, dy)
-			let time = Math.max(500, Math.min(1000, dist / 2))
-			e.animate(
-				[
-					{ transform: `translate(${dx}px, ${dy}px)`, },
-					{ transform: "translate(0, 0)", },
-				],
-				{ duration: time, easing: "ease" }
-			)
+			if (thing.is_rotate) {
+				e.animate(
+					[
+						{ transform: `translate(${dx}px, ${dy}px) rotate(${thing.my_old_angle}deg)`, },
+						{ transform: `translate(0, 0) rotate(${thing.my_new_angle}deg)`, },
+					],
+					{ duration: thing.my_time, easing: "ease" }
+				)
+			} else {
+				e.animate(
+					[
+						{ transform: `translate(${dx}px, ${dy}px)`, },
+						{ transform: `translate(0, 0)`, },
+					],
+					{ duration: thing.my_time, easing: "ease" }
+				)
+			}
 		}
 	}
 }
 
-function _sort_z(parent) {
-	var list = Array.from(parent.childNodes)
-	list.sort((a,b) => {
-		var ra = a.getBoundingClientRect()
-		var rb = b.getBoundingClientRect()
-		var za = ra.top * 2 + ra.left
-		var zb = rb.top * 2 + rb.left
-		return za - zb
-	})
-	parent.replaceChildren()
-	for (var e of list)
-		parent.appendChild(e)
+/* PANELS */
+
+function create_panel(parent, action, id, text) {
+	var panel = document.createElement("div")
+	var head = document.createElement("div")
+	var body = document.createElement("div")
+	panel.className = "panel"
+	head.className = "panel-head"
+	body.className = "panel-body"
+	head.textContent = text ?? action + ":" + id
+	panel.append(head, body)
+	$(parent).append(panel)
+	return define_panel(panel, action, id)
 }
 
-function sort_layout() {
-	_sort_z(document.querySelector(".layout-parent"))
+function define_panel(selector, action, id) {
+	var panel = $(selector)
+	var head = panel.querySelector(".panel-head")
+	var body = panel.querySelector(".panel-body")
+	var thing = new Thing(panel.querySelector(".panel-body"), action, id)
+	thing.my_panel = panel
+	thing.my_panel_head = head
+	thing.my_panel_body = body
+	return thing
 }
 
-function begin_update() {
-	G = V = view
-	R = player
-	for (var e of world.animate_list)
-		_remember_position(e)
-	for (var parent of world.parent_list)
-		parent.replaceChildren()
+function update_panel_show(action, id, show) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_panel, "not a panel")
+	thing.my_panel.classList.toggle("hide", !show)
 }
 
-function end_update() {
-	for (var item of world.action_list)
-		item.classList.toggle("action", is_action(item.my_action, item.my_id))
+function update_panel_text(action, id, text) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_panel, "not a panel")
+	thing.my_panel_head.textContent = text
+	
+}
 
-	for (var e of document.querySelectorAll(".layout.square"))
-		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
+function update_panel_text_html(action, id, text) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_panel, "not a panel")
+	thing.my_panel_head.innerHTML = text
+}
 
-	var scale1 = Number(world.mapwrap?.dataset?.scale ?? 1)
-	var scale2 = Number(world.panzoom?.dataset?.scale ?? 1)
-	var inv_scale = 1 / (scale1 * scale2)
-	for (var e of world.animate_list)
-		_animate_position(e, inv_scale)
+/* PREFERENCES (WIP) */
+
+function get_preference(name, fallback) {
+	var key = params.title_id + "/" + name
+	var value = window.localStorage.getItem(key)
+	if (value)
+		return JSON.parse(value)
+	return fallback
+}
+
+function set_preference(name, value) {
+	var key = params.title_id + "/" + name
+	window.localStorage.setItem(key, JSON.stringify(value))
+	return value
+}
+
+function init_preference_checkbox(name, initial) {
+	var input = document.getElementById(name)
+	var value = get_preference(name, initial)
+	input.checked = value
+	input.onchange = function () {
+		_update_preference_checkbox(name)
+		close_toolbar_menus()
+		on_update()
+	}
+	document.body.classList.toggle(name, value)
+}
+
+function _update_preference_checkbox(name) {
+	var input = document.getElementById(name)
+	var value = input.checked
+	set_preference(name, value)
+	document.body.classList.toggle(name, value)
+}
+
+function init_preference_radio(name, initial) {
+	var value = get_preference(name, initial)
+	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
+		if (value === input.value) {
+			input.checked = true
+			document.body.dataset[name] = value
+		} else {
+			input.checked = false
+		}
+		input.onchange = function () {
+			_update_preference_radio(name)
+			close_toolbar_menus()
+			on_update()
+		}
+	}
+}
+
+function _update_preference_radio(name) {
+	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
+		if (input.checked) {
+			set_preference(name, input.value)
+			document.body.dataset[name] = input.value
+		}
+	}
+}
+
+/* LIBRARY */
+
+function array_insert(array, index, item) {
+	for (var i = array.length; i > index; --i)
+		array[i] = array[i - 1]
+	array[index] = item
 }
 
 function set_has(set, item) {
+	if (set === item)
+		return true
 	if (!set)
 		return false
 	var a = 0
@@ -589,7 +759,30 @@ function set_has(set, item) {
 	return false
 }
 
+function set_add(set, item) {
+	var a = 0
+	var b = set.length - 1
+	// optimize fast case of appending items in order
+	if (item > set[b]) {
+		set[b+1] = item
+		return
+	}
+	while (a <= b) {
+		var m = (a + b) >> 1
+		var x = set[m]
+		if (item < x)
+			b = m - 1
+		else if (item > x)
+			a = m + 1
+		else
+			return
+	}
+	array_insert(set, a, item)
+}
+
 function map_get(map, key, missing) {
+	if (!map)
+		return missing
 	let a = 0
 	let b = (map.length >> 1) - 1
 	while (a <= b) {

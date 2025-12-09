@@ -554,17 +554,19 @@ function on_view() {
 		]
 	}
 
-	V.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
-	V.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+	V.next_war = G.next_war
+	V.theater_basic_war_tiles = [ [], [] ] // [player][theater][0-n]
+	V.theater_bonus_war_tiles = [ [], [] ] // [player][theater][0-n]
 
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
-			for (const tile of G.theater_basic_war_tiles[who][theater]) {
-				V.theater_basic_war_tiles = ((who === R) || set_has(G.basic_war_tile_revealed, tile)) ? G.theater_basic_war_tiles[who][theater] : -1 // -1 means opponent hasn't seen the tile yet
-			}
-			for (const tile of G.theater_bonus_war_tiles[who][theater]) {
-				V.theater_bonus_war_tiles = ((who === R) || set_has(G.bonus_war_tile_revealed, tile)) ? G.theater_bonus_war_tiles[who][theater] : -1 // -1 means opponent hasn't seen the tile yet
-			}
+			// -1 means opponent hasn't seen the tile yet
+			V.theater_basic_war_tiles[who][theater] = G.theater_basic_war_tiles[who][theater].map(tile =>
+				((who === R) || set_has(G.basic_war_tile_revealed, tile)) ? tile : -1
+			)
+			V.theater_bonus_war_tiles[who][theater] = G.theater_bonus_war_tiles[who][theater].map(tile =>
+				((who === R) || set_has(G.bonus_war_tile_revealed, tile)) ? tile : -1
+			)
 		}
 	}
 
@@ -622,7 +624,7 @@ function draw_basic_war_tile(who, theater) {
 
 function draw_bonus_war_tile(who, theater) {
 	if (G.bonus_war_tiles[who].length < 1) return
-	G.theater_bonus_war_tiles[who][theater].push(G.basic_war_tiles[who].pop())
+	G.theater_bonus_war_tiles[who][theater].push(G.bonus_war_tiles[who].pop())
 }
 
 /* 3.8 - CONFLICT MARKERS */

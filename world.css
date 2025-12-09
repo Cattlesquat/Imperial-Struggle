@@ -1,3 +1,32 @@
+/* THINGS */
+
+body.hide-markers .marker { display: none }
+body.hide-pieces .piece { display: none }
+
+.board {
+	position: relative;
+}
+
+.board > * {
+	position: absolute;
+}
+
+.layout {
+	box-sizing: border-box;
+	pointer-events: none;
+}
+
+.layout > * {
+	position: relative;
+	pointer-events: auto;
+}
+
+.panel-body > * {
+	position: relative;
+}
+
+/* PANELS */
+
 .panel {
 	background-color: silver;
 }
@@ -8,7 +37,6 @@
 }
 
 .panel-body {
-	position: relative;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
@@ -17,36 +45,6 @@
 
 .panel.autohide:has(.panel-body:empty) {
 	display: none;
-}
-
-body.hide-markers .decor { display: none }
-body.hide-markers .marker { display: none }
-body.hide-pieces .piece { display: none }
-
-.board { position: relative; }
-.board > svg { position: absolute; }
-.decor { position: absolute; }
-.space { position: absolute; }
-.layout { position: absolute; }
-.card { position: relative }
-.piece { position: relative; }
-.marker { position: relative; }
-
-.layout {
-	box-sizing: border-box;
-	pointer-events: none;
-}
-
-.layout > * {
-	pointer-events: auto;
-}
-
-.decor {
-	pointer-events: none;
-}
-
-.board, .decor, .marker, .piece, .card {
-	background-repeat: no-repeat;
 }
 
 /* LAYOUT */
