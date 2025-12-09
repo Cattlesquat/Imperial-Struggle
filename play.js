@@ -209,14 +209,14 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
-		define_marker("bonus_war", (i+0), "war-wss fr war" + (i+0))
-		define_marker("bonus_war", (i+12), "war-wss br war" + (i+12))
-		define_marker("bonus_war", (i+24), "war-was fr war" + (i+24))
-		define_marker("bonus_war", (i+36), "war-was br war" + (i+36))
-		define_marker("bonus_war", (i+48), "war-7yw fr war" + (i+48))
-		define_marker("bonus_war", (i+60), "war-7yw br war" + (i+60))
-		define_marker("bonus_war", (i+72), "war-awi fr war" + (i+72))
-		define_marker("bonus_war", (i+84), "war-awi br war" + (i+84))
+		define_marker("bonus_war", (i+0), "hex war-wss fr war" + (i+0))
+		define_marker("bonus_war", (i+12), "hex war-wss br war" + (i+12))
+		define_marker("bonus_war", (i+24), "hex war-was fr war" + (i+24))
+		define_marker("bonus_war", (i+36), "hex war-was br war" + (i+36))
+		define_marker("bonus_war", (i+48), "hex war-7yw fr war" + (i+48))
+		define_marker("bonus_war", (i+60), "hex war-7yw br war" + (i+60))
+		define_marker("bonus_war", (i+72), "hex war-awi fr war" + (i+72))
+		define_marker("bonus_war", (i+84), "hex war-awi br war" + (i+84))
 	}
 
 	define_board("#war_wss", 825, 638)
