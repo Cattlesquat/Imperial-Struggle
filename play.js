@@ -438,7 +438,6 @@ function update_war_display() {
 		console.log ("# France BASIC war tiles in UNDEPLOYED theater: " + V.theater_basic_war_tiles[FRANCE][0].length)
 		console.log ("# Britain BASIC war tiles in UNDEPLOYED theater: " + V.theater_basic_war_tiles[BRITAIN][0].length)
 
-		/* //BR// First just getting the undeployed theater to display correctly
 		offset = war * 12 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
@@ -449,13 +448,12 @@ function update_war_display() {
 				)
 				populate_with_list(
 					"lout-theater", offset,
-					"bonus_war", V.theater_bonus_war_tiles[player][theater])
+					"bonus_war", V.theater_bonus_war_tiles[player][theater]),
 					war_reverse[war][player]
 				)
 				++offset
 			}
 		}
-		*/
 	}
 }
 
