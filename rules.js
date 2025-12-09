@@ -1403,7 +1403,7 @@ function action_all_eligible_spaces() {
 }
 
 function action_eligible_ministries() {
-	for (const m in G.ministry[R]) {
+	for (const m of G.ministry[R]) {
 		action_ministry_card(m)
 	}
 }
@@ -1596,6 +1596,12 @@ P.may_spend_action_points = {
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
+	},
+	ministry_card(m) {
+
+	},
+	advantage(a) {
+
 	}
 }
 
