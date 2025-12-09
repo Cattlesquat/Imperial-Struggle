@@ -1401,6 +1401,16 @@ function action_all_eligible_spaces() {
 	}
 }
 
+function action_eligible_ministries() {
+	for (const m in G.ministry[R]) {
+		action_ministry_card(m)
+	}
+}
+
+function action_eligible_advantages() {
+
+}
+
 
 function space_action_type(s) {
 	if (data.spaces[s].type === POLITICAL) return DIPLO
@@ -1514,6 +1524,8 @@ P.may_spend_action_points = {
 		prompt += ") or activate Advantage / Ministry"
 		V.prompt = prompt;
 
+		action_eligible_advantages()
+		action_eligible_ministries()
 		action_all_eligible_spaces()
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
