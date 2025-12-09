@@ -553,6 +553,20 @@ function on_view() {
 			G.ministry[BRITAIN].map(x => -1),
 		]
 	}
+
+	V.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+	V.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+
+	for (var who = FRANCE; who <= BRITAIN; who++) {
+		for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
+			for (const tile of G.theater_basic_war_tiles[who][theater]) {
+				V.theater_basic_war_tiles = set_has(G.basic_war_tile_revealed, tile) ? G.theater_basic_war_tiles[who][theater] : -1 // -1 means opponent hasn't seen the tile yet
+			}
+			for (const tile of G.theater_bonus_war_tiles[who][theater]) {
+				V.theater_bonus_war_tiles = set_has(G.bonus_war_tile_revealed, tile) ? G.theater_bonus_war_tiles[who][theater] : -1 // -1 means opponent hasn't seen the tile yet
+			}
+		}
+	}
 }
 
 
