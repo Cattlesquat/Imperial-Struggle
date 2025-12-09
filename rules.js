@@ -408,6 +408,13 @@ function on_setup(scenario, options) {
 	war_layout_basic_war_tiles()
 	draw_bonus_war_tile(FRANCE, 1) // France starts the game with one bonus war tile
 
+	log ("# France bonus war tiles in first theater: " + G.theater_bonus_war_tiles[FRANCE][1].length)
+	log ("# Britain bonus war tiles in first theater: " + G.theater_bonus_war_tiles[BRITAIN][1].length)
+	log ("# France bonus war tiles in UNDEPLOYED theater: " + G.theater_bonus_war_tiles[FRANCE][0].length)
+	log ("# Britain bonus war tiles in UNDEPLOYED theater: " + G.theater_bonus_war_tiles[BRITAIN][0].length)
+	log ("# France BASIC war tiles in UNDEPLOYED theater: " + G.theater_basic_war_tiles[FRANCE][0].length)
+	log ("# Britain BASIC war tiles in UNDEPLOYED theater: " + G.theater_basic_war_tiles[BRITAIN][0].length)
+
 	G.awards = []
 	G.award_chits = []
 
@@ -607,7 +614,7 @@ function current_era() {
 /* 7.6 and Setup - BONUS WAR TILE LAYOUT */
 function add_next_war_bonus_tiles() {
 	G.bonus_war_tiles = [ [], [] ]
-	let base = G.next_war * (NUM_BONUS_WAR_TILES * 2)
+	let base = (G.next_war - 1) * (NUM_BONUS_WAR_TILES * 2)
 	for (var i = 0; i < NUM_BONUS_WAR_TILES; i++) {
 		G.bonus_war_tiles[FRANCE].push(base + i)
 		G.bonus_war_tiles[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
@@ -623,6 +630,7 @@ function draw_basic_war_tile(who, theater) {
 }
 
 function draw_bonus_war_tile(who, theater) {
+	log ("Who: " + who + "   Theater: " + theater)
 	if (G.bonus_war_tiles[who].length < 1) return
 	G.theater_bonus_war_tiles[who][theater].push(G.bonus_war_tiles[who].pop())
 }

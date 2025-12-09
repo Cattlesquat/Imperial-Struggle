@@ -203,12 +203,12 @@ function on_init() {
 			.tooltip(data.ministries[i].name)
 	}
 
-	for (i = 0; i < 16; ++i) {
+	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
 		define_marker("basic_war", i+0, "hex fr war-basic" + (i+0))
 		define_marker("basic_war", i+16, "hex br war-basic" + (i+16))
 	}
 
-	for (i = 0; i < 12; ++i) {
+	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
 		define_marker("bonus_war", (i+0), "war-wss fr war" + (i+0))
 		define_marker("bonus_war", (i+12), "war-wss br war" + (i+12))
 		define_marker("bonus_war", (i+24), "war-was fr war" + (i+24))
@@ -404,25 +404,34 @@ function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
 
-	war_display[0].classList.toggle("hide", war !== 0)
-	war_display[1].classList.toggle("hide", war !== 1)
-	war_display[2].classList.toggle("hide", war !== 2)
-	war_display[3].classList.toggle("hide", war !== 3)
+	for (var w = 0; w < NUM_WARS; w++) {
+		war_display[w].classList.toggle("hide", war !== w)
+	}
 
-	if (war < 4) {
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[0][0])
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[1][0])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[0][0])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[1][0])
+	if (war < NUM_WARS) {
+		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0])
+		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0])
+		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0])
+		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0])
 
+		console.log ("PLAY.JS")
+		console.log ("# France bonus war tiles in first theater: " + V.theater_bonus_war_tiles[FRANCE][1].length)
+		console.log ("# Britain bonus war tiles in first theater: " + V.theater_bonus_war_tiles[BRITAIN][1].length)
+		console.log ("# France bonus war tiles in UNDEPLOYED theater: " + V.theater_bonus_war_tiles[FRANCE][0].length)
+		console.log ("# Britain bonus war tiles in UNDEPLOYED theater: " + V.theater_bonus_war_tiles[BRITAIN][0].length)
+		console.log ("# France BASIC war tiles in UNDEPLOYED theater: " + V.theater_basic_war_tiles[FRANCE][0].length)
+		console.log ("# Britain BASIC war tiles in UNDEPLOYED theater: " + V.theater_basic_war_tiles[BRITAIN][0].length)
+
+		/* //BR// First just getting the undeployed theater to display correctly
 		offset = war * 12 + 1
-		for (theater = 1; theater <= 4; ++theater) {
-			for (player = 0; player < 2; ++player) {
+		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
+			for (player = FRANCE; player <= BRITAIN; ++player) {
 				populate_with_list("lout-theater", offset, "basic_war", V.theater_basic_war_tiles[player][theater])
 				populate_with_list("lout-theater", offset, "bonus_war", V.theater_bonus_war_tiles[player][theater])
 				++offset
 			}
 		}
+		*/
 	}
 }
 
