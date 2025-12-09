@@ -629,6 +629,7 @@ function set_damaged_fort(s, damage = true)
 	}
 }
 
+/* 5.4.1 Isolated Market flags */
 function is_isolated_market(s) {
 	return set_has (G.isolated_markets, s)
 }
@@ -1124,7 +1125,7 @@ function check_if_market_isolated(market)
 
 	let connection_queue  = [ market ]
 	let already_traversed = [ market ]
-	let connected = false
+	let connected       = false
 
 	while (!connected && connection_queue.length > 0) {
 		var s = connection_queue.pop()
@@ -1139,7 +1140,7 @@ function check_if_market_isolated(market)
 			if (G.flags[s] !== who) continue                           // Only trace through our own flagged markets
 			if ((s !== market) && has_conflict_marker(s)) continue     // Can't trace through conflict marker, but original starting point can have conflict
 			for (const connection of data.spaces[s].connects) {
-				if (already_traversed.includes(connection)) continue // Don't traverse things twice
+				if (already_traversed.includes(connection)) continue   // Don't traverse things twice
 				already_traversed.push(connection)
 				connection_queue.unshift(connection)
 			}
@@ -1217,10 +1218,10 @@ P.select_investment_tile = {
 
 		clear_dirty()
 
-		G.played_investments.push(tile)    //BR// We leave it in available_investments but mark it played
+		G.played_investments.push(tile)      //BR// We leave it in available_investments but mark it played
 		G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 		G.played_tile = tile
-		G.military_upgrade = major <= 2 // We get a military upgrade if we picked a tile w/ major action strength 2
+		G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
 		start_action_round()
 		end()
 	},
@@ -1256,6 +1257,22 @@ P.may_play_event_card = {
 }
 
 
+/* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
+
+function allowed_to_shift_market(s, who)
+{
+	for (const link of data.spaces[s].connects) {
+		if (G.flags[link] !== who) continue
+		if ([ FORT, NAVAL, TERRITORY ].includes(data.spaces[link].type)) return true // Can always shift if adjacent to friendly fort/navy/territory
+		if (data.spaces[link].type === MARKET) {
+			if (has_conflict_marker(link)) continue						// Not if conflict
+			if (is_isolated_market(link)) continue						// Not if isolated
+			if (!set_has(G.controlled_start_of_round, link)) continue	// Can't "daisy chain" from market we shifted THIS round
+			return true
+		}
+	}
+	return false
+}
 
 function action_eligible_spaces_econ(region)
 {
@@ -1263,8 +1280,7 @@ function action_eligible_spaces_econ(region)
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
 		if (space.type !== MARKET) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
-
-		//TODO: all the connected-market rules, etc.
+		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
 
 		action_space(space.num)
 	}
@@ -1286,10 +1302,41 @@ function action_eligible_spaces_mil(region)
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
 		if ((space.type !== NAVAL) && (space.type !== FORT)) continue
 		if (G.flags[space.num] === R) {
-			//TODO: repair my own fort (otherwise can't do anything to a fort I already own)
+			/* 5.6.4 - Repair a fort */
+			if (space.type === FORT) {
+				if (!is_damaged_fort(space.num)) continue
+			}
+
 			//TODO: move my existing ship
 		}
-		//TODO: seize damaged forts
+		else {
+			if (space.type === FORT) {
+				if (G.flags[space.num] === NONE) {
+					/* 5.6.3 - Build a fort */
+					var allowed_to_build_fort = false
+					for (const link of space.connects) {
+						if (G.flags[link] !== R) continue
+						if (![ TERRITORY, NAVAL, MARKET ].includes(data.spaces[link].type)) continue // Need a friendly fort, territory, or market
+						if (!set_has(G.controlled_start_of_round, link)) continue                    // Need it since start of action round
+						allowed_to_build_fort = true
+						break
+					}
+					if (!allowed_to_build_fort) continue
+				}
+				else {
+					/* 5.6.4 - Seize ('repair') an enemy fort  */
+					if (!is_damaged_fort(space.num)) continue                              // Must be damaged
+					var allowed_to_seize_fort = false
+					for (const link of space.connects) {
+						if (G.flags[link] !== R) continue
+						if (![ NAVAL , MARKET ].includes(data.spaces[link].type)) continue // Need a fort, territory, or market (but don't care if since start of action round apparently)
+						allowed_to_seize_fort = true
+						break
+					}
+					if (!allowed_to_seize_fort) continue
+				}
+			}
+		}
 		action_space(space.num)
 	}
 }
@@ -1479,8 +1526,6 @@ P.may_spend_action_points = {
 		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
-
-		find_isolated_markets() ////TODO take this out, it's only here for debug
 	}
 }
 
