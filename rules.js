@@ -408,13 +408,6 @@ function on_setup(scenario, options) {
 	war_layout_basic_war_tiles()
 	draw_bonus_war_tile(FRANCE, 1) // France starts the game with one bonus war tile
 
-	log ("# France bonus war tiles in first theater: " + G.theater_bonus_war_tiles[FRANCE][1].length)
-	log ("# Britain bonus war tiles in first theater: " + G.theater_bonus_war_tiles[BRITAIN][1].length)
-	log ("# France bonus war tiles in UNDEPLOYED theater: " + G.theater_bonus_war_tiles[FRANCE][0].length)
-	log ("# Britain bonus war tiles in UNDEPLOYED theater: " + G.theater_bonus_war_tiles[BRITAIN][0].length)
-	log ("# France BASIC war tiles in UNDEPLOYED theater: " + G.theater_basic_war_tiles[FRANCE][0].length)
-	log ("# Britain BASIC war tiles in UNDEPLOYED theater: " + G.theater_basic_war_tiles[BRITAIN][0].length)
-
 	G.awards = []
 	G.award_chits = []
 
