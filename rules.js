@@ -1122,12 +1122,12 @@ function check_if_market_isolated(market)
 	let who = G.flags[market]
 	if ((who !== FRANCE) && (who !== BRITAIN)) return false // Ignore unflagged markets, Spain, etc.
 
-	L.connection_queue  = [ market ]
-	L.already_traversed = [ market ]
+	let connection_queue  = [ market ]
+	let already_traversed = [ market ]
 	let connected = false
 
-	while (!connected && L.connection_queue.length > 0) {
-		var s = L.connection_queue.pop()
+	while (!connected && connection_queue.length > 0) {
+		var s = connection_queue.pop()
 		if ((data.spaces[s].type === NAVAL) || (data.spaces[s].type === TERRITORY)) {
 			if (G.flags[s] === who) connected = true
 		}
@@ -1139,9 +1139,9 @@ function check_if_market_isolated(market)
 			if (G.flags[s] !== who) continue                           // Only trace through our own flagged markets
 			if ((s !== market) && has_conflict_marker(s)) continue     // Can't trace through conflict marker, but original starting point can have conflict
 			for (const connection of data.spaces[s].connects) {
-				if (L.already_traversed.includes(connection)) continue // Don't traverse things twice
-				L.already_traversed.push(connection)
-				L.connection_queue.unshift(connection)
+				if (already_traversed.includes(connection)) continue // Don't traverse things twice
+				already_traversed.push(connection)
+				connection_queue.unshift(connection)
 			}
 		}
 	}
