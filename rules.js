@@ -355,9 +355,9 @@ const PLAYED_EVENTS = 218
 /* SETUP */
 function on_setup(scenario, options) {
 	G.active = FRANCE
-	G.hand = [ [], [] ]
-	G.ministry = [ [], [] ]
-	G.unbuilt_squadrons = [ 7, 7 ]
+	G.hand = [[], []]
+	G.ministry = [[], []]
+	G.unbuilt_squadrons = [7, 7]
 	G.vp = 0
 	G.turn = 0
 	G.next_war = WAR_WSS
@@ -367,7 +367,7 @@ function on_setup(scenario, options) {
 	G.debt_limit = []
 	G.treaty_points = []
 
-	G.played_tiles = [ [], [] ]
+	G.played_tiles = [[], []]
 
 	for (var i = FRANCE; i <= BRITAIN; i++) {
 		G.debt_limit[i] = 6
@@ -390,15 +390,23 @@ function on_setup(scenario, options) {
 		G.investment_tile_stack.push(i)
 	shuffle(G.investment_tile_stack)
 
+	// This are the face-down stocks of war tiles the players draw from
 	G.basic_war_tiles = [ [], [] ]
-	for (i = 0; i < NUM_BASE_WAR_TILES; i++) {
-		G.basic_war_tiles[FRANCE].push(i)
-		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
-	}
-	shuffle(G.basic_war_tiles[FRANCE])
-	shuffle(G.basic_war_tiles[BRITAIN])
+	G.bonus_war_tiles = [ [], [] ]
 
+	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
+	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+
+	// "Sets" -- keeps track of which individual war tiles have been revealed to the opponent, by tile index
+	G.basic_war_tile_revealed = [[], []]
+	G.bonus_war_tile_revealed = [[], []]
+
+	war_layout_reshuffle_basic_war_tiles()
 	add_next_war_bonus_tiles()
+
+	war_layout_basic_war_tiles()
+	draw_bonus_war_tile(FRANCE, 1) // France starts the game with one bonus war tile
 
 	G.awards = []
 	G.award_chits = []
@@ -587,6 +595,17 @@ function add_next_war_bonus_tiles() {
 	}
 	shuffle(G.bonus_war_tiles[FRANCE])
 	shuffle(G.bonus_war_tiles[BRITAIN])
+}
+
+
+function draw_basic_war_tile(who, theater) {
+	if (G.basic_war_tiles[who].length < 1) return
+	G.theater_basic_war_tiles[who][theater].push(G.basic_war_tiles[who].pop())
+}
+
+function draw_bonus_war_tile(who, theater) {
+	if (G.bonus_war_tiles[who].length < 1) return
+	G.theater_bonus_war_tiles[who][theater].push(G.basic_war_tiles[who].pop())
 }
 
 /* 3.8 - CONFLICT MARKERS */
@@ -1602,13 +1621,59 @@ P.war_reset_phase = function () {
 }
 
 
+function war_layout_reshuffle_basic_war_tiles() {
+	G.basic_war_tiles = [[], []]
+	for (var i = 0; i < NUM_BASE_WAR_TILES; i++) {
+		G.basic_war_tiles[FRANCE].push(i)
+		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+	}
+	shuffle(G.basic_war_tiles[FRANCE])
+	shuffle(G.basic_war_tiles[BRITAIN])
+
+	G.bonus_war_tile_revealed = [ [], [] ] // Turn them all back face down
+}
+
+
+/* 7.6 - War layout - each side gets one basic war tile per theater to start out */
+function war_layout_basic_war_tiles()
+{
+	for (var who = FRANCE; who <= BRITAIN; who++) {
+		for (var i = 0; i < data.wars[G.next_war].theaters; i++) {
+			draw_basic_war_tile(who, 0) // I'm presently assuming "Military Planning" (12.2) will be our default
+		}
+	}
+}
+
 /* 7.6 - WAR LAYOUT PHASE */
 
 P.war_layout_phase = function () {
+
+	let current_war_bonus_tiles = [ 0, 0 ]
+	for (var who = FRANCE; who <= BRITAIN; who++) {
+		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
+			current_war_bonus_tiles[who] += G.theater_bonus_war_tiles[who][theater].length
+		}
+	}
+
 	G.next_war++;
 	log ("=War Layout Phase")
+	war_layout_reshuffle_basic_war_tiles()
 	add_next_war_bonus_tiles()
+	war_layout_basic_war_tiles()
 	log (data.wars[G.next_war].name + " mat and Bonus War Tiles added")
+
+	if (G.next_war === WAR_7YW) {
+		for (who = FRANCE; who <= BRITAIN; who++) {
+			let amount = Math.min(current_war_bonus_tiles[who], 3)
+			if (amount > 0) {
+				log(data.flags[who].name + " receives " + amount + " bonus war tiles for Seven Years War.")
+				for (var i = 0; i < amount; i++) {
+					draw_bonus_war_tile(who, 0)
+				}
+			}
+		}
+	}
+
 	end()
 }
 

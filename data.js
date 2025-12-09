@@ -407,10 +407,10 @@ data.turns = [
 ]
 
 data.wars = [
-	{ "num": 0, "id": "WSS", "name": "War of the Spanish Succession" },
-	{ "num": 1, "id": "WAS", "name": "War of the Austrian Succession" },
-	{ "num": 2, "id": "7YW", "name": "Seven Years War" },
-	{ "num": 3, "id": "AWI", "name": "American War of Independence" }
+	{ "num": 0, "id": "WSS", "theaters": 4, "name": "War of the Spanish Succession" },
+	{ "num": 1, "id": "WAS", "theaters": 4, "name": "War of the Austrian Succession" },
+	{ "num": 2, "id": "7YW", "theaters": 4, "name": "Seven Years War" },
+	{ "num": 3, "id": "AWI", "theaters": 3, "name": "American War of Independence" }
 ]
 
 data.cards = [
