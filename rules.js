@@ -1371,8 +1371,9 @@ function space_action_type(s) {
 }
 
 
-/* Purchases in multiple regions - 5.3.4 */
+/* Purchases in multiple regions - 5.3.4 - does NOT apply to military */
 function charge_region_switching_penalty(type, region) {
+	if (type === MIL) return false
 	if (set_has(G.action_point_regions[type], region)) return false // We've already spent this type of points in this region, so don't charge again
 
 	for (var r = 0; r < NUM_REGIONS; r++) {
@@ -1404,18 +1405,29 @@ function action_point_cost (s, type)
 {
 	var cost = data.spaces[s].cost
 
-	if (type === MIL) return cost // We probably won't ultimately use this function for Military operations, but one way or another let's get the hell out of here
-
 	// General Rule: Apply all reductions before any increases (5.4.2, 5.5.2)
 
-	//TODO apply discounts from event cards, advantages, etc
+	if (type === MIL) {
+		if ((data.spaces[s].type === FORT) && is_damaged_fort()) {
+			if (G.flags[s] === R) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player. For now I *think* the latter.
+				cost -= 1 // Repairing friendly fort costs one less than strength
+			} else {
+				cost += 1 // Seizing enemy fort costs one more than strength
+			}
+		}
 
-	if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
+		//TODO handle naval spaces, probably elsewhere
+	}
+	else {
+		//TODO apply discounts from event cards, advantages, etc
 
-	if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
-	if (type === ECON) {
-		if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
-		if (is_protected(s))       cost++   // Protected markets cost +1 to shift
+		if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
+
+		if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
+		if (type === ECON) {
+			if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
+			if (is_protected(s)) cost++   // Protected markets cost +1 to shift
+		}
 	}
 
 	return cost
