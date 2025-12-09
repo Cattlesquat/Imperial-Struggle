@@ -400,6 +400,21 @@ const war_display = [
 	$("#war_awi"),
 ]
 
+const war_reverse = [
+	[
+		"marker hex war-wss fr",
+		"marker hex war-was fr",
+		"marker hex war-7yw fr",
+		"marker hex war-awi fr",
+	],
+	[
+		"marker hex war-wss br",
+		"marker hex war-was br",
+		"marker hex war-7yw br",
+		"marker hex war-awi br",
+	]
+]
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -409,10 +424,11 @@ function update_war_display() {
 	}
 
 	if (war < NUM_WARS) {
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0])
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0])
+		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr")
+		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br")
+
+		populate_with_list( "lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war])
+		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war])
 
 		console.log ("PLAY.JS")
 		console.log ("# France bonus war tiles in first theater: " + V.theater_bonus_war_tiles[FRANCE][1].length)
@@ -426,8 +442,16 @@ function update_war_display() {
 		offset = war * 12 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
-				populate_with_list("lout-theater", offset, "basic_war", V.theater_basic_war_tiles[player][theater])
-				populate_with_list("lout-theater", offset, "bonus_war", V.theater_bonus_war_tiles[player][theater])
+				populate_with_list(
+					"lout-theater", offset,
+					"basic_war", V.theater_basic_war_tiles[player][theater],
+					war_reverse[war][player]
+				)
+				populate_with_list(
+					"lout-theater", offset,
+					"bonus_war", V.theater_bonus_war_tiles[player][theater])
+					war_reverse[war][player]
+				)
 				++offset
 			}
 		}
