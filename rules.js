@@ -1486,6 +1486,11 @@ P.may_spend_action_points = {
 			button ("construct_squadron")
 		}
 
+		//TODO maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
+		//if (G.military_upgrade) {
+		//	button ("military_upgrade")
+		//}
+
 		// I'm presently undecided whether to have these here (or only when you try to spend extra, or just have you click on the debt counters)
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
@@ -1494,8 +1499,7 @@ P.may_spend_action_points = {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 			left += G.action_points_major[i] + G.action_points_minor[i]
 		}
-		button( (left > 0) ? "confirm_end_action_round" : "end_action_round")
-
+		button( (left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : "end_action_round")
 	},
 	draw_event() {
 		log ("draw event!")
@@ -1504,6 +1508,9 @@ P.may_spend_action_points = {
 		log ("construct squadron!")
 	},
 	confirm_end_action_round() {
+		this.end_action_round()
+	},
+	confirm_no_military_upgrade() {
 		this.end_action_round()
 	},
 	end_action_round() {

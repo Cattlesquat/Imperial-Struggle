@@ -254,6 +254,7 @@ function on_update() {
 
 	action_button("end_action_round", "End Action Round")
 	confirm_action_button("confirm_end_action_round", "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
+	confirm_action_button("confirm_no_military_upgrade", "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
 
 	action_button("done", "Done")
 
