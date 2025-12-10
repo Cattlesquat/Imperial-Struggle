@@ -591,14 +591,25 @@ function has_advantage(p, a) {
 	return true
 }
 
+function is_advantage_conflicted(a)
+{
+	for (var s of data.advantages[a].req) {
+		if (has_conflict_marker(s)) return true
+	}
+	return false
+}
+
+/* 8.0 - Advantages */
 function has_advantage_eligible(p, a)
 {
-	if (!has_advantage(p, a)) return false
-	if (G.advantages_newly_acquired[a]) return false
-	if (G.advantages_exhausted[a]) return false
+	if (!has_advantage(p, a)) return false				// 8.1 - control all the connected spaces
+	if (G.advantages_newly_acquired[a]) return false    // 8.0 - Can only be used the round *after* control is gained
+	if (G.advantages_exhausted[a]) return false			// 8.1 - Exhausted when used
+	if (is_advantage_conflicted(a)) return false		// 8.1 - can't be used if any conflict markers, but remains "controlled"
 	return true
 }
 
+/* 8.0 - Advantages */
 function update_advantages() {
 	for (var i = 0; i < NUM_ADVANTAGES; i++) {
 		var old = G.advantages[i]
