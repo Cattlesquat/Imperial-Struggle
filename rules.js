@@ -411,7 +411,10 @@ function on_setup(scenario, options) {
 	G.awards = []
 	G.award_chits = []
 
-	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
+	G.advantages                 = new Array(NUM_ADVANTAGES).fill(NONE)
+	G.advantages_newly_acquired  = new Array(NUM_ADVANTAGES).fill(false)
+	G.advantages_exhausted       = new Array(NUM_ADVANTAGES).fill(false)
+	G.advantages_used_this_round = [0, 0]
 
 	G.flags = [] // All the flags on the map
 	G.dirty = [] // Any changes since last investment tile? If so, highlight them!
@@ -480,6 +483,9 @@ function on_setup(scenario, options) {
 	G.navy_box = []
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
+
+	update_advantages()
+	advantages_acquired_last_round_now_available()
 
 	call("main")
 }
@@ -578,23 +584,47 @@ function on_view() {
 
 
 
-function player_has_advantage(p, a) {
-	for (var s of data.advantages.req)
+function has_advantage(p, a) {
+	for (var s of data.advantages[a].req)
 		if (G.flags[s] !== p)
 			return false
 	return true
 }
 
+function has_advantage_eligible(p, a)
+{
+	if (!has_advantage(p, a)) return false
+	if (G.advantages_newly_acquired[a]) return false
+	if (G.advantages_exhausted[a]) return false
+	return true
+}
+
 function update_advantages() {
 	for (var i = 0; i < NUM_ADVANTAGES; i++) {
-		if (player_has_advantage(FRANCE, i))
+		var old = G.advantages[i]
+		if (has_advantage(FRANCE, i))
 			G.advantages[i] = FRANCE
-		else if (player_has_advantage(BRITAIN, i))
+		else if (has_advantage(BRITAIN, i))
 			G.advantages[i] = BRITAIN
 		else
 			G.advantages[i] = NONE
+
+		if (old !== G.advantages[i]) {
+			G.advantages_newly_acquired[i] = true
+			if (G.advantages[i] !== NONE) {
+				log(data.flags[G.advantages[i]].name + " GAINS " + data.advantages[i].name + " Advantage")
+			} else {
+				log(data.flags[old].name + " LOSES " + data.advantages[i].name + " Advantage")
+			}
+		}
 	}
 }
+
+function advantages_acquired_last_round_now_available() // a sort of awkward name, but otherwise hard to distinguish from "exhausted"/refreshed advantage state
+{
+	G.advantages_newly_acquired.fill(false)
+}
+
 
 function beginning_of_era() {
 	return ([PEACE_TURN_1, PEACE_TURN_3, PEACE_TURN_5].includes(G.turn))
@@ -830,7 +860,7 @@ P.reset_phase = function () {
 	}
 
 	// remove exhausted from advantage and ministry cards
-	G.exhausted_advantage = []
+	G.advantages_exhausted.fill(false)
 	G.ministry_exhausted  = [ [], [] ]
 
 	// move investments to used
@@ -1275,6 +1305,10 @@ function start_action_round()
 	}
 
 	find_isolated_markets()
+
+	update_advantages()
+	advantages_acquired_last_round_now_available()
+	G.advantages_used_this_round = [0, 0]
 }
 
 P.select_investment_tile = {
@@ -1457,7 +1491,10 @@ function action_eligible_ministries() {
 }
 
 function action_eligible_advantages() {
-
+	if (G.advantages_used_this_round[R] >= 2) return
+	for (var a = 0; a < NUM_ADVANTAGES; a++) {
+		if (has_advantage_eligible(R, a)) action_advantage(a)
+	}
 }
 
 
@@ -1528,6 +1565,20 @@ function action_point_cost (s, type)
 	}
 
 	return cost
+}
+
+
+function reflag_space(s, who) {
+	var former = G.flags[s]
+	if (former === who) return // If we already own the space, we shouldn't do anything
+
+	G.flags[s] = who
+	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
+	log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+
+	remove_conflict_marker(s) // Reflagging a space removes any conflict marker
+
+	update_advantages() // This could change the ownership of an advantage
 }
 
 
@@ -1634,14 +1685,8 @@ P.may_spend_action_points = {
 		}
 
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
-		var former = G.flags[s]
-		if (G.flags[s] === NONE) {
-			G.flags[s] = R
-		} else {
-			G.flags[s] = NONE
-		}
-		mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
-		log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+
+		reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
 
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 	},
