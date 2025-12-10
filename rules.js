@@ -349,6 +349,14 @@ const DRAW_PILE = 216
 const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
 
+// ACTION_SUBPHASES
+const BEFORE_PICKING_TILE           = 0
+const PICKED_TILE_OPTION_TO_PASS    = 1
+const OPTION_TO_PLAY_EVENT          = 2
+const DURING_EVENT                  = 3
+const BEFORE_SPENDING_ACTION_POINTS = 4
+const ACTION_POINTS_ALREADY_SPENT   = 5
+
 /* TILES & CARDS */
 
 
@@ -1006,7 +1014,17 @@ P.ministry_phase = function () {
 
 P.choose_ministry_cards = {
 	prompt() {
-		V.prompt = "MINISTRY PHASE: Choose two ministry cards."
+		if (G.ministry[R].length < 2) {
+			V.prompt = "MINISTRY PHASE: Choose two ministry cards."
+		} else {
+			V.prompt = "Confirm choice of ministers: "
+			var any = false
+			for (const i of G.ministry[R]) {
+				if (any) V.prompt += ", ";
+				V.prompt += data.ministries[i].name
+				any = true;
+			}
+		}
 		V.all_ministries = []
 		for (var m of data.ministries) {
 			if (m.side === R && !G.ministry[R].includes(m.num)) {
@@ -1163,6 +1181,13 @@ P.choose_first_player = {
 }
 
 P.confirm_first_player = {
+	_begin() {
+		// Don't need a confirmation step if player picks himself - head straight into his turn
+		if (G.first_player === R) {
+			G.active = G.first_player
+			end()
+		}
+	},
 	prompt() {
 		V.prompt = "INITIATIVE PHASE: Confirm choice of first player: " + data.flags[G.first_player].name
 		button("confirm")
@@ -1323,13 +1348,14 @@ function start_action_round()
 
 P.select_investment_tile = {
 	prompt() {
-		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile (or pass to reduce Debt by " + debt_reduction + ")."
+		//var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
+		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister."; // (or pass to reduce Debt by " + debt_reduction + ")." //BR// technically must pick a tile before passing
 		for (var tile of G.available_investments) {
 			if (tile in G.played_investments) continue;
 			action_investment(tile)
 		}
-		button("pass", G.debt[R] > 0)
+		action_eligible_ministries()
+		//button("pass", G.debt[R] > 0)
 	},
 	investment(tile) {
 		push_undo()
@@ -1356,6 +1382,9 @@ P.select_investment_tile = {
 		start_action_round()
 		end()
 	},
+	ministry_card(m) {
+		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: BEFORE_PICKING_TILE })
+	},
 	pass() {
 		push_undo()
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
@@ -1365,12 +1394,69 @@ P.select_investment_tile = {
 	}
 }
 
+
+// Is there something the player could conceivably accomplish by clicking on this ministry right now
+function ministry_useful_this_phase(m, phase)
+{
+	switch (phase) {
+		case BEFORE_PICKING_TILE:
+			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS ].includes(m)
+		default:
+			return true
+	}
+}
+
+
+P.activate_ministry_card = {
+	_begin() {
+		if (L.ministry_index >= 0) {
+			if (!G.ministry_revealed[R][L.ministry_index]) {
+				call ("confirm_reveal_ministry", { ministry_index : L.ministry_index})
+			} else if (!ministry_useful_this_phase(G.ministry[R][L.ministry_index], L.subphase)) {
+				end()
+			}
+		} else {
+			throw new Error("Invalid ministry index: " + L.ministry_index)
+		}
+	},
+	prompt() {
+		V.prompt = "Do some of that fancy ministry shit"
+	}
+}
+
+function reveal_ministry(index) {
+	let m = G.ministry[R][index]
+	G.ministry_revealed[R][index] = true
+	log ("MINISTRY REVEALED: " + data.ministries[m].name)
+
+	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
+}
+
+P.confirm_reveal_ministry = {
+	_begin() {
+		let m = G.ministry[R][L.ministry_index]
+	},
+	prompt() {
+		let m = G.ministry[R][L.ministry_index]
+		V.prompt = "Reveal " + data.ministries[m].name + " Ministry Card?"
+		action("reveal_ministry")
+	},
+	reveal_ministry() {
+		push_undo()
+		reveal_ministry(L.ministry_index)
+		end()
+	},
+}
+
+
+
 P.may_play_event_card = {
 	prompt() {
-		V.prompt = "ACTION ROUND " + G.round + ": Play event card, reveal ministry, or pass to skip to actions"
+		V.prompt = "ACTION ROUND " + G.round + ": Play event card, use ministry, or pass to skip to actions"
 		for (var card of G.hand[R]) {
 			action_event_card(card)
 		}
+		action_eligible_ministries()
 		button ("pass")
 	},
 	event_card(c) {
@@ -1379,6 +1465,9 @@ P.may_play_event_card = {
 		log (data.cards[c].name);
 		G.played_events.push(c)
 		//TODO: Here we branch to an unholy number of possible events
+	},
+	ministry_card(m) {
+		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: OPTION_TO_PLAY_EVENT })
 	},
 	pass () {
 		push_undo()
@@ -1593,6 +1682,9 @@ function reflag_space(s, who) {
 
 
 P.may_spend_action_points = {
+	_begin() {
+		G.has_spent_action_points = false
+	},
 	prompt() {
 		var prompt = "ACTION ROUND " + G.round + ": Spend Action Points ("
 		var need_comma = false;
@@ -1693,6 +1785,7 @@ P.may_spend_action_points = {
 		} else if (G.action_points_major[type] > 0) {
 			G.action_points_major[type] = 0
 		}
+		G.has_spent_action_points = true
 
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
 
@@ -1701,50 +1794,11 @@ P.may_spend_action_points = {
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 	},
 	ministry_card(m) {
-		let index = G.ministry[R].indexOf(m)
-		if (index >= 0) {
-			if (!G.ministry_revealed[R][index]) {
-				G.ministry_index = index
-				goto ("confirm_reveal_ministry")
-			}
-			else {
-				log ("(already revealed - TBD: being able to do something with it)")
-
-				//TODO: Use ministry
-			}
-		}
-		else {
-			// Bad. Shouldn't be possible.
-		}
+		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: G.has_spent_action_points ? ACTION_POINTS_ALREADY_SPENT : BEFORE_SPENDING_ACTION_POINTS })
 	},
 	advantage(a) {
 
 	}
-}
-
-
-function reveal_ministry(index) {
-	let m = G.ministry[R][index]
-	G.ministry_revealed[R][index] = true
-	log ("MINISTRY REVEALED: " + data.ministries[m].name)
-
-    //TODO: effects right when ministry is revealed, if applicable
-}
-
-P.confirm_reveal_ministry = {
-	_begin() {
-		let m = G.ministry[R][G.ministry_index]
-	},
-	prompt() {
-		let m = G.ministry[R][G.ministry_index]
-		V.prompt = "Reveal " + data.ministries[m].name + " Ministry Card?"
-		action("reveal_ministry")
-	},
-	reveal_ministry() {
-		push_undo()
-		reveal_ministry(G.ministry_index)
-		goto ("may_spend_action_points")
-	},
 }
 
 
