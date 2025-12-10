@@ -422,7 +422,7 @@ function on_setup(scenario, options) {
 	G.advantages                 = new Array(NUM_ADVANTAGES).fill(NONE)
 	G.advantages_newly_acquired  = new Array(NUM_ADVANTAGES).fill(false)
 	G.advantages_exhausted       = new Array(NUM_ADVANTAGES).fill(false)
-	G.advantages_used_this_round = [0, 0]
+	G.advantages_used_this_round = 0
 
 	G.flags = [] // All the flags on the map
 	G.dirty = [] // Any changes since last investment tile? If so, highlight them!
@@ -1094,6 +1094,31 @@ function has_inactive_ministry (who, m)
 	return !G.ministry_revealed[who][idx]
 }
 
+// Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
+function require_ministry(who, m)
+{
+	G.has_required_ministry = undefined
+	if (has_active_ministry(who, m)) {
+		G.has_required_ministry = true
+	}
+	else if (!has_ministry(who, m)) {
+		G.has_required_ministry = false
+	}
+	G.ministry_index = G.ministry[who].indexOf(m)
+	call ("ministry_is_required")
+
+	console.log("has required? " + G.has_required_ministry)
+
+	return G.has_required_ministry
+}
+
+P.ministry_is_required = script (`
+    call confirm_reveal_ministry
+    eval {    
+    	G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
+    }
+`)
+
 // Some ministries have more than one separately exhaustible ability
 function is_ministry_exhausted (who, m, ability = 0)
 {
@@ -1250,16 +1275,32 @@ P.final_scoring_phase = function () {
 /* 5.0 - ACTION ROUNDS */
 
 P.action_round = script (`
+    eval {
+        start_action_round()	// This is the official "start of action round" per the "Play Note" on p. 10 (beneath 5.1)
+    }
 	call select_investment_tile
-	if (G.played_tile >= 0) {
-		if (data.investments[G.played_tile].majorval <= 3) { // We get an event if we picked a tile with major action strength <= 3
-			call may_play_event_card
-		}
-		call may_spend_action_points
-		call end_of_action_round
-	}
+	call action_round_core
+	call end_of_action_round
 	set G.played_tile -1
 `)
+
+function start_action_round() {
+	G.action_round_subphase = BEFORE_PICKING_TILE
+
+	G.controlled_start_of_round = [] // Certain effects care if we controlled this space from beginning of action round
+	for (var s = 0; s < NUM_SPACES; s++) {
+		if (G.flags[s] !== R) continue
+		set_add(G.controlled_start_of_round, s)
+	}
+
+	find_isolated_markets() // Markets are isolated for the whole action around if-and-only-if they're isolated at the beginning of the round
+
+	// Advantages we acquired last round now "age in" and are available to be used. Any we acquire *after* this point won't be available until the following round
+	update_advantages()
+	advantages_acquired_last_round_now_available()
+	G.advantages_used_this_round = 0
+}
+
 
 function mark_dirty(s) {
 	set_add(G.dirty, s)
@@ -1316,14 +1357,42 @@ function find_isolated_markets()
 }
 
 
-function start_action_round()
+function selected_a_tile(tile)
 {
+	G.action_round_subphase = PICKED_TILE_OPTION_TO_PASS
+
+	log ("=Action Round " + G.round + " (" + data.flags[R].adj + ")")
+	log (data.flags[R].name + " selects investment tile: ");
+	log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
+	var major = data.investments[tile].majorval
+
+	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
+	if (major === 3) {
+		log ("Event allowed")
+	} else if (major === 2) {
+		log ("Event allowed + Military Upgrade")
+	}
+
+	log ("")
+
+	clear_dirty() // Clear highlights of opponent's previous round actions
+
+	G.played_investments.push(tile)      //BR// We leave it in available_investments but mark it played
+	G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
+	G.played_tile = tile
+	G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
+
 	// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
 	G.action_points_major = [ 0, 0, 0 ]
 	G.action_points_minor = [ 0, 0, 0 ]
 	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
 	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
 
+	//TODO: ministries might increase our amounts right away
+
+	// We're eligible for a class of action if we had at least 1 point of it. We're eligible for major if we had at least 1 point of major.
+	// This controls whether we're allowed to use this category at all.
+	// Initially set to what our tile gives us, but event cards could add other categories
 	G.action_points_eligible       = []
 	G.action_points_eligible_major = []
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
@@ -1332,21 +1401,12 @@ function start_action_round()
 	}
 
 	G.action_point_regions = [ [], [], [] ] // For each flavor of action points (though only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
-
-	G.controlled_start_of_round = [] // Certain effects care if we controlled this space from beginning of action round
-	for (var s = 0; s < NUM_SPACES; s++) {
-		if (G.flags[s] !== R) continue
-		set_add(G.controlled_start_of_round, s)
-	}
-
-	find_isolated_markets()
-
-	update_advantages()
-	advantages_acquired_last_round_now_available()
-	G.advantages_used_this_round = [0, 0]
 }
 
 P.select_investment_tile = {
+	_begin() {
+		push_undo()
+	},
 	prompt() {
 		//var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
 		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister."; // (or pass to reduce Debt by " + debt_reduction + ")." //BR// technically must pick a tile before passing
@@ -1359,31 +1419,11 @@ P.select_investment_tile = {
 	},
 	investment(tile) {
 		push_undo()
-		log ("=Action Round " + G.round + " (" + data.flags[R].adj + ")")
-		log (data.flags[R].name + " selects investment tile: ");
-		log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
-		var major = data.investments[tile].majorval
-
-		//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
-		if (major === 3) {
-			log ("Event allowed")
-		} else if (major === 2) {
-			log ("Event allowed + Military Upgrade")
-		}
-
-		log ("")
-
-		clear_dirty()
-
-		G.played_investments.push(tile)      //BR// We leave it in available_investments but mark it played
-		G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
-		G.played_tile = tile
-		G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
-		start_action_round()
+		selected_a_tile(tile)
 		end()
 	},
 	ministry_card(m) {
-		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: BEFORE_PICKING_TILE })
+		handle_ministry_card_click(m)
 	},
 	pass() {
 		push_undo()
@@ -1395,28 +1435,93 @@ P.select_investment_tile = {
 }
 
 
-// Is there something the player could conceivably accomplish by clicking on this ministry right now
-function ministry_useful_this_phase(m, phase)
+function handle_event_card_click(c) {
+	push_undo()
+
+	if (data.investments[G.played_tile].majorval > 3) {
+		let req = require_ministry(R, MARQUIS_DE_CONDORCET)
+		console.log (req)
+		if (req === undefined) return
+		if (!req) {
+			discard_undo()
+			return
+		}
+	}
+	if ((data.cards[c].action !== WILD) && (data.cards[c].action !== data.investments[G.played_tile].majortype)) {
+		let req = require_ministry(R, BANK_OF_ENGLAND)
+		console.log (req)
+		if (req === undefined) return
+		if (!req) {
+			discard_undo()
+			return
+		}
+	}
+
+	// IDEALLY it gets down here if we're allowed to play the event
+	// If we had to confirm revealing a minister, it should come down here only if we accepted revealing it.
+	// (Presently I can't avoid it either "always falling through" or "never falling through" the reveal -- present version never falls through if there's a reveal needed, or rather it hits one of the early returns)
+	// Example test case is play Britain, pick Bank of England ministry, make sure you have an event card with coin in upper left, then pick a small (<4) investment tile does NOT have a coin, and then try to play your coin event.
+	//         It will ask you if you want to reveal Bank of England. If you DO it should then say in the log you played the event; if you DON'T it should NOT say that (because you have to undo out)
+
+	G.action_round_subphase = DURING_EVENT
+	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS //TODO distinguish those two subphases as appropriate
+	log(data.flags[R].name + " plays Event: ")
+	log(data.cards[c].name);
+	G.played_events.push(c)
+	//TODO: Here we branch to an unholy number of possible events
+}
+
+
+
+function handle_ministry_card_click(m)
 {
-	switch (phase) {
+	G.ministry_index  = G.ministry[R].indexOf(m)
+	if (G.ministry_index >= 0) {
+		call ("ministry_card")
+	}
+}
+
+P.ministry_card = script (`
+    if (!G.ministry_revealed[R][G.ministry_index]) {
+    	call confirm_reveal_ministry
+    }
+    
+    if (G.ministry_revealed[R][G.ministry_index]) {
+        eval {
+        	L.ministry_useful_this_phase = ministry_useful_this_phase(G.ministry[G.ministry_index], G.action_round_subphase)
+    	}
+    	
+    	if (L.ministry_useful_this_phase) {
+    		call activate_ministry_card
+    	}
+    }
+`)
+
+
+// Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
+function ministry_useful_this_phase(m, subphase)
+{
+	switch (subphase) {
 		case BEFORE_PICKING_TILE:
 			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS ].includes(m)
+
+		case OPTION_TO_PLAY_EVENT:
+		case DURING_EVENT:
+		case BEFORE_SPENDING_ACTION_POINTS:
+		case ACTION_POINTS_ALREADY_SPENT:
+
 		default:
 			return true
 	}
 }
 
 
+
+
 P.activate_ministry_card = {
 	_begin() {
-		if (L.ministry_index >= 0) {
-			if (!G.ministry_revealed[R][L.ministry_index]) {
-				call ("confirm_reveal_ministry", { ministry_index : L.ministry_index})
-			} else if (!ministry_useful_this_phase(G.ministry[R][L.ministry_index], L.subphase)) {
-				end()
-			}
-		} else {
-			throw new Error("Invalid ministry index: " + L.ministry_index)
+		if (!G.ministry_revealed[R][G.ministry_index] || !ministry_useful_this_phase(G.ministry[R][G.ministry_index], G.ministry_subphase)) {
+			end()
 		}
 	},
 	prompt() {
@@ -1424,9 +1529,11 @@ P.activate_ministry_card = {
 	}
 }
 
-function reveal_ministry(index) {
-	let m = G.ministry[R][index]
-	G.ministry_revealed[R][index] = true
+function reveal_ministry(who, index) {
+	if (index < 0) return
+
+	let m = G.ministry[who][index]
+	G.ministry_revealed[who][index] = true
 	log ("MINISTRY REVEALED: " + data.ministries[m].name)
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
@@ -1434,16 +1541,15 @@ function reveal_ministry(index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
-		let m = G.ministry[R][L.ministry_index]
+		if (G.ministry_revealed[R][G.ministry_index]) end()
 	},
 	prompt() {
-		let m = G.ministry[R][L.ministry_index]
-		V.prompt = "Reveal " + data.ministries[m].name + " Ministry Card?"
+		V.prompt = "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?"
 		action("reveal_ministry")
 	},
 	reveal_ministry() {
 		push_undo()
-		reveal_ministry(L.ministry_index)
+		reveal_ministry(R, G.ministry_index)
 		end()
 	},
 }
@@ -1467,7 +1573,7 @@ P.may_play_event_card = {
 		//TODO: Here we branch to an unholy number of possible events
 	},
 	ministry_card(m) {
-		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: OPTION_TO_PLAY_EVENT })
+		handle_ministry_card_click(m)
 	},
 	pass () {
 		push_undo()
@@ -1584,13 +1690,16 @@ function action_all_eligible_spaces() {
 }
 
 function action_eligible_ministries() {
-	for (const m of G.ministry[R]) {
-		action_ministry_card(m)
+	for (var index = 0; index < G.ministry[R].length; index++) {
+		if (G.ministry_revealed[R][index]) {
+			if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
+		}
+		action_ministry_card(G.ministry[R][index])
 	}
 }
 
 function action_eligible_advantages() {
-	if (G.advantages_used_this_round[R] >= 2) return
+	if (G.advantages_used_this_round >= 2) return
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
 		if (has_advantage_eligible(R, a)) action_advantage(a)
 	}
@@ -1680,13 +1789,39 @@ function reflag_space(s, who) {
 	update_advantages() // This could change the ownership of an advantage
 }
 
-
-P.may_spend_action_points = {
+/* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
+P.action_round_core = {
 	_begin() {
-		G.has_spent_action_points = false
+		push_undo()
 	},
 	prompt() {
-		var prompt = "ACTION ROUND " + G.round + ": Spend Action Points ("
+		var prompt = "ACTION ROUND " + G.round + ": "
+
+		let any = false
+
+		//if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {   //BR// I'm thinking the button existing is enough for this.
+		//	prompt += "Pass to reduce Debt"
+		//	any = true;
+		//}
+
+		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
+			if ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET)) { // Eligible for event if our tiles major base value was <= 3
+				if (any) prompt += ", "
+				prompt += "Play Event"
+				any = true
+
+				for (var card of G.hand[R]) {
+					// Only events that either match our major action or be "wild" events (the ones that don't show a symbol)
+					if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
+						(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON))) {
+						action_event_card(card)
+					}
+				}
+			}
+		}
+
+		if (any) prompt += ", "
+		prompt += "Spend Action Points ("
 		var need_comma = false;
 		var early = [ false, false, false ]
 		for (var level = MAJOR; level <= MINOR; level++) {
@@ -1751,13 +1886,46 @@ P.may_spend_action_points = {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 			left += G.action_points_major[i] + G.action_points_minor[i]
 		}
-		button( (left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : "end_action_round")
+		if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {
+			button("confirm_pass_to_reduce_debt")
+		} else {
+			button((left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : "end_action_round")
+		}
 	},
 	draw_event() {
+		push_undo()
+		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
 		log ("draw event!")
 	},
 	construct_squadron() {
+		push_undo()
+		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
 		log ("construct squadron!")
+	},
+	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
+
+	},
+	buy_bonus_war_tile() {	// TBD: buy a bonus war tile, and deploy it into the next war
+
+	},
+	buy_political_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
+
+	},
+	buy_economic_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
+
+	},
+	deploy_squadron() { // TBD: deploy from navy box (or move one from somewhere else)
+
+	},
+	remove_conflict_marker() { // TBD: remove a conflict marker
+
+	},
+	confirm_pass_to_reduce_debt() {
+		push_undo()
+		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
+		log(data.flags[R].name + " passes to reduce debt by " + debt_reduction + ".")
+		G.debt[R] = Math.max(0, G.debt[R] - 2)
+		end()
 	},
 	confirm_end_action_round() {
 		this.end_action_round()
@@ -1785,7 +1953,7 @@ P.may_spend_action_points = {
 		} else if (G.action_points_major[type] > 0) {
 			G.action_points_major[type] = 0
 		}
-		G.has_spent_action_points = true
+		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
 
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
 
@@ -1794,11 +1962,18 @@ P.may_spend_action_points = {
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 	},
 	ministry_card(m) {
-		call ("activate_ministry_card", { ministry_index : G.ministry[R].indexOf(m), subphase: G.has_spent_action_points ? ACTION_POINTS_ALREADY_SPENT : BEFORE_SPENDING_ACTION_POINTS })
+		handle_ministry_card_click(m)
 	},
 	advantage(a) {
-
-	}
+		push_undo()
+		if (G.action_round_subphase < BEFORE_SPENDING_ACTION_POINTS) {
+			G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS // Can't play an event after using an advantage
+		}
+		// TODO - handle_advantage_click
+	},
+	event_card(c) {
+		handle_event_card_click(c)
+	},
 }
 
 
@@ -2495,6 +2670,11 @@ function pop_undo() {
 		G.log = save_log
 		G.undo = save_undo
 	}
+}
+
+
+function discard_undo() {
+	if (G.undo) G.undo.pop()
 }
 
 function random(range) {

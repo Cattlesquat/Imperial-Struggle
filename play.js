@@ -379,6 +379,8 @@ function on_update() {
 	action_button("confirm", "Confirm")
 	action_button("pass", "Pass")
 
+	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
+
 	action_button("draw_event", "Draw Event")
 	action_button("construct_squadron", "Construct Squadron")
 
@@ -389,7 +391,6 @@ function on_update() {
 	action_button ("reveal_ministry", "Reveal")
 
 	action_button("done", "Done")
-
 	action_button("undo", "Undo")
 
 	end_update()
