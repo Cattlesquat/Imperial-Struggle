@@ -666,7 +666,6 @@ function draw_basic_war_tile(who, theater) {
 }
 
 function draw_bonus_war_tile(who, theater) {
-	log ("Who: " + who + "   Theater: " + theater)
 	if (G.bonus_war_tiles[who].length < 1) return
 	G.theater_bonus_war_tiles[who][theater].push(G.bonus_war_tiles[who].pop())
 }
