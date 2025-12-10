@@ -1598,11 +1598,43 @@ P.may_spend_action_points = {
 		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 	},
 	ministry_card(m) {
+		let index = G.ministry[R].indexOf(m)
+		if (index >= 0) {
+			if (!G.ministry_revealed[R][index]) {
+				G.ministry_index = index
+				goto ("confirm_reveal_ministry")
+			}
+			else {
+				log ("(already revealed - TBD: being able to do something with it)")
 
+				//TODO: Use ministry
+			}
+		}
+		else {
+			// Bad. Shouldn't be possible.
+		}
 	},
 	advantage(a) {
 
 	}
+}
+
+P.confirm_reveal_ministry = {
+	_begin() {
+		let m = G.ministry[R][G.ministry_index]
+	},
+	prompt() {
+		let m = G.ministry[R][G.ministry_index]
+		V.prompt = "Reveal " + data.ministries[m].name + " Ministry Card?"
+		action("reveal_ministry")
+	},
+	reveal_ministry() {
+		push_undo()
+		let m = G.ministry[R][G.ministry_index]
+		G.ministry_revealed[R][G.ministry_index] = true
+		log ("MINISTRY REVEALED: " + data.ministries[m].name)
+		goto ("may_spend_action_points")
+	},
 }
 
 
