@@ -237,6 +237,10 @@ body.Britain #events_br { grid-row: 2 }
 	box-shadow: 0 0 0 1px black, 0 0 0 4px white;
 }
 
+.marker.advantage.action {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px white;
+}
+
 .card.action {
 	box-shadow: 0 0 0 3px white;
 }
