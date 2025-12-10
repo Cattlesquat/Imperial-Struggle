@@ -1105,13 +1105,7 @@ function require_ministry(who, m)
 		G.has_required_ministry = false
 	}
 	G.ministry_index = G.ministry[who].indexOf(m)
-	call ("ministry_is_required") // In theory this gives the player a chance to reveal the minister, and then sets G.has_required_ministry true if he reveals it
-	                                    // In practice it lets him do that, but the routine calling into here has already received back "undefined" from this method and never rechecks
-	                                    // I'm trying to figure out how to get the flow calling this to "wait for the real answer"
-
-	console.log("has required? " + G.has_required_ministry)
-
-	return G.has_required_ministry
+	call ("ministry_is_required")
 }
 
 P.ministry_is_required = script (`
@@ -1439,40 +1433,45 @@ P.select_investment_tile = {
 
 function handle_event_card_click(c) {
 	push_undo()
+	G.selected_event = c
+	call ("event_process_click")
+}
 
-	if (data.investments[G.played_tile].majorval > 3) {
-		let req = require_ministry(R, MARQUIS_DE_CONDORCET)
-		console.log (req)
-		if (req === undefined) return
-		if (!req) {
-			discard_undo()
-			return
-		}
-	}
-	if ((data.cards[c].action !== WILD) && (data.cards[c].action !== data.investments[G.played_tile].majortype)) {
-		let req = require_ministry(R, BANK_OF_ENGLAND)
-		console.log (req)
-		if (req === undefined) return
-		if (!req) {
-			discard_undo()
-			return
-		}
-	}
-
-	// IDEALLY it gets down here if we're allowed to play the event
-	// If we had to confirm revealing a minister, it should come down here only if we accepted revealing it.
-	// (Presently I can't avoid it either "always falling through" or "never falling through" the reveal -- present version never falls through if there's a reveal needed, or rather it hits one of the early returns)
-	// Example test case is play Britain, pick Bank of England ministry, make sure you have an event card with coin in upper left, then pick a small (<4) investment tile does NOT have a coin, and then try to play your coin event.
-	//         It will ask you if you want to reveal Bank of England. If you DO it should then say in the log you played the event; if you DON'T it should NOT say that (because you have to undo out)
-
+function begin_event_play(c) {
 	G.action_round_subphase = DURING_EVENT
 	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS //TODO distinguish those two subphases as appropriate
 	log(data.flags[R].name + " plays Event: ")
 	log(data.cards[c].name);
 	G.played_events.push(c)
-	//TODO: Here we branch to an unholy number of possible events
 }
 
+
+P.event_process_click = script (`
+    if (data.investments[G.played_tile].majorval > 3) {
+        eval {
+        	require_ministry(R, MARQUIS_DE_CONDORCET)
+        }
+        if (!G.has_required_ministry) {
+        	return
+		}
+    }
+
+    if ((data.cards[G.selected_event].action !== WILD) && (data.cards[G.selected_event].action !== data.investments[G.played_tile].majortype)) {
+        eval {
+        	require_ministry(R, BANK_OF_ENGLAND)
+        }
+        if (!G.has_required_ministry) {
+        	return
+		}
+    }
+    
+    eval { 
+    	begin_event_play(G.selected_event) 
+    }
+    
+    //TODO: Here we branch to an unholy number of possible events 
+    //goto (data.cards[c].event_proc_name)
+`)
 
 
 function handle_ministry_card_click(m)
@@ -1503,6 +1502,8 @@ P.ministry_card = script (`
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
 function ministry_useful_this_phase(m, subphase)
 {
+	return false //// TODO: DEBUG - remove this. Just makes it easier to "pretend to play ministries" for the moment
+
 	switch (subphase) {
 		case BEFORE_PICKING_TILE:
 			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS ].includes(m)
@@ -1516,8 +1517,6 @@ function ministry_useful_this_phase(m, subphase)
 			return true
 	}
 }
-
-
 
 
 P.activate_ministry_card = {
@@ -1554,34 +1553,6 @@ P.confirm_reveal_ministry = {
 		reveal_ministry(R, G.ministry_index)
 		end()
 	},
-}
-
-
-
-P.may_play_event_card = {
-	prompt() {
-		V.prompt = "ACTION ROUND " + G.round + ": Play event card, use ministry, or pass to skip to actions"
-		for (var card of G.hand[R]) {
-			action_event_card(card)
-		}
-		action_eligible_ministries()
-		button ("pass")
-	},
-	event_card(c) {
-		push_undo()
-		log (data.flags[R].name + " plays Event: ")
-		log (data.cards[c].name);
-		G.played_events.push(c)
-		//TODO: Here we branch to an unholy number of possible events
-	},
-	ministry_card(m) {
-		handle_ministry_card_click(m)
-	},
-	pass () {
-		push_undo()
-		log ("No event card played.")
-		end()
-	}
 }
 
 
