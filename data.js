@@ -676,7 +676,7 @@ data.bonus_war_tiles = [
 // ADVANTAGE TILES
 data.advantages = [
 	{ "num":  0, "name": "Baltic Trade",		    req: [ DENMARK, PRUSSIA_1 ] },
-	{ "num":  1, "name": "Central Europe Conflict",	req: [ GERMAN_STATES_2 ] },
+	{ "num":  1, "name": "Central Europe Conflict",	req: [ GERMAN_STATES_2, BAVARIA ] },
 	{ "num":  2, "name": "German Diplomacy",	    req: [ PRUSSIA_4 ] },
 	{ "num":  3, "name": "Italy Influence",		    req: [ AUSTRIA_3, SARDINIA ] },
 	{ "num":  4, "name": "Mediterranean Intrigue",	req: [ SAVOY, SPAIN_4 ] },
