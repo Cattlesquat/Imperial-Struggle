@@ -3,6 +3,10 @@
 body.hide-markers .marker { display: none }
 body.hide-pieces .piece { display: none }
 
+#map > * {
+	position: absolute;
+}
+
 .board {
 	position: relative;
 }
@@ -28,12 +32,14 @@ body.hide-pieces .piece { display: none }
 /* PANELS */
 
 .panel {
-	background-color: silver;
+	background-color: #0002;
 }
 
 .panel-head {
 	padding: 0px 8px;
-	background-color: gainsboro;
+	font-weight: bold;
+	color: white;
+	background-color: #0002;
 }
 
 .panel-body {
@@ -45,6 +51,48 @@ body.hide-pieces .piece { display: none }
 
 .panel.autohide:has(.panel-body:empty) {
 	display: none;
+}
+
+/* OVERLAYS */
+
+.overlay {
+	scroll-margin: 20px;
+}
+
+.overlay summary {
+	list-style: none;
+	cursor: n-resize;
+	padding: 0px 8px;
+	font-weight: bold;
+	background-repeat: no-repeat;
+	background-position: 100% 50%;
+}
+
+.overlay summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="white" fill="none" d="M 14 5 L 8 11 L 2 5"/></svg>');
+	color: white;
+}
+
+.overlay[open] summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="white" fill="none" d="M 14 11 L 8 5 L 2 11"/></svg>');
+}
+
+.overlay.color\:gold summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="gold" fill="none" d="M 14 5 L 8 11 L 2 5"/></svg>');
+	color: gold;
+}
+
+.overlay[open].color\:gold[open] summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="gold" fill="none" d="M 14 11 L 8 5 L 2 11"/></svg>');
+}
+
+.overlay.color\:black summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="black" fill="none" d="M 14 5 L 8 11 L 2 5"/></svg>');
+	color: black;
+}
+
+.overlay[open].color\:black[open] summary {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16"><path stroke-width="3" stroke="black" fill="none" d="M 14 11 L 8 5 L 2 11"/></svg>');
 }
 
 /* LAYOUT */

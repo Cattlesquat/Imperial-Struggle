@@ -10,7 +10,7 @@ function assert(exp, msg) {
 }
 
 function $(x) {
-	return x instanceof HTMLElement ? x : document.querySelector(x)
+	return x instanceof Element ? x : document.querySelector(x)
 }
 
 function toggle_pieces() {
@@ -274,8 +274,17 @@ function define_board(selector, w, h) {
 
 function sort_board_children() {
 	var parent = world.parent
-	var list = Array.from(parent.childNodes)
+	var list = Array.from(parent.childNodes).filter(node => node instanceof Element)
 	list.sort((a,b) => {
+		// svg at the start
+		if ((a instanceof SVGElement) && !(b instanceof SVGElement)) return -1
+		if (!(a instanceof SVGElement) && (b instanceof SVGElement)) return 1
+
+		// overlays at the end
+		if ((a instanceof HTMLDetailsElement) && !(b instanceof HTMLDetailsElement)) return 1
+		if (!(a instanceof HTMLDetailsElement) && (b instanceof HTMLDetailsElement)) return -1
+
+		// everything else sorted for cabinet projection order
 		var ra = a.getBoundingClientRect()
 		var rb = b.getBoundingClientRect()
 		var za = ra.top * 2 + ra.left
@@ -511,6 +520,17 @@ function update_text_html(action, id, text) {
 	thing.my_text_html = text
 }
 
+function update_position(action, id, x, y) {
+	var thing = lookup_thing(action, id)
+	thing.element.style.left = Math.round(x) + "px"
+	thing.element.style.top = Math.round(y) + "px"
+}
+
+function update_show(action, id, show) {
+	var thing = lookup_thing(action, id)
+	thing.element.hidden = !show
+}
+
 /* ENGINE */
 
 function begin_update() {
@@ -634,7 +654,7 @@ function create_panel(parent, action, id, text) {
 	panel.className = "panel"
 	head.className = "panel-head"
 	body.className = "panel-body"
-	head.textContent = text ?? action + ":" + id
+	head.textContent = text
 	panel.append(head, body)
 	$(parent).append(panel)
 	return define_panel(panel, action, id)
@@ -654,7 +674,7 @@ function define_panel(selector, action, id) {
 function update_panel_show(action, id, show) {
 	var thing = lookup_thing(action, id)
 	assert(thing.my_panel, "not a panel")
-	thing.my_panel.classList.toggle("hide", !show)
+	thing.my_panel.hidden = !show
 }
 
 function update_panel_text(action, id, text) {
@@ -668,6 +688,109 @@ function update_panel_text_html(action, id, text) {
 	var thing = lookup_thing(action, id)
 	assert(thing.my_panel, "not a panel")
 	thing.my_panel_head.innerHTML = text
+}
+
+/* OVERLAYS */
+
+function create_overlay(parent, action, id, text) {
+	var overlay = document.createElement("details")
+	var head = document.createElement("summary")
+	var body = document.createElement("div")
+	overlay.className = "overlay"
+	head.className = "overlay-head"
+	body.className = "overlay-body"
+	head.textContent = text
+	overlay.append(head, body)
+	$(parent).append(overlay)
+	return define_overlay(overlay, action, id)
+}
+
+function define_overlay(selector, action, id) {
+	var overlay = $(selector)
+	var head = overlay.querySelector("summary")
+	var body = overlay.querySelector("div")
+	var thing = new Thing(overlay.querySelector(".overlay-body"), action, id)
+	thing.my_overlay = overlay
+	thing.my_overlay_head = head
+	thing.my_overlay_body = body
+	thing.my_overlay.hidden = true
+	thing.my_overlay.open = true
+	return thing
+}
+
+function lookup_overlay(action, id) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_overlay, "not an overlay")
+	return thing.my_overlay
+}
+
+function is_overlay_open(action, id) {
+	return lookup_overlay(action, id).open
+}
+
+function is_overlay_hidden(action, id) {
+	return lookup_overlay(action, id).hidden
+}
+
+function update_overlay_show(action, id, show = true) {
+	var overlay = lookup_overlay(action, id)
+	if (show) {
+		if (overlay.hidden) {
+			overlay.open = true
+			overlay.hidden = false
+		}
+	} else {
+		if (!overlay.hidden) {
+			overlay.open = true
+			overlay.hidden = true
+		}
+	}
+	return show
+}
+
+// position overlay to be aligned with gravity on x/y but still fit parent board within margins
+function update_overlay_position(action, id, x, y, grav_x=0.5, grav_y=0.5, top=12, right=12, bottom=top, left=right) {
+	var overlay = lookup_overlay(action, id)
+	if (overlay.my_last_x !== x || overlay.my_last_y !== y) {
+		// remember so we don't need to redo every update
+		overlay.my_last_x = x
+		overlay.my_last_y = y
+
+		// reset position (so we can calculate accurate size)
+		overlay.style.top = null
+		overlay.style.left = null
+
+		// calculate size
+		var w = overlay.clientWidth
+		var h = overlay.clientHeight
+		var parent_w = overlay.parentElement.clientWidth
+		var parent_h = overlay.parentElement.clientHeight
+
+		// gravity alignment
+		x = x - w * grav_x
+		y = y - h * grav_y
+
+		// clamp to fit on parent
+		if (y + h > parent_h - bottom) y = parent_h - h - bottom
+		if (x + w > parent_w - right) x = parent_w - w - right
+		if (x < left) x = left
+		if (y < top) y = top
+
+		overlay.style.top = y + "px"
+		overlay.style.left = x + "px"
+	}
+}
+
+function update_overlay_text(action, id, text) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_overlay, "not an overlay")
+	return thing.my_overlay_head.textContent = text
+}
+
+function update_overlay_text_html(action, id, text) {
+	var thing = lookup_thing(action, id)
+	assert(thing.my_overlay, "not an overlay")
+	return thing.my_overlay_head.innerHTML = text
 }
 
 /* PREFERENCES (WIP) */

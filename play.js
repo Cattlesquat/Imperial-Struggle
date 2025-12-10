@@ -424,7 +424,7 @@ function update_war_display() {
 	var war = G.next_war - 1 // make it zero-based
 
 	for (var w = 0; w < NUM_WARS; w++) {
-		war_display[w].classList.toggle("hide", war !== w)
+		war_display[w].hidden = (war !== w)
 	}
 
 	if (war < NUM_WARS) {
