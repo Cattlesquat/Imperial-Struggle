@@ -554,6 +554,8 @@ function on_view() {
 		]
 	}
 
+	V.ministry_exhausted = G.ministry_exhausted
+
 	V.next_war = G.next_war
 	V.theater_basic_war_tiles = [ [], [] ] // [player][theater][0-n]
 	V.theater_bonus_war_tiles = [ [], [] ] // [player][theater][0-n]
@@ -829,7 +831,7 @@ P.reset_phase = function () {
 
 	// remove exhausted from advantage and ministry cards
 	G.exhausted_advantage = []
-	G.exhausted_ministry = []
+	G.ministry_exhausted  = [ [], [] ]
 
 	// move investments to used
 	for (var i of G.available_investments)
@@ -954,9 +956,10 @@ P.ministry_phase = function () {
 	if (!beginning_of_era()) {
 		goto ("replace_ministry_cards")
 	} else {
-		G.ministry          = [ [], [] ]
-		G.ministry_revealed = [ [], [] ]
-		G.active            = [ FRANCE, BRITAIN ]
+		G.ministry           = [ [], [] ]
+		G.ministry_revealed  = [ [], [] ]
+		G.ministry_exhausted = [ [], [] ]
+		G.active             = [ FRANCE, BRITAIN ]
 		goto("choose_ministry_cards")
 	}
 }
@@ -1012,6 +1015,51 @@ P.replace_ministry_cards = {
 			end()
 	},
 }
+
+// Ministry is active if it's one of the player's ministry cards AND it has been revealed
+function has_active_ministry(who, m)
+{
+	if (!G.ministry[who].includes(m)) return false
+	let idx = G.ministry[who].indexOf(m)
+	return G.ministry_revealed[who][idx]
+}
+
+function has_ministry(who, m)
+{
+	return G.ministry[who].includes(m)
+}
+
+function has_inactive_ministry (who, m)
+{
+	if (!G.ministry[who].includes(m)) return false
+	let idx = G.ministry[who].indexOf(m)
+	return !G.ministry_revealed[who][idx]
+}
+
+// Some ministries have more than one separately exhaustible ability
+function is_ministry_exhausted (who, m, ability = 0)
+{
+	if (!G.ministry[who].includes(m)) return false
+	var idx = G.ministry[who].indexOf(m)
+	return set_has(G.ministry_exhausted[who][idx], ability)
+}
+
+function exhaust_ministry (who, m, ability = 0)
+{
+	if (!G.ministry[who].includes(m)) return
+	var idx = G.ministry[who].indexOf(m)
+    set_add(G.ministry_exhausted[who][idx], ability)
+}
+
+
+function refresh_ministry (who, m, ability = 0)
+{
+	if (!G.ministry[who].includes(m)) return
+	var idx = G.ministry[who].indexOf(m)
+	set_delete(G.ministry_exhausted[who][idx], ability)
+}
+
+
 
 /* 4.1.8 - INITIATIVE PHASE */
 
@@ -1275,7 +1323,7 @@ P.select_investment_tile = {
 
 P.may_play_event_card = {
 	prompt() {
-		V.prompt = "ACTION ROUND " + G.round + ": Play event card or pass to skip to actions"
+		V.prompt = "ACTION ROUND " + G.round + ": Play event card, reveal ministry, or pass to skip to actions"
 		for (var card of G.hand[R]) {
 			action_event_card(card)
 		}
@@ -1619,6 +1667,15 @@ P.may_spend_action_points = {
 	}
 }
 
+
+function reveal_ministry(index) {
+	let m = G.ministry[R][index]
+	G.ministry_revealed[R][index] = true
+	log ("MINISTRY REVEALED: " + data.ministries[m].name)
+
+    //TODO: effects right when ministry is revealed, if applicable
+}
+
 P.confirm_reveal_ministry = {
 	_begin() {
 		let m = G.ministry[R][G.ministry_index]
@@ -1630,9 +1687,7 @@ P.confirm_reveal_ministry = {
 	},
 	reveal_ministry() {
 		push_undo()
-		let m = G.ministry[R][G.ministry_index]
-		G.ministry_revealed[R][G.ministry_index] = true
-		log ("MINISTRY REVEALED: " + data.ministries[m].name)
+		reveal_ministry(G.ministry_index)
 		goto ("may_spend_action_points")
 	},
 }
