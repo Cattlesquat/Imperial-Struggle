@@ -1105,7 +1105,9 @@ function require_ministry(who, m)
 		G.has_required_ministry = false
 	}
 	G.ministry_index = G.ministry[who].indexOf(m)
-	call ("ministry_is_required")
+	call ("ministry_is_required") // In theory this gives the player a chance to reveal the minister, and then sets G.has_required_ministry true if he reveals it
+	                                    // In practice it lets him do that, but the routine calling into here has already received back "undefined" from this method and never rechecks
+	                                    // I'm trying to figure out how to get the flow calling this to "wait for the real answer"
 
 	console.log("has required? " + G.has_required_ministry)
 
