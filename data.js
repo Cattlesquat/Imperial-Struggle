@@ -8,12 +8,14 @@ const XXX = -1
 // So DON'T change things here -- change them in rules.js and then copy/paste on top of here.
 //
 
+/* CONSTANTS */
+
 // FLAGS
 const FRANCE  = 0
 const BRITAIN = 1
 const SPAIN   = 2
 const USA     = 3
-const NONE    = 4
+const NONE    = 4   // HO HO HO! WHAT COULD POSSIBLY GO WRONG!
 
 // Types of Action Point
 const ECON  = 0
@@ -58,11 +60,12 @@ const WAR_7YW = 3
 const WAR_AWI = 4
 
 // Ministry keywords
-const FINANCE      = 0
-const MERCANTILISM = 1
-const GOVERNANCE   = 2
-const STYLE        = 3
-const SCHOLARSHIP  = 4
+const KEYWORD_NONE = -1
+const FINANCE      =  0
+const MERCANTILISM =  1
+const GOVERNANCE   =  2
+const STYLE        =  3
+const SCHOLARSHIP  =  4
 
 // Global Demand
 const FURS    = 0
@@ -349,6 +352,14 @@ const USED_INVESTMENT_TILES = 215
 const DRAW_PILE = 216
 const DISCARD_PILE = 217
 const PLAYED_EVENTS = 218
+
+// ACTION_SUBPHASES
+const BEFORE_PICKING_TILE           = 0
+const PICKED_TILE_OPTION_TO_PASS    = 1
+const OPTION_TO_PLAY_EVENT          = 2
+const DURING_EVENT                  = 3
+const BEFORE_SPENDING_ACTION_POINTS = 4
+const ACTION_POINTS_ALREADY_SPENT   = 5
 
 /* TILES & CARDS */
 

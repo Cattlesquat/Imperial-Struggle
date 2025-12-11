@@ -1144,7 +1144,6 @@ function require_ministry(who, m, why, optional = false)
 		G.has_required_ministry = false
 	}
 	G.ministry_index = G.ministry[who].indexOf(m)
-	debug_log ("Ministry Index: " + G.ministry_index)
 	G.ministry_required_because = why
 	G.ministry_optional = optional
 	call ("ministry_is_required")
