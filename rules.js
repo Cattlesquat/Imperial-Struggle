@@ -420,9 +420,9 @@ function on_setup(scenario, options) {
 	G.award_chits = []
 
 	G.advantages                 = new Array(NUM_ADVANTAGES).fill(NONE)
-	G.advantages_newly_acquired  = new Array(NUM_ADVANTAGES).fill(false)
-	G.advantages_exhausted       = new Array(NUM_ADVANTAGES).fill(false)
-	G.advantages_used_this_round = 0
+	G.advantages_newly_acquired  = 0 // bitflags
+	G.advantages_exhausted       = 0 // bitflags
+	G.advantages_used_this_round = 0 // integer
 
 	G.flags = [] // All the flags on the map
 	G.dirty = [] // Any changes since last investment tile? If so, highlight them!
@@ -610,10 +610,10 @@ function is_advantage_conflicted(a)
 /* 8.0 - Advantages */
 function has_advantage_eligible(p, a)
 {
-	if (!has_advantage(p, a)) return false				// 8.1 - control all the connected spaces
-	if (G.advantages_newly_acquired[a]) return false    // 8.0 - Can only be used the round *after* control is gained
-	if (G.advantages_exhausted[a]) return false			// 8.1 - Exhausted when used
-	if (is_advantage_conflicted(a)) return false		// 8.1 - can't be used if any conflict markers, but remains "controlled"
+	if (!has_advantage(p, a)) return false				      // 8.1 - control all the connected spaces
+	if (G.advantages_newly_acquired & (1 << a)) return false  // 8.0 - Can only be used the round *after* control is gained
+	if (G.advantages_exhausted & (1 << a)) return false		  // 8.1 - Exhausted when used
+	if (is_advantage_conflicted(a)) return false		      // 8.1 - can't be used if any conflict markers, but remains "controlled"
 	return true
 }
 
@@ -629,7 +629,7 @@ function update_advantages() {
 			G.advantages[i] = NONE
 
 		if (old !== G.advantages[i]) {
-			G.advantages_newly_acquired[i] = true
+			G.advantages_newly_acquired |= (1 << i)
 			if (G.advantages[i] !== NONE) {
 				log(data.flags[G.advantages[i]].name + " GAINS " + data.advantages[i].name + " Advantage")
 			} else {
@@ -641,7 +641,7 @@ function update_advantages() {
 
 function advantages_acquired_last_round_now_available() // a sort of awkward name, but otherwise hard to distinguish from "exhausted"/refreshed advantage state
 {
-	G.advantages_newly_acquired.fill(false)
+	G.advantages_newly_acquired = 0
 }
 
 
@@ -878,8 +878,8 @@ P.reset_phase = function () {
 	}
 
 	// remove exhausted from advantage and ministry cards
-	G.advantages_exhausted.fill(false)
-	G.ministry_exhausted  = [ ]
+	G.advantages_exhausted = 0 // Bitflags
+	G.ministry_exhausted   = [ ]
 
 	// move investments to used
 	for (var i of G.available_investments)
