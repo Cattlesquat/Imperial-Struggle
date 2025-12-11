@@ -479,6 +479,19 @@ function on_log(text) {
 		break
 	}
 
+	if (text.match(/^\.h1/)) {
+		text = text.substring(4)
+		p.className = 'h1'
+	}
+	if (text.match(/^\.h2/)) {
+		text = text.substring(4)
+		p.className = 'h2'
+	}
+	if (text.match(/^\.h3/)) {
+		text = text.substring(4)
+		p.className = "h3"
+	}
+
 	p.innerHTML = escape_text(text)
 	return p
 }
