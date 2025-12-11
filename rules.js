@@ -493,7 +493,7 @@ function on_setup(scenario, options) {
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
 
-	update_advantages()
+	update_advantages(true)
 	advantages_acquired_last_round_now_available()
 
 	call("main")
@@ -628,7 +628,7 @@ function has_advantage_eligible(who, a)
 }
 
 /* 8.0 - Advantages */
-function update_advantages() {
+function update_advantages(silent = false) {
 	for (var i = 0; i < NUM_ADVANTAGES; i++) {
 		var old = G.advantages[i]
 		if (has_advantage(FRANCE, i))
@@ -640,10 +640,12 @@ function update_advantages() {
 
 		if (old !== G.advantages[i]) {
 			G.advantages_newly_acquired |= (1 << i)
-			if (G.advantages[i] !== NONE) {
-				log(data.flags[G.advantages[i]].name + " GAINS " + data.advantages[i].name + " Advantage")
-			} else {
-				log(data.flags[old].name + " LOSES " + data.advantages[i].name + " Advantage")
+			if (!silent) {
+				if (G.advantages[i] !== NONE) {
+					log(data.flags[G.advantages[i]].name + " GAINS " + data.advantages[i].name + " Advantage")
+				} else {
+					log(data.flags[old].name + " LOSES " + data.advantages[i].name + " Advantage")
+				}
 			}
 		}
 	}
@@ -1487,9 +1489,7 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	G.action_round_subphase = DURING_EVENT
-	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS //TODO distinguish those two subphases as appropriate
-	log_h2(data.flags[R].name + " plays Event: ")
-	log_h2(data.cards[c].name);
+	log_h2(data.flags[R].name + " plays Event: \n" + data.cards[c].name)
 	G.played_events.push(c)
 
 	if (G.qualifies_for_bonus) {
@@ -1497,6 +1497,12 @@ function begin_event_play(c) {
 	} else if (G.card_has_bonus) {
 		log ("No bonus received")
 	}
+}
+
+
+function end_event_play(c)
+{
+	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS
 }
 
 
