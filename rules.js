@@ -879,7 +879,7 @@ P.reset_phase = function () {
 
 	// remove exhausted from advantage and ministry cards
 	G.advantages_exhausted.fill(false)
-	G.ministry_exhausted  = [ [], [] ]
+	G.ministry_exhausted  = [ ]
 
 	// move investments to used
 	for (var i of G.available_investments)
@@ -1006,7 +1006,7 @@ P.ministry_phase = function () {
 	} else {
 		G.ministry           = [ [], [] ]
 		G.ministry_revealed  = [ [], [] ]
-		G.ministry_exhausted = [ [], [] ]
+		G.ministry_exhausted = [ ]
 		G.active             = [ FRANCE, BRITAIN ]
 		goto("choose_ministry_cards")
 	}
@@ -1121,14 +1121,14 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	return set_has(G.ministry_exhausted[who][idx], ability)
+	return set_has(G.ministry_exhausted[idx], ability)
 }
 
 function exhaust_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-    set_add(G.ministry_exhausted[who][idx], ability)
+    set_add(G.ministry_exhausted[idx], ability)
 }
 
 
@@ -1136,7 +1136,7 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-	set_delete(G.ministry_exhausted[who][idx], ability)
+	set_delete(G.ministry_exhausted[idx], ability)
 }
 
 
