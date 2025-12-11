@@ -1370,8 +1370,6 @@ function selected_a_tile(tile)
 		log ("Event allowed + Military Upgrade")
 	}
 
-	log ("")
-
 	clear_dirty() // Clear highlights of opponent's previous round actions
 
 	G.played_investments.push(tile)      //BR// We leave it in available_investments but mark it played
@@ -1441,7 +1439,7 @@ function handle_event_card_click(c) {
 function begin_event_play(c) {
 	G.action_round_subphase = DURING_EVENT
 	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS //TODO distinguish those two subphases as appropriate
-	log(data.flags[R].name + " plays Event: ")
+	log("\n" + data.flags[R].name + " plays Event: ")
 	log(data.cards[c].name);
 	G.played_events.push(c)
 }
@@ -1537,7 +1535,7 @@ function reveal_ministry(who, index) {
 
 	let m = G.ministry[who][index]
 	G.ministry_revealed[who][index] = true
-	log ("MINISTRY REVEALED: " + data.ministries[m].name)
+	log ("\nMINISTRY REVEALED: " + data.ministries[m].name)
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 }
@@ -2090,6 +2088,13 @@ function action_conflict(s) {
 function action_navy(who) {
 	action("navy", who)
 }
+
+
+function debug_log(s) {
+	console.log(s)
+	log(s)
+}
+
 
 /* FRAMEWORK */
 
