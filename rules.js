@@ -117,7 +117,7 @@ const MILITARY_SPENDING_OVERRUNS    = 12
 const ALBERONIS_AMBITION            = 13
 const FAMINE_IN_IRELAND             = 14
 const INTEREST_PAYMENTS             = 15
-const CARRIBEAN_SLAVE_UNREST        = 16 // EMPIRE ERA
+const CARIBBEAN_SLAVE_UNREST        = 16 // EMPIRE ERA
 const PACTE_DE_FAMILLE              = 17
 const BYNGS_TRIAL                   = 18
 const LE_BEAU_MONDE                 = 19
@@ -591,11 +591,20 @@ function on_view() {
 	V.bonus_war_tile_revealed = G.bonus_war_tile_revealed
 }
 
+function available_debt(who)
+{
+	return G.debt_limit[who] - G.debt[who]
+}
+
+function available_debt_plus_trps(who)
+{
+	return available_debt(who) + G.treaty_points[who]
+}
 
 
-function has_advantage(p, a) {
+function has_advantage(who, a) {
 	for (var s of data.advantages[a].req)
-		if (G.flags[s] !== p)
+		if (G.flags[s] !== who)
 			return false
 	return true
 }
@@ -609,9 +618,9 @@ function is_advantage_conflicted(a)
 }
 
 /* 8.0 - Advantages */
-function has_advantage_eligible(p, a)
+function has_advantage_eligible(who, a)
 {
-	if (!has_advantage(p, a)) return false				      // 8.1 - control all the connected spaces
+	if (!has_advantage(who, a)) return false				  // 8.1 - control all the connected spaces
 	if (G.advantages_newly_acquired & (1 << a)) return false  // 8.0 - Can only be used the round *after* control is gained
 	if (G.advantages_exhausted & (1 << a)) return false		  // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		      // 8.1 - can't be used if any conflict markers, but remains "controlled"
@@ -1479,17 +1488,25 @@ function handle_event_card_click(c) {
 function begin_event_play(c) {
 	G.action_round_subphase = DURING_EVENT
 	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS //TODO distinguish those two subphases as appropriate
-	log("\n" + data.flags[R].name + " plays Event: ")
-	log(data.cards[c].name);
+	log_h2(data.flags[R].name + " plays Event: ")
+	log_h2(data.cards[c].name);
 	G.played_events.push(c)
+
+	if (G.qualifies_for_bonus) {
+		log ("BONUS unlocked")
+	} else if (G.card_has_bonus) {
+		log ("No bonus received")
+	}
 }
 
 
 function check_event_bonus_requirements(who) {
+	G.card_has_bonus         = false
 	G.qualifies_for_bonus    = false
 	G.needs_to_flip_ministry = -1
 	let keyword = data.cards[G.selected_event].keyword
 	if (keyword !== KEYWORD_NONE) {
+		G.card_has_bonus = true
 		if (has_active_keyword(who, keyword)) {
 			G.qualifies_for_bonus = true
 		} else if (has_keyword(who, keyword)) {
@@ -1497,7 +1514,45 @@ function check_event_bonus_requirements(who) {
 		}
 	}
 
-	//TODO: debt-based bonus requirements
+	if ([INTEREST_PAYMENTS, MILITARY_SPENDING_OVERRUNS, WEST_AFRICAN_GOLD_MINING, LA_GABELLE].includes(G.selected_event)) {
+		G.card_has_bonus = true
+		G.qualifies_for_bonus = available_debt(who) > available_debt(1 - who)     // "You have more Available Debt than your opponent"
+	}
+
+	if ([DEBT_CRISIS, EUROPEAN_PANIC].includes(G.selected_event)) {
+		G.card_has_bonus = true
+		G.qualifies_for_bonus = available_debt(who) > available_debt(1 - who) + 2 // "You have at least 3 more Available Debt than your opponent"
+	}
+
+	if ([CARIBBEAN_SLAVE_UNREST, HAITIAN_REVOLUTION].includes(G.selected_event)) {
+		G.card_has_bonus = true
+		if (G.turn < PEACE_TURN_6) {
+			var tiles = [ 0, 0 ]
+			for (let whom = FRANCE; whom <= BRITAIN; whom++) {
+				for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB intentionally from 0 to theaters, inclusive
+					tiles[whom] += G.theater_bonus_war_tiles[whom][theater]
+				}
+			}
+
+			G.qualifies_for_bonus = tiles[who] > tiles [1 - who] // "More total Bonus War Tiles in next War"
+		}
+		else {
+			G.qualifies_for_bonus = false // There IS no next war
+		}
+	}
+
+	if (G.selected_event === ACTS_OF_UNION) {
+		G.card_has_bonus = true
+		var prestige = [ ]
+		for (let whom = FRANCE; whom <= BRITAIN; whom++) {
+			prestige[whom] = ((G.flags[IRELAND_2] === whom) ? 1 : 0) + ((G.flags[SCOTLAND_2] === whom) ? 1 : 0)
+		}
+		G.qualifies_for_bonus = prestige[who] > prestige[1 - who] // "More Prestige spaces in Scotland and Ireland"
+	}
+
+	if (G.selected_event === FALKLANDS_CRISIS) {
+		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
+	}
 }
 
 P.event_process_click = script (`
@@ -1535,7 +1590,7 @@ P.event_process_click = script (`
     
     eval { 
     	begin_event_play(G.selected_event) 
-    }
+    }        
     
     //TODO: Here we branch to an unholy number of possible events 
     //goto (data.cards[c].event_proc_name)
@@ -2180,6 +2235,7 @@ function log(s) {
 		G.log.push(s)
 	}
 }
+
 
 function prompt(s) {
 	V.prompt = s
@@ -3075,3 +3131,43 @@ function map_group_by(items, callback) {
 	}
 	return groups
 }
+
+
+// === Log Helpers ===
+
+function log_br() {
+	if (G.log.length > 0 && G.log[G.log.length-1] !== "")
+		log("")
+}
+
+function logi(msg) {
+	log(">" + msg)
+}
+function logii(msg) {
+	log(">>" + msg)
+}
+
+function log_h1(msg) {
+	log_br()
+	log(".h1 " + msg)
+	log_br()
+}
+
+function log_h1(msg) {
+	log_br()
+	log(".h1 " + msg)
+	log_br()
+}
+
+function log_h2(msg) {
+	log_br()
+	log(".h2 " + msg)
+	log_br()
+}
+
+function log_h3(msg) {
+	log_br()
+	log(".h3 " + msg)
+	log_br()
+}
+

@@ -88,6 +88,33 @@ body.Britain #events_br { grid-row: 2 }
 	background-color: wheat;
 }
 
+
+#log .h1 { font-weight: bold; padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h2 { padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h3 { text-align: center; }
+#log .h4 { font-weight: bold; }
+#log .h5 { text-decoration: underline; }
+
+#log .h1 { background-color: tan }
+#log .h2 { background-color: wheat }
+#log .h3 { background-color: wheat }
+
+#log .h1, .h2, .h3 {
+    font-variant-caps: small-caps;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+#log .b {
+    font-weight: bold;
+}
+
+#log .small_br {
+    min-height: 5px;
+    height: 5px;
+}
+
+
 /* TRACKS & LAYOUTS */
 
 .layout {
