@@ -57,11 +57,12 @@ const WAR_7YW = 3
 const WAR_AWI = 4
 
 // Ministry keywords
-const FINANCE      = 0
-const MERCANTILISM = 1
-const GOVERNANCE   = 2
-const STYLE        = 3
-const SCHOLARSHIP  = 4
+const KEYWORD_NONE = -1
+const FINANCE      =  0
+const MERCANTILISM =  1
+const GOVERNANCE   =  2
+const STYLE        =  3
+const SCHOLARSHIP  =  4
 
 // Global Demand
 const FURS    = 0
@@ -1087,6 +1088,44 @@ function has_ministry(who, m)
 	return G.ministry[who].includes(m)
 }
 
+function has_keyword(who, k)
+{
+	if (k === KEYWORD_NONE) return true
+	for (const m of G.ministry[who]) {
+		for (const keyword of data.ministries[m].keywords) {
+			if (keyword === k) return true
+		}
+	}
+	return false
+}
+
+
+function has_active_keyword(who, k)
+{
+	if (k === KEYWORD_NONE) return true
+	for (const m of G.ministry[who]) {
+		let index = G.ministry[who].indexOf(m)
+		if (!G.ministry_revealed[who][index]) continue
+		for (const keyword of data.ministries[m].keywords) {
+			if (keyword === k) return true
+		}
+	}
+	return false
+}
+
+
+function get_minister_for_keyword(who, k)
+{
+	if (k === KEYWORD_NONE) return -1
+	for (const m of G.ministry[who]) {
+		for (const keyword of data.ministries[m].keywords) {
+			if (keyword === k) return m
+		}
+	}
+	return -1
+}
+
+
 function has_inactive_ministry (who, m)
 {
 	if (!G.ministry[who].includes(m)) return false
@@ -1095,7 +1134,7 @@ function has_inactive_ministry (who, m)
 }
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
-function require_ministry(who, m, why)
+function require_ministry(who, m, why, optional = false)
 {
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
@@ -1105,7 +1144,9 @@ function require_ministry(who, m, why)
 		G.has_required_ministry = false
 	}
 	G.ministry_index = G.ministry[who].indexOf(m)
+	debug_log ("Ministry Index: " + G.ministry_index)
 	G.ministry_required_because = why
+	G.ministry_optional = optional
 	call ("ministry_is_required")
 }
 
@@ -1445,6 +1486,21 @@ function begin_event_play(c) {
 }
 
 
+function check_event_bonus_requirements(who) {
+	G.qualifies_for_bonus    = false
+	G.needs_to_flip_ministry = -1
+	let keyword = data.cards[G.selected_event].keyword
+	if (keyword !== KEYWORD_NONE) {
+		if (has_active_keyword(who, keyword)) {
+			G.qualifies_for_bonus = true
+		} else if (has_keyword(who, keyword)) {
+			G.needs_to_flip_ministry = get_minister_for_keyword(who, keyword)
+		}
+	}
+
+	//TODO: debt-based bonus requirements
+}
+
 P.event_process_click = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
@@ -1464,6 +1520,20 @@ P.event_process_click = script (`
 		}
     }
     
+    eval {
+    	check_event_bonus_requirements(R)
+    }
+    
+    if (G.needs_to_flip_ministry >= 0) {
+    	eval {
+    		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.selected_event].keyword].name, true)    		
+    	}
+    	
+    	eval {
+	    	check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus	    	
+    	}
+    }
+    
     eval { 
     	begin_event_play(G.selected_event) 
     }
@@ -1475,7 +1545,7 @@ P.event_process_click = script (`
 
 function handle_ministry_card_click(m)
 {
-	G.ministry_index  = G.ministry[R].indexOf(m)
+	G.ministry_index = G.ministry[R].indexOf(m)
 	if (G.ministry_index >= 0) {
 		call ("ministry_card")
 	}
@@ -1548,12 +1618,17 @@ P.confirm_reveal_ministry = {
 		V.prompt = "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?"
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
 		action("reveal_ministry")
+		if (G.ministry_optional) action("dont_reveal_ministry")
 	},
 	reveal_ministry() {
 		push_undo()
 		reveal_ministry(R, G.ministry_index)
 		end()
 	},
+	dont_reveal_ministry() {
+		push_undo()
+		end()
+	}
 }
 
 

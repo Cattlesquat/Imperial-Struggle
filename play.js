@@ -389,6 +389,7 @@ function on_update() {
 	confirm_action_button("confirm_no_military_upgrade", "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
 
 	action_button ("reveal_ministry", "Reveal")
+	action_button ("dont_reveal_ministry", "Don't Reveal")
 
 	action_button("done", "Done")
 	action_button("undo", "Undo")
