@@ -1095,7 +1095,7 @@ function has_inactive_ministry (who, m)
 }
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
-function require_ministry(who, m)
+function require_ministry(who, m, why)
 {
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
@@ -1105,6 +1105,7 @@ function require_ministry(who, m)
 		G.has_required_ministry = false
 	}
 	G.ministry_index = G.ministry[who].indexOf(m)
+	G.ministry_required_because = why
 	call ("ministry_is_required")
 }
 
@@ -1449,7 +1450,7 @@ function begin_event_play(c) {
 P.event_process_click = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
-        	require_ministry(R, MARQUIS_DE_CONDORCET)
+        	require_ministry(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
         }
         if (!G.has_required_ministry) {
         	return
@@ -1458,7 +1459,7 @@ P.event_process_click = script (`
 
     if ((data.cards[G.selected_event].action !== WILD) && (data.cards[G.selected_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
-        	require_ministry(R, BANK_OF_ENGLAND)
+        	require_ministry(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action")
         }
         if (!G.has_required_ministry) {
         	return
@@ -1484,6 +1485,7 @@ function handle_ministry_card_click(m)
 
 P.ministry_card = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
+        eval { G.minister_required_because = "" }
     	call confirm_reveal_ministry
     }
     
@@ -1546,6 +1548,7 @@ P.confirm_reveal_ministry = {
 	},
 	prompt() {
 		V.prompt = "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?"
+		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
 		action("reveal_ministry")
 	},
 	reveal_ministry() {
