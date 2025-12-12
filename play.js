@@ -67,14 +67,14 @@ const space_type_class = [
 
 function find_layout_node(name) {
 	for (var g in layout.nodes) {
-		var lout = layout.nodes[g][name]
-		if (lout)
-			return lout
+		var rect = layout.nodes[g][name]
+		if (rect)
+			return rect
 	}
 	return null
 }
 
-function make_lout(xc, yc, w, h) {
+function center_rect(xc, yc, w, h) {
 	return [ xc - w/2, yc - h/2, w, h ]
 }
 
@@ -94,39 +94,36 @@ function on_init() {
 	define_panel("#available_investment_tiles", "panel-available-investments")
 	define_panel("#used_investment_tiles", "panel-used-investments")
 
-	define_board("#map", 2550, 1650)
+	define_board("#map", 2550, 1650, [ 24, 24, 24, 24 ])
 
 	for (s of data.spaces) {
-		var lout = find_layout_node(s.layout ?? s.name)
-		if (!lout) {
+		var rect = find_layout_node(s.layout ?? s.name)
+		if (!rect) {
 			console.error("no layout for " + s.name)
 			continue
 		}
 
-		;[ x, y, w, h ] = lout
-		x = x + w/2
-		y = y + h/2
-
 		if (s.type === POLITICAL)
-			lout = make_lout(x, y, 66, 66)
+			rect = resize_rect(rect, 66, 66)
 		else if (s.type === MARKET)
-			lout = make_lout(x, y, 80, 80)
+			rect = resize_rect(rect, 80, 80)
 		else if (s.type === TERRITORY)
-			lout = make_lout(x, y, 80, 80)
+			rect = resize_rect(rect, 80, 80)
 		else if (s.type === NAVAL || s.type === FORT)
-			lout = make_lout(x, y, 92, 92)
+			rect = resize_rect(rect, 92, 92)
 
-		define_space("space", s.num, lout)
+		define_space("space", s.num, rect)
 			.keyword(space_type_class[s.type])
 			.tooltip(s.name)
 
-		define_layout("lout-space", s.num, lout)
+		define_layout("lout-space", s.num, rect)
 	}
 
 	for (i = 0; i <= 36; ++i) {
-		define_layout("general-track", i,
-			find_layout_node("record track " + i),
-			"stack offset:5 hover-offset:20"
+		define_stack("general-track", i,
+			resize_rect(find_layout_node("record track " + i), 49, 49),
+			-5, -5,
+			0, -50
 		)
 	}
 
@@ -176,10 +173,8 @@ function on_init() {
 	}
 
 	for (a of data.advantages) {
-		var [ x, y, w, h ] = find_layout_node(a.name)
-		x = x + w/2
-		y = y + h/2
-		define_layout("lout-advantage", a.num, make_lout(x, y, 88, 88))
+		var rect = find_layout_node(a.name)
+		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(a.name)
@@ -348,8 +343,26 @@ function on_update() {
 	populate_with_list("panel-available-investments", "investment", G.available_investments)
 	populate_with_list("panel-used-investments", "investment", G.used_investments)
 
-	populate_with_list("panel-ministry", FRANCE, "ministry_card", V.ministry[FRANCE], "card ministry_card deck_fr")
-	populate_with_list("panel-ministry", BRITAIN, "ministry_card", V.ministry[BRITAIN], "card ministry_card deck_br")
+	for (i = 0; i <= 1; ++i) {
+		a = V.ministry[FRANCE][i]
+		if (a >= 0) {
+			populate("panel-ministry", FRANCE, "ministry_card", a)
+			update_keyword("ministry_card",  a, "revealed", V.ministry_revealed[FRANCE][i])
+			update_keyword("ministry_card",  a, "hidden", !V.ministry_revealed[FRANCE][i])
+		} else {
+			populate_generic("panel-ministry", FRANCE, "card ministry_card deck_fr")
+		}
+	}
+	for (i = 0; i <= 1; ++i) {
+		a = V.ministry[BRITAIN][i]
+		if (a >= 0) {
+			populate("panel-ministry", BRITAIN, "ministry_card", a)
+			update_keyword("ministry_card",  a, "revealed", V.ministry_revealed[BRITAIN][i])
+			update_keyword("ministry_card",  a, "hidden", !V.ministry_revealed[BRITAIN][i])
+		} else {
+			populate_generic("panel-ministry", BRITAIN, "card ministry_card deck_br")
+		}
+	}
 
 	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")

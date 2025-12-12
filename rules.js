@@ -571,6 +571,7 @@ function on_view() {
 	}
 
 	V.ministry_exhausted = G.ministry_exhausted
+	V.ministry_revealed = G.ministry_revealed
 
 	V.next_war = G.next_war
 	V.theater_basic_war_tiles = [ [], [] ] // [player][theater][0-n]

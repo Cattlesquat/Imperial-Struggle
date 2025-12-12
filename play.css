@@ -145,7 +145,7 @@ body.Britain #events_br { grid-row: 2 }
 	pointer-events: none;
 }
 
-.marker.action {
+.stack .marker, .marker.action {
 	pointer-events: auto;
 }
 
@@ -230,7 +230,7 @@ body.Britain #events_br { grid-row: 2 }
 	height: 350px;
 	background-size: 250px 350px;
 	border: 1px solid black;
-	border-radius: 16px;
+	border-radius: 12px;
 }
 
 .marker.investment.action {
@@ -244,6 +244,22 @@ body.Britain #events_br { grid-row: 2 }
 .card.action {
 	box-shadow: 0 0 0 3px white;
 }
+
+/* COMPONENT OVERLAYS */
+
+.ministry_card:after {
+	position: absolute;
+	text-align: center;
+	font-size: 16px;
+	line-hight: 20px;
+	width: 100%;
+	bottom: 0;
+	background-color: linen;
+	border-radius: 0  0 12px 12px;
+}
+
+.ministry_card.hidden:after { content: "HIDDEN"; }
+.ministry_card.revealed:after { content: "REVEALED"; }
 
 /* BORDERS */
 
