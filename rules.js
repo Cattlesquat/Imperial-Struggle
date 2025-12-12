@@ -386,7 +386,8 @@ function on_setup(scenario, options) {
 
 	G.deck = []
 	G.discard_pile = []
-	G.played_events = []
+	G.played_events = [] // All the events ever played
+	G.played_event  = 0  // Event played this action round
 	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
@@ -1407,7 +1408,7 @@ function find_isolated_markets()
 
 function selected_a_tile(tile)
 {
-	G.action_round_subphase = PICKED_TILE_OPTION_TO_PASS
+	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
 	log ("=Action Round " + G.round + " (" + data.flags[R].adj + ")")
 	log (data.flags[R].name + " selects investment tile: ");
@@ -1483,12 +1484,12 @@ P.select_investment_tile = {
 
 function handle_event_card_click(c) {
 	push_undo()
-	G.selected_event = c
+	G.played_event = c
 	call ("event_process_click")
 }
 
 function begin_event_play(c) {
-	G.action_round_subphase = DURING_EVENT
+	advance_action_round_subphase(DURING_EVENT)
 	log_h2(data.flags[R].name + " plays Event: \n" + data.cards[c].name)
 	G.played_events.push(c)
 
@@ -1502,7 +1503,7 @@ function begin_event_play(c) {
 
 function end_event_play(c)
 {
-	G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS
+	advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS)
 }
 
 
@@ -1510,7 +1511,7 @@ function check_event_bonus_requirements(who) {
 	G.card_has_bonus         = false
 	G.qualifies_for_bonus    = false
 	G.needs_to_flip_ministry = -1
-	let keyword = data.cards[G.selected_event].keyword
+	let keyword = data.cards[G.played_event].keyword
 	if (keyword !== KEYWORD_NONE) {
 		G.card_has_bonus = true
 		if (has_active_keyword(who, keyword)) {
@@ -1520,17 +1521,17 @@ function check_event_bonus_requirements(who) {
 		}
 	}
 
-	if ([INTEREST_PAYMENTS, MILITARY_SPENDING_OVERRUNS, WEST_AFRICAN_GOLD_MINING, LA_GABELLE].includes(G.selected_event)) {
+	if ([INTEREST_PAYMENTS, MILITARY_SPENDING_OVERRUNS, WEST_AFRICAN_GOLD_MINING, LA_GABELLE].includes(G.played_event)) {
 		G.card_has_bonus = true
 		G.qualifies_for_bonus = available_debt(who) > available_debt(1 - who)     // "You have more Available Debt than your opponent"
 	}
 
-	if ([DEBT_CRISIS, EUROPEAN_PANIC].includes(G.selected_event)) {
+	if ([DEBT_CRISIS, EUROPEAN_PANIC].includes(G.played_event)) {
 		G.card_has_bonus = true
 		G.qualifies_for_bonus = available_debt(who) > available_debt(1 - who) + 2 // "You have at least 3 more Available Debt than your opponent"
 	}
 
-	if ([CARIBBEAN_SLAVE_UNREST, HAITIAN_REVOLUTION].includes(G.selected_event)) {
+	if ([CARIBBEAN_SLAVE_UNREST, HAITIAN_REVOLUTION].includes(G.played_event)) {
 		G.card_has_bonus = true
 		if (G.turn < PEACE_TURN_6) {
 			var tiles = [ 0, 0 ]
@@ -1547,7 +1548,7 @@ function check_event_bonus_requirements(who) {
 		}
 	}
 
-	if (G.selected_event === ACTS_OF_UNION) {
+	if (G.played_event === ACTS_OF_UNION) {
 		G.card_has_bonus = true
 		var prestige = [ ]
 		for (let whom = FRANCE; whom <= BRITAIN; whom++) {
@@ -1556,7 +1557,7 @@ function check_event_bonus_requirements(who) {
 		G.qualifies_for_bonus = prestige[who] > prestige[1 - who] // "More Prestige spaces in Scotland and Ireland"
 	}
 
-	if (G.selected_event === FALKLANDS_CRISIS) {
+	if (G.played_event === FALKLANDS_CRISIS) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
 }
@@ -1567,15 +1568,17 @@ P.event_process_click = script (`
         	require_ministry(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
         }
         if (!G.has_required_ministry) {
+        	eval { G.played_event = 0 }
         	return
 		}
     }
 
-    if ((data.cards[G.selected_event].action !== WILD) && (data.cards[G.selected_event].action !== data.investments[G.played_tile].majortype)) {
+    if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
         	require_ministry(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action")
         }
         if (!G.has_required_ministry) {
+        	eval { G.played_event = 0 }
         	return
 		}
     }
@@ -1586,7 +1589,7 @@ P.event_process_click = script (`
     
     if (G.needs_to_flip_ministry >= 0) {
     	eval {
-    		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.selected_event].keyword].name, true)    		
+    		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.played_event].keyword].name, true)    		
     	}
     	
     	eval {
@@ -1595,7 +1598,7 @@ P.event_process_click = script (`
     }
     
     eval { 
-    	begin_event_play(G.selected_event) 
+    	begin_event_play(G.played_event) 
     }        
     
     //TODO: Here we branch to an unholy number of possible events 
@@ -1898,6 +1901,23 @@ function reflag_space(s, who) {
 	update_advantages() // This could change the ownership of an advantage
 }
 
+
+function eligible_to_play_event()
+{
+	return ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET))
+}
+
+function advance_action_round_subphase(subphase)
+{
+	if (G.action_round_subphase >= subphase) return
+    let prior_phase = G.action_round_subphase
+	G.action_round_subphase = subphase
+
+	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
+		log ("\nNo Event played.")
+	}
+}
+
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
@@ -1920,7 +1940,7 @@ P.action_round_core = {
 				any = true
 
 				for (var card of G.hand[R]) {
-					// Only events that either match our major action or be "wild" events (the ones that don't show a symbol)
+					// Only events that either match=our major action or be "wild" events (the ones that don't show a symbol)
 					if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
 						(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON))) {
 						action_event_card(card)
@@ -2003,12 +2023,12 @@ P.action_round_core = {
 	},
 	draw_event() {
 		push_undo()
-		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		log ("draw event!")
 	},
 	construct_squadron() {
 		push_undo()
-		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
+		advance_action_round_subphase()
 		log ("construct squadron!")
 	},
 	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
@@ -2062,7 +2082,7 @@ P.action_round_core = {
 		} else if (G.action_points_major[type] > 0) {
 			G.action_points_major[type] = 0
 		}
-		G.action_round_subphase = ACTION_POINTS_ALREADY_SPENT
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
 		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
 
@@ -2075,9 +2095,7 @@ P.action_round_core = {
 	},
 	advantage(a) {
 		push_undo()
-		if (G.action_round_subphase < BEFORE_SPENDING_ACTION_POINTS) {
-			G.action_round_subphase = BEFORE_SPENDING_ACTION_POINTS // Can't play an event after using an advantage
-		}
+		advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS) // Can't play an event after using an advantage
 		// TODO - handle_advantage_click
 	},
 	event_card(c) {
