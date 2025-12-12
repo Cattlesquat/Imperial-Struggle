@@ -23,8 +23,8 @@ function toggle_markers() {
 
 function toggle_markers_and_pieces() {
 	// cycle between showing everything, only pieces, and nothing.
-	let hidden_pieces = document.body.classList.contains("hide-pieces")
-	let hidden_markers = document.body.classList.contains("hide-markers")
+	var hidden_pieces = document.body.classList.contains("hide-pieces")
+	var hidden_markers = document.body.classList.contains("hide-markers")
 	if (hidden_pieces && hidden_markers) {
 		document.body.classList.remove("hide-pieces")
 		document.body.classList.remove("hide-markers")
@@ -33,19 +33,6 @@ function toggle_markers_and_pieces() {
 	} else {
 		document.body.classList.add("hide-pieces")
 	}
-}
-
-function escape_typography(text) {
-	text = String(text)
-	// TODO: smart quotes
-	text = text.replace(/---/g, "\u2014")
-	text = text.replace(/--/g, "\u2013")
-	text = text.replace(/->/g, "\u2192")
-	text = text.replace(/-( ?[\d])/g, "\u2212$1")
-	text = text.replace(/&/g, "&amp;")
-	text = text.replace(/</g, "&lt;")
-	text = text.replace(/>/g, "&gt;")
-	return text
 }
 
 function is_action(action, id) {
@@ -61,6 +48,24 @@ function is_action(action, id) {
 	return false
 }
 
+function resize_rect(rect, w, h) {
+	var x = rect[0] + rect[2]/2
+	var y = rect[1] + rect[3]/2
+	return [ x - w/2, y - h/2, w, h ]
+}
+
+function translate_rect(rect, dx, dy) {
+	var x = rect[0] + rect[2]/2
+	var y = rect[1] + rect[3]/2
+	return [ rect[0] + dx, rect[1] + dy, rect[2], rect[3] ]
+}
+
+function expand_rect(rect, dx, dy) {
+	var x = rect[0] + rect[2]/2
+	var y = rect[1] + rect[3]/2
+	return [ rect[0] - dx, rect[1] - dy, rect[2] + dx * 2, rect[3] + dy * 2 ]
+}
+
 /* WORLD */
 
 const world = {
@@ -70,7 +75,9 @@ const world = {
 	status: $("#status"),
 	mapwrap: $("#mapwrap"),
 	panzoom: $("#pan_zoom_main"),
+	tip: $("#tip"),
 	parent_list: [],
+	stack_list: [],
 	action_list: [],
 	animate_list: [],
 	keyword_list: [],
@@ -92,6 +99,7 @@ class Thing {
 		this.my_keywords = [ action ]
 
 		this.is_parent = false
+		this.is_stack = false
 		this.is_action = false
 		this.is_keyword = false
 		this.is_text = false
@@ -111,6 +119,14 @@ class Thing {
 		if (!this.is_action) {
 			this.element.onmousedown = _on_click_action
 			world.action_list.push(this)
+		}
+		return this
+	}
+
+	stackable() {
+		// for non-action elements that populate stacks (and should expand the stack when clicked)
+		if (!this.is_action) {
+			this.element.onmousedown = _on_click_stackable
 		}
 		return this
 	}
@@ -173,6 +189,18 @@ class Thing {
 		return this
 	}
 
+	tooltip_zoom_class() {
+		this.element.onmouseenter = () => _tip_focus_class(this.my_keywords.join(" "))
+		this.element.onmouseleave = _tip_blur_class
+		return this
+	}
+
+	tooltip_zoom_clone(action, id) {
+		this.element.onmouseenter = () => _tip_focus_clone(action, id)
+		this.element.onmouseleave = _tip_blur_clone
+		return this
+	}
+
 	layout(rect, keywords) {
 		var e = this.element
 
@@ -210,12 +238,39 @@ class Thing {
 		return this
 	}
 
+	stack(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap) {
+		world.parent.appendChild(this.element)
+
+		if (Array.isArray(rect))
+			var [ x, y, w, h ] = rect
+		else
+			var { x, y, w, h } = rect
+		this.element.style.left = Math.round(x) + "px"
+		this.element.style.top = Math.round(y) + "px"
+		this.element.style.width = Math.round(w) + "px"
+		this.element.style.height = Math.round(h) + "px"
+
+		this.is_stack = true
+		this.my_stack = {
+			dx, dy, // normal
+			major_dx, major_dy, // expanded major-axis
+			minor_dx, minor_dy, // expanded minor-axis
+			threshold,
+			wrap
+		}
+
+		world.stack_list.push(this)
+
+		return this
+	}
+
 	keyword(keywords, on = true) {
 		if (keywords && on) {
 			if (typeof keywords === "string")
 				keywords = keywords.trim().split(" ")
 			for (var word of keywords) {
-				set_add(this.my_keywords, word)
+				if (!this.my_keywords.includes(word))
+					this.my_keywords.push(word)
 				this.element.classList.add(word)
 			}
 		}
@@ -245,8 +300,21 @@ function lookup_thing(action, id) {
 }
 
 function _on_click_action(evt) {
-	if (evt.button === 0 && send_action(evt.target.thing.my_action, evt.target.thing.my_id))
+	if (evt.button === 0) {
+		var thing = evt.target.thing
 		evt.stopPropagation()
+		if (_focus_stack(thing.element.parentElement.thing))
+			if (!send_action(thing.my_action, thing.my_id))
+				_blur_stack()
+	}
+}
+
+function _on_click_stackable(evt) {
+	if (evt.button === 0) {
+		var thing = evt.target.thing
+		evt.stopPropagation()
+		_focus_stack(thing.element.parentElement.thing)
+	}
 }
 
 /* DEFINE THINGS */
@@ -259,8 +327,9 @@ function define_html_thing(selector, action, id) {
 	return new Thing($(selector), action, id)
 }
 
-function define_board(selector, w, h) {
+function define_board(selector, w, h, padding=[0,0,0,0]) {
 	world.parent = $(selector)
+	world.parent.my_padding = padding
 	assert(world.parent, "board not found: " + selector)
 	world.parent.classList.add("board")
 	if (!w || !h) {
@@ -272,7 +341,7 @@ function define_board(selector, w, h) {
 	world.parent_h = h
 }
 
-function sort_board_children() {
+function sort_board(x_weight = 1, y_weight = 2) {
 	var parent = world.parent
 	var list = Array.from(parent.childNodes).filter(node => node instanceof Element)
 	list.sort((a,b) => {
@@ -287,13 +356,19 @@ function sort_board_children() {
 		// everything else sorted for cabinet projection order
 		var ra = a.getBoundingClientRect()
 		var rb = b.getBoundingClientRect()
-		var za = ra.top * 2 + ra.left
-		var zb = rb.top * 2 + rb.left
+		var za = ra.top * y_weight + ra.left * x_weight
+		var zb = rb.top * y_weight + rb.left * x_weight
 		return za - zb
 	})
 	parent.replaceChildren()
 	for (var e of list)
 		parent.appendChild(e)
+}
+
+function define_stack(action, id, rect, dx=-12, dy=-12, major_dx=dx, major_dy=dy, minor_dx=0, minor_dy=0, threshold=1, wrap=1000) {
+	return define_thing(action, id)
+		.keyword("stack")
+		.stack(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap)
 }
 
 function define_layout(action, id, rect, keywords, styles) {
@@ -353,8 +428,6 @@ function define_layout_grid(action, order, cols, rows, layout, gapx, gapy, keywo
 		y += cell_h + gapy
 	}
 }
-
-/* PREDEFINED THINGS - SPACE, PIECE, MARKER, CARD */
 
 function define_space(action, id, rect, keywords) {
 	return define_thing(action, id)
@@ -489,6 +562,12 @@ function update_position(action, id, x, y) {
 	thing.element.style.top = Math.round(y) + "px"
 }
 
+function update_size(action, id, w, h) {
+	var thing = lookup_thing(action, id)
+	thing.element.style.width = Math.round(w) + "px"
+	thing.element.style.height = Math.round(h) + "px"
+}
+
 function update_style(action, id, key, value) {
 	var thing = lookup_thing(action, id)
 	thing.element.style.setProperty(key, value)
@@ -531,60 +610,114 @@ function update_show(action, id, show) {
 	thing.element.hidden = !show
 }
 
-/* ENGINE */
+/* STACKS */
 
-function begin_update() {
-	G = V = view
-	R = player
+$("main")?.addEventListener("mousedown", function (evt) {
+	if (evt.button === 0)
+		_blur_stack()
+})
 
-	// reset unused element cache
-	for (var key in world.generic_used) {
-		var unused = world.generic_unused[key]
-		var used = world.generic_used[key]
-		while (used.length > 0)
-			unused.push(used.pop())
+function _focus_stack(stack) {
+	if (stack?.is_stack) {
+		if (world.focus === stack)
+			return true
+
+		world.focus = stack
+		if (world.focus.element.children.length <= world.focus.my_threshold)
+			return true
+
+		_animate_begin()
+		_layout_stacks()
+		_animate_end(200)
+
+		return false
 	}
-
-	for (var thing of world.animate_list)
-		_remember_position(thing)
-	for (var thing of world.parent_list)
-		thing.element.replaceChildren()
-	for (var thing of world.keyword_list)
-		thing.my_dynamic_keywords = []
-	for (var thing of world.text_list)
-		thing.my_text = thing.my_text_html = null
+	return true
 }
 
-function end_update() {
-	for (var e of document.querySelectorAll(".layout.square"))
-		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
-
-	for (var thing of world.keyword_list)
-		thing.element.setAttribute("class", [ ...thing.my_keywords, ...thing.my_dynamic_keywords ].join(" "))
-
-	for (var thing of world.text_list) {
-		if (thing.my_text_html !== null)
-			thing.element.innerHTML = thing.my_text_html
-		else if (thing.my_text !== null)
-			thing.element.textContent = thing.my_text
-		else
-			thing.element.textContent = ""
+function _blur_stack() {
+	if (world.focus) {
+		world.focus = null
+		_animate_begin()
+		_layout_stacks()
+		_animate_end(200)
 	}
+}
 
-	for (var thing of world.action_list)
-		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
+function _layout_stacks() {
+	function _(x) { return (typeof x === "function") ? x(n, stack) : x }
+	for (var stack of world.stack_list) {
+		var padding = stack.element.parentElement.my_padding
 
+		var n = stack.element.children.length
+		if (n === 0)
+			continue
+
+		var expand = (world.focus === stack || n <= _(stack.my_threshold))
+		var z = (world.focus === stack ? 1 : null)
+		var major_dx = expand ? _(stack.my_stack.major_dx) : _(stack.my_stack.dx)
+		var major_dy = expand ? _(stack.my_stack.major_dy) : _(stack.my_stack.dy)
+		var minor_dx = expand ? _(stack.my_stack.minor_dx) : _(0)
+		var minor_dy = expand ? _(stack.my_stack.minor_dy) : _(0)
+		var wrap = expand ? _(stack.my_stack.wrap) : n
+		var major = Math.min(n, wrap) - 1
+		var minor = Math.ceil(n / wrap) - 1
+
+		// clamp start so it fits on board
+		var min_x = padding[3]
+		var min_y = padding[0]
+		var max_x = stack.element.parentElement.offsetWidth - stack.element.offsetWidth - padding[1]
+		var max_y = stack.element.parentElement.offsetHeight - stack.element.offsetHeight - padding[2]
+
+		var start_x = stack.element.offsetLeft
+		var start_y = stack.element.offsetTop
+		if (start_x < min_x) start_x = min_x
+		if (start_y < min_y) start_y = min_y
+		if (start_x > max_x) start_x = max_x
+		if (start_y > max_y) start_y = max_y
+		if (start_x + major_dx * major + minor_dx * minor < min_x) start_x = min_x - (major_dx * major + minor_dx * minor)
+		if (start_y + major_dy * major + minor_dy * minor < min_y) start_y = min_y - (major_dy * major + minor_dy * minor)
+		if (start_x + major_dx * major + minor_dx * minor > max_x) start_x = max_x - (major_dx * major + minor_dx * minor)
+		if (start_y + major_dy * major + minor_dy * minor > max_y) start_y = max_y - (major_dy * major + minor_dy * minor)
+
+		// use stack-local coords for children
+		start_x -= stack.element.offsetLeft
+		start_y -= stack.element.offsetTop
+
+		var i = 0, k = 0
+		for (var child of stack.element.children) {
+			var x = start_x + major_dx * i + minor_dx * k
+			var y = start_y + major_dy * i + minor_dy * k
+			child.style.left = x + "px"
+			child.style.top = y + "px"
+			child.style.zIndex = z
+			if (++i === wrap) {
+				i = 0
+				++k
+			}
+		}
+	}
+}
+
+/* ANIMATION */
+
+function _animate_begin() {
+	for (var thing of world.animate_list)
+		_remember_position(thing)
+}
+
+function _animate_end(max_duration = 1000) {
 	var scale1 = Number(world.mapwrap?.dataset?.scale ?? 1)
 	var scale2 = Number(world.panzoom?.dataset?.scale ?? 1)
 	var inv_scale = 1 / (scale1 * scale2)
 	for (var thing of world.animate_list)
-		_animate_position(thing, inv_scale)
+		_animate_position(thing, inv_scale, max_duration)
 }
 
 function _remember_position(thing) {
 	var e = thing.element
 	if (e.offsetParent) {
-		let prect = e.offsetParent.getBoundingClientRect()
+		var prect = e.offsetParent.getBoundingClientRect()
 		e.my_parent = e.offsetParent
 		e.my_px = prect.x
 		e.my_py = prect.y
@@ -600,13 +733,14 @@ function _remember_position(thing) {
 	}
 }
 
-function _animate_position(thing, inv_scale) {
+function _animate_position(thing, inv_scale, max_duration) {
 	var e = thing.element
 	if (e.offsetParent && e.my_parent) {
-		let prect = e.offsetParent.getBoundingClientRect()
-		let new_x = prect.x + e.offsetLeft
-		let new_y = prect.y + e.offsetTop
-		let dx, dy, da
+		var prect = e.offsetParent.getBoundingClientRect()
+		var new_x = prect.x + e.offsetLeft
+		var new_y = prect.y + e.offsetTop
+		var dx, dy, da
+		var duration = Math.min(thing.my_time, max_duration)
 		// TODO: fix dx,dy calculation with nested transform
 		if (e.offsetParent === e.my_parent) {
 			// animate pieces on pieces
@@ -630,7 +764,7 @@ function _animate_position(thing, inv_scale) {
 						{ transform: `translate(${dx}px, ${dy}px) rotate(${thing.my_old_angle}deg)`, },
 						{ transform: `translate(0, 0) rotate(${thing.my_new_angle}deg)`, },
 					],
-					{ duration: thing.my_time, easing: "ease" }
+					{ duration, easing: "ease" }
 				)
 			} else {
 				e.animate(
@@ -638,11 +772,60 @@ function _animate_position(thing, inv_scale) {
 						{ transform: `translate(${dx}px, ${dy}px)`, },
 						{ transform: `translate(0, 0)`, },
 					],
-					{ duration: thing.my_time, easing: "ease" }
+					{ duration, easing: "ease" }
 				)
 			}
 		}
 	}
+}
+
+
+/* ENGINE */
+
+function begin_update() {
+	G = V = view
+	R = roles[player].index
+
+	// reset unused element cache
+	for (var key in world.generic_used) {
+		var unused = world.generic_unused[key]
+		var used = world.generic_used[key]
+		while (used.length > 0)
+			unused.push(used.pop())
+	}
+
+	_animate_begin()
+
+	for (var thing of world.parent_list)
+		thing.element.replaceChildren()
+	for (var thing of world.keyword_list)
+		thing.my_dynamic_keywords = []
+	for (var thing of world.text_list)
+		thing.my_text = thing.my_text_html = null
+}
+
+function end_update() {
+	for (var e of document.querySelectorAll(".layout.square"))
+		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
+
+	_layout_stacks()
+
+	for (var thing of world.keyword_list)
+		thing.element.setAttribute("class", [ ...thing.my_keywords, ...thing.my_dynamic_keywords ].join(" "))
+
+	for (var thing of world.text_list) {
+		if (thing.my_text_html !== null)
+			thing.element.innerHTML = thing.my_text_html
+		else if (thing.my_text !== null)
+			thing.element.textContent = thing.my_text
+		else
+			thing.element.textContent = ""
+	}
+
+	for (var thing of world.action_list)
+		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
+
+	_animate_end()
 }
 
 /* PANELS */
@@ -793,6 +976,97 @@ function update_overlay_text_html(action, id, text) {
 	return thing.my_overlay_head.innerHTML = text
 }
 
+/* LOG FORMATTING */
+
+function escape_typography(text) {
+	text = String(text)
+	// TODO: smart quotes
+	text = text.replace(/---/g, "\u2014")
+	text = text.replace(/--/g, "\u2013")
+	text = text.replace(/->/g, "\u2192")
+	text = text.replace(/-( ?[\d])/g, "\u2212$1")
+	text = text.replace(/&/g, "&amp;")
+	text = text.replace(/</g, "&lt;")
+	text = text.replace(/>/g, "&gt;")
+	return text
+}
+
+const _escape_dice_cache = {}
+
+function escape_dice(text, re = /\b([BW])([0-6])\b/g) {
+	if (typeof re === "string")
+		re = _escape_dice_cache[re] ??= new RegExp("\\b([" + re + "])([0-6])\\b", "g")
+	return text.replace(re, '<span class="dice $1 d$2"></span>')
+}
+
+function escape_icon(text, re, icons) {
+	return text.replace(re, (m) => icons[m] ?? m)
+}
+
+function _tip_focus_class(name) {
+	world.tip.setAttribute("class", name)
+	world.tip.hidden = false
+}
+
+function _tip_blur_class(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+}
+
+function _tip_focus_clone(action, id) {
+	var thing = lookup_thing(action, id)
+	var clone = thing.element.cloneNode(true)
+	clone.setAttribute("class", thing.my_keywords.join(" "))
+	clone.removeAttribute("style")
+	world.tip.replaceChildren(clone)
+	world.tip.hidden = false
+}
+
+function _tip_blur_clone() {
+	world.tip.replaceChildren()
+	world.tip.hidden = true
+}
+
+function _tip_focus_light(action, id) {
+	lookup_thing(action, id).element.classList.add("highlight")
+}
+
+function _tip_blur_light(action, id) {
+	lookup_thing(action, id).element.classList.remove("highlight")
+}
+
+function _tip_click_light(action, id) {
+	scroll_into_view(lookup_thing(action, id).element)
+}
+
+function escape_tip_light(text, re, log_className, action, names) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_light('${action}',${x})"
+		onmouseleave="_tip_blur_light('${action}',${x})"
+		onmousedown="_tip_click_light('${action}',${x})"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
+function escape_tip_class(text, re, log_className, tip_className, names) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_class('${tip_className.replace("$1",x)}')"
+		onmouseleave="_tip_blur_class()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
+function escape_tip_clone(text, re, log_className, action, names) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_clone('${action}',${x})"
+		onmouseleave="_tip_blur_clone()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
 /* PREFERENCES (WIP) */
 
 function get_preference(name, fallback) {
@@ -856,12 +1130,6 @@ function _update_preference_radio(name) {
 
 /* LIBRARY */
 
-function array_insert(array, index, item) {
-	for (var i = array.length; i > index; --i)
-		array[i] = array[i - 1]
-	array[index] = item
-}
-
 function set_has(set, item) {
 	if (set === item)
 		return true
@@ -882,35 +1150,14 @@ function set_has(set, item) {
 	return false
 }
 
-function set_add(set, item) {
-	var a = 0
-	var b = set.length - 1
-	// optimize fast case of appending items in order
-	if (item > set[b]) {
-		set[b+1] = item
-		return
-	}
-	while (a <= b) {
-		var m = (a + b) >> 1
-		var x = set[m]
-		if (item < x)
-			b = m - 1
-		else if (item > x)
-			a = m + 1
-		else
-			return
-	}
-	array_insert(set, a, item)
-}
-
 function map_get(map, key, missing) {
 	if (!map)
 		return missing
-	let a = 0
-	let b = (map.length >> 1) - 1
+	var a = 0
+	var b = (map.length >> 1) - 1
 	while (a <= b) {
-		let m = (a + b) >> 1
-		let x = map[m << 1]
+		var m = (a + b) >> 1
+		var x = map[m << 1]
 		if (key < x)
 			b = m - 1
 		else if (key > x)
