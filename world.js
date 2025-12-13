@@ -82,6 +82,8 @@ const world = {
 	animate_list: [],
 	keyword_list: [],
 	text_list: [],
+	focus: null,
+	last_focus: null,
 	generic_unused: {},
 	generic_used: {},
 	parent: $("#map"),
@@ -644,6 +646,14 @@ function _blur_stack() {
 	}
 }
 
+function focus_stack_with_thing(action, id) {
+	if (world.last_focus) {
+		var stack = lookup_thing(action, id).element.parentElement?.thing
+		if (stack?.is_stack)
+			world.focus = stack
+	}
+}
+
 function _layout_stacks() {
 	function _(x) { return (typeof x === "function") ? x(n, stack) : x }
 	for (var stack of world.stack_list) {
@@ -695,6 +705,16 @@ function _layout_stacks() {
 				i = 0
 				++k
 			}
+		}
+	}
+}
+
+function _reset_stacks() {
+	for (var stack of world.stack_list) {
+		for (var e of stack.element.children) {
+			e.style.left = null
+			e.style.top = null
+			e.style.zIndex = null
 		}
 	}
 }
@@ -796,12 +816,16 @@ function begin_update() {
 
 	_animate_begin()
 
+	_reset_stacks()
+
 	for (var thing of world.parent_list)
 		thing.element.replaceChildren()
 	for (var thing of world.keyword_list)
 		thing.my_dynamic_keywords = []
 	for (var thing of world.text_list)
 		thing.my_text = thing.my_text_html = null
+
+	world.last_focus = world.focus
 }
 
 function end_update() {

@@ -208,10 +208,10 @@ body.hide-pieces .piece { display: none }
 	background-color: #444;
 }
 
-.dice .d0 { background-position: -100% 0 }
-.dice .d1 { background-position: 0% 0; }
-.dice .d2 { background-position: 20% 0; }
-.dice .d3 { background-position: 40% 0; }
-.dice .d4 { background-position: 60% 0; }
-.dice .d5 { background-position: 80% 0; }
-.dice .d6 { background-position: 100% 0; }
+.dice.d0 { background-position: -100% 0 }
+.dice.d1 { background-position: 0% 0; }
+.dice.d2 { background-position: 20% 0; }
+.dice.d3 { background-position: 40% 0; }
+.dice.d4 { background-position: 60% 0; }
+.dice.d5 { background-position: 80% 0; }
+.dice.d6 { background-position: 100% 0; }
