@@ -1761,7 +1761,7 @@ function action_eligible_spaces_diplo(region)
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
 		if (space.type !== POLITICAL) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
-		if (data.spaces[space.num].era > current_era()) continue
+		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
 		if (!can_afford_to_shift(space.num, R)) continue
 		action_space(space.num)
 	}
