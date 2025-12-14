@@ -1713,6 +1713,35 @@ function allowed_to_shift_market(s, who)
 	return false
 }
 
+function eligible_for_minor_action(s, who)
+{
+	if ((G.flags[s] !== NONE) && (G.flags[s] !== who)) {
+		if (!has_conflict_marker(s)) return false // Other nations flags can only be removed w/ presence of a conflict marker
+		if ([ FORT, NAVAL ].includes(data.spaces[s].type)) return false // Can't pop enemy forts or squadrons
+	}
+	return true
+}
+
+
+function can_afford_to_shift(s, who)
+{
+	var type = space_action_type(s)
+
+	if (!G.action_points_eligible[type]) return false
+
+	var eligible_minor = eligible_for_minor_action(s, who)
+	if (!G.action_points_eligible_major[type] && !eligible_minor) return false
+
+	var cost = action_point_cost(s, type)
+
+	//TODO forts and navies different behaviors
+
+	var avail = G.action_points_major[type] + available_debt_plus_trps(who) + (eligible_minor ? G.action_points_minor[type] : 0)
+
+	return (avail >= cost)
+}
+
+
 function action_eligible_spaces_econ(region)
 {
 	for (const space of data.spaces) {
@@ -1720,6 +1749,7 @@ function action_eligible_spaces_econ(region)
 		if (space.type !== MARKET) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
+		if (!can_afford_to_shift(space.num, R)) continue
 
 		action_space(space.num)
 	}
@@ -1731,6 +1761,8 @@ function action_eligible_spaces_diplo(region)
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
 		if (space.type !== POLITICAL) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
+		if (data.spaces[space.num].era > current_era()) continue
+		if (!can_afford_to_shift(space.num, R)) continue
 		action_space(space.num)
 	}
 }
@@ -1739,11 +1771,18 @@ function action_eligible_spaces_mil(region)
 {
 	for (const space of data.spaces) {
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
-		if ((space.type !== NAVAL) && (space.type !== FORT)) continue
+		if ((space.type !== NAVAL) && (space.type !== FORT)) {
+			if (!has_conflict_marker(space.num)) continue
+			//TODO conflict markers in Markets & Political spaces
+		}
 		if (G.flags[space.num] === R) {
 			/* 5.6.4 - Repair a fort */
 			if (space.type === FORT) {
 				if (!is_damaged_fort(space.num)) continue
+			}
+
+			if (has_conflict_marker(space.num)) {
+
 			}
 
 			//TODO: move my existing ship
