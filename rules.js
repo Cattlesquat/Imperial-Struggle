@@ -1723,7 +1723,17 @@ function eligible_for_minor_action(s, who)
 }
 
 
-function can_afford_to_shift(s, who)
+function action_points_available(who, type, allow_debt_and_trps)
+{
+	if (!G.action_points_eligible[type]) return 0
+
+	var eligible_minor = eligible_for_minor_action(s, who)
+	if (!G.action_points_eligible_major[type] && !eligible_minor) return 0
+
+	return G.action_points_major[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+}
+
+function can_afford_to_shift(s, who, allow_debt_and_trps)
 {
 	var type = space_action_type(s)
 
@@ -1733,10 +1743,8 @@ function can_afford_to_shift(s, who)
 	if (!G.action_points_eligible_major[type] && !eligible_minor) return false
 
 	var cost = action_point_cost(s, type)
-
+    var avail = action_points_available(who, type, allow_debt_and_trps)
 	//TODO forts and navies different behaviors
-
-	var avail = G.action_points_major[type] + available_debt_plus_trps(who) + (eligible_minor ? G.action_points_minor[type] : 0)
 
 	return (avail >= cost)
 }
@@ -1749,7 +1757,7 @@ function action_eligible_spaces_econ(region)
 		if (space.type !== MARKET) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
-		if (!can_afford_to_shift(space.num, R)) continue
+		if (!can_afford_to_shift(space.num, R, true)) continue
 
 		action_space(space.num)
 	}
@@ -1762,7 +1770,7 @@ function action_eligible_spaces_diplo(region)
 		if (space.type !== POLITICAL) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
-		if (!can_afford_to_shift(space.num, R)) continue
+		if (!can_afford_to_shift(space.num, R, true)) continue
 		action_space(space.num)
 	}
 }
@@ -1958,6 +1966,110 @@ function advance_action_round_subphase(subphase)
 	}
 }
 
+void handle_space_click(s)
+{
+	push_undo()
+
+	G.action_type = space_action_type(s)
+	G.action_cost = action_point_cost(s, type)
+	G.action_minor = false
+	G.eligible_minor = eligible_for_minor_action(s, R) && G.action_points_minor[G.action_type] > 0
+	G.action_points_available_now  = action_points_available(R, G.action_type, false)
+	G.action_points_available_debt = action_points_available(R, G.action_type, true)
+
+
+    call("space_process_click")
+	/////
+
+    //TODO forts and navies different behaviors
+
+
+    //TODO this is just the barest rough-in of paying costs
+	if (G.action_points_major[type] >= cost) {
+		G.action_points_major[type] -= cost
+	} else if (G.action_points_minor[type] > 0) {
+		G.action_points_minor[type] = 0
+	} else if (G.action_points_major[type] > 0) {
+		G.action_points_major[type] = 0
+	}
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+
+    //TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
+
+	reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
+
+	set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
+}
+
+P.space_process_click = script(`
+    if (G.action_points_available_debt < G.action_cost) {
+    	return // If we can't even afford it w/ debt and trps, we shouldn't be here
+    }
+    
+    if (G.eligible_minor && G.action_points_available_debt - 2 < G.action_cost) {
+        eval { G.action_minor = true }
+    }
+    
+    if (G.eligible_minor && !G.action_minor) {
+    }
+    
+    if (G.action_points_available_now < G.action_cost) {
+    	call decide_whether_to_spend()
+    	if (G.action_points_available_now < G.action_cost) {
+    		return // If we didn't decide to spend enough, we're done
+    	}
+    }
+    
+    
+
+    eval { handle_reflag_space() }
+`)
+
+
+function handle_reflag_space() {
+
+}
+
+
+// Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
+function decide_whether_to_spend()
+{
+	call ("spending_is_required")
+}
+
+P.spending_is_required = script (`
+    call confirm_spend_debt_or_trps
+    eval {    
+    	
+    }
+`)
+
+
+P.confirm_spend_debt_or_trps = {
+	_begin() {
+		if (G.ministry_revealed[R][G.ministry_index]) end()
+	},
+	prompt() {
+		V.prompt = "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?"
+		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
+		action("reveal_ministry")
+		if (G.ministry_optional) action("dont_reveal_ministry")
+	},
+	reveal_ministry() {
+		push_undo()
+		//reveal_ministry(R, G.ministry_index)
+		end()
+	},
+	dont_reveal_ministry() {
+		push_undo()
+		end()
+	}
+}
+
+
+
+
+
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
@@ -2107,28 +2219,7 @@ P.action_round_core = {
 		end()
 	},
 	space(s) {
-		var type = space_action_type(s)
-		var cost   = action_point_cost(s, type)
-
-		//TODO forts and navies different behaviors
-
-		push_undo()
-
-		//TODO this is just the barest rough-in of paying costs
-		if (G.action_points_major[type] >= cost) {
-			G.action_points_major[type] -= cost
-		} else if (G.action_points_minor[type] > 0) {
-			G.action_points_minor[type] = 0
-		} else if (G.action_points_major[type] > 0) {
-			G.action_points_major[type] = 0
-		}
-		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
-
-		//TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
-
-		reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
-
-		set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
+		handle_space_click(s)
 	},
 	ministry_card(m) {
 		handle_ministry_card_click(m)
