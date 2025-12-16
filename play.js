@@ -149,6 +149,16 @@ function space_tooltip(s) {
 	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")");
 }
 
+
+function bizarro_space_tooltip(bs) {
+
+	if ((bs >= AWARD_EUROPE) && (bs <= AWARD_INDIA)) {
+		return award_tooltip(bs - AWARD_EUROPE)
+	}
+
+	return data.bizarro_spaces[bs].name
+}
+
 function award_tooltip(region)
 {
 	var award = V.awards[region]
@@ -227,6 +237,16 @@ function on_init() {
 		define_layout("turn-track", s.num, find_layout_node(s.layout))
 	}
 
+	for (s of data.bizarro_spaces) {
+		var rect = find_layout_node(s.layout ?? s.name)
+		if (!rect) {
+			console.log("No layout for Bizarro Space: " + s.name)
+			continue
+		}
+
+	    define_thing("tip-bizarro", s).layout(rect).tooltip(bizarro_space_tooltip)
+	}
+
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
 	define_layout("lout-navy", undefined, find_layout_node("Navy Box"))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
@@ -236,11 +256,11 @@ function on_init() {
 	define_layout("lout-award", REGION_CARIBBEAN, find_layout_node("Award Caribbean"))
 	define_layout("lout-award", REGION_INDIA, find_layout_node("Award India"))
 
-	define_thing("tip-navy").layout(find_layout_node("Navy Box")).tooltip("Navy Box")
-	define_thing("tip-award", REGION_EUROPE).layout(find_layout_node("Award Europe")).tooltip(award_tooltip)
-	define_thing("tip-award", REGION_NORTH_AMERICA).layout(find_layout_node("Award North America")).tooltip(award_tooltip)
-	define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
-	define_thing("tip-award", REGION_INDIA).layout(find_layout_node("Award India")).tooltip(award_tooltip)
+	//define_thing("tip-navy").layout(find_layout_node("Navy Box")).tooltip("Navy Box")
+	//define_thing("tip-award", REGION_EUROPE).layout(find_layout_node("Award Europe")).tooltip(award_tooltip)
+	//define_thing("tip-award", REGION_NORTH_AMERICA).layout(find_layout_node("Award North America")).tooltip(award_tooltip)
+	//define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
+	//define_thing("tip-award", REGION_INDIA).layout(find_layout_node("Award India")).tooltip(award_tooltip)
 
 	define_marker("game-turn", undefined, "square-sm")
 	define_marker("victory-points", undefined, "square-sm black")
