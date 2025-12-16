@@ -389,6 +389,9 @@ function on_update() {
 	action_button("france", "France")
 	action_button("britain", "Britain")
 
+	action_button("paydebt", "Add 1 Debt")
+	action_button("paytrp", "Spend 1 Treaty Point")
+
 	action_button("confirm", "Confirm")
 	action_button("pass", "Pass")
 
@@ -403,6 +406,9 @@ function on_update() {
 
 	action_button ("reveal_ministry", "Reveal")
 	action_button ("dont_reveal_ministry", "Don't Reveal")
+
+	action_button ("major", "Major")
+	action_button ("minor", "Minor")
 
 	action_button("done", "Done")
 	action_button("undo", "Undo")

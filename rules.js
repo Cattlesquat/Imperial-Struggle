@@ -603,6 +603,18 @@ function available_debt_plus_trps(who)
 	return available_debt(who) + G.treaty_points[who]
 }
 
+function pay_debt(who, amount) {
+	G.debt[who] += amount
+	//TODO handle going over the debt limit
+}
+
+function pay_treaty_points(who, amount) {
+	if (amount > G.treaty_points[who]) {
+		console.error("Paid more treaty points than had available. Who: " + who + "  Avail: " + G.treaty_points[who] + "  Paid " + amount)
+		amount = G.treaty_points[who]
+	}
+	G.treaty_points[who] -= amount
+}
 
 function has_advantage(who, a) {
 	for (var s of data.advantages[a].req)
@@ -1096,11 +1108,13 @@ function has_active_ministry(who, m)
 	return G.ministry_revealed[who][idx]
 }
 
+// True if this is one of the specified player's ministries (possibly still face down)
 function has_ministry(who, m)
 {
 	return G.ministry[who].includes(m)
 }
 
+// True if the player has a ministry keyword somewhere in his ministry. Possibly face down.
 function has_keyword(who, k)
 {
 	if (k === KEYWORD_NONE) return true
@@ -1113,6 +1127,7 @@ function has_keyword(who, k)
 }
 
 
+// True if the player has the ministry keyword on an *active* (face up) ministry
 function has_active_keyword(who, k)
 {
 	if (k === KEYWORD_NONE) return true
@@ -1127,6 +1142,7 @@ function has_active_keyword(who, k)
 }
 
 
+// Used to figure out which (if any) of a player's ministers he could flip to gain the specified keyword
 function get_minister_for_keyword(who, k)
 {
 	if (k === KEYWORD_NONE) return -1
@@ -1139,6 +1155,7 @@ function get_minister_for_keyword(who, k)
 }
 
 
+// True if specified player has the specified ministry AND it is currently still hidden
 function has_inactive_ministry (who, m)
 {
 	if (!G.ministry[who].includes(m)) return false
@@ -1169,7 +1186,8 @@ P.ministry_is_required = script (`
     }
 `)
 
-// Some ministries have more than one separately exhaustible ability
+// True if ministry is presently exhausted
+// Some ministries have more than one separately exhaustible ability (in which case can pass a different "ability" number)
 function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
@@ -1177,6 +1195,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 	return set_has(G.ministry_exhausted[idx], ability)
 }
 
+// Exhausts the specific ability of a ministry
 function exhaust_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
@@ -1185,6 +1204,7 @@ function exhaust_ministry (who, m, ability = 0)
 }
 
 
+// Refreshes a ministry (or ministry sub-ability)
 function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
@@ -1339,7 +1359,7 @@ function start_action_round() {
 
 	G.controlled_start_of_round = [] // Certain effects care if we controlled this space from beginning of action round
 	for (var s = 0; s < NUM_SPACES; s++) {
-		if (G.flags[s] !== R) continue
+		if (G.flags[s] !== G.active) continue
 		set_add(G.controlled_start_of_round, s)
 	}
 
@@ -1361,6 +1381,7 @@ function clear_dirty() {
 }
 
 
+// Checks if a specified market (space) qualifies as isolated per 5.4.1
 function check_if_market_isolated(market)
 {
 	let who = G.flags[market]
@@ -1407,6 +1428,7 @@ function find_isolated_markets()
 }
 
 
+// Active player has picked an investment tile.
 function selected_a_tile(tile)
 {
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
@@ -1451,19 +1473,18 @@ function selected_a_tile(tile)
 	G.action_point_regions = [ [], [], [] ] // For each flavor of action points (though only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
 }
 
+// Player is picking an investment tile
 P.select_investment_tile = {
 	_begin() {
 		push_undo()
 	},
 	prompt() {
-		//var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister."; // (or pass to reduce Debt by " + debt_reduction + ")." //BR// technically must pick a tile before passing
+		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister.";
 		for (var tile of G.available_investments) {
 			if (tile in G.played_investments) continue;
 			action_investment(tile)
 		}
 		action_eligible_ministries()
-		//button("pass", G.debt[R] > 0)
 	},
 	investment(tile) {
 		push_undo()
@@ -1473,16 +1494,10 @@ P.select_investment_tile = {
 	ministry_card(m) {
 		handle_ministry_card_click(m)
 	},
-	pass() {
-		push_undo()
-		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		log(data.flags[R].name + " passes to reduce debt by " + debt_reduction + ".")
-		G.debt[R] = Math.max(0, G.debt[R] - 2)
-		end()
-	}
 }
 
 
+// Player selects an event card to play
 function handle_event_card_click(c) {
 	push_undo()
 	G.played_event = c
@@ -1697,7 +1712,6 @@ P.confirm_reveal_ministry = {
 
 
 /* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
-
 function allowed_to_shift_market(s, who)
 {
 	for (const link of data.spaces[s].connects) {
@@ -1723,7 +1737,7 @@ function eligible_for_minor_action(s, who)
 }
 
 
-function action_points_available(who, type, allow_debt_and_trps)
+function action_points_available(who, s, type, allow_debt_and_trps)
 {
 	if (!G.action_points_eligible[type]) return 0
 
@@ -1743,7 +1757,7 @@ function can_afford_to_shift(s, who, allow_debt_and_trps)
 	if (!G.action_points_eligible_major[type] && !eligible_minor) return false
 
 	var cost = action_point_cost(s, type)
-    var avail = action_points_available(who, type, allow_debt_and_trps)
+    var avail = action_points_available(who, s, type, allow_debt_and_trps)
 	//TODO forts and navies different behaviors
 
 	return (avail >= cost)
@@ -1966,39 +1980,29 @@ function advance_action_round_subphase(subphase)
 	}
 }
 
-void handle_space_click(s)
+// Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
+function handle_space_click(s)
 {
 	push_undo()
 
+	// Set up our tracking of the how-would-you-like-to-pay-for-this situation
+	G.action_space = s
 	G.action_type = space_action_type(s)
-	G.action_cost = action_point_cost(s, type)
+	G.action_cost = action_point_cost(s, G.action_type)
 	G.action_minor = false
 	G.eligible_minor = eligible_for_minor_action(s, R) && G.action_points_minor[G.action_type] > 0
-	G.action_points_available_now  = action_points_available(R, G.action_type, false)
-	G.action_points_available_debt = action_points_available(R, G.action_type, true)
+	G.action_points_available_now  = action_points_available(R, s, G.action_type, false)
+	G.action_points_available_debt = action_points_available(R, s, G.action_type, true)
 
+	// TODO include weird "region restricted" action points if available
+
+	G.debt_spent = 0
+	G.treaty_points_spent = 0
+
+	//TODO forts and navies different behaviors
+	//TODO remove conflict
 
     call("space_process_click")
-	/////
-
-    //TODO forts and navies different behaviors
-
-
-    //TODO this is just the barest rough-in of paying costs
-	if (G.action_points_major[type] >= cost) {
-		G.action_points_major[type] -= cost
-	} else if (G.action_points_minor[type] > 0) {
-		G.action_points_minor[type] = 0
-	} else if (G.action_points_major[type] > 0) {
-		G.action_points_major[type] = 0
-	}
-	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
-
-    //TODO for the moment just clicking a flag reflags it a space towards the player. Lotsa rules to come...
-
-	reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
-
-	set_add(G.action_point_regions[type], data.spaces[s].region) // We've now used this flavor of action point in this region
 }
 
 P.space_process_click = script(`
@@ -2006,67 +2010,138 @@ P.space_process_click = script(`
     	return // If we can't even afford it w/ debt and trps, we shouldn't be here
     }
     
-    if (G.eligible_minor && G.action_points_available_debt - 2 < G.action_cost) {
-        eval { G.action_minor = true }
+    if (G.eligible_minor) {
+    	if (G.action_points_available_debt < G.action_cost + 2) {
+        	eval { G.action_minor = true }  // If the only way we can do this is as a minor action, we don't need to make a choice
+        }
+        if (!G.action_points_eligible_major[G.action_type]) {
+			eval { G.action_minor = true }  // If we're not eligible for a major action in this category, we don't need to make a choice    
+        }
     }
     
+    // If we could do *either* major or minor action, make our choice
     if (G.eligible_minor && !G.action_minor) {
+    	call choice_use_minor_action
+    	eval {
+    		if (!G.action_minor) {
+    			G.eligible_minor = false
+    			G.action_points_available_debt -= G.action_points_minor[G.action_type]
+    			G.action_points_available      -= G.action_points_minor[G.action_type]
+    		}
+    	}  	
     }
     
+    // If it is going to cost debt or TRPs, then see if player wants to spend them
     if (G.action_points_available_now < G.action_cost) {
-    	call decide_whether_to_spend()
+    	call confirm_spend_debt_or_trps
     	if (G.action_points_available_now < G.action_cost) {
     		return // If we didn't decide to spend enough, we're done
     	}
     }
-    
-    
-
+       
     eval { handle_reflag_space() }
 `)
 
 
+
+function pay_action_cost() {
+	// TODO spend weird "region restricted" action points if available
+
+	if (G.action_minor) {
+		// Minor actions always zero out the minor action points (even if the cost was less)
+		G.action_points_minor[G.action_type] = 0
+		G.action_cost = Math.max(0, G.action_cost - 2)
+	}
+
+	if (G.action_points_major[G.action_type] >= G.action_cost) {
+		G.action_points_major[G.action_type] -= G.action_cost
+		G.action_cost = 0
+	}
+	else {
+		// Bad. Somehow we got in here without enough action points to pay for the cost
+		console.error("ERROR: Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!")
+		G.action_points_major[G.action_type] = 0
+		G.action_cost = 0
+	}
+
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+}
+
 function handle_reflag_space() {
-
+	pay_action_cost()
+	reflag_space(G.action_space, (G.flags[G.action_space] === NONE) ? R : NONE)
+	set_add(G.action_point_regions[G.action_type], data.spaces[G.action_space].region) // We've now used this flavor of action point in this region
 }
 
 
-// Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
-function decide_whether_to_spend()
-{
-	call ("spending_is_required")
-}
-
-P.spending_is_required = script (`
-    call confirm_spend_debt_or_trps
-    eval {    
-    	
-    }
-`)
-
-
-P.confirm_spend_debt_or_trps = {
-	_begin() {
-		if (G.ministry_revealed[R][G.ministry_index]) end()
-	},
+P.choice_use_minor_action = {
 	prompt() {
-		V.prompt = "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?"
-		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
-		action("reveal_ministry")
-		if (G.ministry_optional) action("dont_reveal_ministry")
+		V.prompt = "Use major or minor action?"
+		action ("major")
+		action ("minor")
 	},
-	reveal_ministry() {
+	major() {
 		push_undo()
-		//reveal_ministry(R, G.ministry_index)
+		G.action_minor = false
 		end()
 	},
-	dont_reveal_ministry() {
+	minor() {
 		push_undo()
+		G.action_minor = true
 		end()
 	}
 }
 
+function add_action_point()
+{
+	G.action_points_available_now++
+	if (G.action_minor) {
+		G.action_points_minor[G.action_type]++
+	} else {
+		G.action_points_major[G.action_type]++
+	}
+}
 
+// Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
+P.confirm_spend_debt_or_trps = {
+	prompt() {
+		if (G.action_points_available_now < G.action_cost) {
+			V.prompt = "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + "). Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? "Treaty Points: " + G.treaty_points[R] : "")
+			if (available_debt(R) > 0) {
+				action("paydebt")
+			}
+			if (G.treaty_points[R] > 0) {
+				action("paytrp")
+			}
+		}
+		else {
+			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
+				V.prompt = "Confirm spending " + G.debt_spent + " debt?"
+			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
+				V.prompt = "Confirm spending " + G.treaty_points_spent + " treaty_points?"
+			} else {
+				V.prompt = "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points?"
+			}
+			action("confirm")
+		}
+	},
+	paydebt() {
+		push_undo()
+		pay_debt(R, 1)
+		G.debt_spent++
+		add_action_point()
+	},
+	paytrp() {
+		push_undo()
+		pay_treaty_points(R, 1)
+		G.treaty_points_spent++
+		add_action_point()
+	},
+	confirm() {
+		push_undo()
+		end()
+	}
+}
 
 
 
