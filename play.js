@@ -155,9 +155,8 @@ function award_tooltip(region)
 	var who = region_flag_winner(region)
 	return bold(data.bizarro_spaces[AWARD_EUROPE + region].name) + ": "
 		   + italic(data.awards[award].name + ((region === REGION_EUROPE) ? italic(" for most total flags and +2 VP for most flagged prestige spaces") : ""))
-	       + " ( " + data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
-	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : "")
-	       + " )"
+	       + ". " + bold(data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
+	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
 }
 
 function bold (s)
