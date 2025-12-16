@@ -718,6 +718,14 @@ data.advantages = [
 	{ "num": 21, "name": "Textiles",		        req: [ TIRUCHIRAPPALLI ] }
 ]
 
+data.space_types = [
+	{ "num": 0, "name" : "Political" },
+	{ "num": 1, "name" : "Market" },
+	{ "num": 2, "name" : "Naval" },
+	{ "num": 3, "name" : "Territory" },
+	{ "num": 4, "name" : "Fort" }
+]
+
 data.spaces = [
     // EUROPE
     { "layout": "Ireland_1" ,              "num":   0, "name": "Ireland",                 "era": 0, "region": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0, "alliance": [ [ 1, 4 ], [ 2, 4 ] ] },

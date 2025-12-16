@@ -78,6 +78,45 @@ function center_rect(xc, yc, w, h) {
 	return [ xc - w/2, yc - h/2, w, h ]
 }
 
+
+function space_tooltip(s) {
+	var type = data.spaces[s].type
+	var typename
+	if (type === MARKET) {
+		var market = data.spaces[s].market
+		typename = data.demands[market].name
+	}
+	else if (type === POLITICAL) {
+		var alliance = (data.spaces[s].alliance !== undefined) && (data.spaces[s].alliance.length > 0)
+		var prestige = data.spaces[s].prestige
+		if (prestige && !alliance) {
+			typename = "Prestige"
+		}
+		else if (data.spaces[s].region === REGION_EUROPE) {
+			if (prestige) {
+				typename = "Prestige + Alliance"
+			} else {
+				typename = "Alliance"
+			}
+		}
+		else {
+			typename = "Local Alliance"
+		}
+	}
+	else {
+		typename = data.space_types[type].name
+	}
+
+	var value
+	if ((type !== NAVAL) && (type !== TERRITORY)) {
+		value = data.spaces[s].cost
+	} else {
+		value = 0
+	}
+
+	return data.spaces[s].name + " (" + typename + ((value > 0) ? ": " + value : "") + ")";
+}
+
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
@@ -114,7 +153,7 @@ function on_init() {
 
 		define_space("space", s.num, rect)
 			.keyword(space_type_class[s.type])
-			.tooltip(s.name)
+			.tooltip(space_tooltip)
 
 		if (s.type === TERRITORY) {
 			rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces

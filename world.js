@@ -179,6 +179,7 @@ class Thing {
 	}
 
 	tooltip(tip) {
+		var id = this.my_id
 		this.element.onmouseenter = function () {
 			if (typeof tip === "function")
 				world.status.textContent = tip(id)
