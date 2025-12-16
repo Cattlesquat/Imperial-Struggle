@@ -2149,6 +2149,12 @@ P.confirm_spend_debt_or_trps = {
 	},
 	confirm() {
 		push_undo()
+		if (G.debt_spent > 0) {
+			log (data.flags[R].adj + " Debt: " + (G.debt[R] - G.debt_spent) + " -> " + G.debt[R])
+		}
+		if (G.treaty_points_spent > 0) {
+			log (data.flags[R].adj + " Treaty Points: " + (G.treaty_points_spent[R] + G.treaty_points_spent) + " -> " + G.treaty_points[R])
+		}
 		end()
 	}
 }
@@ -2164,11 +2170,6 @@ P.action_round_core = {
 		var prompt = "ACTION ROUND " + G.round + ": "
 
 		let any = false
-
-		//if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {   //BR// I'm thinking the button existing is enough for this.
-		//	prompt += "Pass to reduce Debt"
-		//	any = true;
-		//}
 
 		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
 			if ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET)) { // Eligible for event if our tiles major base value was <= 3
