@@ -306,49 +306,50 @@ const CALICUT = 109
 const MANGALORE = 110
 const MALABAR_COAST = 111
 
-const NAVY_BOX = 134
-const AWARD_EUROPE = 135
-const AWARD_NORTH_AMERICA = 136
-const AWARD_CARIBBEAN = 137
-const AWARD_INDIA = 138
-const GLOBAL_DEMAND_SPACE = 139
-const INITIATIVE_SPACE = 140
-const TURN_1_SPACE = 141
-const WAR_WSS_SPACE = 142
-const TURN_2_SPACE = 143
-const TURN_3_SPACE = 144
-const WAR_WAS_SPACE = 145
-const TURN_4_SPACE = 146
-const WAR_7YW_SPACE = 147
-const TURN_5_SPACE = 148
-const WAR_AWI_SPACE = 149
-const TURN_6_SPACE = 150
-const GENERAL_RECORDS_NEGATIVE_7 = 151
-const GENERAL_RECORDS_0 = 158
-const FRANCE_ADVANTAGES = 195
-const FRANCE_MINISTRIES = 196
-const FRANCE_SQUADRONS = 197
-const FRANCE_BASIC_WAR_TILES = 198
-const FRANCE_BONUS_WAR_TILES = 199
-const BRITAIN_ADVANTAGES = 200
-const BRITAIN_MINISTRIES = 201
-const BRITAIN_SQUADRONS = 202
-const BRITAIN_BASIC_WAR_TILES = 203
-const BRITAIN_BONUS_WAR_TILES = 204
-const AVAILABLE_INVESTMENT_1 = 205
-const AVAILABLE_INVESTMENT_2 = 206
-const AVAILABLE_INVESTMENT_3 = 207
-const AVAILABLE_INVESTMENT_4 = 208
-const AVAILABLE_INVESTMENT_5 = 209
-const AVAILABLE_INVESTMENT_6 = 210
-const AVAILABLE_INVESTMENT_7 = 211
-const AVAILABLE_INVESTMENT_8 = 212
-const AVAILABLE_INVESTMENT_9 = 213
-const INVESTMENT_TILE_STACK = 214
-const USED_INVESTMENT_TILES = 215
-const DRAW_PILE = 216
-const DISCARD_PILE = 217
-const PLAYED_EVENTS = 218
+// BIZARRO SPACES
+const NAVY_BOX = 0
+const AWARD_EUROPE = 1
+const AWARD_NORTH_AMERICA = 2
+const AWARD_CARIBBEAN = 3
+const AWARD_INDIA = 4
+const GLOBAL_DEMAND_SPACE = 5
+const INITIATIVE_SPACE = 6
+const TURN_1_SPACE = 7
+const WAR_WSS_SPACE = 8
+const TURN_2_SPACE = 9
+const TURN_3_SPACE = 10
+const WAR_WAS_SPACE = 11
+const TURN_4_SPACE = 12
+const WAR_7YW_SPACE = 13
+const TURN_5_SPACE = 14
+const WAR_AWI_SPACE = 15
+const TURN_6_SPACE = 16
+const GENERAL_RECORDS_NEGATIVE_7 = 17
+const GENERAL_RECORDS_0 = 24
+const FRANCE_ADVANTAGES = 61
+const FRANCE_MINISTRIES = 62
+const FRANCE_SQUADRONS = 63
+const FRANCE_BASIC_WAR_TILES = 64
+const FRANCE_BONUS_WAR_TILES = 65
+const BRITAIN_ADVANTAGES = 66
+const BRITAIN_MINISTRIES = 67
+const BRITAIN_SQUADRONS = 68
+const BRITAIN_BASIC_WAR_TILES = 69
+const BRITAIN_BONUS_WAR_TILES = 70
+const AVAILABLE_INVESTMENT_1 = 71
+const AVAILABLE_INVESTMENT_2 = 72
+const AVAILABLE_INVESTMENT_3 = 73
+const AVAILABLE_INVESTMENT_4 = 74
+const AVAILABLE_INVESTMENT_5 = 75
+const AVAILABLE_INVESTMENT_6 = 76
+const AVAILABLE_INVESTMENT_7 = 77
+const AVAILABLE_INVESTMENT_8 = 78
+const AVAILABLE_INVESTMENT_9 = 79
+const INVESTMENT_TILE_STACK = 80
+const USED_INVESTMENT_TILES = 81
+const DRAW_PILE = 82
+const DISCARD_PILE = 83
+const PLAYED_EVENTS = 84
 
 // ACTION_SUBPHASES
 const BEFORE_PICKING_TILE           = 0
@@ -495,8 +496,14 @@ function on_setup(scenario, options) {
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
 
+	G.flag_count = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ]                      // G.flag_count[who][region]
+	G.prestige_flags = [ 0, 0 ]                                            // G.flag_count[who]
+	G.demand_flag_count = [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]   // G.demand_flag_count[who][demand]
+
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
+
+	update_flag_counts()
 
 	call("main")
 }
@@ -592,6 +599,11 @@ function on_view() {
 
 	V.basic_war_tile_revealed = G.basic_war_tile_revealed
 	V.bonus_war_tile_revealed = G.bonus_war_tile_revealed
+
+	// Current flag counts are public
+	V.demand_flag_count = G.demand_flag_count
+	V.flag_count        = G.flag_count
+	V.prestige_flags    = G.prestige_flags
 }
 
 
@@ -744,6 +756,7 @@ function set_conflict_marker(s, n = 1) {
 
 function remove_conflict_marker(s) {
 	map_delete(G.conflicts, s)
+	update_flag_counts()
 }
 
 
@@ -1966,6 +1979,55 @@ function action_point_cost (s, type)
 	return cost
 }
 
+function update_flag_counts()
+{
+	G.prestige_flags    = [ 0, 0 ]                                       // G.flag_count[who]
+	G.flag_count        = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ]             // G.flag_count[who][region]
+	G.demand_flag_count = [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ] // G.demand_flag_count[who][demand]
+
+	for (let s = 0; s < NUM_SPACES; s++) {
+		let who = G.flags[s]
+		if ((who !== FRANCE) && (who !== BRITAIN)) continue
+		if (has_conflict_marker(s)) continue
+        G.flag_count[who][data.spaces[s].region]++
+		if (data.spaces[s].prestige > 0) G.prestige_flags[who]++
+		if (data.spaces[s].type === MARKET) {
+			G.demand_flag_count[who][data.spaces[s].market]++
+		}
+	}
+}
+
+function region_flag_winner(region) {
+	if (G.flag_count[FRANCE][region] > G.flag_count[BRITAIN][region]) return FRANCE
+	if (G.flag_count[BRITAIN][region] > G.flag_count[FRANCE][region]) return BRITAIN
+	return NONE
+}
+
+function region_flag_delta(region) {
+	return Math.abs(G.flag_count[FRANCE][region] - G.flag_count[BRITAIN][region])
+}
+
+function prestige_winner() {
+	if (G.prestige_flags[FRANCE] > G.prestige_flags[BRITAIN]) return FRANCE
+	if (G.prestige_flags[BRITAIN] > G.prestige_flags[FRANCE]) return BRITAIN
+	return NONE
+}
+
+function prestige_flag_delta() {
+	return Math.abs(G.prestige_flags[FRANCE] - G.prestige_flags[BRITAIN])
+}
+
+function demand_flag_winner(demand) {
+	if (G.demand_flag_count[FRANCE][demand] > G.demand_flag_count[BRITAIN][demand]) return FRANCE
+	if (G.demand_flag_count[BRITAIN][demand] > G.demand_flag_count[FRANCE][demand]) return BRITAIN
+	return NONE
+}
+
+function demand_flag_delta(demand) {
+	return Math.abs(G.demand_flag_count[FRANCE][demand] - G.demand_flag_count[BRITAIN][demand])
+}
+
+
 
 function reflag_space(s, who) {
 	var former = G.flags[s]
@@ -1978,6 +2040,7 @@ function reflag_space(s, who) {
 	remove_conflict_marker(s) // Reflagging a space removes any conflict marker
 
 	update_advantages() // This could change the ownership of an advantage
+	//update_flag_counts()  //BR// Updating flag counts is implicit in removing conflict marker above
 }
 
 

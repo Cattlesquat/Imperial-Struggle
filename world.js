@@ -188,12 +188,12 @@ class Thing {
 		var id = this.my_id
 		this.element.addEventListener("mouseenter", function () {
 			if (typeof tip === "function")
-				world.status.textContent = tip(id)
+				world.status.innerHTML = tip(id)
 			else
-				world.status.textContent = tip
+				world.status.innerHTML = tip
 		})
 		this.element.addEventListener("mouseleave", function () {
-			world.status.textContent = ""
+			world.status.innerHTML = ""
 		})
 		return this
 	}

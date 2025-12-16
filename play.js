@@ -79,6 +79,38 @@ function center_rect(xc, yc, w, h) {
 }
 
 
+function region_flag_winner(region) {
+	if (V.flag_count[FRANCE][region] > V.flag_count[BRITAIN][region]) return FRANCE
+	if (V.flag_count[BRITAIN][region] > V.flag_count[FRANCE][region]) return BRITAIN
+	return NONE
+}
+
+function region_flag_delta(region) {
+	return Math.abs(V.flag_count[FRANCE][region] - V.flag_count[BRITAIN][region])
+}
+
+function prestige_winner() {
+	if (V.prestige_flags[FRANCE] > V.prestige_flags[BRITAIN]) return FRANCE
+	if (V.prestige_flags[BRITAIN] > V.prestige_flags[FRANCE]) return BRITAIN
+	return NONE
+}
+
+function prestige_flag_delta() {
+	return Math.abs(V.prestige_flags[FRANCE] - V.prestige_flags[BRITAIN])
+}
+
+function demand_flag_winner(demand) {
+	if (V.demand_flag_count[FRANCE][demand] > V.demand_flag_count[BRITAIN][demand]) return FRANCE
+	if (V.demand_flag_count[BRITAIN][demand] > V.demand_flag_count[FRANCE][demand]) return BRITAIN
+	return NONE
+}
+
+function demand_flag_delta(demand) {
+	return Math.abs(V.demand_flag_count[FRANCE][demand] - V.demand_flag_count[BRITAIN][demand])
+}
+
+
+
 function space_tooltip(s) {
 	var type = data.spaces[s].type
 	var typename
@@ -114,14 +146,30 @@ function space_tooltip(s) {
 		value = 0
 	}
 
-	return data.spaces[s].name + " (" + typename + ((value > 0) ? ": " + value : "") + ")";
+	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")");
 }
 
 function award_tooltip(region)
 {
 	var award = V.awards[region]
-	return data.regions[region].name + ": " + data.awards[award].name
+	var who = region_flag_winner(region)
+	return bold(data.bizarro_spaces[AWARD_EUROPE + region].name) + ": "
+		   + italic(data.awards[award].name + ((region === REGION_EUROPE) ? italic(" for most total flags and +2 VP for most flagged prestige spaces") : ""))
+	       + " ( " + data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
+	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : "")
+	       + " )"
 }
+
+function bold (s)
+{
+	return "<b>" + s + "</b>"
+}
+
+function italic (s)
+{
+	return "<i>" + s + "</i>"
+}
+
 
 function on_init() {
 	var i, a, s, x, y, w, h, lout
@@ -232,7 +280,7 @@ function on_init() {
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
-			.tooltip(a.name)
+			.tooltip(bold(a.name) + ": " + italic(a.desc))
 	}
 
 	for (a of data.investments) {

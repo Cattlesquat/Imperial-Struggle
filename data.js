@@ -309,49 +309,50 @@ const CALICUT = 109
 const MANGALORE = 110
 const MALABAR_COAST = 111
 
-const NAVY_BOX = 134
-const AWARD_EUROPE = 135
-const AWARD_NORTH_AMERICA = 136
-const AWARD_CARIBBEAN = 137
-const AWARD_INDIA = 138
-const GLOBAL_DEMAND_SPACE = 139
-const INITIATIVE_SPACE = 140
-const TURN_1_SPACE = 141
-const WAR_WSS_SPACE = 142
-const TURN_2_SPACE = 143
-const TURN_3_SPACE = 144
-const WAR_WAS_SPACE = 145
-const TURN_4_SPACE = 146
-const WAR_7YW_SPACE = 147
-const TURN_5_SPACE = 148
-const WAR_AWI_SPACE = 149
-const TURN_6_SPACE = 150
-const GENERAL_RECORDS_NEGATIVE_7 = 151
-const GENERAL_RECORDS_0 = 158
-const FRANCE_ADVANTAGES = 195
-const FRANCE_MINISTRIES = 196
-const FRANCE_SQUADRONS = 197
-const FRANCE_BASIC_WAR_TILES = 198
-const FRANCE_BONUS_WAR_TILES = 199
-const BRITAIN_ADVANTAGES = 200
-const BRITAIN_MINISTRIES = 201
-const BRITAIN_SQUADRONS = 202
-const BRITAIN_BASIC_WAR_TILES = 203
-const BRITAIN_BONUS_WAR_TILES = 204
-const AVAILABLE_INVESTMENT_1 = 205
-const AVAILABLE_INVESTMENT_2 = 206
-const AVAILABLE_INVESTMENT_3 = 207
-const AVAILABLE_INVESTMENT_4 = 208
-const AVAILABLE_INVESTMENT_5 = 209
-const AVAILABLE_INVESTMENT_6 = 210
-const AVAILABLE_INVESTMENT_7 = 211
-const AVAILABLE_INVESTMENT_8 = 212
-const AVAILABLE_INVESTMENT_9 = 213
-const INVESTMENT_TILE_STACK = 214
-const USED_INVESTMENT_TILES = 215
-const DRAW_PILE = 216
-const DISCARD_PILE = 217
-const PLAYED_EVENTS = 218
+// BIZARRO SPACES
+const NAVY_BOX = 0
+const AWARD_EUROPE = 1
+const AWARD_NORTH_AMERICA = 2
+const AWARD_CARIBBEAN = 3
+const AWARD_INDIA = 4
+const GLOBAL_DEMAND_SPACE = 5
+const INITIATIVE_SPACE = 6
+const TURN_1_SPACE = 7
+const WAR_WSS_SPACE = 8
+const TURN_2_SPACE = 9
+const TURN_3_SPACE = 10
+const WAR_WAS_SPACE = 11
+const TURN_4_SPACE = 12
+const WAR_7YW_SPACE = 13
+const TURN_5_SPACE = 14
+const WAR_AWI_SPACE = 15
+const TURN_6_SPACE = 16
+const GENERAL_RECORDS_NEGATIVE_7 = 17
+const GENERAL_RECORDS_0 = 24
+const FRANCE_ADVANTAGES = 61
+const FRANCE_MINISTRIES = 62
+const FRANCE_SQUADRONS = 63
+const FRANCE_BASIC_WAR_TILES = 64
+const FRANCE_BONUS_WAR_TILES = 65
+const BRITAIN_ADVANTAGES = 66
+const BRITAIN_MINISTRIES = 67
+const BRITAIN_SQUADRONS = 68
+const BRITAIN_BASIC_WAR_TILES = 69
+const BRITAIN_BONUS_WAR_TILES = 70
+const AVAILABLE_INVESTMENT_1 = 71
+const AVAILABLE_INVESTMENT_2 = 72
+const AVAILABLE_INVESTMENT_3 = 73
+const AVAILABLE_INVESTMENT_4 = 74
+const AVAILABLE_INVESTMENT_5 = 75
+const AVAILABLE_INVESTMENT_6 = 76
+const AVAILABLE_INVESTMENT_7 = 77
+const AVAILABLE_INVESTMENT_8 = 78
+const AVAILABLE_INVESTMENT_9 = 79
+const INVESTMENT_TILE_STACK = 80
+const USED_INVESTMENT_TILES = 81
+const DRAW_PILE = 82
+const DISCARD_PILE = 83
+const PLAYED_EVENTS = 84
 
 // ACTION_SUBPHASES
 const BEFORE_PICKING_TILE           = 0
@@ -371,11 +372,11 @@ data.regions = [
 ]
 
 data.flags = [
-	{ "num": 0, "id": "fr", "name": "France",  "adj": "French" },
-	{ "num": 1, "id": "br", "name": "Britain", "adj": "British" },
-	{ "num": 2, "id": "sp", "name": "Spain",   "adj": "Spanish" },
-	{ "num": 3, "id": "us", "name": "USA",     "adj": "US" },
-	{ "num": 4, "id": "no", "name": "No Flag", "adj": "Unflagged" }
+	{ "num": 0, "id": "fr", "name": "France",  "name2": "France",  "adj": "French" },
+	{ "num": 1, "id": "br", "name": "Britain", "name2": "Britain", "adj": "British" },
+	{ "num": 2, "id": "sp", "name": "Spain",   "name2": "Spain",   "adj": "Spanish" },
+	{ "num": 3, "id": "us", "name": "USA",     "name2": "USA",     "adj": "US" },
+	{ "num": 4, "id": "no", "name": "No Flag", "name2": "TIE",     "adj": "Unflagged" }
 ]
 
 data.action_points = [
@@ -694,28 +695,28 @@ data.bonus_war_tiles = [
 
 // ADVANTAGE TILES
 data.advantages = [
-	{ "num":  0, "name": "Baltic Trade",		    req: [ DENMARK, PRUSSIA_1 ] },
-	{ "num":  1, "name": "Central Europe Conflict",	req: [ GERMAN_STATES_2, BAVARIA ] },
-	{ "num":  2, "name": "German Diplomacy",	    req: [ PRUSSIA_4 ] },
-	{ "num":  3, "name": "Italy Influence",		    req: [ AUSTRIA_3, SARDINIA ] },
-	{ "num":  4, "name": "Mediterranean Intrigue",	req: [ SAVOY, SPAIN_4 ] },
-	{ "num":  5, "name": "Naval Bastion",		    req: [ GIBRALTAR ] },
-	{ "num":  6, "name": "Silesia Negotiations",	req: [ AUSTRIA_2 ] },
-	{ "num":  7, "name": "Algonquin Raids",		    req: [ ALGONQUIN ] },
-	{ "num":  8, "name": "Fur Trade",		        req: [ HUDSON_BAY ] },
-	{ "num":  9, "name": "Iroquois Raids",		    req: [ IROQUOIS ] },
-	{ "num": 10, "name": "Patriot Agitation",	    req: [ SONS_OF_LIBERTY ] },
-	{ "num": 11, "name": "Wheat",			        req: [ CHESAPEAKE ] },
-	{ "num": 12, "name": "Fruit",			        req: [ SAN_AGUSTIN ] },
-	{ "num": 13, "name": "Letters of Marque",	    req: [ PRIVATEERS ] },
-	{ "num": 14, "name": "Pirate Havens",		    req: [ BUCCANEERS ] },
-	{ "num": 15, "name": "Rum",			            req: [ PUERTO_RICO ] },
-	{ "num": 16, "name": "Slaving Contracts",	    req: [ ASIENTO ] },
-	{ "num": 17, "name": "Power Struggle",		    req: [ MYSORE ] },
-	{ "num": 18, "name": "Raids & Incursions",	    req: [ MARATHA ] },
-	{ "num": 19, "name": "Separatist Wars",		    req: [ NIZAM ] },
-	{ "num": 20, "name": "Silk",			        req: [ WEST_BENGAL ] },
-	{ "num": 21, "name": "Textiles",		        req: [ TIRUCHIRAPPALLI ] }
+	{ "num":  0, "name": "Baltic Trade",		    req: [ DENMARK, PRUSSIA_1 ],            "desc": "Reduce your debt by 2" },
+	{ "num":  1, "name": "Central Europe Conflict",	req: [ GERMAN_STATES_2, BAVARIA ],      "desc": "Place a conflict marker in an alliance space in Europe" },
+	{ "num":  2, "name": "German Diplomacy",	    req: [ PRUSSIA_4 ],                     "desc": "Pay one diplomatic action point total to unflag Russia, Sweden, or Bavaria" },
+	{ "num":  3, "name": "Italy Influence",		    req: [ AUSTRIA_3, SARDINIA ],           "desc": "Pay one diplomatic action point total to unflag a space in Spain or Austria" },
+	{ "num":  4, "name": "Mediterranean Intrigue",	req: [ SAVOY, SPAIN_4 ],                "desc": "Place a conflict marker in Spain or Austria" },
+	{ "num":  5, "name": "Naval Bastion",		    req: [ GIBRALTAR ],                     "desc": "Pay one military action point to return an enemy squadron to the Navy Box" },
+	{ "num":  6, "name": "Silesia Negotiations",	req: [ AUSTRIA_2 ],                     "desc": "Pay one diplomatic action point total to unflag a space in Prussia or the German States" },
+	{ "num":  7, "name": "Algonquin Raids",		    req: [ ALGONQUIN ],                     "desc": "Place a conflict marker in a fur market" },
+	{ "num":  8, "name": "Fur Trade",		        req: [ HUDSON_BAY ],                    "desc": "Pay one economic action point total to unflag a market in North America" },
+	{ "num":  9, "name": "Iroquois Raids",		    req: [ IROQUOIS ],                      "desc": "Place a conflict marker in a fur market" },
+	{ "num": 10, "name": "Patriot Agitation",	    req: [ SONS_OF_LIBERTY ],               "desc": "Place a conflict marker in a market or local alliance space in North America" },
+	{ "num": 11, "name": "Wheat",			        req: [ CHESAPEAKE ],                    "desc": "-1 economic action point to unflag a market in North America" },
+	{ "num": 12, "name": "Fruit",			        req: [ SAN_AGUSTIN ],                   "desc": "-1 economic action point to unflag a market in the Caribbean" },
+	{ "num": 13, "name": "Letters of Marque",	    req: [ PRIVATEERS ],                    "desc": "Place a conflict marker in an unprotected Caribbean market" },
+	{ "num": 14, "name": "Pirate Havens",		    req: [ BUCCANEERS ],                    "desc": "Place a conflict marker in an unprotected Caribbean market" },
+	{ "num": 15, "name": "Rum",			            req: [ PUERTO_RICO ],                   "desc": "-1 economic action point to unflag a market in the Caribbean" },
+	{ "num": 16, "name": "Slaving Contracts",	    req: [ ASIENTO ],                       "desc": "Pay 2 military action points to construct a squadron" },
+	{ "num": 17, "name": "Power Struggle",		    req: [ MYSORE ],                        "desc": "Place a conflict marker in a Carnatic Coast market" },
+	{ "num": 18, "name": "Raids & Incursions",	    req: [ MARATHA ],                       "desc": "Place a conflict marker in an Indian market" },
+	{ "num": 19, "name": "Separatist Wars",		    req: [ NIZAM ],                         "desc": "Place a conflict marker in a cotton market" },
+	{ "num": 20, "name": "Silk",			        req: [ WEST_BENGAL ],                   "desc": "-1 economic action point to unflag a market in India" },
+	{ "num": 21, "name": "Textiles",		        req: [ TIRUCHIRAPPALLI ],               "desc": "-1 economic action point to unflag a market in India" }
 ]
 
 data.space_types = [
@@ -849,113 +850,99 @@ data.spaces = [
     { "layout": "Malabar Coast",           "num": 111, "name": "Malabar Coast",           "era": 0, "region": 3, "subreg": 2, "type": 2, "prestige": false, "cost": 0, "flag": 4,              "connects": [ MANGALORE, CALICUT ],                                                         "conquest": [ ],                                                             "alliance": [ [ 2, 3 ], [ 3, 2 ], [ 4, 2 ] ] },
 ]
 
-data.bizzaro_spaces = [
+data.bizarro_spaces = [
     // BIZARRO SPACES
-    { "layout": "Navy Box",                "num": 134, "name": "Navy Box"  },
-    { "layout": "Award Europe",            "num": 135, "name": "Award (Europe)" },
-    { "layout": "Award North America",     "num": 136, "name": "Award (North America)" },
-    { "layout": "Award Caribbean",         "num": 137, "name": "Award (Caribbean)" },
-    { "layout": "Award India",             "num": 138, "name": "Award (India)" },
-    { "layout": "Demand",                  "num": 139, "name": "Global Demand" },
-    { "layout": "Initiative",              "num": 140, "name": "Initiative Box" },
-    { "layout": "Turn 1",                  "num": 141, "name": "Turn 1" },
-    { "layout": "War 1",                   "num": 142, "name": "War of the Spanish Succession" },
-    { "layout": "Turn 2",                  "num": 143, "name": "Turn 2" },
-    { "layout": "Turn 3",                  "num": 144, "name": "Turn 3" },
-    { "layout": "War 2",                   "num": 145, "name": "War of the Austrian Succession" },
-    { "layout": "Turn 4",                  "num": 146, "name": "Turn 4" },
-    { "layout": "War 3",                   "num": 147, "name": "Seven Years War" },
-    { "layout": "Turn 5",                  "num": 148, "name": "Turn 5" },
-    { "layout": "War 4",                   "num": 149, "name": "American War of Independence" },
-    { "layout": "Turn 6",                  "num": 150, "name": "Turn 6" },
-	{ "layout": "record track -7",         "num": 151, "name": "General track Record -7" },
-	{ "layout": "record track -6",         "num": 152, "name": "General track Record -6" },
-	{ "layout": "record track -5",         "num": 153, "name": "General track Record -5" },
-	{ "layout": "record track -4",         "num": 154, "name": "General track Record -4" },
-	{ "layout": "record track -3",         "num": 155, "name": "General track Record -3" },
-	{ "layout": "record track -2",         "num": 156, "name": "General track Record -2" },
-	{ "layout": "record track -1",         "num": 157, "name": "General track Record -1" },
-    { "layout": "start record track",      "num": 158, "name": "General track Record 0" },
-	{ "layout": "record track 1",          "num": 159, "name": "General track Record 1" },
-	{ "layout": "record track 2",          "num": 160, "name": "General track Record 2" },
-	{ "layout": "record track 3",          "num": 161, "name": "General track Record 3" },
-	{ "layout": "record track 4",          "num": 162, "name": "General track Record 4" },
-	{ "layout": "record track 5",          "num": 163, "name": "General track Record 5" },
-	{ "layout": "record track 6",          "num": 164, "name": "General track Record 6" },
-	{ "layout": "record track 7",          "num": 165, "name": "General track Record 7" },
-	{ "layout": "record track 8",          "num": 166, "name": "General track Record 8" },
-	{ "layout": "record track 9",          "num": 167, "name": "General track Record 9" },
-	{ "layout": "record track 10",         "num": 168, "name": "General track Record 10" },
-	{ "layout": "record track 11",         "num": 169, "name": "General track Record 11" },
-	{ "layout": "record track 12",         "num": 170, "name": "General track Record 12" },
-	{ "layout": "record track 13",         "num": 171, "name": "General track Record 13" },
-	{ "layout": "record track 14",         "num": 172, "name": "General track Record 14" },
-	{ "layout": "record track 15",         "num": 173, "name": "General track Record 15" },
-	{ "layout": "record track 16",         "num": 174, "name": "General track Record 16" },
-	{ "layout": "record track 17",         "num": 175, "name": "General track Record 17" },
-	{ "layout": "record track 18",         "num": 176, "name": "General track Record 18" },
-	{ "layout": "record track 19",         "num": 177, "name": "General track Record 19" },
-	{ "layout": "record track 20",         "num": 178, "name": "General track Record 10" },
-	{ "layout": "record track 21",         "num": 179, "name": "General track Record 21" },
-	{ "layout": "record track 22",         "num": 180, "name": "General track Record 22" },
-	{ "layout": "record track 23",         "num": 181, "name": "General track Record 23" },
-	{ "layout": "record track 24",         "num": 182, "name": "General track Record 24" },
-	{ "layout": "record track 25",         "num": 183, "name": "General track Record 25" },
-	{ "layout": "record track 26",         "num": 184, "name": "General track Record 26" },
-	{ "layout": "record track 27",         "num": 185, "name": "General track Record 27" },
-	{ "layout": "record track 28",         "num": 186, "name": "General track Record 28" },
-	{ "layout": "record track 29",         "num": 187, "name": "General track Record 29" },
-	{ "layout": "record track 30",         "num": 188, "name": "General track Record 30" },
-	{ "layout": "record track 31",         "num": 189, "name": "General track Record 31" },
-	{ "layout": "record track 32",         "num": 190, "name": "General track Record 32" },
-	{ "layout": "record track 33",         "num": 191, "name": "General track Record 33" },
-	{ "layout": "record track 34",         "num": 192, "name": "General track Record 34" },
-	{ "layout": "record track 35",         "num": 193, "name": "General track Record 35" },
-	{ "layout": "record track 36",         "num": 194, "name": "General track Record 36" },
+    { "layout": "Navy Box",                "num":  0, "name": "Navy Box"  },
+    { "layout": "Award Europe",            "num":  1, "name": "Award for Europe" },
+    { "layout": "Award North America",     "num":  2, "name": "Award for North America" },
+    { "layout": "Award Caribbean",         "num":  3, "name": "Award for the Caribbean" },
+    { "layout": "Award India",             "num":  4, "name": "Award for India" },
+    { "layout": "Demand",                  "num":  5, "name": "Global Demand" },
+    { "layout": "Initiative",              "num":  6, "name": "Initiative Box" },
+    { "layout": "Turn 1",                  "num":  7, "name": "Turn 1" },
+    { "layout": "War 1",                   "num":  8, "name": "War of the Spanish Succession" },
+    { "layout": "Turn 2",                  "num":  9, "name": "Turn 2" },
+    { "layout": "Turn 3",                  "num": 10, "name": "Turn 3" },
+    { "layout": "War 2",                   "num": 11, "name": "War of the Austrian Succession" },
+    { "layout": "Turn 4",                  "num": 12, "name": "Turn 4" },
+    { "layout": "War 3",                   "num": 13, "name": "Seven Years War" },
+    { "layout": "Turn 5",                  "num": 14, "name": "Turn 5" },
+    { "layout": "War 4",                   "num": 15, "name": "American War of Independence" },
+    { "layout": "Turn 6",                  "num": 16, "name": "Turn 6" },
+	{ "layout": "record track -7",         "num": 17, "name": "General track Record -7" },
+	{ "layout": "record track -6",         "num": 18, "name": "General track Record -6" },
+	{ "layout": "record track -5",         "num": 19, "name": "General track Record -5" },
+	{ "layout": "record track -4",         "num": 20, "name": "General track Record -4" },
+	{ "layout": "record track -3",         "num": 21, "name": "General track Record -3" },
+	{ "layout": "record track -2",         "num": 22, "name": "General track Record -2" },
+	{ "layout": "record track -1",         "num": 23, "name": "General track Record -1" },
+    { "layout": "start record track",      "num": 24, "name": "General track Record 0" },
+	{ "layout": "record track 1",          "num": 25, "name": "General track Record 1" },
+	{ "layout": "record track 2",          "num": 26, "name": "General track Record 2" },
+	{ "layout": "record track 3",          "num": 27, "name": "General track Record 3" },
+	{ "layout": "record track 4",          "num": 28, "name": "General track Record 4" },
+	{ "layout": "record track 5",          "num": 29, "name": "General track Record 5" },
+	{ "layout": "record track 6",          "num": 30, "name": "General track Record 6" },
+	{ "layout": "record track 7",          "num": 31, "name": "General track Record 7" },
+	{ "layout": "record track 8",          "num": 32, "name": "General track Record 8" },
+	{ "layout": "record track 9",          "num": 33, "name": "General track Record 9" },
+	{ "layout": "record track 10",         "num": 34, "name": "General track Record 10" },
+	{ "layout": "record track 11",         "num": 35, "name": "General track Record 11" },
+	{ "layout": "record track 12",         "num": 36, "name": "General track Record 12" },
+	{ "layout": "record track 13",         "num": 37, "name": "General track Record 13" },
+	{ "layout": "record track 14",         "num": 38, "name": "General track Record 14" },
+	{ "layout": "record track 15",         "num": 39, "name": "General track Record 15" },
+	{ "layout": "record track 16",         "num": 40, "name": "General track Record 16" },
+	{ "layout": "record track 17",         "num": 41, "name": "General track Record 17" },
+	{ "layout": "record track 18",         "num": 42, "name": "General track Record 18" },
+	{ "layout": "record track 19",         "num": 43, "name": "General track Record 19" },
+	{ "layout": "record track 20",         "num": 44, "name": "General track Record 10" },
+	{ "layout": "record track 21",         "num": 45, "name": "General track Record 21" },
+	{ "layout": "record track 22",         "num": 46, "name": "General track Record 22" },
+	{ "layout": "record track 23",         "num": 47, "name": "General track Record 23" },
+	{ "layout": "record track 24",         "num": 48, "name": "General track Record 24" },
+	{ "layout": "record track 25",         "num": 49, "name": "General track Record 25" },
+	{ "layout": "record track 26",         "num": 50, "name": "General track Record 26" },
+	{ "layout": "record track 27",         "num": 51, "name": "General track Record 27" },
+	{ "layout": "record track 28",         "num": 52, "name": "General track Record 28" },
+	{ "layout": "record track 29",         "num": 53, "name": "General track Record 29" },
+	{ "layout": "record track 30",         "num": 54, "name": "General track Record 30" },
+	{ "layout": "record track 31",         "num": 55, "name": "General track Record 31" },
+	{ "layout": "record track 32",         "num": 56, "name": "General track Record 32" },
+	{ "layout": "record track 33",         "num": 57, "name": "General track Record 33" },
+	{ "layout": "record track 34",         "num": 58, "name": "General track Record 34" },
+	{ "layout": "record track 35",         "num": 59, "name": "General track Record 35" },
+	{ "layout": "record track 36",         "num": 60, "name": "General track Record 36" },
 
 	// FRENCH PLAYER MAT
-	{ "layout": "fr_advantages",           "num": 195, "name": "Advantage Tile"},
-	{ "layout": "fr_ministries",           "num": 196, "name": "Ministries"},
-	{ "layout": "fr_squadrons",            "num": 197, "name": "Squadrons"},
-	{ "layout": "fr_basic_war_tiles",      "num": 198, "name": "Basic War Tiles"},
-	{ "layout": "fr_bonus_war_tiles",      "num": 199, "name": "Bonus War Tiles"},
+	{ "layout": "fr_advantages",           "num": 61, "name": "Advantage Tile"},
+	{ "layout": "fr_ministries",           "num": 62, "name": "Ministries"},
+	{ "layout": "fr_squadrons",            "num": 63, "name": "Squadrons"},
+	{ "layout": "fr_basic_war_tiles",      "num": 64, "name": "Basic War Tiles"},
+	{ "layout": "fr_bonus_war_tiles",      "num": 65, "name": "Bonus War Tiles"},
 
 	// BRITISH PLAYER MAT
-	{ "layout": "br_advantages",           "num": 200, "name": "Advantage Tile"},
-	{ "layout": "br_ministries",           "num": 201, "name": "Ministry Card"},
-	{ "layout": "br_squadrons",            "num": 202, "name": "Squadrons"},
-	{ "layout": "br_basic_war_tiles",      "num": 203, "name": "Basic War Tiles"},
-	{ "layout": "br_bonus_war_tiles",      "num": 204, "name": "Bonus War Tiles"},
+	{ "layout": "br_advantages",           "num": 66, "name": "Advantage Tile"},
+	{ "layout": "br_ministries",           "num": 67, "name": "Ministry Card"},
+	{ "layout": "br_squadrons",            "num": 68, "name": "Squadrons"},
+	{ "layout": "br_basic_war_tiles",      "num": 69, "name": "Basic War Tiles"},
+	{ "layout": "br_bonus_war_tiles",      "num": 70, "name": "Bonus War Tiles"},
 
 	// INVESTMENT TILE DISPLAY and EVENT DECK
-	{ "layout": "available_investment_1",  "num": 212, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_2",  "num": 213, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_3",  "num": 214, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_4",  "num": 215, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_5",  "num": 216, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_6",  "num": 217, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_7",  "num": 218, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_8",  "num": 219, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_9",  "num": 220, "name": "Available Investment Tiles" },
-	{ "layout": "investment_tile_stack",   "num": 221, "name": "Investment Tile Stack" },
-	{ "layout": "used_investment_tiles",   "num": 222, "name": "Used Investment Tiles" },
-	{ "layout": "draw_pile",               "num": 223, "name": "Draw Pile" },
-	{ "layout": "discard_pile",            "num": 224, "name": "Discard Pile" },
-
-	{ "layout": "available_investment_1",  "num": 205, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_2",  "num": 206, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_3",  "num": 207, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_4",  "num": 208, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_5",  "num": 209, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_6",  "num": 210, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_7",  "num": 211, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_8",  "num": 212, "name": "Available Investment Tiles" },
-	{ "layout": "available_investment_9",  "num": 213, "name": "Available Investment Tiles" },
-	{ "layout": "investment_tile_stack",   "num": 214, "name": "Investment Tile Stack" },
-	{ "layout": "used_investment_tiles",   "num": 215, "name": "Used Investment Tiles" },
-	{ "layout": "draw_pile",               "num": 216, "name": "Draw Pile" },
-	{ "layout": "discard_pile",            "num": 217, "name": "Discard Pile" },
-	{ "layout": "played_events_pile",      "num": 218, "name": "Played Events Pile" },
+	{ "layout": "available_investment_1",  "num": 71, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_2",  "num": 72, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_3",  "num": 73, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_4",  "num": 74, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_5",  "num": 75, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_6",  "num": 76, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_7",  "num": 77, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_8",  "num": 78, "name": "Available Investment Tiles" },
+	{ "layout": "available_investment_9",  "num": 79, "name": "Available Investment Tiles" },
+	{ "layout": "investment_tile_stack",   "num": 80, "name": "Investment Tile Stack" },
+	{ "layout": "used_investment_tiles",   "num": 81, "name": "Used Investment Tiles" },
+	{ "layout": "draw_pile",               "num": 82, "name": "Draw Pile" },
+	{ "layout": "discard_pile",            "num": 83, "name": "Discard Pile" },
+	{ "layout": "played_events_pile",      "num": 84, "name": "Played Events Pile" },
 ]
 
 if (typeof module !== "undefined") module.exports = data
