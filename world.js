@@ -180,8 +180,9 @@ class Thing {
 
 	tooltip(tip) {
 		this.element.onmouseenter = function () {
+			var id = this.my_id
 			if (typeof tip === "function")
-				world.status.textContent = tip(this.my_id)
+				world.status.textContent = tip(id)
 			else
 				world.status.textContent = tip
 		}
