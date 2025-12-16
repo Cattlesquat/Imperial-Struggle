@@ -181,13 +181,19 @@ function on_init() {
 	}
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
-	define_layout("lout-navy", undefined, find_layout_node("Navy Box")).tooltip("Navy Box")
+	define_layout("lout-navy", undefined, find_layout_node("Navy Box"))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
 
-	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe")).tooltip(award_tooltip)
-	define_layout("lout-award", REGION_NORTH_AMERICA, find_layout_node("Award North America")).tooltip(award_tooltip)
-	define_layout("lout-award", REGION_CARIBBEAN, find_layout_node("Award Caribbean")).tooltip(award_tooltip)
-	define_layout("lout-award", REGION_INDIA, find_layout_node("Award India")).tooltip(award_tooltip)
+	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))
+	define_layout("lout-award", REGION_NORTH_AMERICA, find_layout_node("Award North America"))
+	define_layout("lout-award", REGION_CARIBBEAN, find_layout_node("Award Caribbean"))
+	define_layout("lout-award", REGION_INDIA, find_layout_node("Award India"))
+
+	define_thing("tip-navy").layout(find_layout_node("Navy Box")).tooltip("Navy Box")
+	define_thing("tip-award", REGION_EUROPE).layout(find_layout_node("Award Europe")).tooltip(award_tooltip)
+	define_thing("tip-award", REGION_NORTH_AMERICA).layout(find_layout_node("Award North America")).tooltip(award_tooltip)
+	define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
+	define_thing("tip-award", REGION_INDIA).layout(find_layout_node("Award India")).tooltip(award_tooltip)
 
 	define_marker("game-turn", undefined, "square-sm")
 	define_marker("victory-points", undefined, "square-sm black")
