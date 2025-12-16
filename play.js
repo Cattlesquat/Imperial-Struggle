@@ -116,6 +116,10 @@ function on_init() {
 			.keyword(space_type_class[s.type])
 			.tooltip(s.name)
 
+		if (s.type === TERRITORY) {
+			rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces
+		}
+
 		define_layout("lout-space", s.num, rect)
 	}
 

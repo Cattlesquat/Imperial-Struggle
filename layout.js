@@ -79,7 +79,7 @@ layout.nodes = {
 	"North America/Territories": {
 		"Quebec & Montreal": [430,108,75,75],
 		"Hudson Bay": [332,72,75,75],
-		"Acadia": [922,345,75,75],
+		"Acadia": [922,386,75,75],
 		"Northern Colonies": [262,662,75,75],
 	},
 	"North America/Markets": {
