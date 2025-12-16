@@ -431,6 +431,7 @@ function on_setup(scenario, options) {
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
+		if ((G.flags[i] === SPAIN) && !rules_spanish_empire()) G.flags[i] = NONE
 	}
 
 	G.conflicts = []     // map of conflict markers
@@ -591,6 +592,22 @@ function on_view() {
 
 	V.basic_war_tile_revealed = G.basic_war_tile_revealed
 	V.bonus_war_tile_revealed = G.bonus_war_tile_revealed
+}
+
+
+function rules_spanish_empire()
+{
+	return false
+}
+
+function rules_military_planning()
+{
+	return false
+}
+
+function rules_tougher_forts()
+{
+	return false
 }
 
 function available_debt(who)
@@ -2159,8 +2176,6 @@ P.confirm_spend_debt_or_trps = {
 	}
 }
 
-
-
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
@@ -2392,7 +2407,7 @@ function war_layout_basic_war_tiles()
 {
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var i = 0; i < data.wars[G.next_war].theaters; i++) {
-			draw_basic_war_tile(who, 0) // I'm presently assuming "Military Planning" (12.2) will be our default
+			draw_basic_war_tile(who, rules_military_planning() ? 0 : i + 1)
 		}
 	}
 }
