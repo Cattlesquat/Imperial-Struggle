@@ -120,7 +120,7 @@ function space_tooltip(s) {
 function award_tooltip(region)
 {
 	var award = V.awards[region]
-	return data.awards[award].name
+	return data.regions[region].name + ": " + data.awards[award].name
 }
 
 function on_init() {
