@@ -459,12 +459,12 @@ function update_war_display() {
 				populate_with_list(
 					"lout-theater", offset,
 					"basic_war", V.theater_basic_war_tiles[player][theater],
-					war_reverse[war][player]
+					war_reverse[player][war]
 				)
 				populate_with_list(
 					"lout-theater", offset,
 					"bonus_war", V.theater_bonus_war_tiles[player][theater],
-					war_reverse[war][player]
+					war_reverse[player][war]
 				)
 				++offset
 			}
