@@ -110,7 +110,7 @@ layout.nodes = {
 		"Gulf of Maine": [611,429,87,77],
 	},
 	"North America/Award": {
-		"Award North America": [669,31,118,119],
+		"Award North America": [669,48,118,119],
 	},
 	"India/Political": {
 		"Maratha": [1789,721,90,90],
@@ -152,7 +152,7 @@ layout.nodes = {
 		"Malabar Coast": [1245,1207,87,77],
 	},
 	"India/Award": {
-		"Award India": [1437,874,118,119],
+		"Award India": [1437,888,118,119],
 	},
 	"Europe/Political": {
 		"Austria_4": [2415,575,90,90],
@@ -200,7 +200,7 @@ layout.nodes = {
 		"Balearic": [1396,397,87,77],
 	},
 	"Europe/Award": {
-		"Award Europe": [1307,520,118,119],
+		"Award Europe": [1307,530,118,119],
 	},
 	"Caribbean/Political": {
 		"Buccaneers": [515,1534,90,90],
@@ -248,7 +248,7 @@ layout.nodes = {
 		"Antilles Channel": [857,1490,87,77],
 	},
 	"Caribbean/Award": {
-		"Award Caribbean": [1100,1225,118,119],
+		"Award Caribbean": [1100,1238,118,119],
 	},
 }
 
