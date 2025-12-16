@@ -459,7 +459,7 @@ function update_war_display() {
 				populate_with_list(
 					"lout-theater", offset,
 					"basic_war", V.theater_basic_war_tiles[player][theater],
-					war_reverse[player][war]
+					(player === FRANCE) ? "marker hex war-basic fr" : "marker hex war-basic br"
 				)
 				populate_with_list(
 					"lout-theater", offset,
