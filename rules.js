@@ -1450,8 +1450,8 @@ function selected_a_tile(tile)
 {
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
-	log ("=Action Round " + G.round + " (" + data.flags[R].adj + ")")
-	log (data.flags[R].name + " selects investment tile: ");
+	log ("=Action Round " + G.round + " (" + data.flags[G.active].adj + ")")
+	log (data.flags[G.active].name + " selects investment tile: ");
 	log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
 	var major = data.investments[tile].majorval
 
@@ -1464,8 +1464,8 @@ function selected_a_tile(tile)
 
 	clear_dirty() // Clear highlights of opponent's previous round actions
 
-	G.played_investments.push(tile)      //BR// We leave it in available_investments but mark it played
-	G.played_tiles[R][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
+	G.played_investments.push(tile)             //BR// We leave it in available_investments but mark it played
+	G.played_tiles[G.active][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 	G.played_tile = tile
 	G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
 
@@ -1942,7 +1942,7 @@ function action_point_cost (s, type)
 
 	if (type === MIL) {
 		if ((data.spaces[s].type === FORT) && is_damaged_fort()) {
-			if (G.flags[s] === R) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player. For now I *think* the latter.
+			if (G.flags[s] === G.active) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player? For now I *think* the latter.
 				cost -= 1 // Repairing friendly fort costs one less than strength
 			} else {
 				cost += 1 // Seizing enemy fort costs one more than strength
@@ -2007,9 +2007,9 @@ function handle_space_click(s)
 	G.action_type = space_action_type(s)
 	G.action_cost = action_point_cost(s, G.action_type)
 	G.action_minor = false
-	G.eligible_minor = eligible_for_minor_action(s, R) && G.action_points_minor[G.action_type] > 0
-	G.action_points_available_now  = action_points_available(R, s, G.action_type, false)
-	G.action_points_available_debt = action_points_available(R, s, G.action_type, true)
+	G.eligible_minor = eligible_for_minor_action(s, G.active) && G.action_points_minor[G.action_type] > 0
+	G.action_points_available_now  = action_points_available(G.active, s, G.action_type, false)
+	G.action_points_available_debt = action_points_available(G.active, s, G.action_type, true)
 
 	G.action_string = ""
 	if (G.action_type !== MIL) {
@@ -2095,7 +2095,7 @@ function pay_action_cost() {
 
 function handle_reflag_space() {
 	pay_action_cost()
-	reflag_space(G.action_space, (G.flags[G.action_space] === NONE) ? R : NONE)
+	reflag_space(G.action_space, (G.flags[G.action_space] === NONE) ? G.active : NONE)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.action_space].region) // We've now used this flavor of action point in this region
 }
 
