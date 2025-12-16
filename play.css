@@ -100,18 +100,18 @@ body.Britain #events_br { grid-row: 2 }
 #log .h3 { background-color: wheat }
 
 #log .h1, .h2, .h3 {
-    font-variant-caps: small-caps;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+	font-variant-caps: small-caps;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
 }
 
 #log .b {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 #log .small_br {
-    min-height: 5px;
-    height: 5px;
+	min-height: 5px;
+	height: 5px;
 }
 
 
@@ -141,13 +141,7 @@ body.Britain #events_br { grid-row: 2 }
 
 /* SPACES & PIECES */
 
-.marker {
-	pointer-events: none;
-}
-
-.stack .marker, .marker.action {
-	pointer-events: auto;
-}
+body.shift .marker { opacity: 25% }
 
 .space {
 	box-sizing: border-box;
@@ -218,20 +212,21 @@ body.Britain #events_br { grid-row: 2 }
 }
 
 .marker.square-sm {
-    width: 43px;
-    height: 43px;
-    background-size: 45px 45px;
-    background-position: center;
-    border-width: 2px;
-    border-style: solid;
+	width: 43px;
+	height: 43px;
+	background-size: 45px 45px;
+	background-position: center;
+	border-width: 2px;
+	border-style: solid;
 }
 
 .marker.square-sm.flag_fr,
 .marker.square-sm.flag_br,
 .marker.square-sm.flag_usa,
 .marker.square-sm.flag_spain {
-    width: 39px;
-    height: 39px;
+	width: 39px;
+	height: 39px;
+	pointer-events: none; /* make flags invisible to the cursor */
 }
 
 .card {

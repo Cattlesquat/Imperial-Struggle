@@ -117,8 +117,9 @@ function space_tooltip(s) {
 	return data.spaces[s].name + " (" + typename + ((value > 0) ? ": " + value : "") + ")";
 }
 
-function award_tooltip(award)
+function award_tooltip(region)
 {
+	var award = V.awards[region]
 	return data.awards[award].name
 }
 

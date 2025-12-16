@@ -134,6 +134,7 @@ body.hide-pieces .piece { display: none }
 }
 
 .layout > .break {
+	pointer-events: none;
 	flex-basis: 100%;
 }
 
@@ -181,6 +182,7 @@ body.hide-pieces .piece { display: none }
 
 .dice {
 	display: inline-block;
+	background-image: url(/images/die_black_pips.svg);
 	background-size: 600% 100%;
 	background-repeat: no-repeat;
 	border: 1px solid black;

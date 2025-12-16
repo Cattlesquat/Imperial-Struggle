@@ -83,6 +83,7 @@ const world = {
 	keyword_list: [],
 	text_list: [],
 	focus: null,
+	mouse_focus: false,
 	last_focus: null,
 	generic_unused: {},
 	generic_used: {},
@@ -95,10 +96,14 @@ class Thing {
 	constructor(element, action, id) {
 		assert(element, "thing without an html element")
 
+		element.thing = this
+
 		this.element = element
 		this.my_action = action
 		this.my_id = id
-		this.my_keywords = [ action ]
+
+		element.classList.add(action)
+		this.my_keywords = Array.from(element.classList)
 
 		this.is_parent = false
 		this.is_stack = false
@@ -108,10 +113,6 @@ class Thing {
 		this.is_animate = false
 		this.is_rotate = false
 
-		element.thing = this
-
-		element.classList.add(action)
-
 		if (!world.things[action])
 			world.things[action] = []
 		world.things[action][id] = this
@@ -119,7 +120,8 @@ class Thing {
 
 	action() {
 		if (!this.is_action) {
-			this.element.onmousedown = _on_click_action
+			this.is_action = true
+			this.element.addEventListener("mousedown", _on_click_thing)
 			world.action_list.push(this)
 		}
 		return this
@@ -127,8 +129,12 @@ class Thing {
 
 	stackable() {
 		// for non-action elements that populate stacks (and should expand the stack when clicked)
-		if (!this.is_action) {
-			this.element.onmousedown = _on_click_stackable
+		// also for mouse-focusable things
+		if (!this.is_stackable) {
+			this.is_stackable = true
+			if (!this.is_action)
+				this.element.addEventListener("mousedown", _on_click_stackable)
+			this.element.addEventListener("mouseenter", _on_focus_stackable)
 		}
 		return this
 	}
@@ -179,28 +185,16 @@ class Thing {
 	}
 
 	tooltip(tip) {
-		this.element.onmouseenter = function () {
-			var id = this.my_id
+		var id = this.my_id
+		this.element.addEventListener("mouseenter", function () {
 			if (typeof tip === "function")
 				world.status.textContent = tip(id)
 			else
 				world.status.textContent = tip
-		}
-		this.element.onmouseleave = function () {
+		})
+		this.element.addEventListener("mouseleave", function () {
 			world.status.textContent = ""
-		}
-		return this
-	}
-
-	tooltip_zoom_class() {
-		this.element.onmouseenter = () => _tip_focus_class(this.my_keywords.join(" "))
-		this.element.onmouseleave = _tip_blur_class
-		return this
-	}
-
-	tooltip_zoom_clone(action, id) {
-		this.element.onmouseenter = () => _tip_focus_clone(action, id)
-		this.element.onmouseleave = _tip_blur_clone
+		})
 		return this
 	}
 
@@ -302,7 +296,7 @@ function lookup_thing(action, id) {
 	return thing
 }
 
-function _on_click_action(evt) {
+function _on_click_thing(evt) {
 	if (evt.button === 0) {
 		var thing = evt.target.thing
 		evt.stopPropagation()
@@ -316,6 +310,13 @@ function _on_click_stackable(evt) {
 	if (evt.button === 0) {
 		var thing = evt.target.thing
 		evt.stopPropagation()
+		_focus_stack(thing.element.parentElement.thing)
+	}
+}
+
+function _on_focus_stackable(evt) {
+	if (world.mouse_focus) {
+		var thing = evt.target.thing
 		_focus_stack(thing.element.parentElement.thing)
 	}
 }
@@ -432,6 +433,12 @@ function define_layout_grid(action, order, cols, rows, layout, gapx, gapy, keywo
 	}
 }
 
+function define_html_space(selector, action, id) {
+	return define_html_thing(selector, action, id)
+		.keyword("space")
+		.action()
+}
+
 function define_space(action, id, rect, keywords) {
 	return define_thing(action, id)
 		.keyword("space")
@@ -518,11 +525,13 @@ function populate_with_list(parent_action, arg2, arg3, arg4, arg5) {
 	}
 	var parent = lookup_thing(parent_action, parent_id)
 	parent.ensure_parent()
-	for (var child_id of child_id_list) {
-		if (child_id < 0)
-			parent.element.appendChild(_create_generic(fallback))
-		else
-			parent.element.appendChild(lookup_thing(child_action, child_id).element)
+	if (child_id_list) {
+		for (var child_id of child_id_list) {
+			if (child_id < 0)
+				parent.element.appendChild(_create_generic(fallback))
+			else
+				parent.element.appendChild(lookup_thing(child_action, child_id).element)
+		}
 	}
 }
 
@@ -626,7 +635,7 @@ function _focus_stack(stack) {
 			return true
 
 		world.focus = stack
-		if (world.focus.element.children.length <= world.focus.my_threshold)
+		if (world.focus.element.children.length <= world.focus.my_stack.threshold)
 			return true
 
 		_animate_begin()
@@ -664,7 +673,7 @@ function _layout_stacks() {
 		if (n === 0)
 			continue
 
-		var expand = (world.focus === stack || n <= _(stack.my_threshold))
+		var expand = (world.focus === stack || n <= _(stack.my_stack.threshold))
 		var z = (world.focus === stack ? 1 : null)
 		var major_dx = expand ? _(stack.my_stack.major_dx) : _(stack.my_stack.dx)
 		var major_dy = expand ? _(stack.my_stack.major_dy) : _(stack.my_stack.dy)
@@ -847,8 +856,9 @@ function end_update() {
 			thing.element.textContent = ""
 	}
 
-	for (var thing of world.action_list)
+	for (var thing of world.action_list) {
 		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
+	}
 
 	_animate_end()
 }
