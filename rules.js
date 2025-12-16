@@ -1994,6 +1994,15 @@ function handle_space_click(s)
 	G.action_points_available_now  = action_points_available(R, s, G.action_type, false)
 	G.action_points_available_debt = action_points_available(R, s, G.action_type, true)
 
+	G.action_string = ""
+	if (G.action_type !== MIL) {
+		if (G.flags[s] === NONE) {
+			G.action_string = "to flag " + data.spaces[G.action_space].name
+		}
+		else {
+			G.action_string = "to unflag " + data.spaces[G.action_space].name
+		}
+	}
 	// TODO include weird "region restricted" action points if available
 
 	G.debt_spent = 0
@@ -2076,7 +2085,7 @@ function handle_reflag_space() {
 
 P.choice_use_minor_action = {
 	prompt() {
-		V.prompt = "Use major or minor action?"
+		V.prompt = "Use major or minor action" + ((G.action_string !== "") ? " " + G.action_string : "") + "?"
 		action ("major")
 		action ("minor")
 	},
@@ -2106,7 +2115,7 @@ function add_action_point()
 P.confirm_spend_debt_or_trps = {
 	prompt() {
 		if (G.action_points_available_now < G.action_cost) {
-			V.prompt = "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + "). Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? "Treaty Points: " + G.treaty_points[R] : "")
+			V.prompt = "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + ")" + ((G.action_string !== "") ? " " + G.action_string : "") + ". Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? "Treaty Points: " + G.treaty_points[R] : "")
 			if (available_debt(R) > 0) {
 				action("paydebt")
 			}
@@ -2116,12 +2125,13 @@ P.confirm_spend_debt_or_trps = {
 		}
 		else {
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
-				V.prompt = "Confirm spending " + G.debt_spent + " debt?"
+				V.prompt = "Confirm spending " + G.debt_spent + " debt"
 			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
-				V.prompt = "Confirm spending " + G.treaty_points_spent + " treaty_points?"
+				V.prompt = "Confirm spending " + G.treaty_points_spent + " treaty_points"
 			} else {
-				V.prompt = "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points?"
+				V.prompt = "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points"
 			}
+			V.prompt += ((G.action_string !== "") ? " " + G.action_string : "") + "?"
 			action("confirm")
 		}
 	},
