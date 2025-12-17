@@ -159,12 +159,29 @@ function bizarro_space_tooltip(bs) {
 	return data.bizarro_spaces[bs].name
 }
 
+
+function current_era() {
+	if (V.turn < PEACE_TURN_3) return SUCCESSION_ERA
+	if (V.turn < PEACE_TURN_5) return EMPIRE_ERA
+	return REVOLUTION_ERA
+}
+
+
+function demand_tooltip(demand)
+{
+	var awards = data.demands[demand].awards[current_era()]
+	var awards_string = awards.vp + " VP"
+	if (awards.trp > 0) awards_string += ", " + awards.trp + " TRP"
+	if (awards.debt !== 0) awards_string += ", " + ((awards.debt > 0) ? "+" : "") + awards.debt + " Debt"
+	awards_string += " for most flagged " + data.demands[demand].name + " markets. "
+	return bold(data.demands[demand].name) + ": " + italic(awards_string) + bold(data.flags[demand_flag_winner(demand)].name2) + " +" + demand_flag_delta(demand)
+}
+
 function award_tooltip(region)
 {
 	var award = V.awards[region]
-	var who = region_flag_winner(region)
 	return bold(data.bizarro_spaces[AWARD_EUROPE + region].name) + ": "
-		   + italic(data.awards[award].name + ((region === REGION_EUROPE) ? italic(" for most total flags and +2 VP for most flagged prestige spaces") : ""))
+		   + italic(data.awards[award].name + ((region === REGION_EUROPE) ? italic(" for most total flags and +2 VP for most flagged prestige spaces") : " for most total flags"))
 	       + ". " + bold(data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
 	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
 }
@@ -244,7 +261,7 @@ function on_init() {
 			continue
 		}
 
-	    define_thing("tip-bizarro", s).layout(rect).tooltip(bizarro_space_tooltip)
+	    define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
 	}
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
@@ -285,7 +302,7 @@ function on_init() {
 		define_marker("demand", a.num)
 			.keyword("square-sm")
 			.keyword(a.name.toLowerCase())
-			.tooltip(a.name)
+			.tooltip(demand_tooltip)
 	}
 
 	for (a of data.awards) {
@@ -297,6 +314,7 @@ function on_init() {
 	for (a of data.advantages) {
 		var rect = find_layout_node(a.name)
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
+		define_thing("tip-advantage", a.num).layout(resize_rect(rect, 88, 88)).tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
 		define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(bold(a.name) + ": " + italic(a.desc))

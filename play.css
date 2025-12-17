@@ -302,6 +302,8 @@ body.shift .marker { opacity: 25% }
 .marker.flag_spain { background-image: url(tiles75/square-sm/flag_spain.png) }
 .marker.flag_usa { background-image: url(tiles75/square-sm/flag_usa.png) }
 
+.marker.award { pointer-events: none }
+
 .marker.award.a0 { background-image: url(tiles75/square-sm/award00_3.png) }
 .marker.award.a1 { background-image: url(tiles75/square-sm/award01_2.png) }
 .marker.award.a2 { background-image: url(tiles75/square-sm/award02_1.png) }

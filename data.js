@@ -10,6 +10,18 @@ const XXX = -1
 
 /* CONSTANTS */
 
+// TURNS
+const PEACE_TURN_1 = 0
+const WAR_TURN_WSS = 1
+const PEACE_TURN_2 = 2
+const PEACE_TURN_3 = 3
+const WAR_TURN_WAS = 4
+const PEACE_TURN_4 = 5
+const WAR_TURN_7YW = 6
+const PEACE_TURN_5 = 7
+const WAR_TURN_AWI = 8
+const PEACE_TURN_6 = 9
+
 // FLAGS
 const FRANCE  = 0
 const BRITAIN = 1
