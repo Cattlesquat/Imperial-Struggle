@@ -148,8 +148,8 @@ layout.nodes = {
 		"Vandavasi": [1750,1420,87,77],
 	},
 	"India/Naval": {
-		"Hooghly River": [2027,986,87,77],
-		"Malabar Coast": [1245,1207,87,77],
+		"Hooghly River": [2025,986,87,77],
+		"Malabar Coast": [1243,1206,87,77],
 	},
 	"India/Award": {
 		"Award India": [1437,888,118,119],
@@ -196,8 +196,8 @@ layout.nodes = {
 		"Minorca": [1307,780,75,75],
 	},
 	"Europe/Naval": {
-		"Biscay": [1302,398,87,77],
-		"Balearic": [1396,397,87,77],
+		"Biscay": [1300,396,87,77],
+		"Balearic": [1394,396,87,77],
 	},
 	"Europe/Award": {
 		"Award Europe": [1307,530,118,119],
@@ -242,10 +242,10 @@ layout.nodes = {
 		"Cayman Passage": [314,1364,74,74],
 	},
 	"Caribbean/Naval": {
-		"Bahamas Run": [637,1044,87,77],
-		"Cuba Passage": [332,1126,87,77],
-		"Gulf of Cazones": [483,1258,87,77],
-		"Antilles Channel": [857,1490,87,77],
+		"Bahamas Run": [635,1044,87,77],
+		"Cuba Passage": [332,1124,87,77],
+		"Gulf of Cazones": [481,1256,87,77],
+		"Antilles Channel": [855,1489,87,77],
 	},
 	"Caribbean/Award": {
 		"Award Caribbean": [1100,1238,118,119],

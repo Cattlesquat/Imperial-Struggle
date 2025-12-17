@@ -464,13 +464,13 @@ function on_update() {
 	for (i = 0; i < V.navy_box[FRANCE]; i++) {
 		populate("lout-navy", "squadron-fr-navy", i)
 		//populate_generic("lout-navy", "marker hex fleet_fr", 1)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -10}px; margin-left:${i * 10}px`
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	}
 
 	for (i = 0; i < V.navy_box[BRITAIN]; i++) {
 		populate("lout-navy", "squadron-br-navy", i)
 		//populate_generic("lout-navy", "marker hex fleet_br", 1)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -10}px; margin-left:${i * 10}px`
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	}
 	
 	for (s of data.spaces) {
