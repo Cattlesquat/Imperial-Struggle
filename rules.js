@@ -2401,6 +2401,12 @@ P.action_round_core = {
 	event_card(c) {
 		handle_event_card_click(c)
 	},
+	frenchify() {
+		flagify(FRANCE)
+	},
+	britify() {
+		flagify(BRITAIN)
+	},
 }
 
 
@@ -2694,6 +2700,13 @@ exports.view = function (state, role) {
 
 	return V
 }
+
+function flagify(who) {
+	for (let s = 0; s < NUM_SPACES; s++) {
+		G.flags[s] = who
+	}
+}
+
 
 exports.action = function (state, role, action, argument) {
 	G = state

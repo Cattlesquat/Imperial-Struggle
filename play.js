@@ -669,3 +669,28 @@ function on_log(text) {
 	p.innerHTML = escape_text(text)
 	return p
 }
+
+
+// DEBUG KEYS
+//TODO take out :)
+window.addEventListener("keydown", function (evt) {
+	if (document.activeElement instanceof HTMLInputElement)
+		return
+	if (document.activeElement instanceof HTMLTextAreaElement)
+		return
+	if (evt.altKey || evt.ctrlKey)
+		return
+	switch (evt.key) {
+		case "f":
+		case "F":
+			send_message("action", [ "frenchify", null, game_cookie ])
+			evt.preventDefault()
+			break
+		case "b":
+		case "B":
+			send_message("action", [ "britify", null, game_cookie ])
+			evt.preventDefault()
+			break
+	}
+})
+
