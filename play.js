@@ -711,6 +711,15 @@ window.addEventListener("keydown", function (evt) {
 			send_message("action", [ "britify", null, game_cookie ])
 			evt.preventDefault()
 			break
+		case " ":
+		case "X":
+		case "x":
+			if (window.location.search.includes("France")) {
+				window.location.search = window.location.search.replace("France", "Britain")
+			} else {
+				window.location.search = window.location.search.replace("Britain", "France")
+			}
+			break
 	}
 })
 
