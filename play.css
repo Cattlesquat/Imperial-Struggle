@@ -139,6 +139,18 @@ body.Britain #events_br { grid-row: 2 }
 	margin: 80px auto 0 auto;
 }
 
+.layout.lout-navy .marker.hex.fleet_fr {
+	position: absolute;
+	left: 15%;
+	top: 25%;
+}
+
+.layout.lout-navy .marker.hex.fleet_br {
+	position: absolute;
+	left: 55%;
+	top: 25%;
+}
+
 /* SPACES & PIECES */
 
 body.shift .marker { opacity: 25% }

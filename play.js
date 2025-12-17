@@ -450,9 +450,16 @@ function on_update() {
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
 
-	populate_generic("lout-navy", "marker hex fleet_fr", V.navy_box[FRANCE])
-	populate_generic("lout-navy", "marker hex fleet_br", V.navy_box[BRITAIN])
+	for (i = 0; i < V.navy_box[FRANCE]; i++) {
+		populate_generic("lout-navy", "marker hex fleet_fr", 1)
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -5}px; margin-left:${i * 5}px`
+	}
 
+	for (i = 0; i < V.navy_box[BRITAIN]; i++) {
+		populate_generic("lout-navy", "marker hex fleet_br", 1)
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -5}px; margin-left:${i * 5}px`
+	}
+	
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE)
