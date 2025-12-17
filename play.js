@@ -118,7 +118,11 @@ function space_tooltip(s) {
 	var typename
 	if (type === MARKET) {
 		var market = data.spaces[s].market
-		typename = data.demands[market].name
+		if (market !== undefined) {
+			typename = data.demands[market].name
+		} else {
+			typename = "Market"
+		}
 	}
 	else if (type === POLITICAL) {
 		var alliance = (data.spaces[s].alliance !== undefined) && (data.spaces[s].alliance.length > 0)
