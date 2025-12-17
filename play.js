@@ -162,7 +162,11 @@ function bizarro_space_tooltip(bs) {
 		return award_tooltip(bs - AWARD_EUROPE)
 	}
 
-	return data.bizarro_spaces[bs].name
+	if (bs === NAVY_BOX) {
+		//return bold(data.bizarro_spaces[bs].name) + ": " + italic("(France: " + V.navy_box[FRANCE] + ", Britain: " + V.navy_box[BRITAIN] + ")")
+	}
+
+	return bold(data.bizarro_spaces[bs].name)
 }
 
 
@@ -444,7 +448,7 @@ function on_init() {
 		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip(s))
 	}
 
-	for (let ships = 0; ships < 8; ships++) {
+	for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
 		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(bizarro_space_tooltip(NAVY_BOX))
 		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(bizarro_space_tooltip(NAVY_BOX))
 	}
@@ -471,13 +475,11 @@ function on_update() {
 
 	for (i = 0; i < V.navy_box[FRANCE]; i++) {
 		populate("lout-navy", "squadron-fr-navy", i)
-		//populate_generic("lout-navy", "marker hex fleet_fr", 1)
 		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	}
 
 	for (i = 0; i < V.navy_box[BRITAIN]; i++) {
 		populate("lout-navy", "squadron-br-navy", i)
-		//populate_generic("lout-navy", "marker hex fleet_br", 1)
 		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	}
 	
@@ -485,10 +487,8 @@ function on_update() {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE)
 				populate ("lout-space", s.num, "squadron-fr", s.num)
-				//populate_generic("lout-space", s.num, "marker hex fleet_fr")
 			if (V.flags[s.num] === BRITAIN)
 				populate ("lout-space", s.num, "squadron-br", s.num)
-				//populate_generic("lout-space", s.num, "marker hex fleet_br")
 		} else {
 			if (V.flags[s.num] === FRANCE)
 				populate_generic("lout-space", s.num, "marker square-sm flag_fr")
@@ -511,9 +511,6 @@ function on_update() {
 		if (V.advantages[a] === BRITAIN)
 			populate("panel-advantage", BRITAIN, "advantage", a)
 	}
-
-	// populate_generic("panel-squadrons", FRANCE, "marker hex fleet_fr", V.unbuilt_squadrons[FRANCE])
-	// populate_generic("panel-squadrons", BRITAIN, "marker hex fleet_br", V.unbuilt_squadrons[BRITAIN])
 
 	if (V.all_ministries)
 		populate_with_list("panel-all-ministries", "ministry_card", V.all_ministries)

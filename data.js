@@ -52,7 +52,8 @@ const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22
 const NUM_SPACES            = 112
-const NUM_ACTION_POINTS_TYPES       = 3
+const NUM_ACTION_POINTS_TYPES= 3
+const NUM_SQUADRONS			= 8 // per side, counter mix limit
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
