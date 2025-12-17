@@ -109,7 +109,9 @@ function demand_flag_delta(demand) {
 	return Math.abs(V.demand_flag_count[FRANCE][demand] - V.demand_flag_count[BRITAIN][demand])
 }
 
-
+function on_ask() {
+	return "whee"
+}
 
 function space_tooltip(s) {
 	var type = data.spaces[s].type
@@ -216,7 +218,7 @@ function on_init() {
 	define_board("#map", 2550, 1650, [ 24, 24, 24, 24 ])
 
 	for (s of data.spaces) {
-		var rect = find_layout_node(s.layout ?? s.name)
+		let rect = find_layout_node(s.layout ?? s.name)
 		if (!rect) {
 			console.error("no layout for " + s.name)
 			continue
@@ -231,7 +233,13 @@ function on_init() {
 		else if (s.type === NAVAL || s.type === FORT)
 			rect = resize_rect(rect, 92, 92)
 
-		define_space("space", s.num, rect)
+		let space_rect = structuredClone(rect)  //BR// I want a separate copy, not the same array
+		if (s.type === TERRITORY) {		        //BR// Territory clickbox extends above the space
+			space_rect[1] -= 38
+			space_rect[3] += 38
+		}
+
+		define_space("space", s.num, space_rect)
 			.keyword(space_type_class[s.type])
 			.tooltip(space_tooltip)
 
