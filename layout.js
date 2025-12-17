@@ -105,9 +105,9 @@ layout.nodes = {
 		"Halifax": [796,326,87,77],
 	},
 	"North America/Naval": {
-		"Cabot Strait": [928,257,87,77],
-		"Atlantic Passage": [620,590,87,77],
-		"Gulf of Maine": [611,429,87,77],
+		"Cabot Strait": [927,256,87,77],
+		"Atlantic Passage": [619,590,87,77],
+		"Gulf of Maine": [609,429,87,77],
 	},
 	"North America/Award": {
 		"Award North America": [669,48,118,119],

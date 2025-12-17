@@ -429,6 +429,17 @@ function on_init() {
 		define_layout("lout-theater", 31, war_layout.war_awi_theater_4_france)
 		define_layout("lout-theater", 32, war_layout.war_awi_theater_4_britain)
 	}
+
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip(s))
+		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip(s))
+	}
+
+	for (let ships = 0; ships < 8; ships++) {
+		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(bizarro_space_tooltip(NAVY_BOX))
+		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(bizarro_space_tooltip(NAVY_BOX))
+	}
 }
 
 function on_update() {
@@ -451,21 +462,25 @@ function on_update() {
 	populate_with_list("lout-demand", "demand", V.global_demand)
 
 	for (i = 0; i < V.navy_box[FRANCE]; i++) {
-		populate_generic("lout-navy", "marker hex fleet_fr", 1)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -5}px; margin-left:${i * 5}px`
+		populate("lout-navy", "squadron-fr-navy", i)
+		//populate_generic("lout-navy", "marker hex fleet_fr", 1)
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -10}px; margin-left:${i * 10}px`
 	}
 
 	for (i = 0; i < V.navy_box[BRITAIN]; i++) {
-		populate_generic("lout-navy", "marker hex fleet_br", 1)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -5}px; margin-left:${i * 5}px`
+		populate("lout-navy", "squadron-br-navy", i)
+		//populate_generic("lout-navy", "marker hex fleet_br", 1)
+		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${i * -10}px; margin-left:${i * 10}px`
 	}
 	
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE)
-				populate_generic("lout-space", s.num, "marker hex fleet_fr")
+				populate ("lout-space", s.num, "squadron-fr", s.num)
+				//populate_generic("lout-space", s.num, "marker hex fleet_fr")
 			if (V.flags[s.num] === BRITAIN)
-				populate_generic("lout-space", s.num, "marker hex fleet_br")
+				populate ("lout-space", s.num, "squadron-br", s.num)
+				//populate_generic("lout-space", s.num, "marker hex fleet_br")
 		} else {
 			if (V.flags[s.num] === FRANCE)
 				populate_generic("lout-space", s.num, "marker square-sm flag_fr")
