@@ -135,7 +135,7 @@ body.Britain #events_br { grid-row: 2 }
 	gap: 72px 24px;
 }
 
-.marker.action-fr, .marker.action_br {
+.marker.action-fr, .marker.action-br {
 	margin: 77px auto 0 auto;
 }
 

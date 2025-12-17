@@ -291,8 +291,8 @@ function on_init() {
 	define_marker("initiative", BRITAIN, "square-sm initiative-br")
 
 	for (i = 0; i < 4; ++i) {
-		define_marker("action-br", i, `square-sm action_${i+1} br`)
-		define_marker("action-fr", i, `square-sm action_${i+1} fr`)
+		define_marker("action-br", i, `square-sm action_${i+1} br`).tooltip ("Britain Action Round " + (i+1))
+		define_marker("action-fr", i, `square-sm action_${i+1} fr`).tooltip ("France Action Round " + (i+1))
 	}
 
 	for (i = 0; i < NUM_SPACES; ++i)
@@ -323,7 +323,7 @@ function on_init() {
 	for (a of data.investments) {
 		define_marker("investment", a.num)
 			.keyword("square investment i" + a.num)
-			.tooltip(a.name)
+			.tooltip(bold("Investment Tile: ") + a.name)
 	}
 
 	for (i = 1; i <= 41; ++i) {
