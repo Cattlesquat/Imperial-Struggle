@@ -245,6 +245,10 @@ function on_init() {
 
 		if (s.type === TERRITORY) {
 			rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces
+		} else if (s.type === MARKET) {
+			rect = translate_rect(rect, 0, -3) // Move every market flag position up a bit
+		} else if (s.type === FORT) {
+			rect = translate_rect(rect, -1, -12) // Move every fort flag position up a bunchy (uncover the fort number)
 		}
 
 		define_layout("lout-space", s.num, rect)

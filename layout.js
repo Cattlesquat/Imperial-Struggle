@@ -101,8 +101,8 @@ layout.nodes = {
 	"North America/Forts": {
 		"Champlain Valley": [339,272,87,77],
 		"Ohio Forks": [28,611,87,77],
-		"Louisbourg": [1039,361,87,77],
-		"Halifax": [796,326,87,77],
+		"Louisbourg": [1039,362,87,77],
+		"Halifax": [797,326,87,77],
 	},
 	"North America/Naval": {
 		"Cabot Strait": [927,256,87,77],
