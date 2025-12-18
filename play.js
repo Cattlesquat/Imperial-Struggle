@@ -163,7 +163,7 @@ function bizarro_space_tooltip(bs) {
 	}
 
 	if (bs === NAVY_BOX) {
-		//return bold(data.bizarro_spaces[bs].name) + ": " + italic("(France: " + V.navy_box[FRANCE] + ", Britain: " + V.navy_box[BRITAIN] + ")")
+		return bold(data.bizarro_spaces[bs].name) + ": " + italic("(France: " + V.navy_box[FRANCE] + ", Britain: " + V.navy_box[BRITAIN] + ")")
 	}
 
 	return bold(data.bizarro_spaces[bs].name)
@@ -449,8 +449,8 @@ function on_init() {
 	}
 
 	for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
-		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(bizarro_space_tooltip(NAVY_BOX))
-		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(bizarro_space_tooltip(NAVY_BOX))
+		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
+		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
 	}
 }
 
