@@ -718,6 +718,7 @@ function has_advantage_eligible(who, a)
 	if ((G.advantages_exhausted & (1 << a))) return false	  // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		      // 8.1 - can't be used if any conflict markers, but remains "controlled"
 	if (G.advantages_used_this_turn >= 2) return false        // Can only use 2 advantages per turn
+
 	return true
 }
 
@@ -1252,7 +1253,8 @@ function require_advantage(who, a, why, optional = false)
 
 P.advantage_is_required = script (`
     call confirm_use_advantage
-    eval {    
+    eval {
+        debug_log("Finished require: " + !has_advantage_eligible(R, G.advantage))    
     	G.used_required_advantage = !has_advantage_eligible(R, G.advantage)
     }
 `)
@@ -2044,15 +2046,18 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 	if ((who === FRANCE) && has_ministry(who, CHOISEUL, !check_minimum) && !is_ministry_exhausted(who, CHOISEUL, 1) && (squadrons_in_region(who, REGION_NORTH_AMERICA) > 0)) {
 		cost = 2
 		info.ministry = CHOISEUL
+		info.ministry_ability = 1
 	}
 	if (who === BRITAIN) {
 		if (has_ministry(who, EDMOND_HALLEY, !check_minimum) && !is_ministry_exhausted(who, EDMOND_HALLEY, 0)) {
 			cost = 2
 			info.ministry = EDMOND_HALLEY
+			info.ministry_ability = 0
 		}
 		if (has_ministry(who, PITT_THE_ELDER, !check_minimum) && !is_ministry_exhausted(who, PITT_THE_ELDER, 1)) {
 			cost = 2
 			info.ministry = PITT_THE_ELDER
+			info.ministry_ability = 1
 		}
 	}
 
@@ -2074,7 +2079,7 @@ function handle_construct_squadron() {
 	push_undo()
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 	action_cost_setup(-1, MIL)
-	G.action_string = "To construct squadron"
+	G.action_string = "to construct a squadron"
 	call ("construct_squadron_process")
 }
 
@@ -2096,12 +2101,13 @@ P.construct_squadron_process = script(`
     // Possible option to flip relevant ministry
     if (L.info.ministry !== undefined) {
         eval {
-        	require_ministry(R, L.info.ministry, "to reduce cost of squadron by 2")
+        	require_ministry(R, L.info.ministry, "To reduce cost of squadron by 2", G.action_points_available_debt >= G.action_cost)
         }
         if (G.has_required_ministry) {
         	eval { 
         		G.action_cost = (L.info.ability !== undefined) ? 0 : 2
-        		L.flipped_something  = true
+        		L.flipped_something  = true        		
+        		exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
         	} 	
 		} 
 		if (!G.has_required_ministry && (G.action_points_available_debt < L.min_cost)) {
@@ -2110,13 +2116,13 @@ P.construct_squadron_process = script(`
     }
 
 	// Possible option to use advantage
-	if ((L.advantage !== undefined) && !L.flipped_something) {
+	if ((L.info.advantage !== undefined) && !L.flipped_something) {
 		eval {
-			require_advantage(R, L.info_advantage, "to reduce cost of squadron by 2")
+			require_advantage(R, L.info.advantage, "To reduce cost of squadron by 2", G.action_points_available_debt >= G.action_cost)
 		}
 		if (G.used_required_advantage) {
 			eval {
-				L.action_cost = (L.info.ability !== undefined) ? 0 : 2
+				G.action_cost = (L.info.ability !== undefined) ? 0 : 2
 				L.flipped_something = true
 			}
 		}
@@ -2139,7 +2145,9 @@ function do_construct_squadron(who) {
 	G.unbuilt_squadrons[who] -= 1
 	G.navy_box[who]++
 
-	log_h2(data.flags[who].name + " constructs a squadron")
+	log_br()
+	log(data.flags[who].name + " constructs a squadron")
+	log_br()
 }
 
 
@@ -2630,6 +2638,11 @@ P.action_round_core = {
 	britify() {
 		flagify(BRITAIN)
 	},
+	cheatrefresh() {
+		debug_log("Advantages Refreshed")
+		advantages_acquired_last_round_now_available()
+		G.advantages_used_this_turn = 0
+	},
 }
 
 
@@ -2928,6 +2941,7 @@ function flagify(who) {
 	for (let s = 0; s < NUM_SPACES; s++) {
 		G.flags[s] = who
 	}
+	update_advantages(true)
 }
 
 

@@ -714,6 +714,11 @@ window.addEventListener("keydown", function (evt) {
 			send_message("action", [ "britify", null, game_cookie ])
 			evt.preventDefault()
 			break
+		case "r":
+		case "R":
+			send_message("action", [ "cheatrefresh", null, game_cookie ])
+			evt.preventDefault()
+			break
 		case " ":
 		case "X":
 		case "x":
@@ -722,6 +727,7 @@ window.addEventListener("keydown", function (evt) {
 			} else {
 				window.location.search = window.location.search.replace("Britain", "France")
 			}
+			evt.preventDefault()
 			break
 	}
 })
