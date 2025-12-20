@@ -582,6 +582,9 @@ function on_update() {
 	action_button ("reveal_ministry", "Reveal")
 	action_button ("dont_reveal_ministry", "Don't Reveal")
 
+	action_button ("use_advantage", "Use")
+	action_button ("dont_use_advantage", "Don't Use")
+
 	action_button ("major", "Major")
 	action_button ("minor", "Minor")
 
@@ -711,6 +714,11 @@ window.addEventListener("keydown", function (evt) {
 			send_message("action", [ "britify", null, game_cookie ])
 			evt.preventDefault()
 			break
+		case "r":
+		case "R":
+			send_message("action", [ "cheatrefresh", null, game_cookie ])
+			evt.preventDefault()
+			break
 		case " ":
 		case "X":
 		case "x":
@@ -719,6 +727,7 @@ window.addEventListener("keydown", function (evt) {
 			} else {
 				window.location.search = window.location.search.replace("Britain", "France")
 			}
+			evt.preventDefault()
 			break
 	}
 })

@@ -208,6 +208,12 @@ const NAVAL     = 2
 const TERRITORY = 3
 const FORT      = 4
 
+// SPACES PER REGION
+const NUM_SPACES_EUROPE = 30
+const NUM_SPACES_NORTH_AMERICA  = 30
+const NUM_SPACES_CARIBBEAN      = 30
+const NUM_SPACES_INDIA = 22
+
 // SPACES
 const IRELAND_1 = 0
 const IRELAND_2 = 1
@@ -378,10 +384,10 @@ const ACTION_POINTS_ALREADY_SPENT   = 5
 /* TILES & CARDS */
 
 data.regions = [
-	{ num: 0, name: "Europe" },
-	{ num: 1, name: "North America" },
-	{ num: 2, name: "Caribbean" },
-	{ num: 3, name: "India" },
+	{ num: 0, name: "Europe",         "spaces": NUM_SPACES_EUROPE,        "first_space": 0},
+	{ num: 1, name: "North America" , "spaces": NUM_SPACES_NORTH_AMERICA, "first_space": NUM_SPACES_EUROPE },
+	{ num: 2, name: "Caribbean",      "spaces": NUM_SPACES_CARIBBEAN,     "first_space": NUM_SPACES_EUROPE + NUM_SPACES_NORTH_AMERICA },
+	{ num: 3, name: "India",          "spaces": NUM_SPACES_INDIA,         "first_space": NUM_SPACES_EUROPE + NUM_SPACES_NORTH_AMERICA + NUM_SPACES_CARIBBEAN },
 ]
 
 data.flags = [
