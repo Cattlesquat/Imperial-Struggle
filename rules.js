@@ -693,12 +693,29 @@ function is_advantage_conflicted(a)
 	return false
 }
 
+
+function is_advantage_exhausted(a)
+{
+	return !!(G.advantages_exhausted & (1 << a))
+}
+
+function exhaust_advantage(a)
+{
+	G.advantages_exhausted |= (1 << a)
+}
+
+function refresh_advantage(a)
+{
+	G.advantages_exhausted &= ~(1 << a)
+}
+
+
 /* 8.0 - Advantages */
 function has_advantage_eligible(who, a)
 {
 	if (!has_advantage(who, a)) return false				  // 8.1 - control all the connected spaces
 	if (G.advantages_newly_acquired & (1 << a)) return false  // 8.0 - Can only be used the round *after* control is gained
-	if (G.advantages_exhausted & (1 << a)) return false		  // 8.1 - Exhausted when used
+	if ((G.advantages_exhausted & (1 << a))) return false	  // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		      // 8.1 - can't be used if any conflict markers, but remains "controlled"
 	if (G.advantages_used_this_turn >= 2) return false        // Can only use 2 advantages per turn
 	return true
@@ -1220,6 +1237,57 @@ function has_inactive_ministry (who, m)
 	return !G.ministry_revealed[who][idx]
 }
 
+
+// Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
+function require_advantage(who, a, why, optional = false)
+{
+	G.used_required_advantage = false
+	if (!has_advantage_eligible(who, a)) return // If we got here w/o eligibility for the advantage, then fail out
+
+	G.advantage = a
+	G.advantage_required_because = why
+	G.advantage_optional = optional
+	call ("advantage_is_required")
+}
+
+P.advantage_is_required = script (`
+    call confirm_use_advantage
+    eval {    
+    	G.used_required_advantage = !has_advantage_eligible(R, G.advantage)
+    }
+`)
+
+
+function use_advantage(who, a) {
+
+	exhaust_advantage(a)
+}
+
+
+P.confirm_use_advantage = {
+	_begin() {
+		if (!has_advantage_eligible(R, G.advantage)) end()
+	},
+	prompt() {
+		V.prompt = "Use " + data.advantages[G.advantage].name + " Advantage?"
+		if ((G.advantage_required_because !== undefined) && (G.advantage_required_because !== "")) V.prompt += " (" + G.advantage_required_because + ")"
+		action("use_advantage")
+		if (G.advantage_optional) action("dont_use_advantage")
+	},
+	use_advantage() {
+		push_undo()
+		use_advantage(R, G.advantage)
+		end()
+	},
+	dont_use_advantage() {
+		push_undo()
+		end()
+	}
+}
+
+
+
+
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
 function require_ministry(who, m, why, optional = false)
 {
@@ -1249,7 +1317,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	return set_has(G.ministry_exhausted[idx], ability)
+	return set_has(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 }
 
 // Exhausts the specific ability of a ministry
@@ -1257,7 +1325,7 @@ function exhaust_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-    set_add(G.ministry_exhausted[idx], ability)
+    set_add(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 }
 
 
@@ -1266,7 +1334,7 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-	set_delete(G.ministry_exhausted[idx], ability)
+	set_delete(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 }
 
 
@@ -1786,7 +1854,7 @@ function allowed_to_shift_market(s, who)
 
 function eligible_for_minor_action(s, who)
 {
-	if ((G.flags[s] !== NONE) && (G.flags[s] !== who)) {
+	if ((s >= 0) && (G.flags[s] !== NONE) && (G.flags[s] !== who)) {
 		if (!has_conflict_marker(s)) return false // Other nations flags can only be removed w/ presence of a conflict marker
 		if ([ FORT, NAVAL ].includes(data.spaces[s].type)) return false // Can't pop enemy forts or squadrons
 	}
@@ -2005,7 +2073,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 function handle_construct_squadron() {
 	push_undo()
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
-	action_cost_setup()
+	action_cost_setup(-1, MIL)
 	G.action_string = "To construct squadron"
 	call ("construct_squadron_process")
 }
@@ -2024,16 +2092,15 @@ P.construct_squadron_process = script(`
     if (G.unbuilt_squadrons[G.active] <= 0) {
     	return // If we don't have any available squadrons
     }
-
     
     // Possible option to flip relevant ministry
     if (L.info.ministry !== undefined) {
         eval {
-        	require_ministry(R, L.info.ministry, "To reduce cost of squadron by 2")
+        	require_ministry(R, L.info.ministry, "to reduce cost of squadron by 2")
         }
         if (G.has_required_ministry) {
         	eval { 
-        		L.cost = (L.info.ability !== undefined) ? 0 : 2
+        		G.action_cost = (L.info.ability !== undefined) ? 0 : 2
         		L.flipped_something  = true
         	} 	
 		} 
@@ -2042,13 +2109,14 @@ P.construct_squadron_process = script(`
 		}
     }
 
+	// Possible option to use advantage
 	if ((L.advantage !== undefined) && !L.flipped_something) {
 		eval {
-			require_advantage(R, L.info_advantage, "To reduce cost of squadron by 2")
+			require_advantage(R, L.info_advantage, "to reduce cost of squadron by 2")
 		}
 		if (G.used_required_advantage) {
 			eval {
-				L.cost = (L.info.ability !== undefined) ? 0 : 2
+				L.action_cost = (L.info.ability !== undefined) ? 0 : 2
 				L.flipped_something = true
 			}
 		}
@@ -2204,15 +2272,14 @@ function advance_action_round_subphase(subphase)
 	}
 }
 
-function action_cost_setup() {
+function action_cost_setup(s, t) {
 	// Set up our tracking of the how-would-you-like-to-pay-for-this situation
 	G.action_space = s
-	G.action_type = space_action_type(s)
-	G.action_cost = action_point_cost(s, G.action_type)
+	G.action_type = t
 	G.action_minor = false
 	G.eligible_minor = eligible_for_minor_action(s, G.active) && G.action_points_minor[G.action_type] > 0
-	G.action_points_available_now  = action_points_available(G.active, s, G.action_type, false)
-	G.action_points_available_debt = action_points_available(G.active, s, G.action_type, true)
+	G.action_points_available_now  = action_points_available(G.active, G.action_space, G.action_type, false)
+	G.action_points_available_debt = action_points_available(G.active, G.action_space, G.action_type, true)
 
 	G.action_string = ""
 
@@ -2225,7 +2292,10 @@ function handle_space_click(s)
 {
 	push_undo()
 
-	action_cost_setup()
+	action_cost_setup(s, space_action_type(s))
+
+	G.action_cost = action_point_cost(s, G.action_type)
+
 
 	if (G.action_type !== MIL) {
 		if (G.flags[s] === NONE) {
@@ -2244,13 +2314,15 @@ function handle_space_click(s)
 
 P.space_process_click = script(`
 	call decide_how_and_whether_to_spend_action_points	
-    if (!G.paid_action_cost) return
+    if (!G.paid_action_cost) {
+    	return
+    }
        
     eval { handle_reflag_space() }
 `)
 
 P.decide_how_and_whether_to_spend_action_points = script(`
-	G.paid_action_cost = false
+	eval { 	G.paid_action_cost = false }
 	
     if (G.action_points_available_debt < G.action_cost) {
     	return // If we can't even afford it w/ debt and trps, we shouldn't be here
@@ -2285,7 +2357,7 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     	}
     }
     
-    pay_action_cost()
+    eval { pay_action_cost() }
 `)
 
 
@@ -2473,7 +2545,7 @@ P.action_round_core = {
 			button ("draw_event")
 		}
 		if (G.action_points_eligible[MIL]) {
-			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (G.action_points_eligible[MIL] + G.action_points_available_debt >= cost_to_build_squadron(who, true)))
+			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 		}
 
 		//TODO maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
@@ -3587,7 +3659,7 @@ function bit_get(bits, index)
 {
 	var w = index >> 5
 	var b = index & 31
-	return ((G.control[w] >> b) & 1) > 0
+	return ((bits[w] >> b) & 1) > 0
 }
 
 // Initializes bitflag field, given the maximum number of bits possible
@@ -3683,7 +3755,7 @@ function log_h2(msg) {
 	log_br()
 }
 
-function log_h3(msg) {
+function ☻log_h3(msg) {
 	log_br()
 	log(".h3 " + msg)
 	log_br()

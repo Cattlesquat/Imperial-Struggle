@@ -582,6 +582,9 @@ function on_update() {
 	action_button ("reveal_ministry", "Reveal")
 	action_button ("dont_reveal_ministry", "Don't Reveal")
 
+	action_button ("use_advantage", "Use")
+	action_button ("dont_use_advantage", "Don't Use")
+
 	action_button ("major", "Major")
 	action_button ("minor", "Minor")
 
