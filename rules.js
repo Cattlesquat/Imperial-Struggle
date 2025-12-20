@@ -3755,7 +3755,7 @@ function log_h2(msg) {
 	log_br()
 }
 
-function ☻log_h3(msg) {
+function log_h3(msg) {
 	log_br()
 	log(".h3 " + msg)
 	log_br()
