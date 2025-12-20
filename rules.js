@@ -2053,36 +2053,7 @@ P.construct_squadron_process = script(`
 			return // If it's now impossible to afford cost because we didn't use the advantage		    
 		}
 	}	  
-	    
-    if (G.eligible_minor) {
-    	if (G.action_points_available_debt < G.action_cost + 2) {
-        	eval { G.action_minor = true }  // If the only way we can do this is as a minor action, we don't need to make a choice
-        }
-        if (!G.action_points_eligible_major[G.action_type]) {
-			eval { G.action_minor = true }  // If we're not eligible for a major action in this category, we don't need to make a choice    
-        }
-    }
-    
-    // If we could do *either* major or minor action, make our choice
-    if (G.eligible_minor && !G.action_minor) {
-    	call choice_use_minor_action
-    	eval {
-    		if (!G.action_minor) {
-    			G.eligible_minor = false
-    			G.action_points_available_debt -= G.action_points_minor[G.action_type]
-    			G.action_points_available      -= G.action_points_minor[G.action_type]
-    		}
-    	}  	
-    }
-    
-    // If it is going to cost debt or TRPs, then see if player wants to spend them
-    if (G.action_points_available_now < G.action_cost) {
-    	call confirm_spend_debt_or_trps
-    	if (G.action_points_available_now < G.action_cost) {
-    		return // If we didn't decide to spend enough, we're done
-    	}
-    }
-    
+	        
   	call decide_how_and_whether_to_spend_action_points	
     if (!G.paid_action_cost) {
     	return
