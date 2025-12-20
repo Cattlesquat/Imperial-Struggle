@@ -2005,6 +2005,8 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 function handle_construct_squadron() {
 	push_undo()
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+	action_cost_setup()
+	G.action_string = "To construct squadron"
 	call ("construct_squadron_process")
 }
 
@@ -2015,13 +2017,14 @@ P.construct_squadron_process = script(`
         L.info = {}
     	L.min_cost = cost_to_build_squadron(G.active, true, L.info)
     	L.flipped_something = false
-    }
+    }        
     if (G.action_points_available_debt < L.min_cost) {
     	return // If we can't even afford it w/ debt and trps, we shouldn't be here
-    }
+    }    
     if (G.unbuilt_squadrons[G.active] <= 0) {
     	return // If we don't have any available squadrons
     }
+
     
     // Possible option to flip relevant ministry
     if (L.info.ministry !== undefined) {
@@ -2201,11 +2204,7 @@ function advance_action_round_subphase(subphase)
 	}
 }
 
-// Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
-function handle_space_click(s)
-{
-	push_undo()
-
+function action_cost_setup() {
 	// Set up our tracking of the how-would-you-like-to-pay-for-this situation
 	G.action_space = s
 	G.action_type = space_action_type(s)
@@ -2216,6 +2215,18 @@ function handle_space_click(s)
 	G.action_points_available_debt = action_points_available(G.active, s, G.action_type, true)
 
 	G.action_string = ""
+
+	G.debt_spent = 0
+	G.treaty_points_spent = 0
+}
+
+// Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
+function handle_space_click(s)
+{
+	push_undo()
+
+	action_cost_setup()
+
 	if (G.action_type !== MIL) {
 		if (G.flags[s] === NONE) {
 			G.action_string = "to flag " + data.spaces[G.action_space].name
@@ -2225,10 +2236,6 @@ function handle_space_click(s)
 		}
 	}
 	// TODO include weird "region restricted" action points if available
-
-	G.debt_spent = 0
-	G.treaty_points_spent = 0
-
 	//TODO forts and navies different behaviors
 	//TODO remove conflict
 
