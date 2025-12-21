@@ -819,6 +819,7 @@ function set_conflict_marker(s, n = 1) {
 		map_delete(G.conflicts, s)
 	else
 		map_set(G.conflicts, s, n)
+	update_flag_counts()
 }
 
 function remove_conflict_marker(s) {
@@ -1493,8 +1494,34 @@ P.reduce_treaty_points_phase = function () {
 /* 4.1.11 - ACTION PHASE */
 
 P.resolve_remaining_powers = function () {
-	// TODO
+	let announced = false
+
+	if (has_active_ministry(FRANCE, JOHN_LAW)) {
+		let debt_reduction = 1
+		if ((G.flags[SCOTLAND_1] === FRANCE) || (G.flags[SCOTLAND_2] === FRANCE)) debt_reduction++
+		debt_reduction = Math.min(debt_reduction, G.debt[FRANCE])
+		if (debt_reduction > 0) {
+			G.debt[FRANCE] -= debt_reduction
+
+			if (!announced) {
+				announced = true
+				log("=Resolve Remaining Powers Phase")
+			}
+			log (bold("JOHN LAW ministry reduces French debt by " + debt_reduction))
+		}
+	}
+
+	// TODO - any other "remaining powers"
+
 	end()
+}
+
+
+function get_winner(france, britain)
+{
+	if (france > britain) return FRANCE
+	if (britain > france) return BRITAIN
+	return NONE
 }
 
 /* 4.1.12 - SCORING PHASE */
@@ -1502,6 +1529,68 @@ P.resolve_remaining_powers = function () {
 P.scoring_phase = function () {
 	log("=Scoring Phase")
 	// TODO
+
+	for (let region = 0; region < NUM_REGIONS; region++) {
+		let award = G.awards[region]
+		let winner = get_winner(G.flag_count[FRANCE], G.flag_count[BRITAIN])
+		let diff = Math.abs(G.flag_count[FRANCE] - G.flag_count[BRITAIN])
+		if ((diff < 2) && data.awards[award].by2) winner = NONE
+
+		if (winner !== NONE) {
+			let vp = data.awards[award].vp
+			let trp = data.awards[award].trp
+			if (region === REGION_EUROPE) {
+				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
+					log(data.ministries[COURT_OF_THE_SUN_KING].name + " increases VP value of Europe award by +1")
+					vp++
+				}
+			}
+
+			G.vp[winner] += vp
+			G.treaty_points[winner] += trp
+
+			//TODO announce winner & amounts
+		}
+
+		// Prestige awards are sort notionally done alongside the Europe award
+		if (region === REGION_EUROPE) {
+			winner = get_winner(G.prestige_flags[FRANCE], G.prestige_flags[BRITAIN])
+			if (winner !== NONE) {
+				G.vp[winner] += 2
+			}
+			//TODO announce winner & amounts
+			G.prestige_flags = [0, 0]                                       // G.flag_count[who]
+			G.flag_count = [[0, 0, 0, 0], [0, 0, 0, 0]]             // G.flag_count[who][region]
+			G.demand_flag_count = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] // G.demand_flag_count[who][demand]
+		}
+	}
+
+	for (const d of G.global_demand) {
+		let winner = get_winner(G.demand_flag_count[FRANCE], G.demand_flag_count[BRITAIN])
+		if (winner !== NONE) {
+			let vp = data.demands[d].vp
+			let trp = data.demands[d].trp
+			let debt = data.demands[d].debt
+
+			G.vp[winner] += vp
+			G.treaty_points[winner] += trp
+			// TODO - announce winner and amounts
+			// TODO - deal with debt, which might cause more VP
+		}
+
+	}
+
+	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
+		let vp = 0
+		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
+			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
+				vp++
+			}
+		}
+		vp = Math.min(vp, 3)
+		log (data.ministries[EAST_INDIA_COMPANY].name + " adds +" + vp + " VP for Britain")
+	}
+
 	end()
 }
 
@@ -1702,7 +1791,7 @@ function handle_event_card_click(c) {
 		action_event_card(card)
 	}
 
-	call ("event_process_click")
+	call ("event_click_flow")
 }
 
 function begin_event_play(c) {
@@ -1779,7 +1868,7 @@ function check_event_bonus_requirements(who) {
 	}
 }
 
-P.event_process_click = script (`
+P.event_click_flow = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
         	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
@@ -1831,11 +1920,11 @@ function handle_ministry_card_click(m)
 	G.just_revealed = false
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
-		call ("ministry_card")
+		call ("ministry_card_flow")
 	}
 }
 
-P.ministry_card = script (`
+P.ministry_card_flow = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
     	call confirm_reveal_ministry
     	eval { G.just_revealed = true }
@@ -2143,7 +2232,13 @@ function allowed_to_shift_market(s, who)
 function eligible_for_minor_action(s, who)
 {
 	if ((s >= 0) && (G.flags[s] !== NONE) && (G.flags[s] !== who)) {
-		if (!has_conflict_marker(s)) return false // Other nations flags can only be removed w/ presence of a conflict marker
+		if (!has_conflict_marker(s)) {
+			// Other nations flags can only be removed w/ presence of a conflict marker
+			// ... except European diplomatic spaces with Jonathan Swift ministry active and at least one space in Ireland
+			if (!((data.spaces[s].region === REGION_EUROPE) && has_active_ministry(JONATHAN_SWIFT, who) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
+				return false
+			}
+		}
 		if ([ FORT, NAVAL ].includes(data.spaces[s].type)) return false // Can't pop enemy forts or squadrons
 	}
 	return true
@@ -2169,7 +2264,7 @@ function can_afford_to_shift(s, who, allow_debt_and_trps)
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!G.action_points_eligible_major[type] && !eligible_minor) return false
 
-	var cost = action_point_cost(s, type)
+	var cost = action_point_cost(who, s, type)
     var avail = action_points_available(who, s, type, allow_debt_and_trps)
 	//TODO forts and navies different behaviors
 
@@ -2458,7 +2553,7 @@ function is_protected(s)
 	return false
 }
 
-function action_point_cost (s, type)
+function action_point_cost (who, s, type)
 {
 	var cost = data.spaces[s].cost
 
@@ -2477,6 +2572,14 @@ function action_point_cost (s, type)
 	}
 	else {
 		//TODO apply discounts from event cards, advantages, etc
+
+		if (has_active_ministry(who, JONATHAN_SWIFT)) {
+			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
+				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
+					cost -= 1
+				}
+			}
+		}
 
 		if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
 
@@ -2591,7 +2694,7 @@ function handle_space_click(s)
 {
 	action_cost_setup(s, space_action_type(s))
 
-	G.action_cost = action_point_cost(s, G.action_type)
+	G.action_cost = action_point_cost(who, s, G.action_type)
 
 
 	if (G.action_type !== MIL) {
@@ -2606,10 +2709,25 @@ function handle_space_click(s)
 	//TODO forts and navies different behaviors
 	//TODO remove conflict
 
-    call("space_process_click")
+	//TODO - ministries that might give discounts
+	G.needs_to_flip_ministry = -1
+	if ((G.action_type === DIPLO) && [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ].includes(s) && (G.flags[s] === NONE)) {
+		if (has_inactive_ministry(who, JONATHAN_SWIFT)) {
+			G.needs_to_flip_ministry = JONATHAN_SWIFT
+		}
+	}
+
+    call("space_click_flow")
 }
 
-P.space_process_click = script(`
+P.space_click_flow = script(`
+    if (G.needs_to_flip_ministry >= 0) {
+    	eval { 
+    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
+    	    G.action_cost = action_point_cost(who, G.action_space, G.action_type)
+    	}	    	
+    }
+
 	call decide_how_and_whether_to_spend_action_points	
     if (!G.paid_action_cost) {
     	return
@@ -2807,7 +2925,7 @@ P.action_round_core = {
 						prompt += data.action_points[i].short + ": "
 						need_comma = true;
 
-						prompt += G.action_points_major[i] + "M"
+						prompt += G.action_points_major[i] + " major"
 						if (G.action_points_minor[i]) {
 							prompt += "/"
 							early[i] = true
@@ -2824,7 +2942,7 @@ P.action_round_core = {
 								need_comma = true;
 							}
 
-							prompt += G.action_points_minor[i] + "m"
+							prompt += G.action_points_minor[i] + " minor"
 						}
 					}
 				}
@@ -3238,6 +3356,7 @@ function flagify(who) {
 	for (let s = 0; s < NUM_SPACES; s++) {
 		G.flags[s] = who
 	}
+	update_flag_counts()
 	update_advantages(true)
 }
 
