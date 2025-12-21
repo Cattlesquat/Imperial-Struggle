@@ -1367,7 +1367,7 @@ function exhaust_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-    set_add(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+    set_add(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 
 	log_br()
 	let msg = "Ministry exhausted: " + data.ministries[m].name
@@ -1384,7 +1384,7 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-	set_delete(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+	set_delete(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 }
 
 
