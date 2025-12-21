@@ -2302,7 +2302,6 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 
 
 function handle_construct_squadron_button() {
-	push_undo()
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 	action_cost_setup(-1, MIL)
 	G.action_string = "to construct a squadron"
@@ -2709,7 +2708,7 @@ P.confirm_spend_debt_or_trps = {
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
-		push_undo()
+		push_undo() // Possibly keep it from backing straight out of e.g. "Confirm reveal ministry?" all the way back to the select-investment-tile step? If I undo from "confirm reveal ministry" I want to be back where I was when I clicked the ministry
 	},
 	prompt() {
 		var prompt = "ACTION ROUND " + G.round + ": "
@@ -2810,6 +2809,7 @@ P.action_round_core = {
 		log ("draw event!")
 	},
 	construct_squadron() {
+		push_undo()
 		handle_construct_squadron_button()
 	},
 	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
@@ -2887,6 +2887,7 @@ P.end_of_action_round = {
 		button("done")
 	},
 	done() {
+		push_undo()
 		end()
 	}
 }
