@@ -1013,6 +1013,13 @@ function update_overlay_text_html(action, id, text) {
 
 /* LOG FORMATTING */
 
+function escape_html(text) {
+	text = text.replace(/&/g, "&amp;")
+	text = text.replace(/</g, "&lt;")
+	text = text.replace(/>/g, "&gt;")
+	return text
+}
+
 function escape_typography(text) {
 	text = String(text)
 	// TODO: smart quotes
@@ -1020,9 +1027,6 @@ function escape_typography(text) {
 	text = text.replace(/--/g, "\u2013")
 	text = text.replace(/->/g, "\u2192")
 	text = text.replace(/-( ?[\d])/g, "\u2212$1")
-	text = text.replace(/&/g, "&amp;")
-	text = text.replace(/</g, "&lt;")
-	text = text.replace(/>/g, "&gt;")
 	return text
 }
 
