@@ -274,12 +274,23 @@ body.shift .marker { opacity: 25% }
 	line-height: 20px;
 	width: 100%;
 	bottom: 0;
-	background-color: linen;
-	border-radius: 0  0 12px 12px;
+    background-color: linen;
+    border-radius: 0  0 12px 12px;
 }
 
-.ministry_card.hidden:after { content: "HIDDEN"; }
+
+.ministry_card.hidden:after { content: "HIDDEN";
+                              background-color: wheat;}
 .ministry_card.revealed:after { content: "REVEALED"; }
+.ministry_card.exhausted:after { content: "EXHAUSTED";
+                                 background-color: #ffd580; }
+.ministry_card.partial:after { content: "REVEALED";
+                                background: repeating-linear-gradient(
+                                45deg,
+                                linen,
+                                linen 10px,
+                                #ffd580 10px,
+                                #ffd580 20px); }
 
 
 .ministry_card.exhausted-1::before, .ministry_card.exhausted-2::before {

@@ -480,6 +480,24 @@ function is_advantage_exhausted(a)
 }
 
 
+function is_ministry_fully_exhausted(who, m)
+{
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (!is_ministry_exhausted(who, m, i)) return false
+	}
+	return true
+}
+
+function is_ministry_partially_exhausted(who, m)
+{
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (is_ministry_exhausted(who, m, i)) return true
+	}
+	return false
+}
+
+
+
 
 function on_update() {
 	var i, r, s, a
@@ -556,7 +574,9 @@ function on_update() {
 			let m = V.ministry[who][i]
 			if (m >= 0) {
 				populate("panel-ministry", who, "ministry_card", m)
-				update_keyword("ministry_card", m, "revealed", V.ministry_revealed[who][i])
+				update_keyword("ministry_card", m, "exhausted", V.ministry_revealed[who][i] && is_ministry_fully_exhausted(who, m))
+				update_keyword("ministry_card", m, "partial", V.ministry_revealed[who][i] && is_ministry_partially_exhausted(who, m) && !is_ministry_fully_exhausted(who, m))
+				update_keyword("ministry_card", m, "revealed", V.ministry_revealed[who][i] && !is_ministry_partially_exhausted(who, m))
 				update_keyword("ministry_card", m, "hidden", !V.ministry_revealed[who][i])
 
 				for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
