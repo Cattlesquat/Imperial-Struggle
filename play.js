@@ -466,6 +466,12 @@ function is_ministry_exhausted (who, m, ability = 0)
 	return set_has(V.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 }
 
+function is_advantage_exhausted(a)
+{
+	return !!(V.advantages_exhausted & (1 << a))
+}
+
+
 
 function on_update() {
 	var i, r, s, a
@@ -517,6 +523,7 @@ function on_update() {
 	}
 
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {
+		//TODO -- check is_advantage_exhausted(a) and display Exhausted marker "on top of" advantage if so
 		if (V.advantages[a] === NONE)
 			populate("lout-advantage", a, "advantage", a)
 		if (V.advantages[a] === FRANCE)
