@@ -386,6 +386,14 @@ const ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT = 0
 
 /* TILES & CARDS */
 
+setup_procs()
+
+function setup_procs()
+{
+	data.ministries[ROBERT_WALPOLE].proc = "ministry_robert_walpole";
+	data.ministries[BANK_OF_ENGLAND].proc = "ministry_bank_of_england";
+	data.ministries[EDMOND_HALLEY].proc = "ministry_edmond_halley"
+}
 
 /* SETUP */
 function on_setup(scenario, options) {
@@ -704,6 +712,10 @@ function is_advantage_exhausted(a)
 function exhaust_advantage(a)
 {
 	G.advantages_exhausted |= (1 << a)
+
+	log_br()
+	log("Advantage used: " + data.advantages[a].name)
+	log_br()
 }
 
 function refresh_advantage(a)
@@ -1256,7 +1268,6 @@ function require_advantage(who, a, why, optional = false)
 P.advantage_is_required = script (`
     call confirm_use_advantage
     eval {
-        debug_log("Finished require: " + !has_advantage_eligible(R, G.advantage))    
     	G.used_required_advantage = !has_advantage_eligible(R, G.advantage)
     }
 `)
@@ -1293,6 +1304,7 @@ P.confirm_use_advantage = {
 
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
+// "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
 function require_ministry(who, m, why, optional = false)
 {
 	G.has_required_ministry = undefined
@@ -1306,6 +1318,15 @@ function require_ministry(who, m, why, optional = false)
 	G.ministry_required_because = why
 	G.ministry_optional = optional
 	call ("ministry_is_required")
+}
+
+function require_ministry_unexhausted(who, m, why, ability = 0, optional = false)
+{
+	if (is_ministry_exhausted(who, m, ability)) {
+		G.has_required_ministry = false
+		return
+	}
+	require_ministry(who, m, why, optional)
 }
 
 P.ministry_is_required = script (`
@@ -1324,6 +1345,23 @@ function is_ministry_exhausted (who, m, ability = 0)
 	return set_has(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 }
 
+function is_ministry_fully_exhausted(who, m)
+{
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (!is_ministry_exhausted(who, m, i)) return false
+	}
+	return true
+}
+
+function is_ministry_partially_exhausted(who, m)
+{
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (is_ministry_exhausted(who, m, i)) return true
+	}
+	return false
+}
+
+
 // Exhausts the specific ability of a ministry
 function exhaust_ministry (who, m, ability = 0)
 {
@@ -1332,7 +1370,7 @@ function exhaust_ministry (who, m, ability = 0)
     set_add(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
 
 	log_br()
-	let msg = "Exhaustion marker placed on " + data.ministries[m].name + " ministry"
+	let msg = "Ministry exhausted: " + data.ministries[m].name
 	if (data.ministries[m].abilities > 1) {
 		msg += " (Ability #" + (ability + 1) + ")"
 	}
@@ -1638,6 +1676,30 @@ P.select_investment_tile = {
 function handle_event_card_click(c) {
 	push_undo()
 	G.played_event = c
+
+	if (data.cards[card].action !== WILD) {
+		if (data.cards[card].action !== data.investments[G.played_tile].majortype) {
+			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
+				exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+			} else {
+				console.error("Mismatched event play allowed without use of Bank of England ministry: " + data[cards].name)
+			}
+		}
+	}
+
+	if (data.investments[G.played_tile].majorval > 3) {
+		if (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET)) {
+			exhaust_ministry(R, MARQUIS_DE_CONDORCET)
+		} else {
+			console.error("Allowed play of event without an event symbol on investment tile")
+		}
+	}
+
+	if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
+		(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON))) {
+		action_event_card(card)
+	}
+
 	call ("event_process_click")
 }
 
@@ -1718,7 +1780,7 @@ function check_event_bonus_requirements(who) {
 P.event_process_click = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
-        	require_ministry(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
+        	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
         }
         if (!G.has_required_ministry) {
         	eval { G.played_event = 0 }
@@ -1728,7 +1790,7 @@ P.event_process_click = script (`
 
     if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
-        	require_ministry(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action")
+        	require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1)
         }
         if (!G.has_required_ministry) {
         	eval { G.played_event = 0 }
@@ -1761,7 +1823,10 @@ P.event_process_click = script (`
 
 function handle_ministry_card_click(m)
 {
+	G.ministry
 	G.ministry_index = G.ministry[R].indexOf(m)
+	G.ministry_id = m
+	G.just_revealed = false
 	if (G.ministry_index >= 0) {
 		call ("ministry_card")
 	}
@@ -1771,6 +1836,7 @@ P.ministry_card = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
         eval { G.minister_required_because = "" }
     	call confirm_reveal_ministry
+    	eval { G.just_revealed = true }
     }
     
     if (G.ministry_revealed[R][G.ministry_index]) {
@@ -1778,12 +1844,25 @@ P.ministry_card = script (`
         	L.ministry_useful_this_phase = ministry_useful_this_phase(G.ministry[G.ministry_index], G.action_round_subphase)
     	}
     	
-    	if (L.ministry_useful_this_phase) {
-    		call activate_ministry_card
-    	}
+		if (data.ministries[G.ministry_id].proc !== undefined) {
+			//eval { push_undo() }
+			eval { debug_log ("Proc: " + data.ministries[G.ministry_id].proc) }
+			goto (data.ministries[G.ministry_id].proc)
+		} 
+		
+		if (!ministry_has_activatable_abilities(G.ministry_id)) {
+			goto ministry_not_activatable
+		} 		
+    	return
     }
 `)
 
+
+function ministry_has_activatable_abilities(m)
+{
+	if ([ JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE ].includes(m)) return false
+	return true
+}
 
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
 function ministry_useful_this_phase(m, subphase)
@@ -1802,16 +1881,31 @@ function ministry_useful_this_phase(m, subphase)
 	}
 }
 
+function ministry_prompt(who, m, string1, string2 = "") {
+	var prompt = data.ministries[m].name.toUpperCase() + ": "
 
-P.activate_ministry_card = {
-	_begin() {
-		if (!G.ministry_revealed[R][G.ministry_index] || !ministry_useful_this_phase(G.ministry[R][G.ministry_index], G.ministry_subphase)) {
-			end()
-		}
-	},
-	prompt() {
-		V.prompt = "Do some of that fancy ministry shit"
+	if ((G.action_round_subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
+		prompt += "You must pick an Investment Tile before you can use this ministry's abilities"
 	}
+	else if (is_ministry_fully_exhausted(who, m) || (is_ministry_partially_exhausted(who, m) && ((string1 == null) || (string2 == null)))) {
+		prompt += "Ministry Exhausted"
+	}
+	else {
+		if ((string2 === "") || (string2 === null)) {
+			prompt += string1
+		}
+		else if (string1 === null) {
+			prompt += string2
+		}
+		else {
+			prompt += strike(string1, is_ministry_exhausted(who, m, 0))
+			if (is_ministry_exhausted(who, m, 0)) prompt += " (exhausted)"
+			prompt += " OR "
+			prompt += strike(string2, is_ministry_exhausted(who, m, 1))
+			if (is_ministry_exhausted(who, m, 1)) prompt += " (exhausted)"
+		}
+	}
+	return prompt
 }
 
 function reveal_ministry(who, index) {
@@ -1844,6 +1938,129 @@ P.confirm_reveal_ministry = {
 		end()
 	}
 }
+
+P.ministry_not_activatable = {
+	prompt() {
+		let msg = "This ministry does not require manual activation. It takes effect automatically at the appropriate time."
+		V.prompt = ministry_prompt(R, G.ministry_id, msg)
+		button ("pass")
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+P.ministry_robert_walpole = {
+	prompt() {
+		V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may select an event card to discard and replace")
+		if (ministry_useful_this_phase(ROBERT_WALPOLE, G.action_round_subphase)) {
+			for (var card of G.hand[R]) {
+				action_event_card(card)
+			}
+		}
+		button("pass")
+	},
+	event_card(c) {
+		clear_undo() // Because we're drawing a new event card
+
+		exhaust_ministry(R, ROBERT_WALPOLE)
+
+		log (data.flags[R].name + " discards event: " + data.cards[c].name)
+		// Discard the old card
+		array_delete_item(G.hand[R], c)
+		G.discard_pile.push(c);
+
+		if (G.deck.length === 0) {
+			log ("Discard Pile shuffled to form new Event Deck")
+			G.deck = G.discard_pile
+			shuffle(G.deck)
+		}
+
+		if (G.deck.length > 0) {
+			G.hand[R].push(G.deck.pop())
+			log (data.flags[R].name + " draws new event card")
+		} else {
+			log ("Event deck is EMPTY.")
+		}
+		end()
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+
+P.ministry_bank_of_england = {
+	prompt() {
+		V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "You may increase your debt limit by one", null)
+		if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.action_round_subphase)) {
+			button("increase_debt_limit", !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0))
+		}
+		button("pass")
+	},
+	increase_debt_limit() {
+		push_undo()
+		exhaust_ministry(R, BANK_OF_ENGLAND)
+		G.debt_limit[R]++
+		log_br()
+		log(bold(data.flags[R].name + " Debt Limit increased by 1"))
+		log_br()
+		end()
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+
+P.ministry_edmond_halley = {
+	prompt() {
+		V.prompt = ministry_prompt(R, EDMOND_HALLEY, "Build discounted squadron", "discard an event to gain 1 Treaty Point")
+		if (ministry_useful_this_phase(EDMOND_HALLEY, G.action_round_subphase)) {
+			if (!is_ministry_exhausted(R, EDMOND_HALLEY, 1)) {
+				for (var card of G.hand[R]) {
+					action_event_card(card)
+				}
+				L.any = true
+			}
+
+			button("build_squadron", !is_ministry_exhausted(R, EDMOND_HALLEY, 0) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
+		}
+		button("pass")
+	},
+	build_squadron() {
+		push_undo()
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+		action_cost_setup(-1, MIL)
+		G.action_string = "to construct a squadron"
+		G.prepicked_ministry = EDMOND_HALLEY
+		goto ("construct_squadron_process")
+	},
+	event_card(c) {
+		push_undo()
+		exhaust_ministry(R, EDMOND_HALLEY,1)
+
+		// Discard the old card
+		array_delete_item(G.hand[R], c)
+		G.discard_pile.push(c);
+		log (data.flags[R].name + " discards event: " + data.cards[c].name)
+
+		G.treaty_points[R]++
+		log (data.flags[R].name + " gains 1 Treaty Point")
+		end()
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+
+
+
 
 
 /* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
@@ -2000,9 +2217,10 @@ function action_all_eligible_spaces() {
 
 function action_eligible_ministries() {
 	for (var index = 0; index < G.ministry[R].length; index++) {
-		if (G.ministry_revealed[R][index]) {
-			if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
-		}
+		//BR// Removing this for now - for flexibility, allow players to flip ministries at any notionally legal time, even if ministry isn't technically "useful" right at that second.
+		//if (G.ministry_revealed[R][index]) {
+		//	if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
+		//}
 		action_ministry_card(G.ministry[R][index])
 	}
 }
@@ -2088,6 +2306,7 @@ function handle_construct_squadron_button() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 	action_cost_setup(-1, MIL)
 	G.action_string = "to construct a squadron"
+	G.prepicked_ministry = -1
 	call ("construct_squadron_process")
 }
 
@@ -2109,7 +2328,11 @@ P.construct_squadron_process = script(`
     // Possible option to flip relevant ministry
     if (L.info.ministry !== undefined) {
         eval {
-        	require_ministry(R, L.info.ministry, "To reduce cost of squadron by 2", G.action_points_available_debt >= G.action_cost)
+        	if (G.prepicked_ministry === L.info.ministry) {
+        		G.has_required_ministry = true
+        	} else {
+        		require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost)
+        	}
         }
         if (G.has_required_ministry) {
         	eval { 
@@ -3779,3 +4002,22 @@ function log_h3(msg) {
 	log_br()
 }
 
+
+function bold (s, condition = true)
+{
+	if (!condition) return s
+	return "<b>" + s + "</b>"
+}
+
+function italic (s, condition = true )
+{
+	if (!condition) return s
+	return "<i>" + s + "</i>"
+}
+
+function strike (s, condition = true )
+{
+	if (!condition) return s
+	return "<s>" + s + "</s>"
+	//return "<span style=\"text-decoration: line-through;\">" + s + "</span>"
+}

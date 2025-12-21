@@ -109,6 +109,10 @@ body.Britain #events_br { grid-row: 2 }
 	font-weight: bold;
 }
 
+#log .strike {
+    text-decoration: line-through;
+}
+
 #log .small_br {
 	min-height: 5px;
 	height: 5px;

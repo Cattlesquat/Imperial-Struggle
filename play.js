@@ -196,14 +196,22 @@ function award_tooltip(region)
 	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
 }
 
-function bold (s)
+function bold (s, condition = true)
 {
+	if (!condition) return s
 	return "<b>" + s + "</b>"
 }
 
-function italic (s)
+function italic (s, condition = true )
 {
+	if (!condition) return s
 	return "<i>" + s + "</i>"
+}
+
+function strike (s, condition = true )
+{
+	if (!condition) return s
+	return "<s>" + s + "</s>"
 }
 
 
@@ -591,7 +599,6 @@ function on_update() {
 	action_button("paytrp", "Spend 1 Treaty Point")
 
 	action_button("confirm", "Confirm")
-	action_button("pass", "Pass")
 
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 
@@ -605,12 +612,17 @@ function on_update() {
 	action_button ("reveal_ministry", "Reveal")
 	action_button ("dont_reveal_ministry", "Don't Reveal")
 
+	action_button ("build_squadron", "Build Squadron w/ Discount")
+	action_button ("discard_event_for_trp", "Discard Event for TRP")
+	action_button ("increase_debt_limit", "Increase Debt Limit")
+
 	action_button ("use_advantage", "Use")
 	action_button ("dont_use_advantage", "Don't Use")
 
 	action_button ("major", "Major")
 	action_button ("minor", "Minor")
 
+    action_button("pass", "Pass")
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
