@@ -1463,6 +1463,7 @@ P.confirm_first_player = {
 		button("confirm")
 	},
 	confirm() {
+		push_undo() //... just going to get cleared anyway?
 		G.active = G.first_player
 		end()
 	},
@@ -1651,7 +1652,7 @@ function selected_a_tile(tile)
 // Player is picking an investment tile
 P.select_investment_tile = {
 	_begin() {
-		push_undo()
+		push_undo() // It was backing out from later points all the way to back to initiative?!
 	},
 	prompt() {
 		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister.";
@@ -1674,7 +1675,6 @@ P.select_investment_tile = {
 
 // Player selects an event card to play
 function handle_event_card_click(c) {
-	push_undo()
 	G.played_event = c
 
 	if (data.cards[card].action !== WILD) {
@@ -1823,7 +1823,7 @@ P.event_process_click = script (`
 
 function handle_ministry_card_click(m)
 {
-	G.ministry
+	push_undo()
 	G.ministry_index = G.ministry[R].indexOf(m)
 	G.ministry_id = m
 	G.just_revealed = false
@@ -2529,8 +2529,6 @@ function action_cost_setup(s, t) {
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
 function handle_space_click(s)
 {
-	push_undo()
-
 	action_cost_setup(s, space_action_type(s))
 
 	G.action_cost = action_point_cost(s, G.action_type)
@@ -2850,9 +2848,11 @@ P.action_round_core = {
 		end()
 	},
 	space(s) {
+		push_undo()
 		handle_space_click(s)
 	},
 	ministry_card(m) {
+		push_undo()
 		handle_ministry_card_click(m)
 	},
 	advantage(a) {
@@ -2861,15 +2861,19 @@ P.action_round_core = {
 		// TODO - handle_advantage_click
 	},
 	event_card(c) {
+		push_undo()
 		handle_event_card_click(c)
 	},
 	frenchify() {
+		push_undo()
 		flagify(FRANCE)
 	},
 	britify() {
+		push_undo()
 		flagify(BRITAIN)
 	},
 	cheatrefresh() {
+		push_undo()
 		debug_log("Advantages Refreshed")
 		advantages_acquired_last_round_now_available()
 		G.advantages_used_this_turn = 0
