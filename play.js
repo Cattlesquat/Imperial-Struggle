@@ -299,6 +299,8 @@ function on_init() {
 	//define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
 	//define_thing("tip-award", REGION_INDIA).layout(find_layout_node("Award India")).tooltip(award_tooltip)
 
+	define_marker("exhausted", undefined, "square-sm")
+
 	define_marker("game-turn", undefined, "square-sm")
 	define_marker("victory-points", undefined, "square-sm black")
 	define_marker("debt", FRANCE, "square-sm fr")
@@ -454,6 +456,17 @@ function on_init() {
 	}
 }
 
+
+// True if ministry is presently exhausted
+// Some ministries have more than one separately exhaustible ability (in which case can pass a different "ability" number)
+function is_ministry_exhausted (who, m, ability = 0)
+{
+	if (!V.ministry[who].includes(m)) return false
+	var idx = V.ministry[who].indexOf(m)
+	return set_has(V.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+}
+
+
 function on_update() {
 	var i, r, s, a
 
@@ -518,16 +531,28 @@ function on_update() {
 	populate_with_list("panel-available-investments", "investment", G.available_investments)
 	populate_with_list("panel-used-investments", "investment", G.used_investments)
 
-	for (i = 0; i <= 1; ++i) {
-		a = V.ministry[FRANCE][i]
-		if (a >= 0) {
-			populate("panel-ministry", FRANCE, "ministry_card", a)
-			update_keyword("ministry_card",  a, "revealed", V.ministry_revealed[FRANCE][i])
-			update_keyword("ministry_card",  a, "hidden", !V.ministry_revealed[FRANCE][i])
-		} else {
-			populate_generic("panel-ministry", FRANCE, "card ministry_card deck_fr")
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (i = 0; i < NUM_MINISTRY_SLOTS; ++i) {
+			let m = V.ministry[who][i]
+			if (m >= 0) {
+				populate("panel-ministry", who, "ministry_card", m)
+				update_keyword("ministry_card", m, "revealed", V.ministry_revealed[who][i])
+				update_keyword("ministry_card", m, "hidden", !V.ministry_revealed[who][i])
+
+				for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
+					if (is_ministry_exhausted(who, m, ability)) {
+						//BR// TODO - somehow show exhausted marker on a decent part of the ministry card
+						//BR// TODO - if card has two possibile abilities (i.e. data.ministries[m].abilities > 1) then show each exhausted marker near where it's specific ability is printed on card
+						populate_generic("panel-ministry", who, "marker square-sm exhausted")
+					}
+				}
+			} else {
+				populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br"))
+			}
 		}
 	}
+
+	/*
 	for (i = 0; i <= 1; ++i) {
 		a = V.ministry[BRITAIN][i]
 		if (a >= 0) {
@@ -538,6 +563,7 @@ function on_update() {
 			populate_generic("panel-ministry", BRITAIN, "card ministry_card deck_br")
 		}
 	}
+	*/
 
 	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")

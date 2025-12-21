@@ -267,7 +267,7 @@ body.shift .marker { opacity: 25% }
 	position: absolute;
 	text-align: center;
 	font-size: 16px;
-	line-hight: 20px;
+	line-height: 20px;
 	width: 100%;
 	bottom: 0;
 	background-color: linen;
@@ -581,6 +581,9 @@ body.shift .marker { opacity: 25% }
 .marker.war-basic29 { background-image: url(tiles75/hex/warbasic29_br_neg1flag.png) }
 .marker.war-basic30 { background-image: url(tiles75/hex/warbasic30_br_neg1flag.png) }
 .marker.war-basic31 { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png) }
+
+.marker.exhausted { background-image: url(tiles75/square-sm/exhausted.png) }
+.marker.exhausted.reverse { background-image: url(tiles75/square-sm/exhausted_reverse.png) }
 
 /*
 tiles75/square-sm/exhausted.png

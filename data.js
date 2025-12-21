@@ -48,6 +48,7 @@ const NUM_WARS              = 4
 const NUM_EVENT_CARDS       = 41
 const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
+const NUM_MINISTRY_SLOTS    = 2
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22

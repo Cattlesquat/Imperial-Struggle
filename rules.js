@@ -45,6 +45,7 @@ const NUM_WARS              = 4
 const NUM_EVENT_CARDS       = 41
 const NUM_MINISTRY_KEYWORDS = 5
 const NUM_MINISTRY_CARDS    = 21
+const NUM_MINISTRY_SLOTS    = 2
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
 const NUM_ADVANTAGES 		= 22
@@ -1328,6 +1329,14 @@ function exhaust_ministry (who, m, ability = 0)
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
     set_add(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+
+	log_br()
+	let msg = "Exhaustion marker placed on " + data.ministries[m].name + " ministry"
+	if (data.ministries[m].abilities > 1) {
+		msg += " (Ability #" + (ability + 1) + ")"
+	}
+	log(msg)
+	log_br()
 }
 
 
@@ -1778,8 +1787,6 @@ P.ministry_card = script (`
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
 function ministry_useful_this_phase(m, subphase)
 {
-	return false //// TODO: DEBUG - remove this. Just makes it easier to "pretend to play ministries" for the moment
-
 	switch (subphase) {
 		case BEFORE_PICKING_TILE:
 			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS ].includes(m)
@@ -2075,7 +2082,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 }
 
 
-function handle_construct_squadron() {
+function handle_construct_squadron_button() {
 	push_undo()
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 	action_cost_setup(-1, MIL)
@@ -2326,7 +2333,7 @@ P.space_process_click = script(`
     	return
     }
        
-    eval { handle_reflag_space() }
+    eval { do_reflag_space() }
 `)
 
 P.decide_how_and_whether_to_spend_action_points = script(`
@@ -2395,7 +2402,7 @@ function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 }
 
-function handle_reflag_space() {
+function do_reflag_space() {
 	reflag_space(G.action_space, (G.flags[G.action_space] === NONE) ? G.active : NONE)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.action_space].region) // We've now used this flavor of action point in this region
 }
@@ -2581,7 +2588,7 @@ P.action_round_core = {
 		log ("draw event!")
 	},
 	construct_squadron() {
-		handle_construct_squadron()
+		handle_construct_squadron_button()
 	},
 	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
 
