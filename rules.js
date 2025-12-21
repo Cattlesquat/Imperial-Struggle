@@ -1952,24 +1952,25 @@ P.ministry_not_activatable = {
 }
 
 P.ministry_robert_walpole = {
-	prompt() {
-		V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may select an event card to discard and replace")
-		if (ministry_useful_this_phase(ROBERT_WALPOLE, G.action_round_subphase)) {
-			for (var card of G.hand[R]) {
-				action_event_card(card)
-			}
-		}
-		button("pass")
+	_begin() {
+		L.drawn_extra = false
 	},
-	event_card(c) {
+	prompt() {
+		if (L.drawn_extra) {
+			V.prompt = "Robert Walpole: You must now click an event card to discard"
+			for (var c of G.hand[R]) {
+				action_event_card(c)
+			}
+		} else {
+			V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may draw an event card (and then discard one)")
+			button("draw_event")
+			button("pass")
+		}
+	},
+    draw_event() {
 		clear_undo() // Because we're drawing a new event card
 
 		exhaust_ministry(R, ROBERT_WALPOLE)
-
-		log (data.flags[R].name + " discards event: " + data.cards[c].name)
-		// Discard the old card
-		array_delete_item(G.hand[R], c)
-		G.discard_pile.push(c);
 
 		if (G.deck.length === 0) {
 			log ("Discard Pile shuffled to form new Event Deck")
@@ -1979,10 +1980,19 @@ P.ministry_robert_walpole = {
 
 		if (G.deck.length > 0) {
 			G.hand[R].push(G.deck.pop())
+			L.drawn_extra = true
 			log (data.flags[R].name + " draws new event card")
 		} else {
-			log ("Event deck is EMPTY.")
+			log ("Event deck is EMPTY. Cannot an draw event card.")
 		}
+
+		// No end() - we stay in this state. I think that's okay?
+	},
+	event_card(c) {
+		log (data.flags[R].name + " discards event: " + data.cards[c].name)
+		// Discard the old card
+		array_delete_item(G.hand[R], c)
+		G.discard_pile.push(c)
 		end()
 	},
 	pass() {
