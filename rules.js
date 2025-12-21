@@ -410,7 +410,7 @@ function on_setup(scenario, options) {
 
 	G.available_abilities = [[], []] // Transient abilities gained from events, advantages, etc.
 	for (i = FRANCE; i <= BRITAIN; i++) {
-		bit_init(G.available_abilities[i], NUM_TRANSIENT_ABILITIES)
+		G.available_abilities[i] = bit_init(NUM_TRANSIENT_ABILITIES)
 	}
 
 	G.deck = []
@@ -3677,12 +3677,8 @@ function bit_get(bits, index)
 }
 
 // Initializes bitflag field, given the maximum number of bits possible
-function bit_init(bits, total_bits) {
-	bits = []
-	let dwords = (total_bits + 31) >> 5
-	for (let i = 0; i < dwords; i++) {
-		bits[i] = 0
-	}
+function bit_init(total_bits) {
+	return new Array((total_bits + 31) >> 5).fill(0)
 }
 
 
