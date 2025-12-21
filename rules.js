@@ -1617,6 +1617,7 @@ P.action_round = script (`
     }
 	call select_investment_tile
 	call action_round_core
+	call before_end_of_action_round
 	call end_of_action_round
 	set G.played_tile -1
 `)
@@ -3058,6 +3059,27 @@ P.action_round_core = {
 		G.advantages_used_this_turn = 0
 	},
 }
+
+
+P.before_end_of_action_round = script(`
+	if (G.round < 4) {
+		return // Only need to do the below reminders on the player's last action round of the turn 
+	}
+	
+	if (has_inactive_ministry(R, COURT_OF_THE_SUN_KING)) {
+		eval { require_ministry(R, COURT_OF_THE_SUN_KING, "Last chance to flip in time for scoring phase", true) }
+	}
+	
+	if (has_inactive_ministry(R, EAST_INDIA_COMPANY)) {
+		eval { require_ministry(R, EAST_INDIA_COMPANY, "Last chance to flip in time for scoring phase", true) }
+	}
+	
+	if (has_inactive_ministry(R, JOHN_LAW)) {
+		eval { require_ministry(R, JOHN_LAW, "Last chance to flip in time to reduce debt at end of turn", true) }		
+	}
+	
+	//TODO any other flip-before-scoring reminders
+`)
 
 
 P.end_of_action_round = {
