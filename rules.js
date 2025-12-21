@@ -390,9 +390,10 @@ setup_procs()
 
 function setup_procs()
 {
-	data.ministries[ROBERT_WALPOLE].proc = "ministry_robert_walpole";
-	data.ministries[BANK_OF_ENGLAND].proc = "ministry_bank_of_england";
+	data.ministries[ROBERT_WALPOLE].proc = "ministry_robert_walpole"
+	data.ministries[BANK_OF_ENGLAND].proc = "ministry_bank_of_england"
 	data.ministries[EDMOND_HALLEY].proc = "ministry_edmond_halley"
+	data.ministries[THE_CARDINAL_MINISTERS].proc = "ministry_cardinal_ministers"
 }
 
 /* SETUP */
@@ -1076,7 +1077,7 @@ P.deal_cards_discard = {
 			for (var c of G.hand[R])
 				action_event_card(c)
 		} else {
-			V.prompt = "DEAL CARDS PHASE: Review newly drawn Event cards"
+			V.prompt = "DEAL CARDS PHASE: Review newly drawn Event cards."
 			var any = false
 			for (const c of G.hand[R]) {
 				if (any) {
@@ -1139,6 +1140,7 @@ P.choose_ministry_cards = {
 				V.prompt += data.ministries[i].name
 				any = true;
 			}
+			if (any) V.prompt += "."
 		}
 		V.all_ministries = []
 		for (var m of data.ministries) {
@@ -1459,7 +1461,7 @@ P.confirm_first_player = {
 		}
 	},
 	prompt() {
-		V.prompt = "INITIATIVE PHASE: Confirm choice of first player: " + data.flags[G.first_player].name
+		V.prompt = "INITIATIVE PHASE: Confirm choice of first player: " + data.flags[G.first_player].name + "."
 		button("confirm")
 	},
 	confirm() {
@@ -1827,6 +1829,7 @@ function handle_ministry_card_click(m)
 	G.ministry_index = G.ministry[R].indexOf(m)
 	G.ministry_id = m
 	G.just_revealed = false
+	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
 		call ("ministry_card")
 	}
@@ -1834,34 +1837,30 @@ function handle_ministry_card_click(m)
 
 P.ministry_card = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
-        eval { G.minister_required_because = "" }
     	call confirm_reveal_ministry
     	eval { G.just_revealed = true }
     }
     
     if (G.ministry_revealed[R][G.ministry_index]) {
-        eval {
-        	L.ministry_useful_this_phase = ministry_useful_this_phase(G.ministry[G.ministry_index], G.action_round_subphase)
-    	}
-    	
 		if (data.ministries[G.ministry_id].proc !== undefined) {
 			//eval { push_undo() }
-			eval { debug_log ("Proc: " + data.ministries[G.ministry_id].proc) }
+			//eval { debug_log ("Proc: " + data.ministries[G.ministry_id].proc) }
 			goto (data.ministries[G.ministry_id].proc)
 		} 
 		
 		if (!ministry_has_activatable_abilities(G.ministry_id)) {
 			goto ministry_not_activatable
-		} 		
-    	return
+		}
+		 		
+    	goto ministry_not_implemented
     }
 `)
 
 
 function ministry_has_activatable_abilities(m)
 {
-	if ([ JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE ].includes(m)) return false
-	return true
+	return ![JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE].includes(m);
+
 }
 
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
@@ -1875,8 +1874,12 @@ function ministry_useful_this_phase(m, subphase)
 		case DURING_EVENT:
 		case BEFORE_SPENDING_ACTION_POINTS:
 		case ACTION_POINTS_ALREADY_SPENT:
-
 		default:
+
+			if (subphase > OPTION_TO_PLAY_EVENT) {
+				return ![ THE_CARDINAL_MINISTERS ].includes(m) // Ministries which can't be activated after playing an event or spending action points
+			}
+
 			return true
 	}
 }
@@ -1885,17 +1888,20 @@ function ministry_prompt(who, m, string1, string2 = "") {
 	var prompt = data.ministries[m].name.toUpperCase() + ": "
 
 	if ((G.action_round_subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
-		prompt += "You must pick an Investment Tile before you can use this ministry's abilities"
+		prompt += "You must pick an investment tile before you can use this ministry's abilities."
+	}
+	else if ((G.action_round_subphase > OPTION_TO_PLAY_EVENT) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
+		prompt += "This ministry can only be activated at the beginning of your action round."
 	}
 	else if (is_ministry_fully_exhausted(who, m) || (is_ministry_partially_exhausted(who, m) && ((string1 == null) || (string2 == null)))) {
-		prompt += "Ministry Exhausted"
+		prompt += "Ministry Exhausted."
 	}
 	else {
 		if ((string2 === "") || (string2 === null)) {
-			prompt += string1
+			prompt += string1 + "."
 		}
 		else if (string1 === null) {
-			prompt += string2
+			prompt += string2 + "."
 		}
 		else {
 			prompt += strike(string1, is_ministry_exhausted(who, m, 0))
@@ -1903,6 +1909,7 @@ function ministry_prompt(who, m, string1, string2 = "") {
 			prompt += " OR "
 			prompt += strike(string2, is_ministry_exhausted(who, m, 1))
 			if (is_ministry_exhausted(who, m, 1)) prompt += " (exhausted)"
+			prompt += "."
 		}
 	}
 	return prompt
@@ -1951,18 +1958,31 @@ P.ministry_not_activatable = {
 	}
 }
 
+P.ministry_not_implemented = {
+	prompt() {
+		let msg = "Ministry not yet implemented."
+		V.prompt = ministry_prompt(R, G.ministry_id, msg)
+		button ("pass")
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+
 P.ministry_robert_walpole = {
 	_begin() {
 		L.drawn_extra = false
 	},
 	prompt() {
 		if (L.drawn_extra) {
-			V.prompt = "Robert Walpole: You must now click an event card to discard"
+			V.prompt = "Robert Walpole: You must now click an event card to discard."
 			for (var c of G.hand[R]) {
 				action_event_card(c)
 			}
 		} else {
-			V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may draw an event card (and then discard one)")
+			V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may draw an event card (and then discard one).")
 			button("draw_event")
 			button("pass")
 		}
@@ -2064,6 +2084,37 @@ P.ministry_edmond_halley = {
 	},
 	pass() {
 		push_undo()
+		end()
+	}
+}
+
+function cardinal_ministers_value()
+{
+	let raw_value = ((G.flags[SAVOY] === FRANCE) ? 1 : 0) + ((G.flags[SARDINIA] === FRANCE) ? 1 : 0) + ((G.flags[AUSTRIA_2] === FRANCE) ? 1 : 0) + ((G.flags[AUSTRIA_4] === FRANCE) ? 1 : 0) + ((G.flags[SPAIN_2] === FRANCE) ? 1 : 0) + ((G.flags[SPAIN_4] === FRANCE) ? 1 : 0)
+	return Math.min(raw_value, 3)
+}
+
+
+P.ministry_cardinal_ministers = {
+	prompt() {
+		V.prompt = ministry_prompt(R, THE_CARDINAL_MINISTERS, "Confirm use of ministry to gain " + cardinal_ministers_value() + " diplomatic action points")
+		if (cardinal_ministers_value() < 1) V.prompt = "THE CARDINAL MINISTERS: You do not control any of the necessary spaces to gain a bonus."
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && !G.action_points_eligible[DIPLO]) V.prompt = "THE CARDINAL MINISTERS: Your investment tile does not confer any Diplomatic action points."
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
+			button("confirm")
+		}
+		button ("pass")
+	},
+	confirm() {
+		push_undo()
+		exhaust_ministry(R, THE_CARDINAL_MINISTERS)
+
+		if (G.action_points_major[DIPLO] > 0) {
+			G.action_points_major[DIPLO] += cardinal_ministers_value()
+		} else {
+			G.action_points_minor[DIPLO] += cardinal_ministers_value()
+		}
+		log (bold(data.flags[FRANCE].name + " gains " + cardinal_ministers_value() + " Diplomatic action points" + ((G.action_points_major[DIPLO] <= 0) ? " (Minor)" : "")))
 		end()
 	}
 }
@@ -2671,7 +2722,7 @@ function add_action_point()
 P.confirm_spend_debt_or_trps = {
 	prompt() {
 		if (G.action_points_available_now < G.action_cost) {
-			V.prompt = "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + ")" + ((G.action_string !== "") ? " " + G.action_string : "") + ". Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? "Treaty Points: " + G.treaty_points[R] : "")
+			V.prompt = "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + ")" + ((G.action_string !== "") ? " " + G.action_string : "") + ". Available Debt: " + available_debt(R) + "." + ((G.treaty_points[R] > 0) ? " Treaty Points: " + G.treaty_points[R] + "." : "")
 			if (available_debt(R) > 0) {
 				action("paydebt")
 			}
@@ -2681,11 +2732,11 @@ P.confirm_spend_debt_or_trps = {
 		}
 		else {
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
-				V.prompt = "Confirm spending " + G.debt_spent + " debt"
+				V.prompt = "Confirm spending " + G.debt_spent + " debt."
 			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
-				V.prompt = "Confirm spending " + G.treaty_points_spent + " treaty_points"
+				V.prompt = "Confirm spending " + G.treaty_points_spent + " treaty_points."
 			} else {
-				V.prompt = "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points"
+				V.prompt = "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points."
 			}
 			V.prompt += ((G.action_string !== "") ? " " + G.action_string : "") + "?"
 			action("confirm")
@@ -2779,7 +2830,7 @@ P.action_round_core = {
 				}
 			}
 		}
-		prompt += ") or activate Advantage / Ministry"
+		prompt += ") or activate Advantage / Ministry."
 		V.prompt = prompt;
 
 		action_eligible_advantages()
@@ -2893,7 +2944,7 @@ P.action_round_core = {
 
 P.end_of_action_round = {
 	prompt() {
-		V.prompt = "End of Action Round"
+		V.prompt = "End of Action Round."
 		button("done")
 	},
 	done() {
