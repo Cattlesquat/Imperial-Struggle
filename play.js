@@ -533,7 +533,7 @@ function on_update() {
 		}
 		populate(layout, index, "advantage", a)
 		if (is_advantage_exhausted(a)) {
-			// TODO - display Exhausted marker for/on this advantage
+			update_keyword("advantage", a, "exhausted", true)
 		}
 	}
 
@@ -553,9 +553,7 @@ function on_update() {
 
 				for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
 					if (is_ministry_exhausted(who, m, ability)) {
-						//BR// TODO - somehow show exhausted marker on a decent part of the ministry card
-						//BR// TODO - if card has two possibile abilities (i.e. data.ministries[m].abilities > 1) then show each exhausted marker near where it's specific ability is printed on card
-						populate_generic("panel-ministry", who, "marker square-sm exhausted")
+						update_keyword("ministry_card", m, "exhausted-" + (ability + 1), true)
 					}
 				}
 			} else {

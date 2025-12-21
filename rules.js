@@ -574,6 +574,7 @@ function on_view() {
 
 	// Advantage tiles
 	V.advantages = G.advantages
+	V.advantages_exhausted = G.advantages_exhausted
 
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons

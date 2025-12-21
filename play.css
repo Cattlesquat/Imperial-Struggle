@@ -277,6 +277,51 @@ body.shift .marker { opacity: 25% }
 .ministry_card.hidden:after { content: "HIDDEN"; }
 .ministry_card.revealed:after { content: "REVEALED"; }
 
+
+.ministry_card.exhausted-1::before, .ministry_card.exhausted-2::before {
+	content: "";
+	position: absolute;
+	width: 34px;
+	height: 34px;
+	background-image: url(tiles75/square-sm/exhausted.png);
+	background-size: 38px;
+	background-position: center;
+	right: 0;
+}
+
+.ministry_card.exhausted-1::before {
+	top: 55%;
+}
+
+.ministry_card.exhausted-2::before {
+	top: 75%;
+}
+
+.ministry_card.exhausted-1.exhausted-2::before {
+	content: "";
+	position: absolute;
+	width: 34px;
+	height: 130px;
+	background-image: url(tiles75/square-sm/exhausted.png), url(tiles75/square-sm/exhausted.png);
+	background-size: 38px;
+	background-position: center top, center bottom;
+	background-repeat: no-repeat;
+	top: 55%;
+	right: 0;
+}
+
+.marker.advantage.exhausted::before {
+	content: "";
+	position: absolute;
+	width: 34px;
+	height: 34px;
+	background-image: url(tiles75/square-sm/exhausted.png);
+	background-size: 38px;
+	background-position: center;
+	top: 0;
+	right: 0;
+}
+
 /* BORDERS */
 
 .square.advantage { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
