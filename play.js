@@ -523,13 +523,18 @@ function on_update() {
 	}
 
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {
-		//TODO -- check is_advantage_exhausted(a) and display Exhausted marker "on top of" advantage if so
-		if (V.advantages[a] === NONE)
-			populate("lout-advantage", a, "advantage", a)
-		if (V.advantages[a] === FRANCE)
-			populate("panel-advantage", FRANCE, "advantage", a)
-		if (V.advantages[a] === BRITAIN)
-			populate("panel-advantage", BRITAIN, "advantage", a)
+		var layout, index
+		if (V.advantages[a] === NONE) {
+			layout = "lout-advantage"
+			index = a
+		} else {
+			layout = "panel-advantage"
+			index = V.advantages[a]
+		}
+		populate(layout, index, "advantage", a)
+		if (is_advantage_exhausted(a)) {
+			// TODO - display Exhausted marker for/on this advantage
+		}
 	}
 
 	if (V.all_ministries)
@@ -558,19 +563,6 @@ function on_update() {
 			}
 		}
 	}
-
-	/*
-	for (i = 0; i <= 1; ++i) {
-		a = V.ministry[BRITAIN][i]
-		if (a >= 0) {
-			populate("panel-ministry", BRITAIN, "ministry_card", a)
-			update_keyword("ministry_card",  a, "revealed", V.ministry_revealed[BRITAIN][i])
-			update_keyword("ministry_card",  a, "hidden", !V.ministry_revealed[BRITAIN][i])
-		} else {
-			populate_generic("panel-ministry", BRITAIN, "card ministry_card deck_br")
-		}
-	}
-	*/
 
 	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
