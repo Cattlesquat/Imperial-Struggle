@@ -245,6 +245,12 @@ body.shift .marker { opacity: 25% }
 	pointer-events: none; /* make flags invisible to the cursor */
 }
 
+.marker.square-sm.huguenots,
+.marker.square-sm.huguenots_spent {
+    width: 39px;
+    height: 39px;
+}
+
 .card {
 	width: 250px;
 	height: 350px;
@@ -644,6 +650,19 @@ body.shift .marker { opacity: 25% }
 
 .marker.exhausted { background-image: url(tiles75/square-sm/exhausted.png) }
 .marker.exhausted.reverse { background-image: url(tiles75/square-sm/exhausted_reverse.png) }
+
+.marker.huguenots       { background-image: url(tiles75/square-sm/new_world_huguenots.png) }
+.marker.huguenots_spent { background-image: url(tiles75/square-sm/new_world_huguenots_spent.png) }
+
+.marker.jacobite_defeat { background-image: url(tiles75/square-sm/jacobite_defeat.png) }
+.marker.jacobite_defeat_reverse { background-image: url(tiles75/square-sm/jacobite_defeat_reverse.png) }
+.marker.jacobite_victory { background-image: url(tiles75/square-sm/jacobite_victory.png) }
+.marker.jacobite_victory_reverse { background-image: url(tiles75/square-sm/jacobite_victory_reverse.png) }
+.marker.townshend_acts { background-image: url(tiles75/square-sm/townshend_acts.png) }
+.marker.townshend_acts_reverse { background-image: url(tiles75/square-sm/townshend_acts_reverse.png) }
+
+.marker.treaty_points_br_reverse { background-image: url(tiles75/square-sm/treaty_points_br_reverse.png) }
+.marker.treaty_points_fr_reverse { background-image: url(tiles75/square-sm/treaty_points_fr_reverse.png) }
 
 /*
 tiles75/square-sm/exhausted.png

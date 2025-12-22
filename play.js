@@ -268,6 +268,13 @@ function on_init() {
 		}
 
 		define_layout("lout-space", s.num, rect)
+
+		if (s.type === TERRITORY) {
+			if ((s.region === REGION_NORTH_AMERICA) || (s.region === REGION_CARIBBEAN)) {
+				rect = translate_rect(rect, 35, 75) // Huguenot markers displayed at center of territory
+				define_layout ("huguenot-space", s.num, rect)
+			}
+		}
 	}
 
 	for (i = 0; i <= 36; ++i) {
@@ -471,7 +478,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!V.ministry[who].includes(m)) return false
 	var idx = V.ministry[who].indexOf(m)
-	return set_has(V.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+	return set_has(V.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 }
 
 function is_advantage_exhausted(a)
@@ -543,6 +550,10 @@ function on_update() {
 				populate_generic("lout-space", s.num, "marker square-sm flag_spain")
 			if (V.flags[s.num] === USA)
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
+
+			if ((s.type === TERRITORY) && V.huguenots.includes(s.num)) {
+				populate_generic("huguenot-space", s.num, "marker square-sm huguenots" + (V.huguenots_spent.includes(s.num) ? "_spent" : ""))
+			}
 		}
 
 		update_keyword("space", s.num, "dirty", set_has(V.dirty, s.num))
@@ -784,6 +795,9 @@ window.addEventListener("keydown", function (evt) {
 			}
 			evt.preventDefault()
 			break
+		case "h":
+			send_message("action", [ "cheat_huguenots", null, game_cookie ])
+			break;
 	}
 })
 

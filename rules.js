@@ -580,6 +580,16 @@ function on_setup(scenario, options) {
 	// set_has(G.damaged_forts, s)
 	G.damaged_forts = []
 
+	// List of territories with Huguenots
+	// <br><b>
+	// for (const h of G.huguenots) { assert (data.spaces[h].type === TERRITORY) }
+	G.huguenots = []
+
+	// List of territories with *spent* Huguenots (such territories will *also* be part of G.huguenots)
+	// <br><b>
+	// for (const h of G.huguenots_spent) { assert (G.huguenots.includes(h)) }
+	G.huguenots_spent = []
+
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].num !== i)
 			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
@@ -768,6 +778,9 @@ function on_view() {
 	V.demand_flag_count = G.demand_flag_count
 	V.flag_count        = G.flag_count
 	V.prestige_flags    = G.prestige_flags
+
+	V.huguenots = G.huguenots
+	V.huguenots_spent = G.huguenots_spent
 }
 
 
@@ -962,6 +975,77 @@ function set_damaged_fort(s, damage = true)
 	}
 }
 
+/* New World Huguenots */
+
+function has_huguenots(s)
+{
+	return G.huguenots.includes(s)
+}
+
+function has_spent_huguenots(s)
+{
+	return G.huguenots_spent.includes(s)
+}
+
+function has_fresh_huguenots(s)
+{
+	return has_huguenots(s) && !has_spent_huguenots(s)
+}
+
+function add_huguenots(s)
+{
+	if (data.spaces[s].type !== TERRITORY) {
+		throw new Error("Tried to add Huguenots to a space that isn't a territory: " + data.spaces[s].name)
+	}
+	if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) {
+		throw new Error("Tried to add Huguenots outside of North America and Caribbean")
+	}
+	if (has_huguenots(s)) {
+		console.error("Tried to add Huguenots to a space that already has them: " + data.spaces[s].name)
+		return
+	}
+	if (G.flags[s] !== FRANCE) {
+		throw new Error("Tried to add Huguenots to a space that isn't FR-flagged: " + data.spaces[s].name)
+	}
+
+    G.huguenots.push(s)
+}
+
+function remove_huguenots(s)
+{
+	array_delete_item(G.huguenots, s)
+	array_delete_item(G.huguenots_spent, s)
+}
+
+function spend_huguenots(s)
+{
+	if (!has_huguenots(s)) {
+		throw new Error("Tried to spend Huguenots from a space that doesn't contain any: " + data.spaces[s].name)
+	}
+	if (has_spent_huguenots(s)) {
+		throw new Error("Tried to spend Huguenots from a space where they're already spent: " + data.spaces[s].name)
+	}
+
+	G.huguenots_spent.push(s)
+}
+
+function refresh_huguenots() {
+	if (G.huguenots_spent.length > 0) {
+		log(bold("New World Huguenots refreshed"))
+	}
+	G.huguenots_spent = []
+}
+
+function is_space_eligible_for_huguenots(s)
+{
+	if (data.spaces[s].type !== TERRITORY) return false
+	if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) return false
+	if (has_huguenots(s)) return false
+	return G.flags[s] === FRANCE;
+}
+
+
+
 /* 5.4.1 Isolated Market flags */
 function is_isolated_market(s) {
 	return set_has (G.isolated_markets, s)
@@ -1116,6 +1200,10 @@ P.reset_phase = function () {
 
 	// remove exhausted from advantage and ministry cards
 	G.advantages_exhausted = 0 // Bitflags
+
+	// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
+	// <br><b>
+	// set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 	G.ministry_exhausted   = [ ]
 
 	// move investments to used
@@ -1242,8 +1330,17 @@ P.ministry_phase = function () {
 		goto ("replace_ministry_cards")
 	} else {
 		G.ministry           = [ [], [] ]
+
+		// For each player, a flag whether the ministry in the specific ministry slot has been revealed
+		// <br><b>
+		// G.ministry_revealed[FRANCE][0] </b> is true if the ministry in France's first slot has been revealed
 		G.ministry_revealed  = [ [], [] ]
+
+		// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
+		// <br><b>
+		// set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 		G.ministry_exhausted = [ ]
+
 		G.active             = [ FRANCE, BRITAIN ]
 		goto("choose_ministry_cards")
 	}
@@ -1376,14 +1473,20 @@ function has_inactive_ministry (who, m)
 }
 
 
-// Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
+// Player can expend an advantage to enable (or improve) the action he is trying to do. Give him the choice.
 function require_advantage(who, a, why, optional = false)
 {
+	// True if the player chose to activate the advantage requested
 	G.used_required_advantage = false
 	if (!has_advantage_eligible(who, a)) return // If we got here w/o eligibility for the advantage, then fail out
 
+	// The specific advantage tile we're currently dealing with
 	G.advantage = a
+
+	// String reason why the player might want to expend the advantage
 	G.advantage_required_because = why
+
+	// True if player can still accomplish his desired action w/o expending the advantage
 	G.advantage_optional = optional
 	call ("advantage_is_required")
 }
@@ -1430,6 +1533,7 @@ P.confirm_use_advantage = {
 // "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
 function require_ministry(who, m, why, optional = false)
 {
+	// True if the player (now) has the requested/required ministry revealed and thus active
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
 		G.has_required_ministry = true
@@ -1437,8 +1541,13 @@ function require_ministry(who, m, why, optional = false)
 	else if (!has_ministry(who, m)) {
 		G.has_required_ministry = false
 	}
+
 	G.ministry_index = G.ministry[who].indexOf(m)
+
+	// String reason ministry is required or helpful in current action
 	G.ministry_required_because = why
+
+	// True if player can conceivably accomplish current action without revealing the ministry
 	G.ministry_optional = optional
 	call ("ministry_is_required")
 }
@@ -1465,7 +1574,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	return set_has(G.ministry_exhausted, idx + (ability * NUM_ADVANTAGES))
+	return set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 }
 
 function is_ministry_fully_exhausted(who, m)
@@ -1749,7 +1858,10 @@ P.action_round = script (`
 function start_action_round() {
 	G.action_round_subphase = BEFORE_PICKING_TILE
 
-	G.controlled_start_of_round = [] // Certain effects care if we controlled this space from beginning of action round
+	// Certain effects care if we controlled particular spaces from beginning of action round
+	// <br><b>
+	// set_has(G.controlled_start_of_round, space)
+	G.controlled_start_of_round = []
 	for (var s = 0; s < NUM_SPACES; s++) {
 		if (G.flags[s] !== G.active) continue
 		set_add(G.controlled_start_of_round, s)
@@ -1816,6 +1928,9 @@ function check_if_market_isolated(market)
 /* 5.4.1 - Identify Isolated Markets, and flag them for the Action Round */
 function find_isolated_markets()
 {
+	// Set of isolated_market spaces, for the purposes of 5.4.1
+	// <br><b>
+	// set_has(G.isolated_markets, space)
 	G.isolated_markets = []
 
 	for (var s = 0; s < NUM_SPACES; s++) {
@@ -1849,25 +1964,40 @@ function selected_a_tile(tile)
 	G.played_tile = tile
 	G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
 
-	// Set our action point levels for the 3 types. We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
+	// Major action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
 	G.action_points_major = [ 0, 0, 0 ]
+
+	// Minor action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
 	G.action_points_minor = [ 0, 0, 0 ]
+
 	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
 	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
 
 	//TODO: ministries might increase our amounts right away
 
-	// We're eligible for a class of action if we had at least 1 point of it. We're eligible for major if we had at least 1 point of major.
+	/* Action point eligibility */
+
+	// We're eligible for a class of action if we had at least 1 point of it.
 	// This controls whether we're allowed to use this category at all.
 	// Initially set to what our tile gives us, but event cards could add other categories
+	// <br><b>
+	// if (G.action_points_eligible[DIPLO]) ...
 	G.action_points_eligible       = []
+
+	// We're eligible for major action in an action point class if we had at least 1 point of major, either from our investment tile or from an event/ministry
+	// <br><b>
+	// if (G.action_points_eligible_major[ECON]) ...
 	G.action_points_eligible_major = []
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 		G.action_points_eligible[i]       = (G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)
 		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0)
 	}
 
-	G.action_point_regions = [ [], [], [] ] // For each flavor of action points (though only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
+	// For each flavor of action points (though we only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
+	// This is for charging the "region switching" action point penalty
+	// <br><b>
+	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
+	G.action_point_regions = [ [], [], [] ]
 }
 
 // Player is picking an investment tile
@@ -1944,9 +2074,15 @@ function end_event_play(c)
 
 
 function check_event_bonus_requirements(who) {
+	// True if the event card played this turn has a bonus available on it
 	G.card_has_bonus         = false
+
+	// True if we qualified for the bonus on the played event card
 	G.qualifies_for_bonus    = false
+
+	// If there's a ministry the player needs to flip in order to gain an event bonus or ministry discount, it is identified here by "m" value
 	G.needs_to_flip_ministry = -1
+
 	let keyword = data.cards[G.played_event].keyword
 	if (keyword !== KEYWORD_NONE) {
 		G.card_has_bonus = true
@@ -2045,9 +2181,18 @@ P.event_click_flow = script (`
 function handle_ministry_card_click(m)
 {
 	push_undo()
+	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministry "m" id)
+	// <br><b>
+	// G.ministry[R][G.ministry_index] </b> contains card id (m) the card the player clicked on
 	G.ministry_index = G.ministry[R].indexOf(m)
+
+	// The ministry id (m) of the card the player clicked on - an index into data.ministries[...]
 	G.ministry_id = m
+
+	// True player flips up the ministry while doing the current action
 	G.just_revealed = false
+
+	// String reason we are requesting/suggesting the player flip up a ministry
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
 		call ("ministry_card_flow")
@@ -2138,7 +2283,7 @@ function reveal_ministry(who, index) {
 	if (index < 0) return
 
 	let m = G.ministry[who][index]
-	G.ministry_revealed[who][index] = true
+	G.ministry_revealed[who][index] = true ///
 	log ("\nMINISTRY REVEALED: " + data.ministries[m].name)
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
@@ -2365,7 +2510,7 @@ function eligible_for_minor_action(s, who)
 		if (!has_conflict_marker(s)) {
 			// Other nations flags can only be removed w/ presence of a conflict marker
 			// ... except European diplomatic spaces with Jonathan Swift ministry active and at least one space in Ireland
-			if (!((data.spaces[s].region === REGION_EUROPE) && has_active_ministry(JONATHAN_SWIFT, who) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
+			if (!((data.spaces[s].region === REGION_EUROPE) && has_active_ministry(who, JONATHAN_SWIFT) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
 				return false
 			}
 		}
@@ -2790,6 +2935,10 @@ function reflag_space(s, who) {
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 	log (data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 
+	if ((who === BRITAIN) && has_huguenots(s)) {
+		remove_huguenots(s)
+	}
+
 	remove_conflict_marker(s) // Reflagging a space removes any conflict marker
 
 	update_advantages() // This could change the ownership of an advantage
@@ -3196,6 +3345,15 @@ P.action_round_core = {
 		advantages_acquired_last_round_now_available()
 		G.advantages_used_this_turn = 0
 	},
+	cheat_huguenots() {
+		push_undo()
+		add_huguenots(QUEBEC_AND_MONTREAL)
+		add_huguenots(ACADIA)
+		spend_huguenots(ACADIA)
+		add_huguenots(LOUISIANA)
+		add_huguenots(ST_DOMINGUE)
+		add_huguenots(GUADELOUPE)
+	}
 }
 
 
