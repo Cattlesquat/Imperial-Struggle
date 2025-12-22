@@ -1309,11 +1309,11 @@ P.deal_cards_discard = {
 	},
 	prompt() {
 		if (G.hand[R].length > 3) {
-			V.prompt = "DEAL CARDS PHASE: Discard down to three Event cards."
+			V.prompt = tell_current_action("DEAL CARDS PHASE: ") + tell_main_action("Discard down to three Event cards.")
 			for (var c of G.hand[R])
 				action_event_card(c)
 		} else {
-			V.prompt = "DEAL CARDS PHASE: Review newly drawn Event cards."
+			V.prompt = tell_current_action("DEAL CARDS PHASE: ") + tell_main_action("Review newly drawn Event cards.")
 			var any = false
 			for (const c of G.hand[R]) {
 				if (any) {
@@ -1376,16 +1376,18 @@ P.ministry_phase = function () {
 P.choose_ministry_cards = {
 	prompt() {
 		if (G.ministry[R].length < 2) {
-			V.prompt = "MINISTRY PHASE: Choose two ministry cards."
+			V.prompt = tell_current_action("MINISTRY PHASE: ") + tell_main_action("Choose two ministry cards.")
 		} else {
-			V.prompt = "Confirm choice of ministers: "
+			V.prompt = tell_current_action("MINISTRY PHASE: ") + tell_main_action("Confirm choice of ministers: ")
 			var any = false
+			var list = ""
 			for (const i of G.ministry[R]) {
-				if (any) V.prompt += ", ";
-				V.prompt += data.ministries[i].name
+				if (any) list += ", ";
+				list += data.ministries[i].name
 				any = true;
 			}
-			if (any) V.prompt += "."
+			if (any) list += "."
+			V.prompt += tell_main_action(list)
 		}
 		V.all_ministries = []
 		for (var m of data.ministries) {
@@ -1420,12 +1422,12 @@ P.choose_ministry_cards = {
 P.replace_ministry_cards = {
 	prompt() {
 		if (!G.ministry_revealed[R].includes(false)) {
-			V.prompt = "MINISTRY PHASE: No ministries eligible for mid-era replacement (see 4.1.7)."
+			V.prompt = tell_current_action("MINISTRY PHASE: ") + tell_main_action("No ministries eligible for mid-era replacement (see 4.1.7).")
 			button("confirm")
 		}
 		else {
 			//TODO: allow replacement of ministries mid-era
-			V.prompt = "MINISTRY PHASE: Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)"
+			V.prompt = tell_current_action("MINISTRY PHASE: ") + tell_main_action("Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)")
 			button("confirm")
 		}
 	},
@@ -1536,7 +1538,7 @@ P.confirm_use_advantage = {
 		if (!has_advantage_eligible(R, G.advantage)) end()
 	},
 	prompt() {
-		V.prompt = tell_current_action() + "Use " + data.advantages[G.advantage].name + " Advantage?"
+		V.prompt = tell_current_action() + tell_main_action("Use " + data.advantages[G.advantage].name + " Advantage?")
 		if ((G.advantage_required_because !== undefined) && (G.advantage_required_because !== "")) V.prompt += " (" + G.advantage_required_because + ")"
 		V.prompt += tell_action_points()
 		action("use_advantage")
@@ -1556,7 +1558,7 @@ P.confirm_use_advantage = {
 
 P.ask_about_huguenots = {
 	prompt() {
-		V.prompt = tell_current_action() + "Flip a Huguenot in same region to reduce action cost by 1, or pass." + tell_action_points()
+		V.prompt = tell_current_action() + tell_main_action("Flip a Huguenot in same region to reduce action cost by 1, or pass.") + tell_action_points()
 		let region = data.spaces[G.action_space].region
 		for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
 			if (!has_fresh_huguenots(s)) continue
@@ -1567,7 +1569,7 @@ P.ask_about_huguenots = {
 	huguenots(s) {
 		push_undo()
 		expend_huguenots(s)
-		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.action_space] + " by 1."))
+		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.action_space].name + " by 1."))
 		end()
 	},
 	pass() {
@@ -1717,7 +1719,7 @@ function tell_first_player_choice()
 
 P.choose_first_player = {
 	prompt() {
-		V.prompt = "INITIATIVE PHASE: Choose the player to go first in each action round this turn."
+		V.prompt = tell_current_action("INITIATIVE PHASE: ") + tell_main_action("Choose the player to go first in each action round this turn.")
 		button("france")
 		button("britain")
 	},
@@ -1744,7 +1746,7 @@ P.confirm_first_player = {
 		}
 	},
 	prompt() {
-		V.prompt = "INITIATIVE PHASE: Confirm choice of first player: " + data.flags[G.first_player].name + "."
+		V.prompt = tell_current_action("INITIATIVE PHASE: ") + tell_main_action("Confirm choice of first player: " + data.flags[G.first_player].name + ".")
 		button("confirm")
 	},
 	confirm() {
@@ -2060,7 +2062,7 @@ P.select_investment_tile = {
 		push_undo() // It was backing out from later points all the way to back to initiative?!
 	},
 	prompt() {
-		V.prompt = "ACTION ROUND " + G.round + ": Select an investment tile or activate a minister.";
+		V.prompt = tell_current_action("ACTION ROUND " + G.round + ": ") + tell_main_action("Select an investment tile or activate a minister.")
 		for (var tile of G.available_investments) {
 			if (tile in G.played_investments) continue;
 			action_investment(tile)
@@ -2303,8 +2305,9 @@ function ministry_useful_this_phase(m, subphase)
 }
 
 function ministry_prompt(who, m, string1, string2 = "") {
-	var prompt = data.ministries[m].name.toUpperCase() + ": "
+	var header = data.ministries[m].name.toUpperCase() + ": "
 
+	var prompt = ""
 	if ((G.action_round_subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
 		prompt += "You must pick an investment tile before you can use this ministry's abilities."
 	}
@@ -2330,7 +2333,7 @@ function ministry_prompt(who, m, string1, string2 = "") {
 			prompt += "."
 		}
 	}
-	return prompt
+	return tell_current_action(header) + tell_main_action(prompt)
 }
 
 function reveal_ministry(who, index) {
@@ -2343,12 +2346,17 @@ function reveal_ministry(who, index) {
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 }
 
+function tell_ministry_header()
+{
+	return tell_current_action(data.ministries[m].name.toUpperCase() + ": ")
+}
+
 P.confirm_reveal_ministry = {
 	_begin() {
 		if (G.ministry_revealed[R][G.ministry_index]) end()
 	},
 	prompt() {
-		V.prompt = tell_current_action() + "Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?" + tell_action_points()
+		V.prompt = tell_current_action() + tell_main_action("Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?") + tell_action_points()
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
 		action("reveal_ministry")
 		if (G.ministry_optional) action("dont_reveal_ministry")
@@ -2395,7 +2403,7 @@ P.ministry_robert_walpole = {
 	},
 	prompt() {
 		if (L.drawn_extra) {
-			V.prompt = "ROBERT WALPOLE: You must now click an event card to discard." + tell_action_points()
+			V.prompt = tell_ministry_header() + tell_main_action("You must now click an event card to discard.") + tell_action_points()
 			for (var c of G.hand[R]) {
 				action_event_card(c)
 			}
@@ -2516,8 +2524,8 @@ function cardinal_ministers_value()
 P.ministry_cardinal_ministers = {
 	prompt() {
 		V.prompt = ministry_prompt(R, THE_CARDINAL_MINISTERS, "Confirm use of ministry to gain " + cardinal_ministers_value() + " diplomatic action points") + tell_action_points()
-		if (cardinal_ministers_value() < 1) V.prompt = "THE CARDINAL MINISTERS: You do not control any of the necessary spaces to gain a bonus."
-		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && !G.action_points_eligible[DIPLO]) V.prompt = "THE CARDINAL MINISTERS: Your investment tile does not confer any Diplomatic action points."
+		if (cardinal_ministers_value() < 1) V.prompt = tell_ministry_header() + tell_main_action("You do not control any of the necessary spaces to gain a bonus.")
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && !G.action_points_eligible[DIPLO]) V.prompt = tell_ministry_header() + tell_main_action("Your investment tile does not confer any Diplomatic action points.")
 		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
 			button("confirm")
 		}
@@ -3162,7 +3170,7 @@ function do_reflag_space() {
 
 P.choice_use_minor_action = {
 	prompt() {
-		V.prompt = tell_current_action() + "Use major or minor action" + ((G.action_string !== "") ? " " + G.action_string : "") + "?" + tell_action_points()
+		V.prompt = tell_current_action() + tell_main_action("Use major or minor action" + ((G.action_string !== "") ? " " + G.action_string : "") + "?") + tell_action_points()
 		action ("major")
 		action ("minor")
 	},
@@ -3193,7 +3201,7 @@ P.confirm_spend_debt_or_trps = {
 	prompt() {
 		if (G.action_points_available_now < G.action_cost) {
 			V.prompt = tell_current_action()
-			V.prompt += bold ("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")") + ((G.action_string !== "") ? " " + G.action_string : "") + ". (Available Debt: " + available_debt(R) + "." + ((G.treaty_points[R] > 0) ? " Treaty Points: " + G.treaty_points[R] + "." : "") + ")"
+			V.prompt += tell_main_action(("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")" + ((G.action_string !== "") ? " " + G.action_string : ""))) + ". (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += tell_action_points()
 			if (available_debt(R) > 0) {
 				action("paydebt")
@@ -3205,13 +3213,13 @@ P.confirm_spend_debt_or_trps = {
 		else {
 			V.prompt = tell_current_action()
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
-				V.prompt += bold("Confirm spending " + G.debt_spent + " debt")
+				V.prompt += tell_main_action("Confirm spending " + G.debt_spent + " debt")
 			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
-				V.prompt += bold("Confirm spending " + G.treaty_points_spent + " treaty_points")
+				V.prompt += tell_main_action("Confirm spending " + G.treaty_points_spent + " treaty_points")
 			} else {
-				V.prompt += bold("Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points")
+				V.prompt += tell_main_action("Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points")
 			}
-			V.prompt += ((G.action_string !== "") ? " " + G.action_string : "") + "?"
+			V.prompt += tell_main_action(((G.action_string !== "") ? " " + G.action_string : "") + "?")
 			V.prompt += tell_action_points()
 			action("confirm")
 		}
@@ -3240,9 +3248,15 @@ P.confirm_spend_debt_or_trps = {
 	}
 }
 
-function tell_current_action()
+function tell_current_action(msg = null)
 {
-	return G.action_header?.toUpperCase() ?? ""
+	if (msg !== null) return bold(msg)
+	return bold(G.action_header?.toUpperCase() ?? "")
+}
+
+function tell_main_action(msg)
+{
+	return bold (msg)
 }
 
 function tell_action_points(space = true, brackets = true) {
@@ -3251,10 +3265,10 @@ function tell_action_points(space = true, brackets = true) {
 
 	var need_comma = false;
 	var early = [ false, false, false ]
-	var tell = space ? " ": ""
-	if (brackets) tell += "("
+	var tell = ""
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			if (G.action_points_eligible === undefined) continue
 			if (G.action_points_eligible[i]) {
 				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
 
@@ -3287,7 +3301,10 @@ function tell_action_points(space = true, brackets = true) {
 			}
 		}
 	}
-	if (brackets) tell += ")"
+
+	if (tell === "") return tell
+	if (space) tell = " " + tell
+	if (brackets) tell = "(" + tell + ")"
 	return italic(tell)
 }
 
@@ -3321,7 +3338,7 @@ P.action_round_core = {
 
 		if (any) prompt += ", "
 		prompt += "Spend Action Points or activate Advantage / Ministry. "
-		V.prompt = header + bold(prompt) + tell_action_points();
+		V.prompt = tell_current_action(header) + tell_main_action(prompt) + tell_action_points();
 
 		action_eligible_advantages()
 		action_eligible_ministries()
@@ -3466,7 +3483,7 @@ P.before_end_of_action_round = script(`
 
 P.end_of_action_round = {
 	prompt() {
-		V.prompt = "ACTION ROUND " + G.round + ": End of Action Round."
+		V.prompt = tell_current_action("ACTION ROUND " + G.round + ": ") + tell_main_action("End of Action Round.")
 		button("done")
 	},
 	done() {
