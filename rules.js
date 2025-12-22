@@ -3417,8 +3417,8 @@ function tell_action_points(space = true, brackets = true) {
 	}
 
 	if (tell === "") return tell
-	if (space) tell = " " + tell
 	if (brackets) tell = "(" + tell + ")"
+	if (space) tell = " " + tell
 	return italic(tell)
 }
 
