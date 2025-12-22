@@ -3264,7 +3264,7 @@ function tell_action_points(space = true, brackets = true) {
 					tell += data.action_points[i].short + ": "
 					need_comma = true;
 
-					tell += G.action_points_major[i] + " major"
+					tell += G.action_points_major[i] //+ " major"
 					if (G.action_points_minor[i]) {
 						tell += "/"
 						early[i] = true
