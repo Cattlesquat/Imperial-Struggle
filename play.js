@@ -1,58 +1,58 @@
 "use strict"
 
 const war_layout = {
-	"war_7yw_theater_drawn": [265,0,500,70],
-	"war_7yw_theater_1_france": [43,99,114,114],
-	"war_7yw_theater_1_britain": [169,99,114,114],
-	"war_7yw_theater_2_france": [434,99,114,114],
-	"war_7yw_theater_2_britain": [560,99,114,114],
-	"war_7yw_theater_3_france": [43,377,114,114],
-	"war_7yw_theater_3_britain": [169,377,114,114],
-	"war_7yw_theater_4_france": [434,377,114,114],
-	"war_7yw_theater_4_britain": [560,377,114,114],
-	"war_wss_theater_drawn": [180,0,500,70],
-	"war_wss_theater_1_france": [43,99,114,114],
-	"war_wss_theater_1_britain": [169,99,114,114],
-	"war_wss_theater_2_france": [434,99,114,114],
-	"war_wss_theater_2_britain": [560,99,114,114],
-	"war_wss_theater_3_france": [43,376,114,114],
-	"war_wss_theater_3_britain": [169,378,114,114],
-	"war_wss_theater_4_france": [434,377,114,114],
-	"war_wss_theater_4_britain": [560,377,114,114],
-	"war_was_theater_drawn": [175,0,500,70],
-	"war_was_theater_1_france": [43,87,114,114],
-	"war_was_theater_1_britain": [169,87,114,114],
-	"war_was_theater_2_france": [434,83,114,114],
-	"war_was_theater_2_britain": [560,87,114,114],
-	"war_was_theater_3_france": [43,334,114,114],
-	"war_was_theater_3_britain": [169,334,114,114],
-	"war_was_theater_4_france": [434,334,114,114],
-	"war_was_theater_4_britain": [560,334,114,114],
-	"war_awi_theater_drawn": [170,0,500,70],
-	"war_awi_theater_1_france": [43,99,114,114],
-	"war_awi_theater_1_britain": [169,99,114,114],
-	"war_awi_theater_2_france": [434,332,114,114],
-	"war_awi_theater_2_britain": [560,332,114,114],
-	"war_awi_theater_3_france": [86,460,114,114],
-	"war_awi_theater_3_britain": [225,460,114,114],
-	"war_awi_theater_4_france": [433,99,114,114],
-	"war_awi_theater_4_britain": [560,99,114,114],
-	"war_7yw_theater_1": [27,57,380,270],
-	"war_7yw_theater_2": [418,57,379,270],
-	"war_7yw_theater_3": [27,335,380,270],
-	"war_7yw_theater_4": [418,335,379,270],
-	"war_wss_theater_1": [27,57,380,270],
-	"war_wss_theater_2": [418,57,379,270],
-	"war_wss_theater_3": [27,335,380,270],
-	"war_wss_theater_4": [418,335,379,270],
-	"war_was_theater_1": [27,50,380,241],
-	"war_was_theater_2": [418,50,379,241],
-	"war_was_theater_3": [27,300,380,224],
-	"war_was_theater_4": [418,300,379,313],
-	"war_awi_theater_1": [27,57,380,349],
-	"war_awi_theater_2": [418,57,379,223],
-	"war_awi_theater_3": [418,290,379,319],
-	"war_awi_theater_4": [44,426,332,164],
+	war_7yw_theater_drawn: [ 353, 0, 667, 93 ],
+	war_7yw_theater_1_france: [ 57, 132, 152, 152 ],
+	war_7yw_theater_1_britain: [ 225, 132, 152, 152 ],
+	war_7yw_theater_2_france: [ 579, 132, 152, 152 ],
+	war_7yw_theater_2_britain: [ 747, 132, 152, 152 ],
+	war_7yw_theater_3_france: [ 57, 503, 152, 152 ],
+	war_7yw_theater_3_britain: [ 225, 503, 152, 152 ],
+	war_7yw_theater_4_france: [ 579, 503, 152, 152 ],
+	war_7yw_theater_4_britain: [ 747, 503, 152, 152 ],
+	war_wss_theater_drawn: [ 240, 0, 667, 93 ],
+	war_wss_theater_1_france: [ 57, 132, 152, 152 ],
+	war_wss_theater_1_britain: [ 225, 132, 152, 152 ],
+	war_wss_theater_2_france: [ 579, 132, 152, 152 ],
+	war_wss_theater_2_britain: [ 747, 132, 152, 152 ],
+	war_wss_theater_3_france: [ 57, 501, 152, 152 ],
+	war_wss_theater_3_britain: [ 225, 504, 152, 152 ],
+	war_wss_theater_4_france: [ 579, 503, 152, 152 ],
+	war_wss_theater_4_britain: [ 747, 503, 152, 152 ],
+	war_was_theater_drawn: [ 233, 0, 667, 93 ],
+	war_was_theater_1_france: [ 57, 116, 152, 152 ],
+	war_was_theater_1_britain: [ 225, 116, 152, 152 ],
+	war_was_theater_2_france: [ 579, 111, 152, 152 ],
+	war_was_theater_2_britain: [ 747, 116, 152, 152 ],
+	war_was_theater_3_france: [ 57, 445, 152, 152 ],
+	war_was_theater_3_britain: [ 225, 445, 152, 152 ],
+	war_was_theater_4_france: [ 579, 445, 152, 152 ],
+	war_was_theater_4_britain: [ 747, 445, 152, 152 ],
+	war_awi_theater_drawn: [ 227, 0, 667, 93 ],
+	war_awi_theater_1_france: [ 57, 132, 152, 152 ],
+	war_awi_theater_1_britain: [ 225, 132, 152, 152 ],
+	war_awi_theater_2_france: [ 579, 443, 152, 152 ],
+	war_awi_theater_2_britain: [ 747, 443, 152, 152 ],
+	war_awi_theater_3_france: [ 115, 613, 152, 152 ],
+	war_awi_theater_3_britain: [ 300, 613, 152, 152 ],
+	war_awi_theater_4_france: [ 577, 132, 152, 152 ],
+	war_awi_theater_4_britain: [ 747, 132, 152, 152 ],
+	war_7yw_theater_1: [ 36, 76, 507, 360 ],
+	war_7yw_theater_2: [ 557, 76, 505, 360 ],
+	war_7yw_theater_3: [ 36, 447, 507, 360 ],
+	war_7yw_theater_4: [ 557, 447, 505, 360 ],
+	war_wss_theater_1: [ 36, 76, 507, 360 ],
+	war_wss_theater_2: [ 557, 76, 505, 360 ],
+	war_wss_theater_3: [ 36, 447, 507, 360 ],
+	war_wss_theater_4: [ 557, 447, 505, 360 ],
+	war_was_theater_1: [ 36, 67, 507, 321 ],
+	war_was_theater_2: [ 557, 67, 505, 321 ],
+	war_was_theater_3: [ 36, 400, 507, 299 ],
+	war_was_theater_4: [ 557, 400, 505, 417 ],
+	war_awi_theater_1: [ 36, 76, 507, 465 ],
+	war_awi_theater_2: [ 557, 76, 505, 297 ],
+	war_awi_theater_3: [ 557, 387, 505, 425 ],
+	war_awi_theater_4: [ 59, 568, 443, 219 ]
 }
 
 const layout_theater_drawn = [0,638-70,825,70]
@@ -394,7 +394,7 @@ function on_init() {
 		define_marker("bonus_war", (i+84), "hex br war" + (i+84))
 	}
 
-	define_board("#war_wss", 825, 638)
+	define_board("#war_wss", 1100, 850)
 	{
 		define_space("theater", 1, war_layout.war_wss_theater_1)
 		define_space("theater", 2, war_layout.war_wss_theater_2)
@@ -411,7 +411,7 @@ function on_init() {
 		define_layout("lout-theater", 8, war_layout.war_wss_theater_4_britain)
 	}
 
-	define_board("#war_was", 825, 638)
+	define_board("#war_was", 1100, 850)
 	{
 		define_space("theater", 1, war_layout.war_was_theater_1)
 		define_space("theater", 2, war_layout.war_was_theater_2)
@@ -428,7 +428,7 @@ function on_init() {
 		define_layout("lout-theater", 16, war_layout.war_was_theater_4_britain)
 	}
 
-	define_board("#war_7yw", 825, 638)
+	define_board("#war_7yw", 1100, 850)
 	{
 		define_space("theater", 1, war_layout.war_7yw_theater_1)
 		define_space("theater", 2, war_layout.war_7yw_theater_2)
@@ -445,7 +445,7 @@ function on_init() {
 		define_layout("lout-theater", 24, war_layout.war_7yw_theater_4_britain)
 	}
 
-	define_board("#war_awi", 825, 638)
+	define_board("#war_awi", 1100, 850)
 	{
 		define_space("theater", 1, war_layout.war_awi_theater_1)
 		define_space("theater", 2, war_layout.war_awi_theater_2)

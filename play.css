@@ -70,8 +70,8 @@ body.Britain #events_br { grid-row: 2 }
 }
 
 .board.war {
-	width: 825px;
-	height: 638px;
+	width: 1100px;
+	height: 850px;
 }
 
 /* LOG */
@@ -373,10 +373,10 @@ body.shift .marker { opacity: 25% }
 
 /* IMAGES */
 
-.board.war-wss { background-image: url(boards75/war_2.avif); }
-.board.war-was { background-image: url(boards75/war_3.avif); }
-.board.war-7yw { background-image: url(boards75/war_1.avif); }
-.board.war-awi { background-image: url(boards75/war_4.avif); }
+.board.war-wss { background-image: url(boards100/war_2.avif); }
+.board.war-was { background-image: url(boards100/war_3.avif); }
+.board.war-7yw { background-image: url(boards100/war_1.avif); }
+.board.war-awi { background-image: url(boards100/war_4.avif); }
 
 .marker.fleet_fr { background-image: url(tiles75/hex/fleet_fr.png) }
 .marker.fleet_br { background-image: url(tiles75/hex/fleet_br.png) }
