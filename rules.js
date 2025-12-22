@@ -2083,12 +2083,12 @@ function handle_event_card_click(c) {
 	G.played_event = c
 	G.action_header = "PLAY EVENT: "
 
-	if (data.cards[card].action !== WILD) {
-		if (data.cards[card].action !== data.investments[G.played_tile].majortype) {
-			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
+	if (data.cards[c].action !== WILD) {
+		if (data.cards[c].action !== data.investments[G.played_tile].majortype) {
+			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
 				exhaust_ministry(R, BANK_OF_ENGLAND, 1)
 			} else {
-				console.error("Mismatched event play allowed without use of Bank of England ministry: " + data[cards].name)
+				console.error("Mismatched event play allowed without use of Bank of England ministry: " + data.cards[c].name)
 			}
 		}
 	}
@@ -2101,10 +2101,10 @@ function handle_event_card_click(c) {
 		}
 	}
 
-	if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
-		(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON))) {
-		action_event_card(card)
-	}
+	//if ((data.cards[c].action === WILD) || (data.cards[c].action === data.investments[G.played_tile].majortype) ||
+	//	(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON))) {
+		//action_event_card(c)
+	//}
 
 	call ("event_click_flow")
 }
@@ -3193,7 +3193,7 @@ P.confirm_spend_debt_or_trps = {
 	prompt() {
 		if (G.action_points_available_now < G.action_cost) {
 			V.prompt = tell_current_action()
-			V.prompt += "Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")" + ((G.action_string !== "") ? " " + G.action_string : "") + ". (Available Debt: " + available_debt(R) + "." + ((G.treaty_points[R] > 0) ? " Treaty Points: " + G.treaty_points[R] + "." : "") + ")"
+			V.prompt += bold ("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")") + ((G.action_string !== "") ? " " + G.action_string : "") + ". (Available Debt: " + available_debt(R) + "." + ((G.treaty_points[R] > 0) ? " Treaty Points: " + G.treaty_points[R] + "." : "") + ")"
 			V.prompt += tell_action_points()
 			if (available_debt(R) > 0) {
 				action("paydebt")
@@ -3205,11 +3205,11 @@ P.confirm_spend_debt_or_trps = {
 		else {
 			V.prompt = tell_current_action()
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
-				V.prompt += "Confirm spending " + G.debt_spent + " debt"
+				V.prompt += bold("Confirm spending " + G.debt_spent + " debt")
 			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
-				V.prompt += "Confirm spending " + G.treaty_points_spent + " treaty_points"
+				V.prompt += bold("Confirm spending " + G.treaty_points_spent + " treaty_points")
 			} else {
-				V.prompt += "Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points"
+				V.prompt += bold("Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points")
 			}
 			V.prompt += ((G.action_string !== "") ? " " + G.action_string : "") + "?"
 			V.prompt += tell_action_points()
@@ -3242,7 +3242,7 @@ P.confirm_spend_debt_or_trps = {
 
 function tell_current_action()
 {
-	return G.action_header.toUpperCase() ?? ""
+	return G.action_header?.toUpperCase() ?? ""
 }
 
 function tell_action_points(space = true, brackets = true) {
@@ -3288,7 +3288,7 @@ function tell_action_points(space = true, brackets = true) {
 		}
 	}
 	if (brackets) tell += ")"
-	return tell
+	return italic(tell)
 }
 
 
@@ -3298,7 +3298,8 @@ P.action_round_core = {
 		push_undo() // Possibly keep it from backing straight out of e.g. "Confirm reveal ministry?" all the way back to the select-investment-tile step? If I undo from "confirm reveal ministry" I want to be back where I was when I clicked the ministry
 	},
 	prompt() {
-		var prompt = "ACTION ROUND " + G.round + ": "
+		var header = "ACTION ROUND " + G.round + ": "
+		var prompt = ""
 
 		let any = false
 
@@ -3319,8 +3320,8 @@ P.action_round_core = {
 		}
 
 		if (any) prompt += ", "
-		prompt += "Spend Action Points or activate Advantage / Ministry. " + tell_action_points()
-		V.prompt = prompt;
+		prompt += "Spend Action Points or activate Advantage / Ministry. "
+		V.prompt = header + bold(prompt) + tell_action_points();
 
 		action_eligible_advantages()
 		action_eligible_ministries()
