@@ -380,10 +380,11 @@ const BEFORE_SPENDING_ACTION_POINTS = 4
 const ACTION_POINTS_ALREADY_SPENT   = 5
 const NOT_ACTION_PHASE				= 6
 
-// TRANSIENT ABILITIES FROM EVENTS, MINISTERS, ADVANTAGES
-const NUM_TRANSIENT_ABILITIES = 32
-const ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT = 0
-const ABILITY_JACOBITES_USED_THIS_ROUND = 1
+// TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
+const NUM_TRANSIENT_BITFLAGS = 32
+const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
+const TRANSIENT_JACOBITES_USED_1 = 1
+const TRANSIENT_JACOBITES_USED_2 = 2
 
 
 /* TILES & CARDS */
@@ -453,12 +454,12 @@ function on_setup(scenario, options) {
 		G.treaty_points[i] = 0
 	}
 
-	// Transient abilities gained from events, advantages, etc.
+	// Transient flags for tracking events, advantages, etc.
 	// <br><b>
-	// has_transient_ability(who, ABILITY_WHATEVER)
-	G.available_abilities = [[], []]
+	// has_transient(who, TRANSIENT_WHATEVER)
+	G.transient_bitflags = [[], []]
 	for (i = FRANCE; i <= BRITAIN; i++) {
-		G.available_abilities[i] = bit_init(NUM_TRANSIENT_ABILITIES)
+		G.transient_bitflags[i] = bit_init(NUM_TRANSIENT_BITFLAGS)
 	}
 
 	// The current shuffled event card deck. Contains event card indices into data.cards[]
@@ -1929,8 +1930,8 @@ function start_action_round() {
 	G.advantages_used_this_turn = 0
 
 	// Clear all the transient ability flags
-	for (let ab = 0; ab < NUM_TRANSIENT_ABILITIES; ab++) {
-		set_transient_ability(G.active, ab, false)
+	for (let ab = 0; ab < NUM_TRANSIENT_BITFLAGS; ab++) {
+		set_transient(G.active, ab, false)
 	}
 }
 
@@ -2610,7 +2611,7 @@ P.ministry_jacobite_uprisings = {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with military action points", "score " + jacobite_vp_value() + " VP for 3 military action points" ) + tell_action_points()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.action_round_subphase)) {
 			if (G.action_points_eligible[MIL]) {
-				if (!has_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)) {
+				if (!has_transient(R, TRANSIENT_JACOBITES_USED_1)) {
 					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0)) {
 						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 							if (G.flags[s] !== FRANCE) action_space(s)
@@ -2631,7 +2632,7 @@ P.ministry_jacobite_uprisings = {
 	},
 	jacobite_vp() {
 		push_undo()
-		set_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)
+		set_transient(R, TRANSIENT_JACOBITES_USED_1)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_cost = 3
@@ -2641,7 +2642,7 @@ P.ministry_jacobite_uprisings = {
 	},
 	space(s) {
 		push_undo()
-		set_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)
+		set_transient(R, TRANSIENT_JACOBITES_USED_1)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
 		G.action_cost   = action_point_cost(R, s, DIPLO) //NB: we use the political space-shifting cost, but charge the player military points
@@ -2866,12 +2867,12 @@ function squadrons_in_region(who, region) {
 }
 
 
-function has_transient_ability(who, ability) {
-	return bit_get(G.available_abilities[who], ability)
+function has_transient(who, t) {
+	return bit_get(G.transient_bitflags[who], t)
 }
 
-function set_transient_ability(who, ability, on = true) {
-	bit_set(G.available_abilities[who], ability, on)
+function set_transient(who, t, on = true) {
+	bit_set(G.transient_bitflags[who], t, on)
 }
 
 function cost_to_build_squadron(who, check_minimum = false, info = {})
@@ -2902,7 +2903,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 		info.advantage = SLAVING_CONTRACTS
 	}
 
-	if (has_transient_ability(who, ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT)) {
+	if (has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)) {
 		info.ability = true
 		cost -= 2
 	}
