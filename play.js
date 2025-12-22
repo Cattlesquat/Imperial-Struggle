@@ -353,7 +353,8 @@ function on_init() {
 	for (a of data.advantages) {
 		var rect = find_layout_node(a.name)
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
-		define_thing("tip-advantage", a.num).layout(resize_rect(rect, 88, 88)).tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
+		define_space("advantage", a.num, resize_rect(rect, 88, 88))
+			.tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
 		define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(bold(a.name) + ": " + italic(a.desc))

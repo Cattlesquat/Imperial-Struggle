@@ -19,7 +19,6 @@ body.Britain header.your_turn { background-color: salmon }
 	text-align: center;
 }
 
-
 #mapwrap {
 	width: 2550px;
 	height: 1650px;
@@ -41,6 +40,7 @@ body.Britain header.your_turn { background-color: salmon }
 }
 
 .panel-body {
+	position: relative;
 	min-height: 352px;
 	align-content: start;
 }
