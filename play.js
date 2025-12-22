@@ -655,6 +655,7 @@ function on_update() {
 	action_button ("build_squadron", "Build Squadron w/ Discount")
 	action_button ("discard_event_for_trp", "Discard Event for TRP")
 	action_button ("increase_debt_limit", "Increase Debt Limit")
+	action_button ("jacobite_vp", "Score VP")
 
 	action_button ("use_advantage", "Use")
 	action_button ("dont_use_advantage", "Don't Use")

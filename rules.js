@@ -396,6 +396,7 @@ function setup_procs()
 	data.ministries[BANK_OF_ENGLAND].proc = "ministry_bank_of_england"
 	data.ministries[EDMOND_HALLEY].proc = "ministry_edmond_halley"
 	data.ministries[THE_CARDINAL_MINISTERS].proc = "ministry_cardinal_ministers"
+	data.ministries[JACOBITE_UPRISINGS].proc = "ministry_jacobite_uprisings"
 }
 
 /* SETUP */
@@ -413,9 +414,11 @@ function on_setup(scenario, options) {
 	G.ministry = [[], []]
 
 	// Global VP count (tug-of-war)
-	G.vp = 0
+	G.vp = 15
 
-	// Current turn. CAUTION: index does *not* match turn "number" because of war turns
+	// Current turn. CAUTION: index does *not* match turn "number" because of war turns. Use the constants provided.
+	// <br><b>
+	// PEACE_TURN_1, WAR_TURN_WSS, PEACE_TURN_2, PEACE_TURN_3, WAR_TURN_WAS, PEACE_TURN_4, WAR_TURN_7YW, PEACE_TURN_5, WAR_TURN_AWI, PEACE_TURN_6
 	G.turn = 0
 
 	// The next war coming up (WAR_WSS, etc)
@@ -2304,6 +2307,11 @@ function ministry_useful_this_phase(m, subphase)
 	}
 }
 
+function tell_ministry_header()
+{
+	return tell_current_action(data.ministries[G.ministry_id].name.toUpperCase() + ": ")
+}
+
 function ministry_prompt(who, m, string1, string2 = "") {
 	var header = data.ministries[m].name.toUpperCase() + ": "
 
@@ -2333,7 +2341,7 @@ function ministry_prompt(who, m, string1, string2 = "") {
 			prompt += "."
 		}
 	}
-	return tell_current_action(header) + tell_main_action(prompt)
+	return tell_ministry_header() + tell_main_action(prompt)
 }
 
 function reveal_ministry(who, index) {
@@ -2346,10 +2354,6 @@ function reveal_ministry(who, index) {
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 }
 
-function tell_ministry_header()
-{
-	return tell_current_action(data.ministries[m].name.toUpperCase() + ": ")
-}
 
 P.confirm_reveal_ministry = {
 	_begin() {
@@ -2544,6 +2548,113 @@ P.ministry_cardinal_ministers = {
 		end()
 	}
 }
+
+
+function award_vp(who, vp)
+{
+	let old = G.vp
+	if (who === FRANCE)	{
+		G.vp += vp
+	} else {
+		G.vp -= vp
+	}
+
+	log_br()
+	log(bold("VP marker: ") + old + " -> " + bold(G.vp))
+	log_br()
+}
+
+
+function jacobite_vp_value()
+{
+	let vp = 0
+	for (const s of [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ]) {
+		if (G.flags[s] === FRANCE) vp++
+	}
+
+	//TODO: Add VP for Jacobite Victory markers
+
+	vp = Math.min(4, vp)
+	return vp
+}
+
+function do_award_jacobite_vp()
+{
+	award_vp(FRANCE, jacobite_vp_value())
+}
+
+P.jacobite_vp_flow = script (`
+    call decide_how_and_whether_to_spend_action_points	
+	eval { G.action_header = "" } 
+    if (!G.paid_action_cost) {
+    	return
+    }
+       
+    eval { do_award_jacobite_vp() }    
+`)
+
+P.jacobite_space_flow = script (`
+    call decide_how_and_whether_to_spend_action_points	
+	eval { G.action_header = "" } 
+    if (!G.paid_action_cost) {
+    	return
+    }
+       
+    eval { do_reflag_space() }    
+`)
+
+// TODO remove card from game when Papacy/Hanover
+// TODO remove card from the game when Jacobite Defeat
+P.ministry_jacobite_uprisings = {
+	prompt() {
+		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with military action points", "score " + jacobite_vp_value() + " VP for 3 military action points" ) + tell_action_points()
+		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.action_round_subphase)) {
+			if (G.action_points_eligible[MIL]) {
+				if (!has_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)) {
+					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0)) {
+						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
+							if (G.flags[s] !== FRANCE) action_space(s)
+						}
+					}
+
+					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 1)) {
+						button("jacobite_vp")
+					}
+				} else {
+					V.prompt = tell_ministry_header() + tell_main_action("Already used this action round -- only one Jacobite Uprisings ability can be used per round.")
+				}
+			} else {
+				V.prompt = tell_ministry_header() + tell_main_action("This ministry requires military action points to activate.")
+			}
+		}
+		button("pass")
+	},
+	jacobite_vp() {
+		push_undo()
+		set_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+		action_cost_setup(-1, MIL)
+		G.action_cost = 3
+		G.action_string = "to score " + jacobite_vp_value() + " VP with Jacobite Uprisings"
+		G.action_header = tell_ministry_header()
+		goto ("jacobite_vp_flow")
+	},
+	space(s) {
+		push_undo()
+		set_transient_ability(R, ABILITY_JACOBITES_USED_THIS_ROUND)
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+		action_cost_setup(s, MIL)
+		G.action_cost   = action_point_cost(R, s, DIPLO) //NB: we use the political space-shifting cost, but charge the player military points
+		G.action_string = "to shift " + data.spaces[s].name + " space"
+		G.action_header = tell_ministry_header()
+		goto ("jacobite_space_flow")
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
 
 
 
