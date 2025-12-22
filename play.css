@@ -6,6 +6,8 @@ body.Britain header.your_turn { background-color: salmon }
 
 #role_France { background-color: skyblue }
 #role_Britain { background-color: salmon }
+#chat_text .France { background-color: var(--blue) }
+#chat_text .Britain { background-color: var(--red) }
 
 .panel.br .panel-head { background-color: #c004; }
 .panel.fr .panel-head { background-color: #00c4; }
