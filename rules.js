@@ -1017,7 +1017,7 @@ function remove_huguenots(s)
 	array_delete_item(G.huguenots_spent, s)
 }
 
-function spend_huguenots(s)
+function expend_huguenots(s)
 {
 	if (!has_huguenots(s)) {
 		throw new Error("Tried to spend Huguenots from a space that doesn't contain any: " + data.spaces[s].name)
@@ -1027,6 +1027,13 @@ function spend_huguenots(s)
 	}
 
 	G.huguenots_spent.push(s)
+}
+
+function any_huguenots_in_region(region) {
+	for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
+		if (has_fresh_huguenots(s)) return true
+	}
+	return false
 }
 
 function refresh_huguenots() {
@@ -1500,7 +1507,6 @@ P.advantage_is_required = script (`
 
 
 function use_advantage(who, a) {
-
 	exhaust_advantage(a)
 }
 
@@ -1527,6 +1533,28 @@ P.confirm_use_advantage = {
 }
 
 
+P.ask_about_huguenots = {
+	prompt() {
+		V.prompt = "Flip a Huguenot in same region to reduce action cost by 1, or pass."
+		let region = data.spaces[G.action_space].region
+		for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
+			if (!has_fresh_huguenots(s)) continue
+			action("huguenots", s)
+		}
+		button("pass")
+	},
+	huguenots(s) {
+		push_undo()
+		expend_huguenots(s)
+		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.action_space] + " by 1."))
+		end()
+	},
+	pass() {
+		push_undo()
+		G.eligible_for_huguenots = false
+		end()
+	}
+}
 
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
@@ -2982,7 +3010,7 @@ function handle_space_click(s)
 {
 	action_cost_setup(s, space_action_type(s))
 
-	G.action_cost = action_point_cost(who, s, G.action_type)
+	G.action_cost = action_point_cost(G.active, s, G.action_type)
 
 
 	if (G.action_type !== MIL) {
@@ -2997,13 +3025,15 @@ function handle_space_click(s)
 	//TODO forts and navies different behaviors
 	//TODO remove conflict
 
-	//TODO - ministries that might give discounts
+	//TODO - ministries and stuff that might give discounts
 	G.needs_to_flip_ministry = -1
 	if ((G.action_type === DIPLO) && [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ].includes(s) && (G.flags[s] === NONE)) {
-		if (has_inactive_ministry(who, JONATHAN_SWIFT)) {
+		if (has_inactive_ministry(G.active, JONATHAN_SWIFT)) {
 			G.needs_to_flip_ministry = JONATHAN_SWIFT
 		}
 	}
+
+	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[s].region) && (G.action_cost > 1)
 
     call("space_click_flow")
 }
@@ -3014,6 +3044,13 @@ P.space_click_flow = script(`
     		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
     	    G.action_cost = action_point_cost(who, G.action_space, G.action_type)
     	}	    	
+    }
+    
+    if (G.eligible_for_huguenots) {
+    	call ask_about_huguenots
+    	if (G.eligible_for_huguenots) {
+    		eval { G.action_cost -= 1 }
+    	}
     }
 
 	call decide_how_and_whether_to_spend_action_points	
@@ -3349,7 +3386,7 @@ P.action_round_core = {
 		push_undo()
 		add_huguenots(QUEBEC_AND_MONTREAL)
 		add_huguenots(ACADIA)
-		spend_huguenots(ACADIA)
+		expend_huguenots(ACADIA)
 		add_huguenots(LOUISIANA)
 		add_huguenots(ST_DOMINGUE)
 		add_huguenots(GUADELOUPE)
@@ -3400,6 +3437,13 @@ P.war_turn = script (`
 		call war_layout_phase
 	}
 `)
+
+
+
+function conquest_point_cost(s)
+{
+	return has_huguenots(s) ? 2 : 1
+}
 
 
 /* 7.1 - WAR RESOLUTION PHASE */

@@ -178,11 +178,11 @@ body.shift .marker { opacity: 25% }
 }
 
 .space.market.dirty, .space.political.dirty, .space.territory.dirty {
-	border: 4px solid firebrick;
+	border: 4px solid crimson;
 }
 
 .space.market.action, .space.political.action, .space.territory.action {
-	border: 4px solid white;
+    border: 4px solid yellow;
 }
 
 .space.naval.action, .space.fort.action {
@@ -205,6 +205,10 @@ body.shift .marker { opacity: 25% }
 
 .space.theater.action {
 	border-color: yellow;
+}
+
+.huguenots.action {
+    border: 4px solid yellow;
 }
 
 .marker.hex {
@@ -260,15 +264,15 @@ body.shift .marker { opacity: 25% }
 }
 
 .marker.investment.action {
-	box-shadow: 0 0 0 1px black, 0 0 0 4px white;
+	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
 }
 
 .marker.advantage.action {
-	box-shadow: 0 0 0 1px black, 0 0 0 4px white;
+	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
 }
 
 .card.action {
-	box-shadow: 0 0 0 3px white;
+	box-shadow: 0 0 0 3px yellow;
 }
 
 /* COMPONENT OVERLAYS */

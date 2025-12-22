@@ -272,6 +272,8 @@ function on_init() {
 		if (s.type === TERRITORY) {
 			if ((s.region === REGION_NORTH_AMERICA) || (s.region === REGION_CARIBBEAN)) {
 				rect = translate_rect(rect, 35, 75) // Huguenot markers displayed at center of territory
+				rect = resize_rect(rect, 51, 51) // fit to the counters
+				define_space ("huguenots", s.num, rect)
 				define_layout ("huguenot-space", s.num, rect)
 			}
 		}
@@ -465,6 +467,13 @@ function on_init() {
 		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip(s))
 	}
 
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== TERRITORY) continue
+		if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) continue
+		define_marker("huguenots", s, "marker square-sm huguenots").tooltip(bold("Huguenots") + ": increases conquest cost of space by 1. Can be flipped once per game to reduce the economic action cost of a market in the same region by 1.")
+		define_marker("huguenots_spent", s, "marker square-sm huguenots_spent").tooltip(bold("Huguenots (Spent)") + ": increases conquest cost of space by 1. Can be refreshed once per game by North American Trade ministry in Revolutionary Era.")
+	}
+
 	for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
 		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
 		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
@@ -552,7 +561,7 @@ function on_update() {
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
 
 			if ((s.type === TERRITORY) && V.huguenots.includes(s.num)) {
-				populate_generic("huguenot-space", s.num, "marker square-sm huguenots" + (V.huguenots_spent.includes(s.num) ? "_spent" : ""))
+				populate ("huguenot-space", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
 			}
 		}
 
