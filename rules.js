@@ -2611,18 +2611,20 @@ P.ministry_jacobite_uprisings = {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with military action points", "score " + jacobite_vp_value() + " VP for 3 military action points" ) + tell_action_points()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.action_round_subphase)) {
 			if (G.action_points_eligible[MIL]) {
-				if (!has_transient(R, TRANSIENT_JACOBITES_USED_1)) {
+				if (!has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
 					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0)) {
 						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
-							if (G.flags[s] !== FRANCE) action_space(s)
+							if (G.flags[s] !== FRANCE) {
+								if ((G.flags[s] === NONE) || G.action_points_eligible_major[MIL]) { // If we're unflagging, can't use minor action
+									action_space(s)
+								}
+							}
 						}
 					}
+				}
 
-					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 1)) {
-						button("jacobite_vp")
-					}
-				} else {
-					V.prompt = tell_ministry_header() + tell_main_action("Already used this action round -- only one Jacobite Uprisings ability can be used per round.")
+				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 1)) {
+					button("jacobite_vp", !has_transient(R, TRANSIENT_JACOBITES_USED_1))
 				}
 			} else {
 				V.prompt = tell_ministry_header() + tell_main_action("This ministry requires military action points to activate.")
@@ -2642,7 +2644,7 @@ P.ministry_jacobite_uprisings = {
 	},
 	space(s) {
 		push_undo()
-		set_transient(R, TRANSIENT_JACOBITES_USED_1)
+		set_transient(R, TRANSIENT_JACOBITES_USED_2)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
 		G.action_cost   = action_point_cost(R, s, DIPLO) //NB: we use the political space-shifting cost, but charge the player military points
