@@ -382,6 +382,7 @@ const ACTION_POINTS_ALREADY_SPENT   = 5
 // TRANSIENT ABILITIES FROM EVENTS, MINISTERS, ADVANTAGES
 const NUM_TRANSIENT_ABILITIES = 32
 const ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT = 0
+const ABILITY_JACOBITES_USED_THIS_ROUND = 1
 
 
 /* TILES & CARDS */
@@ -399,17 +400,47 @@ function setup_procs()
 /* SETUP */
 function on_setup(scenario, options) {
 	G.active = FRANCE
+
+	// Each player's current hand of event cards.
+	// <br><b>
+	// G.hand[BRITAIN][0] contains an index into data.cards[]
 	G.hand = [[], []]
+
+	// The current ministers chosen by each player.
+	// <br><b>
+	// G.ministry[FRANCE][0] contains an index into data.ministries[]
 	G.ministry = [[], []]
+
+	// Global VP count (tug-of-war)
 	G.vp = 0
+
+	// Current turn. CAUTION: index does *not* match turn "number" because of war turns
 	G.turn = 0
+
+	// The next war coming up (WAR_WSS, etc)
 	G.next_war = WAR_WSS
+
+	// Which player holds the initiative and gets to decide who goes first
 	G.initiative = FRANCE
 
+	// Current debt for each player
+	// <br><b>
+	// G.debt[BRITAIN]
 	G.debt = []
+
+	// Current debt limit for each player
+	// <br><b>
+	// G.debt_limit[BRITAIN]
 	G.debt_limit = []
+
+	// Current treaty points for each player
+	// <br><b>
+	// G.treaty_points[FRANCE]
 	G.treaty_points = []
 
+	// The Investment tiles that each player has chosen this turn, pushed in action round order. Contains an index into data.investments[]
+	// <br><b>
+	// G.played_tiles[FRANCE][0] has the tile played on France's first action round
 	G.played_tiles = [[], []]
 
 	for (var i = FRANCE; i <= BRITAIN; i++) {
@@ -418,37 +449,73 @@ function on_setup(scenario, options) {
 		G.treaty_points[i] = 0
 	}
 
-	G.available_abilities = [[], []] // Transient abilities gained from events, advantages, etc.
+	// Transient abilities gained from events, advantages, etc.
+	// <br><b>
+	// has_transient_ability(who, ABILITY_WHATEVER)
+	G.available_abilities = [[], []]
 	for (i = FRANCE; i <= BRITAIN; i++) {
 		G.available_abilities[i] = bit_init(NUM_TRANSIENT_ABILITIES)
 	}
 
+	// The current shuffled event card deck. Contains event card indices into data.cards[]
 	G.deck = []
+
+	// The event discard. Contains event card indices into data.cards[]
 	G.discard_pile = []
-	G.played_events = [] // All the events ever played
-	G.played_event  = 0  // Event played this action round
+
+	// All the events ever played (distinct from discard pile, as played events are removed from the game)
+	G.played_events = []
+
+	// The Event (card index) played this action round
+	G.played_event  = 0
+
 	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
 
+	// Investments available this action round
 	G.available_investments = []
+
+	// Investments that have already been claimed this action round
 	G.played_investments = []
+
+	// Used investments from previous turns
 	G.used_investments = []
+
+	// Shuffled face-down stack of investment tiles, from which G.available_investments is dealt each turn
 	G.investment_tile_stack = []
 	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
 		G.investment_tile_stack.push(i)
 	shuffle(G.investment_tile_stack)
 
-	// This are the face-down stocks of war tiles the players draw from
+	// These are the face-down stocks of war tiles the players draw from
+	// <br><b>
+	// if (G.basic_war_tiles[who].length < 1) return
 	G.basic_war_tiles = [ [], [] ]
+
+	// These are the face-down stocks of war tiles the players draw from
+	// <br><b>
+	// if (G.bonus_war_tiles[who].length < 1) return
 	G.bonus_war_tiles = [ [], [] ]
 
 	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
-	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
-	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]] // [player][theater][0-n]
+	// <br><b>
+	// G.theater_basic_war_tiles[player][theater][0-n]
+	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
 
-	// "Sets" -- keeps track of which individual war tiles have been revealed to the opponent, by tile index
+	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
+	// <br><b>
+	// G.theater_bonus_war_tiles[player][theater][0-n]
+	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
+
+	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile index.
+	// <br><b>
+	// set_has(G.basic_war_tile_revealed[who], tile)
 	G.basic_war_tile_revealed = [[], []]
+
+	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile index.
+	// <br><b>
+	// set_has(G.bonus_war_tile_revealed[who], tile)
 	G.bonus_war_tile_revealed = [[], []]
 
 	war_layout_reshuffle_basic_war_tiles()
@@ -457,24 +524,61 @@ function on_setup(scenario, options) {
 	war_layout_basic_war_tiles()
 	draw_bonus_war_tile(FRANCE, 1) // France starts the game with one bonus war tile
 
+	/* */
+
+	// Award chit index for each region
+	// <br><b>
+	// G.awards[REGION_EUROPE] </b> contains an index into data.awards[]
 	G.awards = []
+
+	// The stack of available (but not currently active) award chits
 	G.award_chits = []
 
-	G.advantages                 = new Array(NUM_ADVANTAGES).fill(NONE)
-	G.advantages_newly_acquired  = 0 // bitflags
-	G.advantages_exhausted       = 0 // bitflags
-	G.advantages_used_this_turn  = 0 // integer
+	// For each advantage, tells which player owns it
+	// <br><b>
+	// G.advantage[a] === who
+	G.advantages = new Array(NUM_ADVANTAGES).fill(NONE)
 
-	G.flags = [] // All the flags on the map
-	G.dirty = [] // Any changes since last investment tile? If so, highlight them!
+	// Simple bitflag, set if advantage has changed hands this turn
+	// <br><b>
+	// G.advantages_newly_acquired & (1<<a)
+	G.advantages_newly_acquired  = 0
+
+	// Simple bitflag, set if advantage presently exhausted
+	// <br><b>
+	// is_advantage_exhausted(who,a)
+	// <br>
+	// G.advantages_exhausted & (1<<a)
+	G.advantages_exhausted       = 0
+
+	// Integer: the number of advantages the G.active player has already used this turn
+	G.advantages_used_this_turn  = 0
+
+	// All the flags on the map by space: G.flags[space]
+	// <br><b>
+	// if (G.flags[IRELAND_1] === FRANCE) { ... }
+	G.flags = []
+
+	// Any changes to indexed space since last investment tile? If so, highlight them!
+	// <br><b>
+	// G.dirty[space]
+	G.dirty = []
+
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
 		if ((G.flags[i] === SPAIN) && !rules_spanish_empire()) G.flags[i] = NONE
 	}
 
-	G.conflicts = []     // map of conflict markers
-	G.damaged_forts = [] // map of damaged forts
+	// Map of conflict markers by space
+	// <br><b>
+	// set_has(G.conflicts, s)
+	G.conflicts = []
+
+	// Map of damaged forts by space
+	// <br><b>
+	// set_has(G.damaged_forts, s)
+	G.damaged_forts = []
 
 	for (i = 0; i < data.spaces.length; i++) {
 		if (data.spaces[i].num !== i)
@@ -530,6 +634,9 @@ function on_setup(scenario, options) {
 		}
 	}
 
+	// How many squadrons left in each player's navy box
+	// <br><b>
+	// G.navy_box[who]
 	G.navy_box = []
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
@@ -539,9 +646,22 @@ function on_setup(scenario, options) {
 		G.unbuilt_squadrons[who] = NUM_SQUADRONS - G.navy_box[who]
 	}
 
-	G.flag_count = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ]                      // G.flag_count[who][region]
-	G.prestige_flags = [ 0, 0 ]                                            // G.flag_count[who]
-	G.demand_flag_count = [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]   // G.demand_flag_count[who][demand]
+	// Flag counts for each player, by region. Updated whenever flags or conflict changes. Used for scoring regions.
+	// <br><b>
+	// G.flag_count[who][region]
+	G.flag_count = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ]
+
+	// Total prestige flag count for each player. Updated whenever flags or conflict changes. Used for prestige scoring.
+	// <br><b>
+	// G.prestige_flags[who]
+	G.prestige_flags = [ 0, 0 ]
+
+	// Total flag count for each player, by each of the 6 global demand commodities. Updated whenever flags or conflict changes. Used for scoring demands.
+	// <br><b>
+	// G.demand_flag_count[who][demand]
+	// <br><b>
+	// G.demand_flag_count[FRANCE][COTTON]
+	G.demand_flag_count = [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]
 
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
@@ -1413,10 +1533,14 @@ P.initiative_phase = function () {
 	end()
 }
 
+function start_action_phase() {
+}
+
 /* 4.1.9 - ACTION PHASE */
 
 P.action_phase = script (`
 	log ("=Action Phase")
+	eval { start_action_phase() }
 	set G.active G.initiative
 	call choose_first_player
 	call confirm_first_player
@@ -1637,6 +1761,11 @@ function start_action_round() {
 	update_advantages()
 	advantages_acquired_last_round_now_available()
 	G.advantages_used_this_turn = 0
+
+	// Clear all the transient ability flags
+	for (let ab = 0; ab < NUM_TRANSIENT_ABILITIES; ab++) {
+		set_transient_ability(G.active, ab, false)
+	}
 }
 
 
@@ -2421,6 +2550,15 @@ function squadrons_in_region(who, region) {
 	return squadrons
 }
 
+
+function has_transient_ability(who, ability) {
+	return bit_get(G.available_abilities[who], ability)
+}
+
+function set_transient_ability(who, ability, on = true) {
+	bit_set(G.available_abilities[who], ability, on)
+}
+
 function cost_to_build_squadron(who, check_minimum = false, info = {})
 {
 	var cost = 4
@@ -2449,7 +2587,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 		info.advantage = SLAVING_CONTRACTS
 	}
 
-	if (bit_get(G.available_abilities[who], ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT)) {
+	if (has_transient_ability(who, ABILITY_SOUTH_SEA_SQUADRON_DISCOUNT)) {
 		info.ability = true
 		cost -= 2
 	}
