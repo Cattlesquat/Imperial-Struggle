@@ -249,7 +249,7 @@ function on_init() {
 		else if (s.type === NAVAL || s.type === FORT)
 			rect = resize_rect(rect, 92, 92)
 
-		let space_rect = structuredClone(rect)  //BR// I want a separate copy, not the same array
+		let space_rect = rect.slice()  //BR// I want a separate copy, not the same array
 		if (s.type === TERRITORY) {		        //BR// Territory clickbox extends above the space
 			space_rect[1] -= 38
 			space_rect[3] += 38
