@@ -79,6 +79,18 @@ function center_rect(xc, yc, w, h) {
 }
 
 
+function has_conflict_marker(s) {
+	return get_conflict_marker(s) > 0
+}
+
+function get_conflict_marker(s) {
+	return map_get(V.conflicts, s, 0)
+}
+
+function is_damaged_fort(s) {
+	return set_has(V.damaged_forts, s)
+}
+
 function region_flag_winner(region) {
 	if (V.flag_count[FRANCE][region] > V.flag_count[BRITAIN][region]) return FRANCE
 	if (V.flag_count[BRITAIN][region] > V.flag_count[FRANCE][region]) return BRITAIN
@@ -152,7 +164,11 @@ function space_tooltip(s) {
 		value = 0
 	}
 
-	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : ""	) + ")");
+	var other = ""
+	if (has_conflict_marker(s)) other = "Conflict"
+	if (is_damaged_fort(s)) other = "Damaged"
+
+	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : ""	) + ")") + ((other !== "") ? ": " + other : "")
 }
 
 
@@ -281,7 +297,7 @@ function on_init() {
 				}
 			}
 			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space("conflict-space", s.num, conflict_rect)
+			define_space("conflict-space", s.num, conflict_rect).tooltip(space_tooltip)
 		}
 
 		if (s.type === TERRITORY) {
@@ -294,7 +310,7 @@ function on_init() {
 			let damaged_rect = rect.slice()
 			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space ("damaged-fort-space", s.num, damaged_rect)
+			define_space ("damaged-fort-space", s.num, damaged_rect).tooltip(space_tooltip)
 		}
 
 		define_layout("lout-space", s.num, rect)
@@ -500,8 +516,8 @@ function on_init() {
 
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
-		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip(s))
-		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip(s))
+		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip)
+		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip)
 	}
 
 	for (let s = 0; s < NUM_SPACES; s++) {

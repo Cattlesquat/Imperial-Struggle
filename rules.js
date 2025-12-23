@@ -2081,7 +2081,7 @@ P.select_investment_tile = {
 	prompt() {
 		V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Select an investment tile or activate a minister.")
 		for (var tile of G.available_investments) {
-			if (tile in G.played_investments) continue;
+			if (G.played_investments.includes(tile)) continue
 			action_investment(tile)
 		}
 		action_eligible_ministries()
@@ -3614,7 +3614,7 @@ function say_action_points(space = true, brackets = true) {
 							need_comma = true;
 						}
 
-						tell += G.action_points_minor[i] + " minor"
+						tell += G.action_points_minor[i] + " Minor"
 					}
 				}
 			}
