@@ -310,7 +310,7 @@ function on_init() {
 			let damaged_rect = rect.slice()
 			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space ("damaged-fort-space", s.num, damaged_rect).tooltip(space_tooltip)
+			define_space ("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip)
 		}
 
 		define_layout("lout-space", s.num, rect)
@@ -385,7 +385,7 @@ function on_init() {
 		if ((t === POLITICAL) || (t === MARKET)) {
 			define_marker("conflict", i, "hex-sm")
 		} else if (t === FORT) {
-			define_marker("fort-damaged", i, "hex-sm")
+			define_marker("damaged", i, "hex-sm")
 		}
 	}
 
@@ -671,9 +671,12 @@ function on_update() {
 		update_keyword("conflict", s, "plus-one", n > 1)
 	})
 
-	map_for_each(V.damaged_forts, (s) => {
-		populate("damaged-fort-space", s, "fort-damaged", s)
-	})
+	for (s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== FORT) continue
+		if (is_damaged_fort(s)) {
+			populate ("fortdamaged", s, "damaged", s)
+		}
+	}
 
 	for (i = 0; i < G.played_tiles[FRANCE].length; ++i)
 		populate("investment", G.played_tiles[FRANCE][i], "action-fr", i)
@@ -870,6 +873,10 @@ window.addEventListener("keydown", function (evt) {
 			break;
 		case "c":
 			send_message("action", [ "cheat_conflict", null, game_cookie])
+			break;
+		case "d":
+		case "y":
+			send_message("action", [ "cheat_damage", null, game_cookie])
 			break;
 	}
 })

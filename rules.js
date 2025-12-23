@@ -3470,6 +3470,8 @@ function pay_action_cost() {
 }
 
 function do_reflag_space(repair_if_damaged = true) {
+	let whom = (G.flags[G.active_space] === NONE) ? G.active : NONE
+
 	if ((data.spaces[G.active_space].type === FORT) && repair_if_damaged) {
 		if (is_damaged_fort(G.active_space)) {
 			set_damaged_fort(G.active_space, false)
@@ -3478,11 +3480,12 @@ function do_reflag_space(repair_if_damaged = true) {
 			}
 			else {
 				log ("Damaged fort seized at " + data.spaces[G.active_space].name)
+				whom = G.active // We go all the way to our team, no stop at neutral
 			}
 		}
 	}
 
-	reflag_space(G.active_space, (G.flags[G.active_space] === NONE) ? G.active : NONE)
+	reflag_space(G.active_space, whom)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
 }
 
@@ -3796,10 +3799,22 @@ P.action_round_core = {
 				remove_conflict_marker(s)
 			}
 		}
+	},
+	cheat_damage() {
+		cheat_damage_flag = !cheat_damage_flag
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== FORT) continue
+			if (cheat_damage_flag) {
+				set_damaged_fort(s, true)
+			} else {
+				set_damaged_fort(s, false)
+			}
+		}
 	}
 }
 
 var cheat_conflict_flag = false
+var cheat_damage_flag = false
 
 
 P.before_end_of_action_round = script(`

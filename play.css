@@ -370,7 +370,7 @@ body.shift .marker { opacity: 25% }
 
 .marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png), url(images/hex-sm-yellow.svg) }
 .marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png), url(images/hex-sm-yellow.svg) }
-.marker.fort-damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png), url(images/hex-sm-yellow.svg) }
+.marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png), url(images/hex-sm-yellow.svg) }
 
 /* IMAGES */
 
@@ -496,7 +496,7 @@ body.shift .marker { opacity: 25% }
 .marker.byng.reverse { background-image: url(tiles75/hex-sm/byng_reverse.png) }
 .marker.conflict { background-image: url(tiles75/hex-sm/conflict.png) }
 .marker.conflict.plus-one { background-image: url(tiles75/hex-sm/conflict_plus_one.png) }
-.marker.fort-damaged { background-image: url(tiles75/hex-sm/fort_damaged.png) }
+.marker.damaged { background-image: url(tiles75/hex-sm/fort_damaged.png) }
 
 .marker.action_1.br { background-image: url(tiles75/square-sm/action_br_1.png) }
 .marker.action_2.br { background-image: url(tiles75/square-sm/action_br_2.png) }
