@@ -894,17 +894,17 @@ function advantage_tooltip_image(a, onoff) {
 }
 
 function on_focus_advantage_tip(a) {
-	document.getElementById("tooltip").className = `marker.advantage show ${advantage_class_name(a)}`
+	document.getElementById("tooltip").className = `marker show ${advantage_class_name(a)}`
 	console.log("on focus: " + a + "  " + advantage_class_name(a))
 }
 
 function on_blur_advantage_tip() {
-	document.getElementById("tooltip").classList = "advantage"
+	document.getElementById("tooltip").classList = "marker"
 	console.log("on blur: " )
 }
 
 function advantage_class_name(a) {
-	return `marker.advantage.a${a}`
+	return `advantage.a${a}`
 }
 
 
