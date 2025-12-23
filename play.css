@@ -785,3 +785,27 @@ tiles75/square/investment_reverse.png
 .card.ministry_card.c24 { background-image: url(cards100/ministry_24.avif) }
 .card.ministry_card.c25 { background-image: url(cards100/ministry_25.avif) }
 .card.ministry_card.c26 { background-image: url(cards100/ministry_26.avif) }
+
+
+#tooltip {
+    display: none;
+    pointer-events: none;
+    position: fixed;
+    z-index: 600;
+    right: 240px;
+    top: 60px;
+}
+
+#tooltip.show {
+    display: block;
+}
+
+@media (max-width: 800px) {
+    #tooltip {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}

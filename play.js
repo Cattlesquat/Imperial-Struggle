@@ -407,9 +407,11 @@ function on_init() {
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_space("advantage", a.num, resize_rect(rect, 88, 88))
 			.tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
-		define_marker("advantage", a.num)
+		let marker = define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(bold(a.name) + ": " + italic(a.desc))
+		marker.element.setAttribute('onmouseenter', `on_focus_advantage_tip(${a.num})`)
+		marker.element.setAttribute('onmouseleave', 'on_blur_advantage_tip()')
 	}
 
 	for (a of data.investments) {
@@ -880,4 +882,20 @@ window.addEventListener("keydown", function (evt) {
 			break;
 	}
 })
+
+
+function on_focus_advantage_tip(a) {
+	document.getElementById("tooltip").className = `marker.advantage show ${advantage_class_name(a)}`
+	console.log("on focus: " + a + "  " + advantage_class_name(a))
+}
+
+function on_blur_advantage_tip() {
+	document.getElementById("tooltip").classList = "advantage"
+	console.log("on blur: " )
+}
+
+function advantage_class_name(a) {
+	return `marker.advantage.a${a}`
+}
+
 
