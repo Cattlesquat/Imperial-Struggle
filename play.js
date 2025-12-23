@@ -250,7 +250,7 @@ function on_init() {
 			rect = resize_rect(rect, 92, 92)
 
 		let space_rect = rect.slice()  //BR// I want a separate copy, not the same array
-		if (s.type === TERRITORY) {		        //BR// Territory clickbox extends above the space
+		if (s.type === TERRITORY) {	   //BR// Territory clickbox extends above the space
 			space_rect[1] -= 38
 			space_rect[3] += 38
 		}
@@ -265,6 +265,11 @@ function on_init() {
 			rect = translate_rect(rect, 0, -3) // Move every market flag position up a bit
 		} else if (s.type === FORT) {
 			rect = translate_rect(rect, -1, -12) // Move every fort flag position up a bunchy (uncover the fort number)
+
+			let damaged_rect = rect.slice()
+			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
+			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
+			define_space ("damaged-fort-space", s.num, damaged_rect)
 		}
 
 		define_layout("lout-space", s.num, rect)
@@ -334,8 +339,14 @@ function on_init() {
 		define_marker("action-fr", i, `square-sm action_${i+1} fr`).tooltip ("France Action Round " + (i+1))
 	}
 
-	for (i = 0; i < NUM_SPACES; ++i)
-		define_marker("conflict", i, "hex-sm")
+	for (i = 0; i < NUM_SPACES; ++i) {
+		let t = data.spaces[i].type
+		if ((t === POLITICAL) || (t === MARKET)) {
+			define_marker("conflict", i, "hex-sm")
+		} else if (t === FORT) {
+			define_marker("fort-damaged", i, "hex-sm")
+		}
+	}
 
 	for (a of data.demands) {
 		define_marker("demand", a.num)
@@ -617,6 +628,10 @@ function on_update() {
 	map_for_each(V.conflicts, (s, n) => {
 		populate("lout-space", s, "conflict", s)
 		update_keyword("conflict", s, "plus-one", n > 1)
+	})
+
+	map_for_each(V.damaged_forts, (s) => {
+		populate("damaged-fort-space", s, "fort-damaged", s)
 	})
 
 	for (i = 0; i < G.played_tiles[FRANCE].length; ++i)
