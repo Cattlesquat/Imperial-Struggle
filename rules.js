@@ -398,6 +398,8 @@ function setup_procs()
 	data.ministries[EDMOND_HALLEY].proc = "ministry_edmond_halley"
 	data.ministries[THE_CARDINAL_MINISTERS].proc = "ministry_cardinal_ministers"
 	data.ministries[JACOBITE_UPRISINGS].proc = "ministry_jacobite_uprisings"
+
+	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 }
 
 /* SETUP */
@@ -982,6 +984,11 @@ function set_conflict_marker(s, n = 1) {
 function remove_conflict_marker(s) {
 	map_delete(G.conflicts, s)
 	update_flag_counts()
+}
+
+
+function can_have_conflict_marker(s) {
+	return (data.spaces[s].type === MARKET) || (data.spaces[s].type === POLITICAL)
 }
 
 
@@ -2112,7 +2119,7 @@ function handle_event_card_click(c) {
 		//action_event_card(c)
 	//}
 
-	call ("event_click_flow")
+	call ("event_flow")
 }
 
 function begin_event_play(c) {
@@ -2196,7 +2203,7 @@ function check_event_bonus_requirements(who) {
 	}
 }
 
-P.event_click_flow = script (`
+P.event_flow = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
         	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
@@ -2233,11 +2240,148 @@ P.event_click_flow = script (`
     
     eval { 
     	begin_event_play(G.played_event) 
-    }        
+    }
     
-    //TODO: Here we branch to an unholy number of possible events 
-    //goto (data.cards[c].event_proc_name)
+    // Here we branch to an unholy number of possible events 
+	if (data.cards[G.played_event].proc !== undefined) {
+		goto (data.cards[G.played_event].proc)
+	} 
+				 		
+    goto event_not_implemented
 `)
+
+
+function event_prompt(who, c, string1, string2 = "") {
+	var header = data.cards[c].name.toUpperCase() + ": "
+
+	var prompt = ""
+	if ((string2 === "") || (string2 === null) || !G.qualifies_for_bonus) {
+		prompt += string1 + "."
+	}
+	else if (string1 === null) {
+		prompt += string2 + "."
+	}
+	else {
+		prompt += strike(string1, false)
+		prompt += " AND "
+		prompt += strike(string2, false)
+		prompt += "."
+	}
+	return bold(header) + tell_main_action(prompt)
+}
+
+
+P.event_not_implemented = {
+	prompt() {
+		let msg = "Event not yet implemented."
+		V.prompt = event_prompt(R, G.played_event, msg)
+		button ("pass")
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+function carnatic_conflicts(who) {
+	let alliances = 0
+	for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
+		if (data.spaces[s].type !== POLITICAL) continue
+		if (G.flags[s] !== who) continue
+		alliances++
+	}
+	return alliances
+}
+
+// "Place 1 Conflict marker in India for each Local Alliance you control there. BONUS: Damage an enemy Fort or shift a Cotton market in India."
+P.event_carnatic_war = {
+	_begin() {
+		G.qualifies_for_bonus = true
+		L.conflicts_placed = 0
+		L.done_bonus = false
+		L.cant_do_bonus = false
+		L.space = -1
+		L.deciding = false // Unfortunately "cotton markets in India" can qualify for both parts of the event, meaning player needs to decide which when clicking on them
+	},
+	prompt() {
+		if (L.deciding) {
+			V.prompt = event_prompt(R, G.played_event, "Choose shift market or place conflict marker for " + data.spaces[L.space].name)
+			button("shift_market")
+			button("place_conflict_marker")
+		} else {
+			var any_conflictable = false
+			for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
+				if (!can_have_conflict_marker(s)) continue
+				if (has_conflict_marker(s)) continue
+				if (L.conflicts_placed < carnatic_conflicts(R)) {
+					action_space(s)
+				}
+				any_conflictable = true
+			}
+
+			let gauge = any_conflictable ? L.conflicts_placed + "/" + carnatic_conflicts(R) : "DONE"
+			V.prompt = event_prompt(R, G.played_event, "Place conflict markers in India (" + gauge + ")", "damage an enemy fort or shift a Cotton market in India")
+
+			var any_damageable = false
+			if (G.qualifies_for_bonus && !L.done_bonus && !L.cant_do_bonus) {
+				for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
+					if ((data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON)) {
+						if (G.flags[s] !== R) {
+							action_space(s)
+							any_damageable = true
+						}
+					}
+					if (data.spaces[s].type === FORT) {
+						if ((G.flags[s] === 1 - R) && !is_damaged_fort(s)) {
+							action_space(s)
+							any_damageable = true
+						}
+					}
+				}
+				if (!any_damageable) L.cant_do_bonus = true
+			}
+
+			if ((!any_conflictable || (L.conflicts_placed >= carnatic_conflicts(R))) && !any_damageable) {
+				V.prompt = event_prompt(R, G.played_event, "Done")
+				button("done")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		L.space = s
+		// This first horrible "if" detects if the space qualifies under *both* the regular condition *and* the bonus condition, in a situation when the player is presently entitled to do either and hasn't used up quota of either
+		if (can_have_conflict_marker(s) && !has_conflict_marker(s) && (L.conflicts_placed < carnatic_conflicts(R)) &&
+			G.qualifies_for_bonus && !L.done_bonus && !L.cant_do_bonus && (data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
+			L.deciding = true
+		} else if ((can_have_conflict_marker(s) && !has_conflict_marker(s)) && (L.conflicts_placed < carnatic_conflicts(R))) {
+			set_conflict_marker(s)
+			L.conflicts_placed++
+		} else if ((data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
+			reflag_space(s, (G.flags[s] === NONE) ? G.active : NONE)
+			L.done_bonus = true
+		} else if ((data.spaces[s].type === FORT) && (G.flags[s] === 1 - R) && !is_damaged_fort(s)) {
+			set_damaged_fort(s, true)
+			L.done_bonus = true
+		}
+	},
+	place_conflict_marker() {
+		push_undo()
+		set_conflict_marker(L.space)
+		L.conflicts_placed++
+		L.deciding = false
+	},
+	shift_market() {
+		push_undo()
+		reflag_space(L.space, (G.flags[L.space] === NONE) ? G.active : NONE)
+		L.done_bonus = true
+		L.deciding = false
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
 
 
 function handle_ministry_card_click(m)

@@ -658,6 +658,9 @@ function on_update() {
 	action_button ("increase_debt_limit", "Increase Debt Limit")
 	action_button ("jacobite_vp", "Score VP")
 
+	action_button("shift_market", "Shift Market")
+	action_button("place_conflict_marker", "Place Conflict Marker")
+
 	action_button ("use_advantage", "Use")
 	action_button ("dont_use_advantage", "Don't Use")
 
