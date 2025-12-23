@@ -152,7 +152,7 @@ function space_tooltip(s) {
 		value = 0
 	}
 
-	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")");
+	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : ""	) + ")");
 }
 
 
@@ -258,6 +258,31 @@ function on_init() {
 		define_space("space", s.num, space_rect)
 			.keyword(space_type_class[s.type])
 			.tooltip(space_tooltip)
+
+		if ((s.type === POLITICAL) || (s.type === MARKET)) {
+			let conflict_rect = rect.slice()
+			if (s.type === MARKET) {
+				if ((s.num === NORTHEAST_CHANNEL) || (s.num === OSWEGO)) {
+					conflict_rect = translate_rect(conflict_rect, -65, -40) // upper left
+				} else if ([ NIAGARA, HAVANA, ANTIGUA, KURPA, MARTINIQUE ].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -65, 20) // lower left
+				} else {
+					conflict_rect = translate_rect(conflict_rect, 32, 22) // Conflict markers positioning - default lower right
+				}
+			} else if (s.type === POLITICAL) {
+				if ([ PRIVATEERS, IRELAND_1, SCOTLAND_1, DUTCH_1, GERMAN_STATES_1, PRUSSIA_1, PRUSSIA_3, SPAIN_1, SPAIN_3, AUSTRIA_1, AUSTRIA_3 ].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -63, 27) // Conflict markers positioning - lower right
+				} else if ([ BAVARIA ].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -63, -45) // Conflict markers positioning - upper left
+				} else if ([ DUTCH_2 ].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -15, 50) // Conflict markers positioning - lower middle
+				} else {
+					conflict_rect = translate_rect(conflict_rect, 30, 27) // Conflict markers positioning - default lower right
+				}
+			}
+			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
+			define_space("conflict-space", s.num, conflict_rect)
+		}
 
 		if (s.type === TERRITORY) {
 			rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces
@@ -626,7 +651,7 @@ function on_update() {
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
 
 	map_for_each(V.conflicts, (s, n) => {
-		populate("lout-space", s, "conflict", s)
+		populate("conflict-space", s, "conflict", s)
 		update_keyword("conflict", s, "plus-one", n > 1)
 	})
 
@@ -826,6 +851,9 @@ window.addEventListener("keydown", function (evt) {
 			break
 		case "h":
 			send_message("action", [ "cheat_huguenots", null, game_cookie ])
+			break;
+		case "c":
+			send_message("action", [ "cheat_conflict", null, game_cookie])
 			break;
 	}
 })

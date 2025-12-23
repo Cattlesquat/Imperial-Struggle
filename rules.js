@@ -1576,7 +1576,7 @@ P.confirm_use_advantage = {
 P.ask_about_huguenots = {
 	prompt() {
 		V.prompt = say_action_header() + say_action("Flip a Huguenot in same region to reduce action cost by 1, or pass.") + say_action_points()
-		let region = data.spaces[G.action_space].region
+		let region = data.spaces[G.active_space].region
 		for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
 			if (!has_fresh_huguenots(s)) continue
 			action("huguenots", s)
@@ -1586,7 +1586,7 @@ P.ask_about_huguenots = {
 	huguenots(s) {
 		push_undo()
 		expend_huguenots(s)
-		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.action_space].name + " by 1."))
+		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.active_space].name + " by 1."))
 		end()
 	},
 	pass() {
@@ -2333,7 +2333,7 @@ P.event_carnatic_war = {
 				for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
 					if ((data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON)) {
 						if (G.flags[s] !== R) {
-							action_space(s)
+							action_space(s, INCLUDE_CONFLICT)
 							any_damageable = true
 						}
 					}
@@ -2352,6 +2352,9 @@ P.event_carnatic_war = {
 				button("done")
 			}
 		}
+	},
+	conflict(s) {
+		this.space(s)
 	},
 	space(s) {
 		push_undo()
@@ -2766,7 +2769,7 @@ P.ministry_jacobite_uprisings = {
 						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 							if (G.flags[s] !== FRANCE) {
 								if ((G.flags[s] === NONE) || G.action_points_eligible_major[MIL]) { // If we're unflagging, can't use minor action
-									action_space(s)
+									action_space(s, INCLUDE_CONFLICT)
 								}
 							}
 						}
@@ -2791,6 +2794,9 @@ P.ministry_jacobite_uprisings = {
 		G.action_string = "to score " + jacobite_vp_value() + " VP with Jacobite Uprisings"
 		G.action_header = say_ministry_header()
 		goto ("jacobite_vp_flow")
+	},
+	conflict(s) {
+		this.space(s)
 	},
 	space(s) {
 		push_undo()
@@ -2879,7 +2885,7 @@ function action_eligible_spaces_econ(region)
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
 		if (!can_afford_to_shift(space.num, R, true)) continue
 
-		action_space(space.num)
+		action_space(space.num, INCLUDE_CONFLICT)
 	}
 }
 
@@ -2891,7 +2897,7 @@ function action_eligible_spaces_diplo(region)
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
 		if (!can_afford_to_shift(space.num, R, true)) continue
-		action_space(space.num)
+		action_space(space.num, INCLUDE_CONFLICT)
 	}
 }
 
@@ -2899,18 +2905,11 @@ function action_eligible_spaces_mil(region)
 {
 	for (const space of data.spaces) {
 		if ((region !== REGION_ALL) && (region !== space.region)) continue
-		if ((space.type !== NAVAL) && (space.type !== FORT)) {
-			if (!has_conflict_marker(space.num)) continue
-			//TODO conflict markers in Markets & Political spaces
-		}
 		if (G.flags[space.num] === R) {
 			/* 5.6.4 - Repair a fort */
 			if (space.type === FORT) {
 				if (!is_damaged_fort(space.num)) continue
-			}
 
-			if (has_conflict_marker(space.num)) {
-				//TODO
 			}
 
 			//TODO: move my existing ship
@@ -2943,7 +2942,14 @@ function action_eligible_spaces_mil(region)
 				}
 			}
 		}
-		action_space(space.num)
+
+		if ((space.type !== NAVAL) && (space.type !== FORT)) {
+			if (!has_conflict_marker(space.num)) continue
+			action_conflict(space.num)
+		}
+		else {
+			action_space(space.num, INCLUDE_CONFLICT | INCLUDE_DAMAGED)
+		}
 	}
 }
 
@@ -3291,7 +3297,7 @@ function advance_action_round_subphase(subphase)
 function action_cost_setup(s, t) {
 
 	// The space we're checking, if any (could be -1)
-	G.action_space = s
+	G.active_space = s
 
 	// Flavor of action we're trying to perform (i.e. ECON, DIPLO, MIL)
 	G.action_type = t
@@ -3303,10 +3309,10 @@ function action_cost_setup(s, t) {
 	G.eligible_minor = eligible_for_minor_action(s, G.active) && G.action_points_minor[G.action_type] > 0
 
 	// How many action points (of the active flavor) are immediately available (without taking debt, spending TRP, or otherwise invoking an ability to gain more)
-	G.action_points_available_now  = action_points_available(G.active, G.action_space, G.action_type, false)
+	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false)
 
 	// How many action points (of the active flavor) would we have total, if we took all possible debt and spent all our TRP. Our notional absolute maximum w/o needing an ability/advantage.
-	G.action_points_available_debt = action_points_available(G.active, G.action_space, G.action_type, true)
+	G.action_points_available_debt = action_points_available(G.active, G.active_space, G.action_type, true)
 
 	// Clause to remind player why he might be wanting to cough up enough debt or whatever (e.g. "... to unflag Denmark")
 	G.action_string = ""
@@ -3322,25 +3328,43 @@ function action_cost_setup(s, t) {
 }
 
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
-function handle_space_click(s)
+function handle_space_click(s, force_type = -1)
 {
-	action_cost_setup(s, space_action_type(s))
+	action_cost_setup(s, (force_type > 0) ? force_type : space_action_type(s))
 
 	G.action_cost = action_point_cost(G.active, s, G.action_type)
 
 	if (G.action_type !== MIL) {
 		if (G.flags[s] === NONE) {
-			G.action_string = "to flag " + data.spaces[G.action_space].name
-			G.action_header = "FLAG " + data.spaces[G.action_space].name + ": "
+			G.action_string = "to flag " + data.spaces[G.active_space].name
+			G.action_header = "FLAG " + data.spaces[G.active_space].name + ": "
 		}
 		else {
-			G.action_string = "to unflag " + data.spaces[G.action_space].name
-			G.action_header = "UNFLAG " + data.spaces[G.action_space].name + ": "
+			G.action_string = "to unflag " + data.spaces[G.active_space].name
+			G.action_header = "UNFLAG " + data.spaces[G.active_space].name + ": "
+		}
+	} else {
+		if (has_conflict_marker(s)) {
+			G.action_string = "to remove conflict at " + data.spaces[G.active_space].name
+			G.action_header = "REMOVE CONFLICT: "
+		} else if (data.spaces[s].type === FORT) {
+			if (G.flags[s] === NONE) {
+				G.action_string = "to build a fort at " + data.spaces[G.active_space].name
+				G.action_header = "BUILD FORT: "
+			} else if (is_damaged_fort(s)) {
+				if (G.flags[s] === G.active) {
+					G.action_string = "to repair fort at " + data.spaces[G.active_space].name
+					G.action_header = "REPAIR FORT: "
+				} else {
+					G.action_string = "to seize fort at " + data.spaces[G.active_space].name
+					G.action_header = "SEIZE FORT: "
+				}
+			}
 		}
 	}
-	// TODO include weird "region restricted" action points if available
-	//TODO forts and navies different behaviors
-	//TODO remove conflict
+
+	//TODO include weird "region restricted" action points if available
+	//TODO navies different behaviors
 
 	//TODO - ministries and stuff that might give discounts
 	G.needs_to_flip_ministry = -1
@@ -3352,14 +3376,14 @@ function handle_space_click(s)
 
 	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[s].region) && (G.action_cost > 1)
 
-    call("space_click_flow")
+    call("space_flow")
 }
 
-P.space_click_flow = script(`
+P.space_flow = script(`
     if (G.needs_to_flip_ministry >= 0) {
     	eval { 
     		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
-    	    G.action_cost = action_point_cost(who, G.action_space, G.action_type)
+    	    G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
     	}	    	
     }
     
@@ -3446,20 +3470,20 @@ function pay_action_cost() {
 }
 
 function do_reflag_space(repair_if_damaged = true) {
-	if ((data.spaces[G.action_space].type === FORT) && repair_if_damaged) {
-		if (is_damaged_fort(G.action_space)) {
-			set_damaged_fort(G.action_space, false)
-			if (G.flags[G.action_space] === G.active) {
-				log ("Fort repaired at " + data.spaces[G.action_space].name)
+	if ((data.spaces[G.active_space].type === FORT) && repair_if_damaged) {
+		if (is_damaged_fort(G.active_space)) {
+			set_damaged_fort(G.active_space, false)
+			if (G.flags[G.active_space] === G.active) {
+				log ("Fort repaired at " + data.spaces[G.active_space].name)
 			}
 			else {
-				log ("Damaged fort seized at " + data.spaces[G.action_space].name)
+				log ("Damaged fort seized at " + data.spaces[G.active_space].name)
 			}
 		}
 	}
 
-	reflag_space(G.action_space, (G.flags[G.action_space] === NONE) ? G.active : NONE)
-	set_add(G.action_point_regions[G.action_type], data.spaces[G.action_space].region) // We've now used this flavor of action point in this region
+	reflag_space(G.active_space, (G.flags[G.active_space] === NONE) ? G.active : NONE)
+	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
 }
 
 
@@ -3710,6 +3734,18 @@ P.action_round_core = {
 		push_undo()
 		end()
 	},
+	conflict(s) {
+		// Usually clicking conflict just resolves as clicking the space, but if we have military points available *and* the other type for this space then clicking the conflict is explicitly to remove the conflict and clicking the space is to take the regular flag action for the space (w/ conflict discount)
+		if (!G.action_points_eligible[MIL] || !has_conflict_marker(s)) {
+			this.space(s)
+		} else {
+			push_undo()
+			handle_space_click(s, MIL)
+		}
+	},
+	damaged(s) {
+		this.space(s)
+	},
 	space(s) {
 		push_undo()
 		handle_space_click(s)
@@ -3749,8 +3785,21 @@ P.action_round_core = {
 		add_huguenots(LOUISIANA)
 		add_huguenots(ST_DOMINGUE)
 		add_huguenots(GUADELOUPE)
+	},
+	cheat_conflict() {
+		cheat_conflict_flag = !cheat_conflict_flag
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (!can_have_conflict_marker(s)) continue
+			if (cheat_conflict_flag) {
+				set_conflict_marker(s)
+			} else {
+				remove_conflict_marker(s)
+			}
+		}
 	}
 }
+
+var cheat_conflict_flag = false
 
 
 P.before_end_of_action_round = script(`
@@ -3910,13 +3959,24 @@ function action_advantage(a) {
 	action("advantage", a)
 }
 
-function action_space(s) {
+
+const INCLUDE_CONFLICT = 0x01
+const INCLUDE_DAMAGED = 0x02
+
+function action_space(s, include = 0) {
 	action("space", s)
+	if ((include & INCLUDE_CONFLICT) && has_conflict_marker(s)) action_conflict(s)
+	if ((include & INCLUDE_DAMAGED) && is_damaged_fort(s)) action_damaged(s)
 }
 
 function action_conflict(s) {
 	action("conflict", s)
 }
+
+function action_damaged(s) {
+	action("damaged", s)
+}
+
 
 function action_navy(who) {
 	action("navy", who)
