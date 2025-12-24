@@ -3703,7 +3703,9 @@ P.action_round_core = {
 		handle_construct_squadron_button()
 	},
 	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
-
+		push_undo()
+		//handle_military_upgrade()
+		////
 	},
 	buy_bonus_war_tile() {	// TBD: buy a bonus war tile, and deploy it into the next war
 
@@ -3715,9 +3717,6 @@ P.action_round_core = {
 
 	},
 	deploy_squadron() { // TBD: deploy from navy box (or move one from somewhere else)
-
-	},
-	remove_conflict_marker() { // TBD: remove a conflict marker
 
 	},
 	confirm_pass_to_reduce_debt() {
@@ -3995,6 +3994,14 @@ function action_damaged(s) {
 
 function action_navy(who) {
 	action("navy", who)
+}
+
+function action_basic_war_tile(t) {
+	action("basic_war", t)
+}
+
+function action_bonus_war_tile(t) {
+	action("bonus_war", t)
 }
 
 
