@@ -1825,6 +1825,31 @@ function get_winner(france, britain)
 	return NONE
 }
 
+function region_flag_winner(region) {
+	return get_winner(G.flag_count[FRANCE][region], G.flag_count[BRITAIN][region])
+}
+
+function region_flag_delta(region) {
+	return Math.abs(G.flag_count[FRANCE][region] - G.flag_count[BRITAIN][region])
+}
+
+function prestige_winner() {
+	return get_winner(G.prestige_flags[FRANCE], G.prestige_flags[BRITAIN])
+}
+
+function prestige_flag_delta() {
+	return Math.abs(G.prestige_flags[FRANCE] - G.prestige_flags[BRITAIN])
+}
+
+function demand_flag_winner(demand) {
+	return get_winner(G.demand_flag_count[FRANCE][demand], G.demand_flag_count[BRITAIN][demand])
+}
+
+function demand_flag_delta(demand) {
+	return Math.abs(G.demand_flag_count[FRANCE][demand] - G.demand_flag_count[BRITAIN][demand])
+}
+
+
 /* 4.1.12 - SCORING PHASE */
 
 P.scoring_phase = function () {
@@ -1833,9 +1858,8 @@ P.scoring_phase = function () {
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
-		let winner = get_winner(G.flag_count[FRANCE], G.flag_count[BRITAIN])
-		let diff = Math.abs(G.flag_count[FRANCE] - G.flag_count[BRITAIN])
-		if ((diff < 2) && data.awards[award].by2) winner = NONE
+		let winner = region_flag_winner(region)
+		if (data.awards[award].by2 && region_flag_delta(region) < 2) winner = NONE
 
 		if (winner !== NONE) {
 			let vp = data.awards[award].vp
@@ -1855,19 +1879,16 @@ P.scoring_phase = function () {
 
 		// Prestige awards are sort notionally done alongside the Europe award
 		if (region === REGION_EUROPE) {
-			winner = get_winner(G.prestige_flags[FRANCE], G.prestige_flags[BRITAIN])
+			winner = prestige_winner()
 			if (winner !== NONE) {
 				G.vp[winner] += 2
 			}
 			//TODO announce winner & amounts
-			G.prestige_flags = [0, 0]                                       // G.flag_count[who]
-			G.flag_count = [[0, 0, 0, 0], [0, 0, 0, 0]]             // G.flag_count[who][region]
-			G.demand_flag_count = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] // G.demand_flag_count[who][demand]
 		}
 	}
 
 	for (const d of G.global_demand) {
-		let winner = get_winner(G.demand_flag_count[FRANCE], G.demand_flag_count[BRITAIN])
+		let winner = demand_flag_winner(d)
 		if (winner !== NONE) {
 			let vp = data.demands[d].vp
 			let trp = data.demands[d].trp
@@ -2502,7 +2523,7 @@ function reveal_ministry(who, index) {
 	if (index < 0) return
 
 	let m = G.ministry[who][index]
-	G.ministry_revealed[who][index] = true ///
+	G.ministry_revealed[who][index] = true
 	log ("\nMINISTRY REVEALED: " + data.ministries[m].name)
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
@@ -3225,36 +3246,26 @@ function update_flag_counts()
 	}
 }
 
-function region_flag_winner(region) {
-	if (G.flag_count[FRANCE][region] > G.flag_count[BRITAIN][region]) return FRANCE
-	if (G.flag_count[BRITAIN][region] > G.flag_count[FRANCE][region]) return BRITAIN
-	return NONE
+
+function handle_military_upgrade(t)
+{
+	G.upgrading_basic_tile = t
+	call ("military_upgrade_decisions")
 }
 
-function region_flag_delta(region) {
-	return Math.abs(G.flag_count[FRANCE][region] - G.flag_count[BRITAIN][region])
-}
 
-function prestige_winner() {
-	if (G.prestige_flags[FRANCE] > G.prestige_flags[BRITAIN]) return FRANCE
-	if (G.prestige_flags[BRITAIN] > G.prestige_flags[FRANCE]) return BRITAIN
-	return NONE
-}
+P.military_upgrade_decisions = {
+	_begin() {
+		L.confirmed = false
+	},
+	prompt() {
+		let msg = say_action_header("MILITARY_UPGRADE: ")
 
-function prestige_flag_delta() {
-	return Math.abs(G.prestige_flags[FRANCE] - G.prestige_flags[BRITAIN])
-}
+		data.basic_war_tiles.
 
-function demand_flag_winner(demand) {
-	if (G.demand_flag_count[FRANCE][demand] > G.demand_flag_count[BRITAIN][demand]) return FRANCE
-	if (G.demand_flag_count[BRITAIN][demand] > G.demand_flag_count[FRANCE][demand]) return BRITAIN
-	return NONE
+		V.prompt = msg
+	}
 }
-
-function demand_flag_delta(demand) {
-	return Math.abs(G.demand_flag_count[FRANCE][demand] - G.demand_flag_count[BRITAIN][demand])
-}
-
 
 
 function reflag_space(s, who) {
@@ -3674,10 +3685,15 @@ P.action_round_core = {
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 		}
 
-		//TODO maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
-		//if (G.military_upgrade) {
-		//	button ("military_upgrade")
-		//}
+		//Maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
+		if (G.military_upgrade) {
+			// button ("military_upgrade") // Maybe a button "for visibility" or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
+			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
+				for (var t of G.theater_basic_war_tiles[G.active][theater]) {
+					action_basic_war_tile(t)
+				}
+			}
+		}
 
 		// I'm presently undecided whether to have these here (or only when you try to spend extra, or just have you click on the debt counters)
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
@@ -3702,10 +3718,9 @@ P.action_round_core = {
 		push_undo()
 		handle_construct_squadron_button()
 	},
-	military_upgrade() {  	// TBD: click on a basic war tile to upgrade it
+	basic_war(t) {
 		push_undo()
-		//handle_military_upgrade()
-		////
+		handle_military_upgrade(t)
 	},
 	buy_bonus_war_tile() {	// TBD: buy a bonus war tile, and deploy it into the next war
 
