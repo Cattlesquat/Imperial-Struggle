@@ -912,6 +912,18 @@ function on_blur_advantage_tip() {
 	tooltip.innerHTML = ""
 }
 
+/*
+
+document.addEventListener("mousemove", function(e) {
+	let tooltip = document.querySelector("#tooltip")
+	if (tooltip.classList.contains("show")) {
+		tooltip.style.left = (e.clientX - tooltip.offsetWidth / 2) + "px"
+		tooltip.style.top = (e.clientY - tooltip.offsetHeight - 15) + "px"
+	}
+})
+
+*/
+
 function advantage_class_name(a) {
 	return `advantage.a${a}`
 }
