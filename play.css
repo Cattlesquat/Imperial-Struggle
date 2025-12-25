@@ -1042,24 +1042,34 @@ tiles75/square/investment_reverse.png
 
 
 #tooltip {
-    display: none;
-    pointer-events: none;
-    position: fixed;
-    z-index: 600;
-    right: 240px;
-    top: 60px;
+	display: none;
+	pointer-events: none;
+	position: fixed;
+	z-index: 600;
 }
 
 #tooltip.show {
-    display: block;
+	display: flex;
+	gap: 10px;
+}
+
+#tooltip .advantage-front,
+#tooltip .advantage-back {
+	width: 74px;
+	height: 74px;
+	background-size: 74px 74px;
+}
+
+.marker.advantage {
+	z-index: 100;
 }
 
 @media (max-width: 800px) {
-    #tooltip {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-    }
+	#tooltip {
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+	}
 }
