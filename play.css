@@ -1041,16 +1041,29 @@ tiles75/square/investment_reverse.png
 .card.ministry_card.c26 { background-image: url(cards100/ministry_26.avif) }
 
 
+#status {
+    background-color: #f0dcbd;                   /* #e5c089; */ /* light tan color grabbed from mapboard */
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
 #tooltip {
 	display: none;
 	pointer-events: none;
 	position: fixed;
 	z-index: 600;
+    left: 0px;
+    bottom: 23px;
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
 }
 
 #tooltip.show {
 	display: flex;
-	gap: 10px;
+	/* gap: 10px; */
+    background: #f0dcbd; /* light tan color grabbed from mapboard */
 }
 
 #tooltip .advantage-front,
@@ -1058,6 +1071,12 @@ tiles75/square/investment_reverse.png
 	width: 74px;
 	height: 74px;
 	background-size: 74px 74px;
+    margin: 3px;
+        /* border-width: 4px;
+        border-color: #48143a; /* deep purple color grabbed from mapboard frame
+        border-style: double;
+        */
+
 }
 
 .marker.advantage {

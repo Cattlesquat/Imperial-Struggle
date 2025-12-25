@@ -897,16 +897,12 @@ function advantage_tooltip_image(a, onoff) {
 }
 
 function on_focus_advantage_tip(a) {
-	document.getElementById("tooltip").className = `marker show ${advantage_class_name(a)}` // remove ??
-	console.log("on focus: " + a + "  " + advantage_class_name(a))  // remove ??
 	let tooltip = document.getElementById("tooltip")
 	tooltip.innerHTML = `<div class="marker square advantage a${a} advantage-front"></div><div class="marker square advantage a${a} reverse advantage-back"></div>`
 	tooltip.classList.add("show")
 }
 
 function on_blur_advantage_tip() {
-	document.getElementById("tooltip").classList = "marker"  // remove ??
-	console.log("on blur: " )  // remove ??
 	let tooltip = document.getElementById("tooltip")
 	tooltip.classList.remove("show")
 	tooltip.innerHTML = ""
