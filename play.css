@@ -232,21 +232,31 @@ body.shift .marker { opacity: 25% }
 }
 
 .space.theater.action {
-	border-color: yellow;
+    animation: action-pulse 4s ease-in-out infinite;
 }
 
 .huguenots.action {
-    border: 4px solid yellow;
+    animation: action-pulse 4s ease-in-out infinite;
 }
 
 @keyframes action-pulse {
     0%, 100% {
-        box-shadow: 0 0 0 5px #ffb900, 0 0 12px 4px #ffb900; /* Baseline */
+        box-shadow: 0 0 0 4px #ffb900, 0 0 12px 4px #ffb900; /* Baseline */
     }
     83.5% {
-        box-shadow: 0 0 0 5px #ffff00, 0 0 12px 4px #ffff00; /* ... a slow drift to here, then a quick pulse back */
+        box-shadow: 0 0 0 4px #ffff00, 0 0 12px 4px #ffff00; /* ... a slow drift to here, then a quick pulse back */
     }
 }
+
+@keyframes action-pulse-card {
+    0%, 100% {
+        box-shadow: 0 0 0 3px #ffb900, 0 0 6px 3px #ffb900; /* Baseline */
+    }
+    83.5% {
+        box-shadow: 0 0 0 3px #ffff00, 0 0 6px 3px #ffff00; /* ... a slow drift to here, then a quick pulse back */
+    }
+}
+
 
 @keyframes action-pulse-shape {
     0%, 100% {
@@ -260,10 +270,10 @@ body.shift .marker { opacity: 25% }
 
 @keyframes dirty-pulse-british {
     0%, 100% {
-        box-shadow: 0 0 0 5px crimson, 0 0 12px 4px crimson; /* Baseline */
+        box-shadow: 0 0 0 4px crimson, 0 0 12px 4px crimson; /* Baseline */
     }
     83.5% {
-        box-shadow: 0 0 0 5px salmon, 0 0 12px 4px salmon; /* ... a slow drift to here, then a quick pulse back */
+        box-shadow: 0 0 0 4px salmon, 0 0 12px 4px salmon; /* ... a slow drift to here, then a quick pulse back */
     }
 }
 
@@ -280,10 +290,10 @@ body.shift .marker { opacity: 25% }
 
 @keyframes dirty-pulse-french {
     0%, 100% {
-        box-shadow: 0 0 0 5px royalblue, 0 0 12px 4px royalblue; /* Baseline */
+        box-shadow: 0 0 0 4px royalblue, 0 0 12px 4px royalblue; /* Baseline */
     }
     83.5% {
-        box-shadow: 0 0 0 5px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
+        box-shadow: 0 0 0 4px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
     }
 }
 
@@ -368,15 +378,18 @@ body.shift .marker { opacity: 25% }
 }
 
 .marker.investment.action {
-	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+    animation: action-pulse 4s ease-in-out infinite;
+	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
 }
 
 .marker.advantage.action {
-	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+    animation: action-pulse 4s ease-in-out infinite;
+    /* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
 }
 
 .card.action {
-	box-shadow: 0 0 0 3px yellow;
+    animation: action-pulse-card 4s ease-in-out infinite;
+    /* box-shadow: 0 0 0 3px yellow; */
 }
 
 /* COMPONENT OVERLAYS */
@@ -470,9 +483,21 @@ body.shift .marker { opacity: 25% }
 
 /* IMAGES + ACTION OUTLINE */
 
-.marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png), url(images/hex-sm-yellow.svg) }
-.marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png), url(images/hex-sm-yellow.svg) }
-.marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png), url(images/hex-sm-yellow.svg) }
+.marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
+.marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
+
+/* BR-- this could probably be less brutal with a different piece of art */
+.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: action-pulse-shape 4s ease-in-out infinite;
+}
 
 
 
@@ -614,288 +639,335 @@ body.shift .marker { opacity: 25% }
 .marker.action_0.fr { background-image: url(tiles75/square-sm/action_fr_reverse.png) }
 
 .marker.war-7yw.br { background-image: url(tiles75/hex/war_7yw_br_reverse.png) }
-.marker.war-7yw.br.action { background-image: url(tiles75/hex/war_7yw_br_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-7yw.br.action { background-image: url(tiles75/hex/war_7yw_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-7yw.fr { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) }
-.marker.war-7yw.fr.action { background-image: url(tiles75/hex/war_7yw_fr_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-7yw.fr.action { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-awi.br { background-image: url(tiles75/hex/war_awi_br_reverse.png) }
-.marker.war-awi.br.action { background-image: url(tiles75/hex/war_awi_br_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-awi.br.action { background-image: url(tiles75/hex/war_awi_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-awi.fr { background-image: url(tiles75/hex/war_awi_fr_reverse.png) }
-.marker.war-awi.fr.action { background-image: url(tiles75/hex/war_awi_fr_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-awi.fr.action { background-image: url(tiles75/hex/war_awi_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-was.br { background-image: url(tiles75/hex/war_was_br_reverse.png) }
-.marker.war-was.br.action { background-image: url(tiles75/hex/war_was_br_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-was.br.action { background-image: url(tiles75/hex/war_was_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-was.fr { background-image: url(tiles75/hex/war_was_fr_reverse.png) }
-.marker.war-was.fr.action { background-image: url(tiles75/hex/war_was_fr_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-was.fr.action { background-image: url(tiles75/hex/war_was_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-wss.br { background-image: url(tiles75/hex/war_wss_br_reverse.png) }
-.marker.war-wss.br.action { background-image: url(tiles75/hex/war_wss_br_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-wss.br.action { background-image: url(tiles75/hex/war_wss_br_reverse.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-wss.fr { background-image: url(tiles75/hex/war_wss_fr_reverse.png) }
-.marker.war-wss.fr.action { background-image: url(tiles75/hex/war_wss_fr_reverse.png), url(images/hex-sm-yellow.svg) }
+.marker.war-wss.fr.action { background-image: url(tiles75/hex/war_wss_fr_reverse.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic.br { background-image: url(tiles75/hex/warbasic_reverse_br.png) }
-.marker.war-basic.br.action { background-image: url(tiles75/hex/warbasic_reverse_br.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic.br.action { background-image: url(tiles75/hex/warbasic_reverse_br.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic.fr { background-image: url(tiles75/hex/warbasic_reverse_fr.png) }
-.marker.war-basic.fr.action { background-image: url(tiles75/hex/warbasic_reverse_fr.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic.fr.action { background-image: url(tiles75/hex/warbasic_reverse_fr.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war0 { background-image: url(tiles75/hex/war00_wss_fr_vendome.png) }
-.marker.war0.action { background-image: url(tiles75/hex/war00_wss_fr_vendome.png), url(images/hex-sm-yellow.svg) }
+.marker.war0.action { background-image: url(tiles75/hex/war00_wss_fr_vendome.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war1 { background-image: url(tiles75/hex/war01_wss_fr_de_villars.png) }
-.marker.war1.action { background-image: url(tiles75/hex/war01_wss_fr_de_villars.png), url(images/hex-sm-yellow.svg) }
+.marker.war1.action { background-image: url(tiles75/hex/war01_wss_fr_de_villars.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war2 { background-image: url(tiles75/hex/war02_wss_fr_berwick.png) }
-.marker.war2.action { background-image: url(tiles75/hex/war02_wss_fr_berwick.png), url(images/hex-sm-yellow.svg) }
+.marker.war2.action { background-image: url(tiles75/hex/war02_wss_fr_berwick.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war3 { background-image: url(tiles75/hex/war03_wss_fr_cadiz_refused.png) }
-.marker.war3.action { background-image: url(tiles75/hex/war03_wss_fr_cadiz_refused.png), url(images/hex-sm-yellow.svg) }
+.marker.war3.action { background-image: url(tiles75/hex/war03_wss_fr_cadiz_refused.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war4 { background-image: url(tiles75/hex/war04_wss_fr_d_estrees.png) }
-.marker.war4.action { background-image: url(tiles75/hex/war04_wss_fr_d_estrees.png), url(images/hex-sm-yellow.svg) }
+.marker.war4.action { background-image: url(tiles75/hex/war04_wss_fr_d_estrees.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war5 { background-image: url(tiles75/hex/war05_wss_fr_musketeers.png) }
-.marker.war5.action { background-image: url(tiles75/hex/war05_wss_fr_musketeers.png), url(images/hex-sm-yellow.svg) }
+.marker.war5.action { background-image: url(tiles75/hex/war05_wss_fr_musketeers.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war6 { background-image: url(tiles75/hex/war06_wss_fr_d_artagnan.png) }
-.marker.war6.action { background-image: url(tiles75/hex/war06_wss_fr_d_artagnan.png), url(images/hex-sm-yellow.svg) }
+.marker.war6.action { background-image: url(tiles75/hex/war06_wss_fr_d_artagnan.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war7 { background-image: url(tiles75/hex/war07_wss_fr_maison_du_roi.png) }
-.marker.war7.action { background-image: url(tiles75/hex/war07_wss_fr_maison_du_roi.png), url(images/hex-sm-yellow.svg) }
+.marker.war7.action { background-image: url(tiles75/hex/war07_wss_fr_maison_du_roi.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war8 { background-image: url(tiles75/hex/war08_wss_fr_boufflers.png) }
-.marker.war8.action { background-image: url(tiles75/hex/war08_wss_fr_boufflers.png), url(images/hex-sm-yellow.svg) }
+.marker.war8.action { background-image: url(tiles75/hex/war08_wss_fr_boufflers.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war9 { background-image: url(tiles75/hex/war09_wss_fr_de_tesse.png) }
-.marker.war9.action { background-image: url(tiles75/hex/war09_wss_fr_de_tesse.png), url(images/hex-sm-yellow.svg) }
+.marker.war9.action { background-image: url(tiles75/hex/war09_wss_fr_de_tesse.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war10 { background-image: url(tiles75/hex/war10_wss_fr_crack_troops.png) }
-.marker.war10.action { background-image: url(tiles75/hex/war10_wss_fr_crack_troops.png), url(images/hex-sm-yellow.svg) }
+.marker.war10.action { background-image: url(tiles75/hex/war10_wss_fr_crack_troops.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war11 { background-image: url(tiles75/hex/war11_wss_fr_ultima_ratio_regum.png) }
-.marker.war11.action { background-image: url(tiles75/hex/war11_wss_fr_ultima_ratio_regum.png), url(images/hex-sm-yellow.svg) }
+.marker.war11.action { background-image: url(tiles75/hex/war11_wss_fr_ultima_ratio_regum.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war12 { background-image: url(tiles75/hex/war12_wss_br_marlborough.png) }
-.marker.war12.action { background-image: url(tiles75/hex/war12_wss_br_marlborough.png), url(images/hex-sm-yellow.svg) }
+.marker.war12.action { background-image: url(tiles75/hex/war12_wss_br_marlborough.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war13 { background-image: url(tiles75/hex/war13_wss_br_prince_eugene.png) }
-.marker.war13.action { background-image: url(tiles75/hex/war13_wss_br_prince_eugene.png), url(images/hex-sm-yellow.svg) }
+.marker.war13.action { background-image: url(tiles75/hex/war13_wss_br_prince_eugene.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war14 { background-image: url(tiles75/hex/war14_wss_br_church.png) }
-.marker.war14.action { background-image: url(tiles75/hex/war14_wss_br_church.png), url(images/hex-sm-yellow.svg) }
+.marker.war14.action { background-image: url(tiles75/hex/war14_wss_br_church.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war15 { background-image: url(tiles75/hex/war15_wss_br_galway.png) }
-.marker.war15.action { background-image: url(tiles75/hex/war15_wss_br_galway.png), url(images/hex-sm-yellow.svg) }
+.marker.war15.action { background-image: url(tiles75/hex/war15_wss_br_galway.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war16 { background-image: url(tiles75/hex/war16_wss_br_rooke.png) }
-.marker.war16.action { background-image: url(tiles75/hex/war16_wss_br_rooke.png), url(images/hex-sm-yellow.svg) }
+.marker.war16.action { background-image: url(tiles75/hex/war16_wss_br_rooke.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war17 { background-image: url(tiles75/hex/war17_wss_br_savoy_defects.png) }
-.marker.war17.action { background-image: url(tiles75/hex/war17_wss_br_savoy_defects.png), url(images/hex-sm-yellow.svg) }
+.marker.war17.action { background-image: url(tiles75/hex/war17_wss_br_savoy_defects.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war18 { background-image: url(tiles75/hex/war18_wss_br_foot_guards.png) }
-.marker.war18.action { background-image: url(tiles75/hex/war18_wss_br_foot_guards.png), url(images/hex-sm-yellow.svg) }
+.marker.war18.action { background-image: url(tiles75/hex/war18_wss_br_foot_guards.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war19 { background-image: url(tiles75/hex/war19_wss_br_united_parliament.png) }
-.marker.war19.action { background-image: url(tiles75/hex/war19_wss_br_united_parliament.png), url(images/hex-sm-yellow.svg) }
+.marker.war19.action { background-image: url(tiles75/hex/war19_wss_br_united_parliament.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war20 { background-image: url(tiles75/hex/war20_wss_br_huguenot_rebels.png) }
-.marker.war20.action { background-image: url(tiles75/hex/war20_wss_br_huguenot_rebels.png), url(images/hex-sm-yellow.svg) }
+.marker.war20.action { background-image: url(tiles75/hex/war20_wss_br_huguenot_rebels.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war21 { background-image: url(tiles75/hex/war21_wss_br_prize_hunting.png) }
-.marker.war21.action { background-image: url(tiles75/hex/war21_wss_br_prize_hunting.png), url(images/hex-sm-yellow.svg) }
+.marker.war21.action { background-image: url(tiles75/hex/war21_wss_br_prize_hunting.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war22 { background-image: url(tiles75/hex/war22_wss_br_leopold.png) }
-.marker.war22.action { background-image: url(tiles75/hex/war22_wss_br_leopold.png), url(images/hex-sm-yellow.svg) }
+.marker.war22.action { background-image: url(tiles75/hex/war22_wss_br_leopold.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war23 { background-image: url(tiles75/hex/war23_wss_br_louis_william.png) }
-.marker.war23.action { background-image: url(tiles75/hex/war23_wss_br_louis_william.png), url(images/hex-sm-yellow.svg) }
+.marker.war23.action { background-image: url(tiles75/hex/war23_wss_br_louis_william.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war24 { background-image: url(tiles75/hex/war24_was_fr_frederick.png) }
-.marker.war24.action { background-image: url(tiles75/hex/war24_was_fr_frederick.png), url(images/hex-sm-yellow.svg) }
+.marker.war24.action { background-image: url(tiles75/hex/war24_was_fr_frederick.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war25 { background-image: url(tiles75/hex/war25_was_fr_saxe.png) }
-.marker.war25.action { background-image: url(tiles75/hex/war25_was_fr_saxe.png), url(images/hex-sm-yellow.svg) }
+.marker.war25.action { background-image: url(tiles75/hex/war25_was_fr_saxe.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war26 { background-image: url(tiles75/hex/war26_was_fr_bonnie_prince_charlie.png) }
-.marker.war26.action { background-image: url(tiles75/hex/war26_was_fr_bonnie_prince_charlie.png), url(images/hex-sm-yellow.svg) }
+.marker.war26.action { background-image: url(tiles75/hex/war26_was_fr_bonnie_prince_charlie.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war27 { background-image: url(tiles75/hex/war27_was_fr_castries.png) }
-.marker.war27.action { background-image: url(tiles75/hex/war27_was_fr_castries.png), url(images/hex-sm-yellow.svg) }
+.marker.war27.action { background-image: url(tiles75/hex/war27_was_fr_castries.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war28 { background-image: url(tiles75/hex/war28_was_fr_bourdonnais.png) }
-.marker.war28.action { background-image: url(tiles75/hex/war28_was_fr_bourdonnais.png), url(images/hex-sm-yellow.svg) }
+.marker.war28.action { background-image: url(tiles75/hex/war28_was_fr_bourdonnais.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war29 { background-image: url(tiles75/hex/war29_was_fr_murray.png) }
-.marker.war29.action { background-image: url(tiles75/hex/war29_was_fr_murray.png), url(images/hex-sm-yellow.svg) }
+.marker.war29.action { background-image: url(tiles75/hex/war29_was_fr_murray.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war30 { background-image: url(tiles75/hex/war30_was_fr_contades.png) }
-.marker.war30.action { background-image: url(tiles75/hex/war30_was_fr_contades.png), url(images/hex-sm-yellow.svg) }
+.marker.war30.action { background-image: url(tiles75/hex/war30_was_fr_contades.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war31 { background-image: url(tiles75/hex/war31_was_fr_o_sullivan.png) }
-.marker.war31.action { background-image: url(tiles75/hex/war31_was_fr_o_sullivan.png), url(images/hex-sm-yellow.svg) }
+.marker.war31.action { background-image: url(tiles75/hex/war31_was_fr_o_sullivan.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war32 { background-image: url(tiles75/hex/war32_was_fr_de_coigny.png) }
-.marker.war32.action { background-image: url(tiles75/hex/war32_was_fr_de_coigny.png), url(images/hex-sm-yellow.svg) }
+.marker.war32.action { background-image: url(tiles75/hex/war32_was_fr_de_coigny.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war33 { background-image: url(tiles75/hex/war33_was_fr_nizams_favor.png) }
-.marker.war33.action { background-image: url(tiles75/hex/war33_was_fr_nizams_favor.png), url(images/hex-sm-yellow.svg) }
+.marker.war33.action { background-image: url(tiles75/hex/war33_was_fr_nizams_favor.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war34 { background-image: url(tiles75/hex/war34_was_fr_lowendal.png) }
-.marker.war34.action { background-image: url(tiles75/hex/war34_was_fr_lowendal.png), url(images/hex-sm-yellow.svg) }
+.marker.war34.action { background-image: url(tiles75/hex/war34_was_fr_lowendal.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war35 { background-image: url(tiles75/hex/war35_was_fr_von_schwerin.png) }
-.marker.war35.action { background-image: url(tiles75/hex/war35_was_fr_von_schwerin.png), url(images/hex-sm-yellow.svg) }
+.marker.war35.action { background-image: url(tiles75/hex/war35_was_fr_von_schwerin.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war36 { background-image: url(tiles75/hex/war36_was_br_clive.png) }
-.marker.war36.action { background-image: url(tiles75/hex/war36_was_br_clive.png), url(images/hex-sm-yellow.svg) }
+.marker.war36.action { background-image: url(tiles75/hex/war36_was_br_clive.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war37 { background-image: url(tiles75/hex/war37_was_br_stair.png) }
-.marker.war37.action { background-image: url(tiles75/hex/war37_was_br_stair.png), url(images/hex-sm-yellow.svg) }
+.marker.war37.action { background-image: url(tiles75/hex/war37_was_br_stair.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war38 { background-image: url(tiles75/hex/war38_was_br_boscawen.png) }
-.marker.war38.action { background-image: url(tiles75/hex/war38_was_br_boscawen.png), url(images/hex-sm-yellow.svg) }
+.marker.war38.action { background-image: url(tiles75/hex/war38_was_br_boscawen.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war39 { background-image: url(tiles75/hex/war39_was_br_francois_de_bussy.png) }
-.marker.war39.action { background-image: url(tiles75/hex/war39_was_br_francois_de_bussy.png), url(images/hex-sm-yellow.svg) }
+.marker.war39.action { background-image: url(tiles75/hex/war39_was_br_francois_de_bussy.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war40 { background-image: url(tiles75/hex/war40_was_br_treaty_of_warsaw.png) }
-.marker.war40.action { background-image: url(tiles75/hex/war40_was_br_treaty_of_warsaw.png), url(images/hex-sm-yellow.svg) }
+.marker.war40.action { background-image: url(tiles75/hex/war40_was_br_treaty_of_warsaw.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war41 { background-image: url(tiles75/hex/war41_was_br_warren.png) }
-.marker.war41.action { background-image: url(tiles75/hex/war41_was_br_warren.png), url(images/hex-sm-yellow.svg) }
+.marker.war41.action { background-image: url(tiles75/hex/war41_was_br_warren.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war42 { background-image: url(tiles75/hex/war42_was_br_de_lorraine.png) }
-.marker.war42.action { background-image: url(tiles75/hex/war42_was_br_de_lorraine.png), url(images/hex-sm-yellow.svg) }
+.marker.war42.action { background-image: url(tiles75/hex/war42_was_br_de_lorraine.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war43 { background-image: url(tiles75/hex/war43_was_br_king_george_ii.png) }
-.marker.war43.action { background-image: url(tiles75/hex/war43_was_br_king_george_ii.png), url(images/hex-sm-yellow.svg) }
+.marker.war43.action { background-image: url(tiles75/hex/war43_was_br_king_george_ii.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war44 { background-image: url(tiles75/hex/war44_was_br_chaos_in_bavaria.png) }
-.marker.war44.action { background-image: url(tiles75/hex/war44_was_br_chaos_in_bavaria.png), url(images/hex-sm-yellow.svg) }
+.marker.war44.action { background-image: url(tiles75/hex/war44_was_br_chaos_in_bavaria.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war45 { background-image: url(tiles75/hex/war45_was_br_hungarian_enthusiasm.png) }
-.marker.war45.action { background-image: url(tiles75/hex/war45_was_br_hungarian_enthusiasm.png), url(images/hex-sm-yellow.svg) }
+.marker.war45.action { background-image: url(tiles75/hex/war45_was_br_hungarian_enthusiasm.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war46 { background-image: url(tiles75/hex/war46_was_br_lawrence.png) }
-.marker.war46.action { background-image: url(tiles75/hex/war46_was_br_lawrence.png), url(images/hex-sm-yellow.svg) }
+.marker.war46.action { background-image: url(tiles75/hex/war46_was_br_lawrence.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war47 { background-image: url(tiles75/hex/war47_was_br_seckendorff.png) }
-.marker.war47.action { background-image: url(tiles75/hex/war47_was_br_seckendorff.png), url(images/hex-sm-yellow.svg) }
+.marker.war47.action { background-image: url(tiles75/hex/war47_was_br_seckendorff.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war48 { background-image: url(tiles75/hex/war48_7yw_fr_castries.png) }
-.marker.war48.action { background-image: url(tiles75/hex/war48_7yw_fr_castries.png), url(images/hex-sm-yellow.svg) }
+.marker.war48.action { background-image: url(tiles75/hex/war48_7yw_fr_castries.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war49 { background-image: url(tiles75/hex/war49_7yw_fr_montcalm.png) }
-.marker.war49.action { background-image: url(tiles75/hex/war49_7yw_fr_montcalm.png), url(images/hex-sm-yellow.svg) }
+.marker.war49.action { background-image: url(tiles75/hex/war49_7yw_fr_montcalm.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war50 { background-image: url(tiles75/hex/war50_7yw_fr_bougainville.png) }
-.marker.war50.action { background-image: url(tiles75/hex/war50_7yw_fr_bougainville.png), url(images/hex-sm-yellow.svg) }
+.marker.war50.action { background-image: url(tiles75/hex/war50_7yw_fr_bougainville.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war51 { background-image: url(tiles75/hex/war51_7yw_fr_coureurs_des_bois.png) }
-.marker.war51.action { background-image: url(tiles75/hex/war51_7yw_fr_coureurs_des_bois.png), url(images/hex-sm-yellow.svg) }
+.marker.war51.action { background-image: url(tiles75/hex/war51_7yw_fr_coureurs_des_bois.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war52 { background-image: url(tiles75/hex/war52_7yw_fr_nawabs_rally.png) }
-.marker.war52.action { background-image: url(tiles75/hex/war52_7yw_fr_nawabs_rally.png), url(images/hex-sm-yellow.svg) }
+.marker.war52.action { background-image: url(tiles75/hex/war52_7yw_fr_nawabs_rally.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war53 { background-image: url(tiles75/hex/war53_7yw_fr_villiers.png) }
-.marker.war53.action { background-image: url(tiles75/hex/war53_7yw_fr_villiers.png), url(images/hex-sm-yellow.svg) }
+.marker.war53.action { background-image: url(tiles75/hex/war53_7yw_fr_villiers.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war54 { background-image: url(tiles75/hex/war54_7yw_fr_broglie.png) }
-.marker.war54.action { background-image: url(tiles75/hex/war54_7yw_fr_broglie.png), url(images/hex-sm-yellow.svg) }
+.marker.war54.action { background-image: url(tiles75/hex/war54_7yw_fr_broglie.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war55 { background-image: url(tiles75/hex/war55_7yw_fr_lally.png) }
-.marker.war55.action { background-image: url(tiles75/hex/war55_7yw_fr_lally.png), url(images/hex-sm-yellow.svg) }
+.marker.war55.action { background-image: url(tiles75/hex/war55_7yw_fr_lally.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war56 { background-image: url(tiles75/hex/war56_7yw_fr_beaujeu.png) }
-.marker.war56.action { background-image: url(tiles75/hex/war56_7yw_fr_beaujeu.png), url(images/hex-sm-yellow.svg) }
+.marker.war56.action { background-image: url(tiles75/hex/war56_7yw_fr_beaujeu.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war57 { background-image: url(tiles75/hex/war57_7yw_fr_hadiks_raid.png) }
-.marker.war57.action { background-image: url(tiles75/hex/war57_7yw_fr_hadiks_raid.png), url(images/hex-sm-yellow.svg) }
+.marker.war57.action { background-image: url(tiles75/hex/war57_7yw_fr_hadiks_raid.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war58 { background-image: url(tiles75/hex/war58_7yw_fr_chevert.png) }
-.marker.war58.action { background-image: url(tiles75/hex/war58_7yw_fr_chevert.png), url(images/hex-sm-yellow.svg) }
+.marker.war58.action { background-image: url(tiles75/hex/war58_7yw_fr_chevert.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war59 { background-image: url(tiles75/hex/war59_7yw_fr_monongahela_ambush.png) }
-.marker.war59.action { background-image: url(tiles75/hex/war59_7yw_fr_monongahela_ambush.png), url(images/hex-sm-yellow.svg) }
+.marker.war59.action { background-image: url(tiles75/hex/war59_7yw_fr_monongahela_ambush.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war60 { background-image: url(tiles75/hex/war60_7yw_br_clive.png) }
-.marker.war60.action { background-image: url(tiles75/hex/war60_7yw_br_clive.png), url(images/hex-sm-yellow.svg) }
+.marker.war60.action { background-image: url(tiles75/hex/war60_7yw_br_clive.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war61 { background-image: url(tiles75/hex/war61_7yw_br_old_fritz.png) }
-.marker.war61.action { background-image: url(tiles75/hex/war61_7yw_br_old_fritz.png), url(images/hex-sm-yellow.svg) }
+.marker.war61.action { background-image: url(tiles75/hex/war61_7yw_br_old_fritz.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war62 { background-image: url(tiles75/hex/war62_7yw_br_amherst.png) }
-.marker.war62.action { background-image: url(tiles75/hex/war62_7yw_br_amherst.png), url(images/hex-sm-yellow.svg) }
+.marker.war62.action { background-image: url(tiles75/hex/war62_7yw_br_amherst.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war63 { background-image: url(tiles75/hex/war63_7yw_br_coote.png) }
-.marker.war63.action { background-image: url(tiles75/hex/war63_7yw_br_coote.png), url(images/hex-sm-yellow.svg) }
+.marker.war63.action { background-image: url(tiles75/hex/war63_7yw_br_coote.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war64 { background-image: url(tiles75/hex/war64_7yw_br_morta_la_bestia.png) }
-.marker.war64.action { background-image: url(tiles75/hex/war64_7yw_br_morta_la_bestia.png), url(images/hex-sm-yellow.svg) }
+.marker.war64.action { background-image: url(tiles75/hex/war64_7yw_br_morta_la_bestia.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war65 { background-image: url(tiles75/hex/war65_7yw_br_wolfe.png) }
-.marker.war65.action { background-image: url(tiles75/hex/war65_7yw_br_wolfe.png), url(images/hex-sm-yellow.svg) }
+.marker.war65.action { background-image: url(tiles75/hex/war65_7yw_br_wolfe.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war66 { background-image: url(tiles75/hex/war66_7yw_br_granby.png) }
-.marker.war66.action { background-image: url(tiles75/hex/war66_7yw_br_granby.png), url(images/hex-sm-yellow.svg) }
+.marker.war66.action { background-image: url(tiles75/hex/war66_7yw_br_granby.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war67 { background-image: url(tiles75/hex/war67_7yw_br_sepoy_veterans.png) }
-.marker.war67.action { background-image: url(tiles75/hex/war67_7yw_br_sepoy_veterans.png), url(images/hex-sm-yellow.svg) }
+.marker.war67.action { background-image: url(tiles75/hex/war67_7yw_br_sepoy_veterans.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war68 { background-image: url(tiles75/hex/war68_7yw_br_damned_audacity.png) }
-.marker.war68.action { background-image: url(tiles75/hex/war68_7yw_br_damned_audacity.png), url(images/hex-sm-yellow.svg) }
+.marker.war68.action { background-image: url(tiles75/hex/war68_7yw_br_damned_audacity.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war69 { background-image: url(tiles75/hex/war69_7yw_br_johnson.png) }
-.marker.war69.action { background-image: url(tiles75/hex/war69_7yw_br_johnson.png), url(images/hex-sm-yellow.svg) }
+.marker.war69.action { background-image: url(tiles75/hex/war69_7yw_br_johnson.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war70 { background-image: url(tiles75/hex/war70_7yw_br_bradstreet.png) }
-.marker.war70.action { background-image: url(tiles75/hex/war70_7yw_br_bradstreet.png), url(images/hex-sm-yellow.svg) }
+.marker.war70.action { background-image: url(tiles75/hex/war70_7yw_br_bradstreet.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war71 { background-image: url(tiles75/hex/war71_7yw_br_monckton.png) }
-.marker.war71.action { background-image: url(tiles75/hex/war71_7yw_br_monckton.png), url(images/hex-sm-yellow.svg) }
+.marker.war71.action { background-image: url(tiles75/hex/war71_7yw_br_monckton.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war72 { background-image: url(tiles75/hex/war72_awi_fr_lafayette.png) }
-.marker.war72.action { background-image: url(tiles75/hex/war72_awi_fr_lafayette.png), url(images/hex-sm-yellow.svg) }
+.marker.war72.action { background-image: url(tiles75/hex/war72_awi_fr_lafayette.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war73 { background-image: url(tiles75/hex/war73_awi_fr_washington.png) }
-.marker.war73.action { background-image: url(tiles75/hex/war73_awi_fr_washington.png), url(images/hex-sm-yellow.svg) }
+.marker.war73.action { background-image: url(tiles75/hex/war73_awi_fr_washington.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war74 { background-image: url(tiles75/hex/war74_awi_fr_arnold.png) }
-.marker.war74.action { background-image: url(tiles75/hex/war74_awi_fr_arnold.png), url(images/hex-sm-yellow.svg) }
+.marker.war74.action { background-image: url(tiles75/hex/war74_awi_fr_arnold.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war75 { background-image: url(tiles75/hex/war75_awi_fr_east_river_wind.png) }
-.marker.war75.action { background-image: url(tiles75/hex/war75_awi_fr_east_river_wind.png), url(images/hex-sm-yellow.svg) }
+.marker.war75.action { background-image: url(tiles75/hex/war75_awi_fr_east_river_wind.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war76 { background-image: url(tiles75/hex/war76_awi_fr_greene.png) }
-.marker.war76.action { background-image: url(tiles75/hex/war76_awi_fr_greene.png), url(images/hex-sm-yellow.svg) }
+.marker.war76.action { background-image: url(tiles75/hex/war76_awi_fr_greene.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war77 { background-image: url(tiles75/hex/war77_awi_fr_von_steuben.png) }
-.marker.war77.action { background-image: url(tiles75/hex/war77_awi_fr_von_steuben.png), url(images/hex-sm-yellow.svg) }
+.marker.war77.action { background-image: url(tiles75/hex/war77_awi_fr_von_steuben.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war78 { background-image: url(tiles75/hex/war78_awi_fr_de_grasse.png) }
-.marker.war78.action { background-image: url(tiles75/hex/war78_awi_fr_de_grasse.png), url(images/hex-sm-yellow.svg) }
+.marker.war78.action { background-image: url(tiles75/hex/war78_awi_fr_de_grasse.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war79 { background-image: url(tiles75/hex/war79_awi_fr_rochambeau.png) }
-.marker.war79.action { background-image: url(tiles75/hex/war79_awi_fr_rochambeau.png), url(images/hex-sm-yellow.svg) }
+.marker.war79.action { background-image: url(tiles75/hex/war79_awi_fr_rochambeau.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war80 { background-image: url(tiles75/hex/war80_awi_fr_bunker_hill.png) }
-.marker.war80.action { background-image: url(tiles75/hex/war80_awi_fr_bunker_hill.png), url(images/hex-sm-yellow.svg) }
+.marker.war80.action { background-image: url(tiles75/hex/war80_awi_fr_bunker_hill.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war81 { background-image: url(tiles75/hex/war81_awi_fr_castelnau.png) }
-.marker.war81.action { background-image: url(tiles75/hex/war81_awi_fr_castelnau.png), url(images/hex-sm-yellow.svg) }
+.marker.war81.action { background-image: url(tiles75/hex/war81_awi_fr_castelnau.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war82 { background-image: url(tiles75/hex/war82_awi_fr_morgans_rifles.png) }
-.marker.war82.action { background-image: url(tiles75/hex/war82_awi_fr_morgans_rifles.png), url(images/hex-sm-yellow.svg) }
+.marker.war82.action { background-image: url(tiles75/hex/war82_awi_fr_morgans_rifles.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war83 { background-image: url(tiles75/hex/war83_awi_fr_de_suffren.png) }
-.marker.war83.action { background-image: url(tiles75/hex/war83_awi_fr_de_suffren.png), url(images/hex-sm-yellow.svg) }
+.marker.war83.action { background-image: url(tiles75/hex/war83_awi_fr_de_suffren.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war84 { background-image: url(tiles75/hex/war84_awi_br_coote.png) }
-.marker.war84.action { background-image: url(tiles75/hex/war84_awi_br_coote.png), url(images/hex-sm-yellow.svg) }
+.marker.war84.action { background-image: url(tiles75/hex/war84_awi_br_coote.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war85 { background-image: url(tiles75/hex/war85_awi_br_rodney.png) }
-.marker.war85.action { background-image: url(tiles75/hex/war85_awi_br_rodney.png), url(images/hex-sm-yellow.svg) }
+.marker.war85.action { background-image: url(tiles75/hex/war85_awi_br_rodney.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war86 { background-image: url(tiles75/hex/war86_awi_br_anglo_dutch_conflict.png) }
-.marker.war86.action { background-image: url(tiles75/hex/war86_awi_br_anglo_dutch_conflict.png), url(images/hex-sm-yellow.svg) }
+.marker.war86.action { background-image: url(tiles75/hex/war86_awi_br_anglo_dutch_conflict.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war87 { background-image: url(tiles75/hex/war87_awi_br_carleton.png) }
-.marker.war87.action { background-image: url(tiles75/hex/war87_awi_br_carleton.png), url(images/hex-sm-yellow.svg) }
+.marker.war87.action { background-image: url(tiles75/hex/war87_awi_br_carleton.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war88 { background-image: url(tiles75/hex/war88_awi_br_hessians.png) }
-.marker.war88.action { background-image: url(tiles75/hex/war88_awi_br_hessians.png), url(images/hex-sm-yellow.svg) }
+.marker.war88.action { background-image: url(tiles75/hex/war88_awi_br_hessians.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war89 { background-image: url(tiles75/hex/war89_awi_br_howe.png) }
-.marker.war89.action { background-image: url(tiles75/hex/war89_awi_br_howe.png), url(images/hex-sm-yellow.svg) }
+.marker.war89.action { background-image: url(tiles75/hex/war89_awi_br_howe.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war90 { background-image: url(tiles75/hex/war90_awi_br_cornplanter.png) }
-.marker.war90.action { background-image: url(tiles75/hex/war90_awi_br_cornplanter.png), url(images/hex-sm-yellow.svg) }
+.marker.war90.action { background-image: url(tiles75/hex/war90_awi_br_cornplanter.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war91 { background-image: url(tiles75/hex/war91_awi_br_cornwallis.png) }
-.marker.war91.action { background-image: url(tiles75/hex/war91_awi_br_cornwallis.png), url(images/hex-sm-yellow.svg) }
+.marker.war91.action { background-image: url(tiles75/hex/war91_awi_br_cornwallis.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war92 { background-image: url(tiles75/hex/war92_awi_br_brants_volunteers.png) }
-.marker.war92.action { background-image: url(tiles75/hex/war92_awi_br_brants_volunteers.png), url(images/hex-sm-yellow.svg) }
+.marker.war92.action { background-image: url(tiles75/hex/war92_awi_br_brants_volunteers.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war93 { background-image: url(tiles75/hex/war93_awi_br_stuart.png) }
-.marker.war93.action { background-image: url(tiles75/hex/war93_awi_br_stuart.png), url(images/hex-sm-yellow.svg) }
+.marker.war93.action { background-image: url(tiles75/hex/war93_awi_br_stuart.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war94 { background-image: url(tiles75/hex/war94_awi_br_andre.png) }
-.marker.war94.action { background-image: url(tiles75/hex/war94_awi_br_andre.png), url(images/hex-sm-yellow.svg) }
+.marker.war94.action { background-image: url(tiles75/hex/war94_awi_br_andre.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war95 { background-image: url(tiles75/hex/war95_awi_br_arnolds_treason.png) }
-.marker.war95.action { background-image: url(tiles75/hex/war95_awi_br_arnolds_treason.png), url(images/hex-sm-yellow.svg) }
+.marker.war95.action { background-image: url(tiles75/hex/war95_awi_br_arnolds_treason.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war-basic0 { background-image: url(tiles75/hex/warbasic00_fr_2.png) }
-.marker.war-basic0.action { background-image: url(tiles75/hex/warbasic00_fr_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic0.action { background-image: url(tiles75/hex/warbasic00_fr_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic1 { background-image: url(tiles75/hex/warbasic01_fr_2.png) }
-.marker.war-basic1.action { background-image: url(tiles75/hex/warbasic01_fr_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic1.action { background-image: url(tiles75/hex/warbasic01_fr_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic2 { background-image: url(tiles75/hex/warbasic02_fr_2.png) }
-.marker.war-basic2.action { background-image: url(tiles75/hex/warbasic02_fr_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic2.action { background-image: url(tiles75/hex/warbasic02_fr_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic3 { background-image: url(tiles75/hex/warbasic03_fr_1.png) }
-.marker.war-basic3.action { background-image: url(tiles75/hex/warbasic03_fr_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic3.action { background-image: url(tiles75/hex/warbasic03_fr_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic4 { background-image: url(tiles75/hex/warbasic04_fr_1.png) }
-.marker.war-basic4.action { background-image: url(tiles75/hex/warbasic04_fr_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic4.action { background-image: url(tiles75/hex/warbasic04_fr_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic5 { background-image: url(tiles75/hex/warbasic05_fr_1.png) }
-.marker.war-basic5.action { background-image: url(tiles75/hex/warbasic05_fr_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic5.action { background-image: url(tiles75/hex/warbasic05_fr_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic6 { background-image: url(tiles75/hex/warbasic06_fr_1.png) }
-.marker.war-basic6.action { background-image: url(tiles75/hex/warbasic06_fr_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic6.action { background-image: url(tiles75/hex/warbasic06_fr_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic7 { background-image: url(tiles75/hex/warbasic07_fr_0debt.png) }
-.marker.war-basic7.action { background-image: url(tiles75/hex/warbasic07_fr_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic7.action { background-image: url(tiles75/hex/warbasic07_fr_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic8 { background-image: url(tiles75/hex/warbasic08_fr_0debt.png) }
-.marker.war-basic8.action { background-image: url(tiles75/hex/warbasic08_fr_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic8.action { background-image: url(tiles75/hex/warbasic08_fr_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic9 { background-image: url(tiles75/hex/warbasic09_fr_0debt.png) }
-.marker.war-basic9.action { background-image: url(tiles75/hex/warbasic09_fr_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic9.action { background-image: url(tiles75/hex/warbasic09_fr_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic10 { background-image: url(tiles75/hex/warbasic10_fr_0debt.png) }
-.marker.war-basic10.action { background-image: url(tiles75/hex/warbasic10_fr_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic10.action { background-image: url(tiles75/hex/warbasic10_fr_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic11 { background-image: url(tiles75/hex/warbasic11_fr_0fort.png) }
-.marker.war-basic11.action { background-image: url(tiles75/hex/warbasic11_fr_0fort.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic11.action { background-image: url(tiles75/hex/warbasic11_fr_0fort.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic12 { background-image: url(tiles75/hex/warbasic12_fr_0fort.png) }
-.marker.war-basic12.action { background-image: url(tiles75/hex/warbasic12_fr_0fort.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic12.action { background-image: url(tiles75/hex/warbasic12_fr_0fort.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic13 { background-image: url(tiles75/hex/warbasic13_fr_neg1flag.png) }
-.marker.war-basic13.action { background-image: url(tiles75/hex/warbasic13_fr_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic13.action { background-image: url(tiles75/hex/warbasic13_fr_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic14 { background-image: url(tiles75/hex/warbasic14_fr_neg1flag.png) }
-.marker.war-basic14.action { background-image: url(tiles75/hex/warbasic14_fr_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic14.action { background-image: url(tiles75/hex/warbasic14_fr_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic15 { background-image: url(tiles75/hex/warbasic15_fr_neg1flag.png) }
-.marker.war-basic15.action { background-image: url(tiles75/hex/warbasic15_fr_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic15.action { background-image: url(tiles75/hex/warbasic15_fr_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.war-basic16 { background-image: url(tiles75/hex/warbasic16_br_2.png) }
-.marker.war-basic16.action { background-image: url(tiles75/hex/warbasic16_br_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic16.action { background-image: url(tiles75/hex/warbasic16_br_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic17 { background-image: url(tiles75/hex/warbasic17_br_2.png) }
-.marker.war-basic17.action { background-image: url(tiles75/hex/warbasic17_br_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic17.action { background-image: url(tiles75/hex/warbasic17_br_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic18 { background-image: url(tiles75/hex/warbasic18_br_2.png) }
-.marker.war-basic18.action { background-image: url(tiles75/hex/warbasic18_br_2.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic18.action { background-image: url(tiles75/hex/warbasic18_br_2.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic19 { background-image: url(tiles75/hex/warbasic19_br_1.png) }
-.marker.war-basic19.action { background-image: url(tiles75/hex/warbasic19_br_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic19.action { background-image: url(tiles75/hex/warbasic19_br_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic20 { background-image: url(tiles75/hex/warbasic20_br_1.png) }
-.marker.war-basic20.action { background-image: url(tiles75/hex/warbasic20_br_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic20.action { background-image: url(tiles75/hex/warbasic20_br_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic21 { background-image: url(tiles75/hex/warbasic21_br_1.png) }
-.marker.war-basic21.action { background-image: url(tiles75/hex/warbasic21_br_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic21.action { background-image: url(tiles75/hex/warbasic21_br_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic22 { background-image: url(tiles75/hex/warbasic22_br_1.png) }
-.marker.war-basic22.action { background-image: url(tiles75/hex/warbasic22_br_1.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic22.action { background-image: url(tiles75/hex/warbasic22_br_1.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic23 { background-image: url(tiles75/hex/warbasic23_br_0debt.png) }
-.marker.war-basic23.action { background-image: url(tiles75/hex/warbasic23_br_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic23.action { background-image: url(tiles75/hex/warbasic23_br_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic24 { background-image: url(tiles75/hex/warbasic24_br_0debt.png) }
-.marker.war-basic24.action { background-image: url(tiles75/hex/warbasic24_br_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic24.action { background-image: url(tiles75/hex/warbasic24_br_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic25 { background-image: url(tiles75/hex/warbasic25_br_0debt.png) }
-.marker.war-basic25.action { background-image: url(tiles75/hex/warbasic25_br_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic25.action { background-image: url(tiles75/hex/warbasic25_br_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic26 { background-image: url(tiles75/hex/warbasic26_br_0debt.png) }
-.marker.war-basic26.action { background-image: url(tiles75/hex/warbasic26_br_0debt.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic26.action { background-image: url(tiles75/hex/warbasic26_br_0debt.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic27 { background-image: url(tiles75/hex/warbasic27_br_0fort.png) }
-.marker.war-basic27.action { background-image: url(tiles75/hex/warbasic27_br_0fort.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic27.action { background-image: url(tiles75/hex/warbasic27_br_0fort.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic28 { background-image: url(tiles75/hex/warbasic28_br_0fort.png) }
-.marker.war-basic28.action { background-image: url(tiles75/hex/warbasic28_br_0fort.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic28.action { background-image: url(tiles75/hex/warbasic28_br_0fort.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic29 { background-image: url(tiles75/hex/warbasic29_br_neg1flag.png) }
-.marker.war-basic29.action { background-image: url(tiles75/hex/warbasic29_br_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic29.action { background-image: url(tiles75/hex/warbasic29_br_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic30 { background-image: url(tiles75/hex/warbasic30_br_neg1flag.png) }
-.marker.war-basic30.action { background-image: url(tiles75/hex/warbasic30_br_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic30.action { background-image: url(tiles75/hex/warbasic30_br_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-basic31 { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png) }
-.marker.war-basic31.action { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png), url(images/hex-sm-yellow.svg) }
+.marker.war-basic31.action { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
+
+
+.marker.war-7yw.br { background-image: url(tiles75/hex/war_7yw_br_reverse.png) }
+.marker.war-7yw.br.action { background-image: url(tiles75/hex/war_7yw_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-7yw.fr { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) }
+.marker.war-7yw.fr.action { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-awi.br { background-image: url(tiles75/hex/war_awi_br_reverse.png) }
+.marker.war-awi.br.action { background-image: url(tiles75/hex/war_awi_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-awi.fr { background-image: url(tiles75/hex/war_awi_fr_reverse.png) }
+.marker.war-awi.fr.action { background-image: url(tiles75/hex/war_awi_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-was.br { background-image: url(tiles75/hex/war_was_br_reverse.png) }
+.marker.war-was.br.action { background-image: url(tiles75/hex/war_was_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-was.fr { background-image: url(tiles75/hex/war_was_fr_reverse.png) }
+.marker.war-was.fr.action { background-image: url(tiles75/hex/war_was_fr_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-wss.br { background-image: url(tiles75/hex/war_wss_br_reverse.png) }
+.marker.war-wss.br.action { background-image: url(tiles75/hex/war_wss_br_reverse.png)/* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-wss.fr { background-image: url(tiles75/hex/war_wss_fr_reverse.png) }
+.marker.war-wss.fr.action { background-image: url(tiles75/hex/war_wss_fr_reverse.png)/* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-basic.br { background-image: url(tiles75/hex/warbasic_reverse_br.png) }
+.marker.war-basic.br.action { background-image: url(tiles75/hex/warbasic_reverse_br.png)/* , url(images/hex-sm-yellow.svg) */ }
+.marker.war-basic.fr { background-image: url(tiles75/hex/warbasic_reverse_fr.png) }
+.marker.war-basic.fr.action { background-image: url(tiles75/hex/warbasic_reverse_fr.png)/* , url(images/hex-sm-yellow.svg) */ }
+
+
+/* BR - possibly less brutal ways to accomplish this */
+.marker.war-7yw.br.action:before, .marker.war-7yw.fr.action:before, .marker.war-awi.br.action:before, .marker.war-awi.fr.action:before, .marker.war-was.br.action:before, .marker.war-was.fr.action:before, .marker.war-wss.br.action:before, .marker.war-wss.fr.action:before, .marker.war-basic.fr.action:before, marker.war-basic.br.action:before,
+.marker.war0.action:before, .marker.war1.action:before, .marker.war2.action:before, .marker.war3.action:before, .marker.war4.action:before, .marker.war5.action:before, .marker.war6.action:before, .marker.war7.action:before, .marker.war8.action:before, .marker.war9.action:before,
+.marker.war10.action:before, .marker.war11.action:before, .marker.war12.action:before, .marker.war13.action:before, .marker.war14.action:before, .marker.war15.action:before, .marker.war16.action:before, .marker.war17.action:before, .marker.war18.action:before, .marker.war19.action:before,
+.marker.war20.action:before, .marker.war21.action:before, .marker.war22.action:before, .marker.war23.action:before, .marker.war24.action:before, .marker.war25.action:before, .marker.war26.action:before, .marker.war27.action:before, .marker.war28.action:before, .marker.war29.action:before,
+.marker.war30.action:before, .marker.war31.action:before, .marker.war32.action:before, .marker.war33.action:before, .marker.war34.action:before, .marker.war35.action:before, .marker.war36.action:before, .marker.war37.action:before, .marker.war38.action:before, .marker.war39.action:before,
+.marker.war40.action:before, .marker.war41.action:before, .marker.war42.action:before, .marker.war43.action:before, .marker.war44.action:before, .marker.war45.action:before, .marker.war46.action:before, .marker.war47.action:before, .marker.war48.action:before, .marker.war49.action:before,
+.marker.war50.action:before, .marker.war51.action:before, .marker.war52.action:before, .marker.war53.action:before, .marker.war54.action:before, .marker.war55.action:before, .marker.war56.action:before, .marker.war57.action:before, .marker.war58.action:before, .marker.war59.action:before,
+.marker.war60.action:before, .marker.war61.action:before, .marker.war62.action:before, .marker.war63.action:before, .marker.war64.action:before, .marker.war65.action:before, .marker.war66.action:before, .marker.war67.action:before, .marker.war68.action:before, .marker.war69.action:before,
+.marker.war70.action:before, .marker.war71.action:before, .marker.war72.action:before, .marker.war73.action:before, .marker.war74.action:before, .marker.war75.action:before, .marker.war76.action:before, .marker.war77.action:before, .marker.war78.action:before, .marker.war79.action:before,
+.marker.war80.action:before, .marker.war81.action:before, .marker.war82.action:before, .marker.war83.action:before, .marker.war84.action:before, .marker.war85.action:before, .marker.war86.action:before, .marker.war87.action:before, .marker.war88.action:before, .marker.war89.action:before,
+.marker.war90.action:before, .marker.war91.action:before, .marker.war92.action:before, .marker.war93.action:before, .marker.war94.action:before, .marker.war95.action:before, .marker.war96.action:before, .marker.war97.action:before, .marker.war98.action:before, .marker.war99.action:before,
+.marker.war-basic0.action:before, .marker.war-basic1.action:before, .marker.war-basic2.action:before, .marker.war-basic3.action:before, .marker.war-basic4.action:before, .marker.war-basic5.action:before, .marker.war-basic6.action:before, .marker.war-basic7.action:before, .marker.war-basic8.action:before, .marker.war-basic9.action:before, .marker.war-basic10.action:before, .marker.war-basic11.action:before, .marker.war-basic12.action:before, .marker.war-basic13.action:before, .marker.war-basic14.action:before, .marker.war-basic15.action:before, .marker.war-basic16.action:before, .marker.war-basic17.action:before, .marker.war-basic18.action:before, .marker.war-basic19.action:before, .marker.war-basic20.action:before, .marker.war-basic21.action:before, .marker.war-basic22.action:before, .marker.war-basic23.action:before, .marker.war-basic24.action:before, .marker.war-basic25.action:before, .marker.war-basic26.action:before, .marker.war-basic27.action:before, .marker.war-basic28.action:before, .marker.war-basic29.action:before, .marker.war-basic30.action:before, .marker.war-basic31.action:before
+{
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.83) translateX(-15px) translateY(-20px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: action-pulse-shape 4s ease-in-out infinite;
+}
 
 .marker.exhausted { background-image: url(tiles75/square-sm/exhausted.png) }
 .marker.exhausted.reverse { background-image: url(tiles75/square-sm/exhausted_reverse.png) }
