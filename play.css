@@ -213,6 +213,120 @@ body.shift .marker { opacity: 25% }
     border: 4px solid yellow;
 }
 
+@keyframes action-pulse-market {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #ffd700, 0 0 12px 4px #ffd700;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #ffb900, 0 0 12px 4px #ffb900;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #daa520, 0 0 12px 4px #daa520;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #f0c050, 0 0 12px 4px #f0c050;
+	}
+}
+
+@keyframes action-pulse-political {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #9370db, 0 0 12px 4px #9370db;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #8a5dc8, 0 0 12px 4px #8a5dc8;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #7b4bb0, 0 0 12px 4px #7b4bb0;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #9966cc, 0 0 12px 4px #9966cc;
+	}
+}
+
+@keyframes action-pulse-territory {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #6b8e23, 0 0 12px 4px #6b8e23;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #7a9a2e, 0 0 12px 4px #7a9a2e;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #556b2f, 0 0 12px 4px #556b2f;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #8fbc3a, 0 0 12px 4px #8fbc3a;
+	}
+}
+
+@keyframes action-pulse-naval {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #20b2aa, 0 0 12px 4px #20b2aa;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #3cb4a0, 0 0 12px 4px #3cb4a0;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #008b8b, 0 0 12px 4px #008b8b;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #40c4b0, 0 0 12px 4px #40c4b0;
+	}
+}
+
+@keyframes action-pulse-fort {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #ff8c00, 0 0 12px 4px #ff8c00;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #e07800, 0 0 12px 4px #e07800;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #cc6600, 0 0 12px 4px #cc6600;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #f59530, 0 0 12px 4px #f59530;
+	}
+}
+
+@keyframes action-pulse-advantage {
+	0%, 100% {
+		box-shadow: 0 0 0 5px #db7093, 0 0 12px 4px #db7093;
+	}
+	25% {
+		box-shadow: 0 0 0 5px #c76088, 0 0 12px 4px #c76088;
+	}
+	50% {
+		box-shadow: 0 0 0 5px #b8527a, 0 0 12px 4px #b8527a;
+	}
+	75% {
+		box-shadow: 0 0 0 5px #e8809f, 0 0 12px 4px #e8809f;
+	}
+}
+
+.space.market.action {
+	animation: action-pulse-market 2s ease-in-out infinite;
+}
+
+.space.political.action {
+	animation: action-pulse-political 2s ease-in-out infinite;
+}
+
+.space.territory.action {
+	animation: action-pulse-territory 2s ease-in-out infinite;
+}
+
+.space.naval.action {
+	animation: action-pulse-naval 2s ease-in-out infinite;
+}
+
+.space.fort.action {
+	animation: action-pulse-fort 2s ease-in-out infinite;
+}
+
+.space.advantage.action {
+	animation: action-pulse-advantage 2s ease-in-out infinite;
+}
+
 .marker.hex {
 	width: 77px;
 	height: 69px;
