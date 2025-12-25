@@ -190,6 +190,13 @@ body.shift .marker { opacity: 25% }
     /* border: 4px solid crimson; */
 }
 
+.space.fort.dirty_fr {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: dirty-pulse-french2 4s ease-in-out infinite;
+}
+
 
 /*
 .space.market.action, .space.political.action, .space.territory.action {
@@ -252,6 +259,19 @@ body.shift .marker { opacity: 25% }
         box-shadow: 0 0 0 5px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
     }
 }
+
+@keyframes dirty-pulse-french2 {
+    0%, 100% {
+        background-color: royalblue;
+        /* box-shadow: 0 0 0 5px royalblue, 0 0 12px 4px royalblue; /* Baseline */
+    }
+    83.5% {
+        background-color: skyblue;
+        /* box-shadow: 0 0 0 5px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
+    }
+}
+
+
 
 
 
