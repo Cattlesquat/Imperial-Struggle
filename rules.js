@@ -574,6 +574,9 @@ function on_setup(scenario, options) {
 	// G.dirty[space]
 	G.dirty = []
 
+	// Which player made the most recent changes to spaces
+	G.dirty_who = FRANCE
+
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
@@ -731,6 +734,7 @@ function on_view() {
 	// Flags on the board are always visible
 	V.flags = G.flags
 	V.dirty = G.dirty
+	V.dirty_who = G.dirty_who
 	V.conflicts = G.conflicts
 	V.damaged_forts = G.damaged_forts
 
@@ -2114,6 +2118,7 @@ function selected_a_tile(tile)
 	}
 
 	clear_dirty() // Clear highlights of opponent's previous round actions
+	G.dirty_who = G.active
 
 	G.played_investments.push(tile)             //BR// We leave it in available_investments but mark it played
 	G.played_tiles[G.active][G.round-1] = tile  //BR// Mark the tile we played, the round we played it

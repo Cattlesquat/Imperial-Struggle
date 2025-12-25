@@ -621,7 +621,9 @@ function on_update() {
 			}
 		}
 
-		update_keyword("space", s.num, "dirty", set_has(V.dirty, s.num))
+		let dirty = set_has(V.dirty, s.num)
+		update_keyword("space", s.num, "dirty_br", dirty && (V.dirty_who === BRITAIN))
+		update_keyword("space", s.num, "dirty_fr", dirty && (V.dirty_who !== BRITAIN))
 	}
 
 	for (a = 0; a < NUM_ADVANTAGES; ++a) {

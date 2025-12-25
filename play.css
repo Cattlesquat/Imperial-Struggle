@@ -179,26 +179,39 @@ body.shift .marker { opacity: 25% }
 	border: none;
 }
 
-.space.market.dirty, .space.political.dirty, .space.territory.dirty {
-	border: 4px solid crimson;
+
+.space.market.dirty_br, .space.political.dirty_br, .space.territory.dirty_br {
+    animation: dirty-pulse-british 4s ease-in-out infinite;
+	/* border: 4px solid crimson; */
 }
 
+.space.market.dirty_fr, .space.political.dirty_fr, .space.territory.dirty_fr {
+    animation: dirty-pulse-french 4s ease-in-out infinite;
+    /* border: 4px solid crimson; */
+}
+
+
+/*
 .space.market.action, .space.political.action, .space.territory.action {
     border: 4px solid yellow;
 }
 
+
 .space.naval.action, .space.fort.action {
 	background-image: url(images/hexagon.svg);
 }
+*/
 
 .space.advantage {
 	background-size: 88px 88px;
 	border-radius: 50%;
 }
 
+/*
 .space.advantage.action {
 	background-image: url(images/pentagon.svg);
 }
+*/
 
 .space.theater {
 	border-radius: 17px;
@@ -213,21 +226,36 @@ body.shift .marker { opacity: 25% }
     border: 4px solid yellow;
 }
 
-@keyframes action-pulse-market {
-	0%, 100% {
-		box-shadow: 0 0 0 5px #ffd700, 0 0 12px 4px #ffd700;
-	}
-	25% {
-		box-shadow: 0 0 0 5px #ffb900, 0 0 12px 4px #ffb900;
-	}
-	50% {
-		box-shadow: 0 0 0 5px #daa520, 0 0 12px 4px #daa520;
-	}
-	75% {
-		box-shadow: 0 0 0 5px #f0c050, 0 0 12px 4px #f0c050;
-	}
+@keyframes action-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 5px #ffb900, 0 0 12px 4px #ffb900; /* Baseline */
+    }
+    83.5% {
+        box-shadow: 0 0 0 5px #ffff00, 0 0 12px 4px #ffff00; /* ... a slow drift to here, then a quick pulse back */
+    }
 }
 
+@keyframes dirty-pulse-british {
+    0%, 100% {
+        box-shadow: 0 0 0 5px crimson, 0 0 12px 4px crimson; /* Baseline */
+    }
+    83.5% {
+        box-shadow: 0 0 0 5px salmon, 0 0 12px 4px salmon; /* ... a slow drift to here, then a quick pulse back */
+    }
+}
+
+@keyframes dirty-pulse-french {
+    0%, 100% {
+        box-shadow: 0 0 0 5px royalblue, 0 0 12px 4px royalblue; /* Baseline */
+    }
+    83.5% {
+        box-shadow: 0 0 0 5px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
+    }
+}
+
+
+
+/*
 @keyframes action-pulse-political {
 	0%, 100% {
 		box-shadow: 0 0 0 5px #9370db, 0 0 12px 4px #9370db;
@@ -288,6 +316,7 @@ body.shift .marker { opacity: 25% }
 	}
 }
 
+
 @keyframes action-pulse-advantage {
 	0%, 100% {
 		box-shadow: 0 0 0 5px #db7093, 0 0 12px 4px #db7093;
@@ -302,29 +331,10 @@ body.shift .marker { opacity: 25% }
 		box-shadow: 0 0 0 5px #e8809f, 0 0 12px 4px #e8809f;
 	}
 }
+ */
 
-.space.market.action {
-	animation: action-pulse-market 2s ease-in-out infinite;
-}
-
-.space.political.action {
-	animation: action-pulse-political 2s ease-in-out infinite;
-}
-
-.space.territory.action {
-	animation: action-pulse-territory 2s ease-in-out infinite;
-}
-
-.space.naval.action {
-	animation: action-pulse-naval 2s ease-in-out infinite;
-}
-
-.space.fort.action {
-	animation: action-pulse-fort 2s ease-in-out infinite;
-}
-
-.space.advantage.action {
-	animation: action-pulse-advantage 2s ease-in-out infinite;
+.space.market.action, .space.political.action, .space.territory.action, .space.naval.action, .space.fort.action, .space.advantage.action {
+	animation: action-pulse 4s ease-in-out infinite;
 }
 
 .marker.hex {
