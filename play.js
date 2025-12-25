@@ -729,6 +729,9 @@ function on_update() {
 	action_button ("major", "Major")
 	action_button ("minor", "Minor")
 
+	action_button ("return_to_pool", "Return to Pool")
+	action_button ("remove_from_game", "Remove From Game")
+
     action_button("pass", "Pass")
 	action_button("done", "Done")
 	action_button("undo", "Undo")
