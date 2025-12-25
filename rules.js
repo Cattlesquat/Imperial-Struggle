@@ -404,6 +404,9 @@ function setup_procs()
 
 /* SETUP */
 function on_setup(scenario, options) {
+	// Usually this is an integer containing the id of the active player (i.e. FRANCE or BRITAIN).
+	// But *sometimes*, horrifyingly, it's actually an *array* that we fill with both player IDs for multiactive phases.
+	// And then we delete player ids from the array as players individually complete the phase.
 	G.active = FRANCE
 
 	// Each player's current hand of event cards.
@@ -525,7 +528,7 @@ function on_setup(scenario, options) {
 	// set_has(G.bonus_war_tile_revealed[who], tile)
 	G.bonus_war_tile_revealed = [[], []]
 
-	war_layout_reshuffle_basic_war_tiles()
+	war_layout_reshuffle_basic_war_tiles(true)
 	add_next_war_bonus_tiles()
 
 	war_layout_basic_war_tiles()
@@ -848,6 +851,55 @@ function pay_treaty_points(who, amount) {
 	G.treaty_points[who] -= amount
 }
 
+
+function reduce_debt(who, amount)
+{
+	amount = Math.max(amount, G.debt[who])
+	if (amount > 0) {
+		G.debt[who] -= amount
+		log(data.flags[who].adj + " Debt reduced by " + amount)
+	}
+}
+
+function increase_debt(who, amount) {
+	let penalty = 0
+	if (amount > available_debt(who)) {
+		penalty = amount - available_debt(who)
+		amount -= penalty
+	}
+	if (amount > 0) {
+		G.debt[who] += amount
+		log (data.flags[who].adj + " Debt increased by " + amount + ". (Available: " + available_debt(who) + ")")
+	}
+	if (penalty > 0) {
+		adjust_victory_points(who, -penalty, true)
+		log (bold(data.flags[who].name + " loses " + penalty + " VP for Debt Limit overrun. VP Marker: " + G.VP))
+	}
+}
+
+function add_treaty_points(who, amount)
+{
+	G.treaty_points[who] += amount
+	if (amount > 0) {
+		log (data.flags[who].name + " gains " + amount + "Treaty Point" + ((amount !== 1) ? "s" : "") + ".")
+	}
+}
+
+function adjust_victory_points(who, amount, silent = false)
+{
+	if (who === BRITAIN) {
+		amount = 0 - amount
+	}
+
+	if (!silent) {
+		if (amount > 0) {
+			log(bold(data.flags[who].name + " gains " + amount + " VP. VP Marker: " + G.VP))
+		} else {
+			log(bold(data.flags[who].name + " loses " + amount + " VP. VP Marker: " + G.VP))
+		}
+	}
+}
+
 function has_advantage(who, a) {
 	for (var s of data.advantages[a].req)
 		if (G.flags[s] !== who)
@@ -950,13 +1002,17 @@ function add_next_war_bonus_tiles() {
 
 
 function draw_basic_war_tile(who, theater) {
-	if (G.basic_war_tiles[who].length < 1) return
-	G.theater_basic_war_tiles[who][theater].push(G.basic_war_tiles[who].pop())
+	if (G.basic_war_tiles[who].length < 1) return -1
+	let tile = G.basic_war_tiles[who].pop()
+	G.theater_basic_war_tiles[who][theater].push(tile)
+	return tile
 }
 
 function draw_bonus_war_tile(who, theater) {
-	if (G.bonus_war_tiles[who].length < 1) return
-	G.theater_bonus_war_tiles[who][theater].push(G.bonus_war_tiles[who].pop())
+	if (G.bonus_war_tiles[who].length < 1) return -1
+	let tile = G.bonus_war_tiles[who].pop()
+	G.theater_bonus_war_tiles[who][theater].push(tile)
+	return tile
 }
 
 /* 3.8 - CONFLICT MARKERS */
@@ -1854,12 +1910,13 @@ function demand_flag_delta(demand) {
 
 P.scoring_phase = function () {
 	log("=Scoring Phase")
-	// TODO
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
 		let winner = region_flag_winner(region)
 		if (data.awards[award].by2 && region_flag_delta(region) < 2) winner = NONE
+
+		//TODO - probably go region by region with both players confirming the results from each region and demand
 
 		if (winner !== NONE) {
 			let vp = data.awards[award].vp
@@ -1871,8 +1928,8 @@ P.scoring_phase = function () {
 				}
 			}
 
-			G.vp[winner] += vp
-			G.treaty_points[winner] += trp
+			adjust_victory_points(winner, vp)
+			add_treaty_points(winner, trp)
 
 			//TODO announce winner & amounts
 		}
@@ -1881,7 +1938,7 @@ P.scoring_phase = function () {
 		if (region === REGION_EUROPE) {
 			winner = prestige_winner()
 			if (winner !== NONE) {
-				G.vp[winner] += 2
+				adjust_victory_points(winner, 2)
 			}
 			//TODO announce winner & amounts
 		}
@@ -1894,10 +1951,14 @@ P.scoring_phase = function () {
 			let trp = data.demands[d].trp
 			let debt = data.demands[d].debt
 
-			G.vp[winner] += vp
-			G.treaty_points[winner] += trp
+			adjust_victory_points(winner, vp)
+			add_treaty_points(winner, trp)
+			if (debt < 0) {
+				reduce_debt(winner, Math.abs(debt))
+			} else if (debt > 0) {
+				increase_debt(winner, debt)
+			}
 			// TODO - announce winner and amounts
-			// TODO - deal with debt, which might cause more VP
 		}
 
 	}
@@ -1911,6 +1972,7 @@ P.scoring_phase = function () {
 		}
 		vp = Math.min(vp, 3)
 		log (data.ministries[EAST_INDIA_COMPANY].name + " adds +" + vp + " VP for Britain")
+		adjust_victory_points(BRITAIN, vp)
 	}
 
 	end()
@@ -2057,6 +2119,12 @@ function selected_a_tile(tile)
 	G.played_tiles[G.active][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 	G.played_tile = tile
 	G.military_upgrade = major <= 2      // We get a military upgrade if we picked a tile w/ major action strength 2
+
+	if (G.military_upgrade && (G.turn === PEACE_TURN_6)) {
+		G.military_upgrade = false;
+		log (data.flags[G.active].name + " gains 1 Treaty Point for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
+		add_treaty_points(G.active, 1)
+	}
 
 	// Major action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
 	G.action_points_major = [ 0, 0, 0 ]
@@ -3247,6 +3315,24 @@ function update_flag_counts()
 }
 
 
+function say_basic_war_tile(t) {
+	let val = data.basic_war_tiles[t].val
+	let msg = "\"" + ((val >= 0) ? "+" + val : val)
+	switch (data.basic_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+		case WAR_FLAG:
+			msg += " with Flag"
+			break
+	}
+	msg += "\""
+	return msg
+}
+
 function handle_military_upgrade(t)
 {
 	G.upgrading_basic_tile = t
@@ -3254,17 +3340,76 @@ function handle_military_upgrade(t)
 }
 
 
+function get_theater_from_basic_war_tile(who, tile) {
+	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
+		if (G.theater_basic_war_tiles[who][theater].includes(tile)) return theater
+	}
+	console.error ("Could not find theater for basic war tile. Who: " + who + "  Tile: " + tile)
+	return 1
+}
+
+
 P.military_upgrade_decisions = {
 	_begin() {
 		L.confirmed = false
+		L.picked_one_to_keep = false
+		L.theater = get_theater_from_basic_war_tile(G.active, G.upgrading_basic_tile)
 	},
 	prompt() {
 		let msg = say_action_header("MILITARY_UPGRADE: ")
 
-		data.basic_war_tiles.
+		if (!L.confirmed) {
+			//TODO - optional rule would allow choice of swap or draw
+			if (G.basic_war_tiles[G.active].length < 1) {
+				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
+				button ("done")
+			} else {
+				msg += say_action("Confirm upgrade draw for " + say_basic_war_tile(G.upgrading_basic_tile) + " tile in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater - 1] + "? (Cannot be undone)")
+				button("confirm")
+			}
+		} else if (!L.picked_one_to_keep) {
+			msg += say_action("Choose which tile to keep")
+			action_basic_war_tile(L.new_tile)
+			action_basic_war_tile(G.upgrading_basic_tile)
+		} else {
+			msg += say_action("Return " + say_basic_war_tile(L.get_rid_of_tile) + " tile to the pool or remove it from the game?")
+			button("return_to_pool")
+			button("remove_from_game")
+		}
 
 		V.prompt = msg
-	}
+	},
+	confirm() {
+		clear_undo() // Drew a tile - so there's no going back!
+		L.confirmed = true
+		L.new_tile = draw_basic_war_tile(G.active, L.theater)
+		G.military_upgrade = false // No longer eligible for a military upgrade
+		log(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater - 1])
+	},
+	basic_war(t) {
+		push_undo()
+		L.get_rid_of_tile = (t === G.upgrading_basic_tile) ? L.new_tile : G.upgrading_basic_tile
+		array_delete_item(G.theater_basic_war_tiles[G.active][L.theater], L.get_rid_of_tile)
+        L.picked_one_to_keep = true
+	},
+	return_to_pool() {
+		push_undo()
+		G.basic_war_tiles[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
+		shuffle(G.basic_war_tiles[G.active])
+		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
+		end()
+	},
+	remove_from_game() {
+		push_undo()
+		log(data.flags[G.active].name + " removes a basic war tile from the game: " + say_basic_war_tile(L.get_rid_of_tile))
+		end()
+	},
+	done() {
+		push_undo()
+		G.military_upgrade = false // In the rare case where the player doesn't have enough tiles to even take an upgrade, just check it off his to-do list
+		end()
+	},
+
 }
 
 
@@ -3915,11 +4060,24 @@ P.war_reset_phase = function () {
 }
 
 
-function war_layout_reshuffle_basic_war_tiles() {
-	G.basic_war_tiles = [[], []]
-	for (var i = 0; i < NUM_BASE_WAR_TILES; i++) {
-		G.basic_war_tiles[FRANCE].push(i)
-		G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+function war_layout_reshuffle_basic_war_tiles(new_game) {
+	if (new_game) {
+		// For a new game we shuffle all the war tiles together
+		G.basic_war_tiles = [[], []]
+		for (var i = 0; i < NUM_BASE_WAR_TILES; i++) {
+			G.basic_war_tiles[FRANCE].push(i)
+			G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+		}
+	} else {
+		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
+		let war = G.next_war - 1
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			for (let theater = 0; theater <= data.wars[war].theaters; theater++) { //NB 0 through <= theaters is intentional
+				for (const t in G.theater_basic_war_tiles[who][theater]) {
+					G.basic_war_tiles[who].push(t)
+				}
+			}
+		}
 	}
 	shuffle(G.basic_war_tiles[FRANCE])
 	shuffle(G.basic_war_tiles[BRITAIN])
@@ -3951,7 +4109,7 @@ P.war_layout_phase = function () {
 
 	G.next_war++;
 	log ("=War Layout Phase")
-	war_layout_reshuffle_basic_war_tiles()
+	war_layout_reshuffle_basic_war_tiles(false)
 	add_next_war_bonus_tiles()
 	war_layout_basic_war_tiles()
 	log (data.wars[G.next_war].name + " mat and Bonus War Tiles added")
