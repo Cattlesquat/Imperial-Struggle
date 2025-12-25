@@ -349,6 +349,7 @@ function on_init() {
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
 	define_layout("lout-navy", undefined, find_layout_node("Navy Box"))
+	define_space("navy_box", 0, find_layout_node("Navy Box")).tooltip(() => bizarro_space_tooltip(NAVY_BOX))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
 
 	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))

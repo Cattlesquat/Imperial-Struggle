@@ -3832,6 +3832,7 @@ P.action_round_core = {
 			button ("draw_event")
 		}
 		if (G.action_points_eligible[MIL]) {
+			action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 		}
 
@@ -3871,6 +3872,11 @@ P.action_round_core = {
 	basic_war(t) {
 		push_undo()
 		handle_military_upgrade(t)
+	},
+	navy_box() {
+		//TODO deploy, not construct. This is just to have an action here for the moment.
+		push_undo()
+		handle_construct_squadron_button()
 	},
 	buy_bonus_war_tile() {	// TBD: buy a bonus war tile, and deploy it into the next war
 
@@ -4172,6 +4178,12 @@ function action_damaged(s) {
 
 function action_navy(who) {
 	action("navy", who)
+}
+
+
+function action_navy_box()
+{
+	action("navy_box", 0)
 }
 
 function action_basic_war_tile(t) {
