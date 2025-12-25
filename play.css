@@ -180,12 +180,12 @@ body.shift .marker { opacity: 25% }
 }
 
 
-.space.market.dirty_br, .space.political.dirty_br, .space.territory.dirty_br {
+.space.market.dirty_br, .space.political.dirty_br, .space.territory.dirty_br, .space.fort.dirty_br, .space.naval.dirty_br {
     animation: dirty-pulse-british 4s ease-in-out infinite;
 	/* border: 4px solid crimson; */
 }
 
-.space.market.dirty_fr, .space.political.dirty_fr, .space.territory.dirty_fr {
+.space.market.dirty_fr, .space.political.dirty_fr, .space.territory.dirty_fr, .space.fort.dirty_fr, .space.naval.dirty_fr {
     animation: dirty-pulse-french 4s ease-in-out infinite;
     /* border: 4px solid crimson; */
 }
