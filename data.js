@@ -439,10 +439,11 @@ data.turns = [
 ]
 
 data.wars = [
-	{ "num": 0, "id": "WSS", "theaters": 4, "name": "War of the Spanish Succession",  "theater_names": ["Central Europe", "Spain", "Queen Anne's War", "Jacobite Rebellion"] },
-	{ "num": 1, "id": "WAS", "theaters": 4, "name": "War of the Austrian Succession", "theater_names": ["Central Europe", "King George's War", "First Carnatic War", "Jacobite Rebellion"] },
-	{ "num": 2, "id": "7YW", "theaters": 4, "name": "Seven Years War",                "theater_names": ["Atlantic Dominance", "Third Carnatic War", "French & Indian War", "Prussia's Wars" ] },
-	{ "num": 3, "id": "AWI", "theaters": 3, "name": "American War of Independence",   "theater_names": ["American Revolution", "Mysore War", "Antilles War"] }
+	{ },
+	{ "num": 1, "id": "WSS", "theaters": 4, "name": "War of the Spanish Succession",  "theater_names": ["Newly Drawn", "Central Europe", "Spain", "Queen Anne's War", "Jacobite Rebellion"] },
+	{ "num": 2, "id": "WAS", "theaters": 4, "name": "War of the Austrian Succession", "theater_names": ["Newly Drawn", "Central Europe", "King George's War", "First Carnatic War", "Jacobite Rebellion"] },
+	{ "num": 3, "id": "7YW", "theaters": 4, "name": "Seven Years War",                "theater_names": ["Newly Drawn", "Atlantic Dominance", "Third Carnatic War", "French & Indian War", "Prussia's Wars" ] },
+	{ "num": 4, "id": "AWI", "theaters": 3, "name": "American War of Independence",   "theater_names": ["Newly Drawn", "American Revolution", "Mysore War", "Antilles War"] }
 ]
 
 data.keywords = [

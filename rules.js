@@ -528,6 +528,9 @@ function on_setup(scenario, options) {
 	// set_has(G.bonus_war_tile_revealed[who], tile)
 	G.bonus_war_tile_revealed = [[], []]
 
+	// Limit of 2 bonus war tiles may be *purchased* per action round (can get more with events, etc)
+	G.bonus_war_tiles_bought_this_round = 0
+
 	war_layout_reshuffle_basic_war_tiles(true)
 	add_next_war_bonus_tiles()
 
@@ -2029,6 +2032,8 @@ function start_action_round() {
 	advantages_acquired_last_round_now_available()
 	G.advantages_used_this_turn = 0
 
+	G.bonus_war_tiles_bought_this_round = 0
+
 	// Clear all the transient ability flags
 	for (let ab = 0; ab < NUM_TRANSIENT_BITFLAGS; ab++) {
 		set_transient(G.active, ab, false)
@@ -2745,7 +2750,7 @@ P.ministry_edmond_halley = {
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
 		G.prepicked_ministry = EDMOND_HALLEY
-		goto ("construct_squadron_process")
+		goto ("construct_squadron_flow")
 	},
 	event_card(c) {
 		push_undo()
@@ -3170,11 +3175,11 @@ function handle_construct_squadron_button() {
 	G.action_string = "to construct a squadron"
 	G.action_header = "CONSTRUCT SQUADRON: "
 	G.prepicked_ministry = -1
-	call ("construct_squadron_process")
+	call ("construct_squadron_flow")
 }
 
 
-P.construct_squadron_process = script(`
+P.construct_squadron_flow = script(`
     eval {
     	G.action_cost = cost_to_build_squadron(G.active, false)
         L.info = {}
@@ -3338,6 +3343,24 @@ function say_basic_war_tile(t) {
 	return msg
 }
 
+
+function say_bonus_war_tile(t) {
+	let name = data.bonus_war_tiles[t].name
+	let val = data.bonus_war_tiles[t].val
+	let msg = "\"" + name + " (+" + val
+	switch (data.bonus_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+	}
+	msg += ")\""
+	return msg
+}
+
+
 function handle_military_upgrade(t)
 {
 	G.upgrading_basic_tile = t
@@ -3369,7 +3392,7 @@ P.military_upgrade_decisions = {
 				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
 				button ("done")
 			} else {
-				msg += say_action("Confirm upgrade draw for " + say_basic_war_tile(G.upgrading_basic_tile) + " tile in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater - 1] + "? (Cannot be undone)")
+				msg += say_action("Confirm upgrade draw for " + say_basic_war_tile(G.upgrading_basic_tile) + " tile in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "? (CANNOT BE UNDONE!)")
 				button("confirm")
 			}
 		} else if (!L.picked_one_to_keep) {
@@ -3389,7 +3412,7 @@ P.military_upgrade_decisions = {
 		L.confirmed = true
 		L.new_tile = draw_basic_war_tile(G.active, L.theater)
 		G.military_upgrade = false // No longer eligible for a military upgrade
-		log(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater - 1])
+		log(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
 	},
 	basic_war(t) {
 		push_undo()
@@ -3415,6 +3438,120 @@ P.military_upgrade_decisions = {
 		end()
 	},
 
+}
+
+function free_theaters(who) {
+	let theaters = []
+	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
+		if (G.theater_bonus_war_tiles[who] >= 2) continue
+		theaters.push(theater)
+	}
+	return theaters
+}
+
+function handle_buy_bonus_war_tile()
+{
+	G.action_header = "BUY BONUS WAR TILE: "
+	G.action_cost   = 2
+	if (free_theaters(G.active).length < 1) {
+		call ("no_room_at_the_inn")
+	} else if (G.bonus_war_tiles_bought_this_round >= 2) {
+		call ("no_time_for_love_dr_jones")
+	} else {
+		call ("buy_bonus_war_tile_flow")
+	}
+}
+
+P.no_room_at_the_inn = { // Player required to click "undo"
+	prompt() {
+		V.prompt = say_action_header() + say_action("All theaters have 2 bonus war tiles. No room to buy any more.")
+	},
+}
+
+P.no_time_for_love_dr_jones = { // Player required to click "undo"
+	prompt() {
+		V.prompt = say_action_header() + say_action("You have already purchased the maximum allowed number of bonus war tiles this action round (2).")
+	},
+}
+
+
+P.buy_bonus_war_tile_flow = script(`
+    if (G.action_points_available_debt < L.min_cost) {
+    	return // If we can't even afford it w/ debt and trps, we shouldn't be here
+    }    
+    
+    call decide_how_and_whether_to_spend_action_points
+	if (!G.paid_action_cost) {
+		eval { G.action_header = "" }         
+		return
+	}
+
+    goto bonus_war_tile_decisions    	
+`)
+
+
+P.bonus_war_tile_decisions = {
+	_begin() {
+		L.confirmed      = false
+		L.theater        = 0
+		L.displaced_tile = -1
+	},
+	prompt() {
+		let msg = say_action_header()
+
+		if (!L.confirmed) {
+			if (G.bonus_war_tiles[G.active].length < 1) {
+				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
+				button ("done")
+			} else {
+				msg += say_action("Confirm drawing tile for 2 military action points? (CANNOT BE UNDONE!)" + say_action_points())
+				button("confirm")
+			}
+		} else if (L.theater <= 0) {
+			msg = say_action_header()
+			msg += "Select theater for " + say_bonus_war_tile(L.new_tile) + " tile"
+			action_all_theaters()
+		} else if (L.displaced_tile < 0) {
+			msg += "Theater had two tiles already. Select a tile to displace."
+			for (const t of G.theater_bonus_war_tiles[G.active][L.theater]) {
+				if (t === L.new_tile) continue
+				action_bonus_war_tile(t)
+			}
+		} else {
+			msg += "Select new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile"
+			for (const t of free_theaters(G.active)) {
+				action_theater(t)
+			}
+		}
+
+		V.prompt = msg
+	},
+	confirm() {
+		push_undo() //clear_undo() // Drew a tile - so there's no going back!
+		L.confirmed = true
+		L.new_tile = draw_bonus_war_tile(G.active, 0)
+	},
+	theater(t) {
+		push_undo()
+		if (L.theater <= 0) {
+			L.theater = t
+			G.theater_bonus_war_tiles[G.active][t].push(L.new_tile)
+			G.bonus_war_tiles_bought_this_round++
+			log(data.flags[G.active].name + " draws a bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+			if (G.theater_bonus_war_tiles[G.active][t].length <= 2) {
+				end() // If we don't need to displace another tile, we're done
+			}
+		} else {
+			G.theater_bonus_war_tiles[G.active][t].push(L.displaced_tile)
+			log(data.flags[G.active].name + " moves a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t])
+			end()
+		}
+	},
+	bonus_war(t) {
+		push_undo()
+		L.displaced_tile = t
+		array_delete_item(G.theater_bonus_war_tiles[G.active][L.theater], t)
+	},
 }
 
 
@@ -3834,6 +3971,7 @@ P.action_round_core = {
 		if (G.action_points_eligible[MIL]) {
 			action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
+			button ("buy_bonus_war_tile")
 		}
 
 		//Maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
@@ -3878,8 +4016,9 @@ P.action_round_core = {
 		push_undo()
 		handle_construct_squadron_button()
 	},
-	buy_bonus_war_tile() {	// TBD: buy a bonus war tile, and deploy it into the next war
-
+	buy_bonus_war_tile() {	// buy a bonus war tile, and deploy it into the next war
+		push_undo()
+		handle_buy_bonus_war_tile()
 	},
 	buy_political_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
 
@@ -4081,9 +4220,8 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 		}
 	} else {
 		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
-		let war = G.next_war - 1
 		for (let who = FRANCE; who <= BRITAIN; who++) {
-			for (let theater = 0; theater <= data.wars[war].theaters; theater++) { //NB 0 through <= theaters is intentional
+			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters is intentional
 				for (const t in G.theater_basic_war_tiles[who][theater]) {
 					G.basic_war_tiles[who].push(t)
 				}
@@ -4184,6 +4322,17 @@ function action_navy(who) {
 function action_navy_box()
 {
 	action("navy_box", 0)
+}
+
+function action_theater(t)
+{
+	action("theater", t)
+}
+
+function action_all_theaters() {
+	for (let t = 1; t <= data.wars[G.next_war].theaters; t++) { //NB 1 to theaters, inclusive
+		action_theater(t)
+	}
 }
 
 function action_basic_war_tile(t) {

@@ -709,7 +709,8 @@ function on_update() {
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 
 	action_button("draw_event", "Draw Event")
-	action_button("construct_squadron", "Construct Squadron")
+	action_button("construct_squadron", "Build Squadron")
+	action_button("buy_bonus_war_tile", "Buy War Tile")
 
 	action_button("end_action_round", "End Action Round")
 	confirm_action_button("confirm_end_action_round", "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
