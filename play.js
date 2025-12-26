@@ -234,6 +234,14 @@ function strike (s, condition = true )
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
+	//init_preference_checkbox("noanims", false)
+	//init_preference_checkbox("noflipsies", false)
+	//init_preference_checkbox("downanddirty", false)
+	//init_preference_checkbox("tracksies", true)
+
+	//BR// get_preference("noanims", false) (second argument is the "default" value if it's not set or has been deleted)
+	//BR// body[data-noanims="true"] .space.action { non-animated css }
+
 	define_panel("#events_fr", "panel-events", FRANCE)
 	define_panel("#ministry_fr", "panel-ministry", FRANCE)
 	define_panel("#advantage_fr", "panel-advantage", FRANCE)

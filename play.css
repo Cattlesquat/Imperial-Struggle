@@ -1162,3 +1162,9 @@ tiles75/square/investment_reverse.png
 		margin: auto;
 	}
 }
+
+menu li.separator {
+    cursor: default;
+    padding: 0;
+    border-top: 1px solid black;
+}
