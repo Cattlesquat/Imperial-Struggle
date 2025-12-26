@@ -3443,7 +3443,7 @@ P.military_upgrade_decisions = {
 function free_theaters(who) {
 	let theaters = []
 	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
-		if (G.theater_bonus_war_tiles[who] >= 2) continue
+		if (G.theater_bonus_war_tiles[who][theater].length >= 2) continue
 		theaters.push(theater)
 	}
 	return theaters
@@ -3509,16 +3509,16 @@ P.bonus_war_tile_decisions = {
 			}
 		} else if (L.theater <= 0) {
 			msg = say_action_header()
-			msg += "Select theater for " + say_bonus_war_tile(L.new_tile) + " tile"
+			msg += "Select theater for " + say_bonus_war_tile(L.new_tile) + " tile."
 			action_all_theaters()
 		} else if (L.displaced_tile < 0) {
-			msg += "Theater had two tiles already. Select a tile to displace."
+			msg += "Theater had two bonus tiles already. Select a bonus tile to displace."
 			for (const t of G.theater_bonus_war_tiles[G.active][L.theater]) {
 				if (t === L.new_tile) continue
 				action_bonus_war_tile(t)
 			}
 		} else {
-			msg += "Select new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile"
+			msg += "Select new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile."
 			for (const t of free_theaters(G.active)) {
 				action_theater(t)
 			}
