@@ -322,11 +322,17 @@ body.shift .marker { opacity: 25% }
 	animation: action-pulse 4s ease-in-out infinite;
 }
 
-.space.fort.action, .space.naval.action {
+.space.naval.action,
+.space.fort.action  {
     transform: scale(1.2);
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.naval.action,
+body[data-noanims="true"] .space.fort.action {
+    background-image: url(images/hexagon.svg);
 }
 
 .space.advantage.action {
