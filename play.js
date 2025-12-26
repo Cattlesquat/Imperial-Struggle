@@ -55,7 +55,7 @@ const war_layout = {
 	war_awi_theater_4: [ 59, 568, 443, 219 ]
 }
 
-const layout_theater_drawn = [0,638-70,825,70]
+const layout_theater_drawn = [0,0,1800,70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
 
 const space_type_class = [
 	"political",
