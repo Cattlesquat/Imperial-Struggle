@@ -357,6 +357,18 @@ body[data-noanims="false"] .space.territory.action {
 	animation: action-pulse 4s ease-in-out infinite;
 }
 
+body[data-noanims="true"] .space.political.action {
+    transform: scale(1.2) rotate(45deg)
+}
+
+body[data-noanims="true"] .space.market.action {
+    transform: scale(1.2)
+}
+
+body[data-noanims="true"] .space.territory.action {
+    transform: scale(1.1)
+}
+
 body[data-noanims="true"] .space.market.action,
 body[data-noanims="true"] .space.political.action,
 body[data-noanims="true"] .space.territory.action {

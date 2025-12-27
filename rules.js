@@ -3052,6 +3052,13 @@ function action_eligible_spaces_mil(region)
 	}
 }
 
+function action_territories_debug() {
+	for (const space of data.spaces) {
+		if (space.type !== TERRITORY) continue
+		action_space(space.num)
+	}
+}
+
 function action_eligible_spaces(type, region)
 {
 	switch (type) {
@@ -3963,6 +3970,8 @@ P.action_round_core = {
 		action_eligible_advantages()
 		action_eligible_ministries()
 		action_all_eligible_spaces()
+
+		//action_territories_debug()
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
 		if (G.action_points_eligible[DIPLO]) {

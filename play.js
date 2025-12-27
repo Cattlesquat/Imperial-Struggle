@@ -275,8 +275,8 @@ function on_init() {
 
 		let space_rect = rect.slice()  //BR// I want a separate copy, not the same array
 		if (s.type === TERRITORY) {	   //BR// Territory clickbox extends above the space
-			space_rect[1] -= 38
-			space_rect[3] += 38
+			space_rect[1] -= 20
+			space_rect[3] += 28
 		}
 
 		define_space("space", s.num, space_rect)
