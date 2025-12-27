@@ -562,6 +562,8 @@ function on_setup(scenario, options) {
 	// is_advantage_exhausted(who,a)
 	// <br>
 	// G.advantages_exhausted & (1<<a)
+	// <br>
+	// G.advantages_exhausted |= (1<<a)
 	G.advantages_exhausted       = 0
 
 	// Integer: the number of advantages the G.active player has already used this turn
@@ -1666,17 +1668,25 @@ P.ask_about_huguenots = {
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
 // "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
-function require_ministry(who, m, why, optional = false)
+function require_ministry(who, m, why, optional = false, prompt_to_exhaust = false)
 {
 	// True if the player (now) has the requested/required ministry revealed and thus active
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
 		G.has_required_ministry = true
+		G.ministry_already_revealed = true
 	}
-	else if (!has_ministry(who, m)) {
-		G.has_required_ministry = false
+	else {
+		if (!has_ministry(who, m)) {
+			G.has_required_ministry = false
+		}
+		G.ministry_already_revealed = false
 	}
 
+	// "m" card id of the ministry card being used (e.g. John Law is 2)
+	G.ministry_id = m
+
+	// Which of the player's two minister cards is being used (always 0 or 1)
 	G.ministry_index = G.ministry[who].indexOf(m)
 
 	// String reason ministry is required or helpful in current action
@@ -1684,22 +1694,33 @@ function require_ministry(who, m, why, optional = false)
 
 	// True if player can conceivably accomplish current action without revealing the ministry
 	G.ministry_optional = optional
+
+	// True if, finding the ministry already revealed, we should prompt the player whether he wants to exhaust the ministry now
+	G.prompt_to_exhaust = prompt_to_exhaust
+
 	call ("ministry_is_required")
 }
 
-function require_ministry_unexhausted(who, m, why, ability = 0, optional = false)
+
+function require_ministry_unexhausted(who, m, why, ability = 0, optional = false, prompt_to_exhaust = false)
 {
 	if (is_ministry_exhausted(who, m, ability)) {
 		G.has_required_ministry = false
 		return
 	}
-	require_ministry(who, m, why, optional)
+	G.ministry_ability = ability
+	require_ministry(who, m, why, optional, prompt_to_exhaust)
 }
+
 
 P.ministry_is_required = script (`
     call confirm_reveal_ministry
-    eval {    
-    	G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
+    eval {
+    	if (G.prompt_to_exhaust && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
+    		G.has_required_ministry = false
+    	} else {    
+    		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
+    	}
     }
 `)
 
@@ -2149,6 +2170,9 @@ function selected_a_tile(tile)
 	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
 	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
 
+	// Bonus points (ECON, DIPLO, MIL) committed during the current specific action (e.g. a bonus military point for Choiseul)
+	G.action_points_committed_bonus = [ 0, 0, 0 ]
+
 	//TODO: ministries might increase our amounts right away
 
 	/* Action point eligibility */
@@ -2510,6 +2534,9 @@ function handle_ministry_card_click(m)
 	// True player flips up the ministry while doing the current action
 	G.just_revealed = false
 
+	G.ministry_already_revealed  = false
+	G.ministry_prompt_to_exhaust = false
+
 	// String reason we are requesting/suggesting the player flip up a ministry
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
@@ -2614,13 +2641,19 @@ function reveal_ministry(who, index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
-		if (G.ministry_revealed[R][G.ministry_index]) end()
+		if (G.ministry_revealed[R][G.ministry_index] && !G.prompt_to_exhaust) end()
 	},
 	prompt() {
-		V.prompt = say_action_header() + say_action("Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?") + say_action_points()
-		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
-		action("reveal_ministry")
-		if (G.ministry_optional) action("dont_reveal_ministry")
+		if (!G.ministry_revealed[R][G.ministry_index]) {
+			V.prompt = say_action_header() + say_action("Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?") + say_action_points()
+			action("reveal_ministry")
+			if (G.ministry_optional) action("dont_reveal_ministry")
+		} else {
+			V.prompt = say_action_header() + say_action("Exhaust " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card Ability?") + say_action_points()
+			if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
+			action ("exhaust_ministry")
+			if (G.ministry_optional) action("dont_exhaust_ministry")
+		}
 	},
 	reveal_ministry() {
 		push_undo()
@@ -2628,6 +2661,14 @@ P.confirm_reveal_ministry = {
 		end()
 	},
 	dont_reveal_ministry() {
+		push_undo()
+		end()
+	},
+	exhaust_ministry() {
+		push_undo()
+		exhaust_ministry(R, G.ministry_id, G.ministry_ability)
+	},
+	dont_exhaust_ministry() {
 		push_undo()
 		end()
 	}
@@ -2959,7 +3000,7 @@ function action_points_available(who, s, type, allow_debt_and_trps)
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!G.action_points_eligible_major[type] && !eligible_minor) return 0
 
-	return G.action_points_major[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+	return G.action_points_major[type] + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
 }
 
 function can_afford_to_shift(s, who, allow_debt_and_trps)
@@ -3467,6 +3508,7 @@ function handle_buy_bonus_war_tile()
 	action_cost_setup(-1, MIL)
 	G.action_header = "BUY BONUS WAR TILE: "
 	G.action_cost   = 2
+
 	if (free_theaters(G.active).length < 1) {
 		call ("no_room_at_the_inn")
 	} else if (G.bonus_war_tiles_bought_this_round >= 2) {
@@ -3489,7 +3531,21 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 }
 
 
+function use_choiseul()
+{
+	G.action_points_committed_bonus[MIL]++
+	log ("Choiseul provides 1 extra military action point")
+}
+
+
 P.buy_bonus_war_tile_flow = script(`
+	eval {
+		require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
+	}
+	if (G.has_required_ministry) {
+		eval { use_choiseul() }
+	}
+
     call decide_how_and_whether_to_spend_action_points
 	if (!G.paid_action_cost) {
 		eval { G.action_header = "" }         
@@ -3717,6 +3773,13 @@ P.naval_flow = script(`
     eval {
     	G.action_cost = get_naval_cost()
     }
+    
+  	eval {
+		require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
+	}
+	if (G.has_required_ministry) {
+		eval { use_choiseul() }
+	}
 
     call decide_how_and_whether_to_spend_action_points
 	if (!G.paid_action_cost) {
@@ -3935,6 +3998,7 @@ P.space_flow = script(`
     eval { do_reflag_space() }
 `)
 
+
 P.decide_how_and_whether_to_spend_action_points = script(`
 	eval { 	G.paid_action_cost = false }
 	
@@ -3986,6 +4050,8 @@ function pay_action_cost() {
 		}
 	}
 	log(italic(msg))
+
+	G.action_cost -= G.action_points_committed_bonus[G.action_type] // Spend any committed bonus points first
 
 	if (G.action_minor) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
@@ -4156,6 +4222,11 @@ function say_action_points(space = true, brackets = true) {
 						}
 
 						tell += G.action_points_minor[i] + " Minor"
+					}
+
+					if (G.action_points_committed_bonus[i] > 0) {
+						tell += "/"
+						tell += G.action_points_committed_bonus[i] + " Bonus"
 					}
 				}
 			}
