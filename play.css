@@ -330,9 +330,12 @@ body[data-noanims="false"] .space.fort.action  {
     animation: action-pulse-shape 4s ease-in-out infinite;
 }
 
-body[data-noanims="true"] .space.naval.action,
-body[data-noanims="true"] .space.fort.action {
-    background-image: url(images/hexagon.svg);
+.space.naval.action,
+.space.fort.action {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg);
+    mask: url(images/hexagon.svg) no-repeat center;
+    background-color: yellow;
 }
 
 .space.advantage.action {
