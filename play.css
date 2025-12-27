@@ -171,10 +171,15 @@ body.shift .marker { opacity: 25% }
     background-size: 92px 92px;
 }
 
-.space.navy_box.action {
+body[data-noanims="false"] .space.navy_box.action {
     /* border: 4px solid yellow; */
     animation: action-pulse 4s ease-in-out infinite;
 }
+
+body[data-noanims="true"] .space.navy_box.action {
+    border: 4px solid yellow;
+}
+
 
 .space.political {
 	transform: rotate(45deg);
@@ -191,64 +196,93 @@ body.shift .marker { opacity: 25% }
 }
 
 
-.space.market.dirty_br, .space.political.dirty_br, .space.territory.dirty_br {
+body[data-noanims="false"] .space.market.dirty_br,
+body[data-noanims="false"] .space.political.dirty_br,
+body[data-noanims="false"] .space.territory.dirty_br {
     animation: dirty-pulse-british 4s ease-in-out infinite;
 	/* border: 4px solid crimson; */
 }
 
-.space.market.dirty_fr, .space.political.dirty_fr, .space.territory.dirty_fr  {
-    animation: dirty-pulse-french 4s ease-in-out infinite;
-    /* border: 4px solid crimson; */
+body[data-noanims="true"] .space.market.dirty_br,
+body[data-noanims="true"] .space.political.dirty_br,
+body[data-noanims="true"] .space.territory.dirty_br {
+    border: 4px solid crimson;
 }
 
-.space.fort.dirty_fr, .space.naval.dirty_fr {
+
+body[data-noanims="false"] .space.market.dirty_fr,
+body[data-noanims="false"] .space.political.dirty_fr,
+body[data-noanims="false"] .space.territory.dirty_fr  {
+    animation: dirty-pulse-french 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.market.dirty_fr,
+body[data-noanims="true"] .space.political.dirty_fr,
+body[data-noanims="true"] .space.territory.dirty_fr  {
+    border: 4px solid royalblue;
+}
+
+
+body[data-noanims="false"] .space.fort.dirty_fr,
+body[data-noanims="false"] .space.naval.dirty_fr {
     transform: scale(1.2);
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     animation: dirty-pulse-french-shape 4s ease-in-out infinite;
 }
 
-.space.fort.dirty_br, .space.naval.dirty_br {
+body[data-noanims="true"] .space.fort.dirty_fr,
+body[data-noanims="true"] .space.naval.dirty_fr {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    border: 4px solid royalblue;
+}
+
+
+body[data-noanims="false"] .space.fort.dirty_br,
+body[data-noanims="false"] .space.naval.dirty_br {
     transform: scale(1.2);
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     animation: dirty-pulse-british-shape 4s ease-in-out infinite;
 }
 
-/*
-.space.market.action, .space.political.action, .space.territory.action {
-    border: 4px solid yellow;
-}
 
-
-.space.naval.action, .space.fort.action {
-	background-image: url(images/hexagon.svg);
+body[data-noanims="true"] .space.fort.dirty_br,
+body[data-noanims="true"] .space.naval.dirty_br {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    border: 4px solid crimson;
 }
-*/
 
 .space.advantage {
 	background-size: 88px 88px;
 	border-radius: 50%;
 }
 
-/*
-.space.advantage.action {
-	background-image: url(images/pentagon.svg);
-}
-*/
-
 .space.theater {
 	border-radius: 17px;
 	border: 4px solid transparent;
 }
 
-.space.theater.action {
+body[data-noanims="false"] .space.theater.action {
     animation: action-pulse 4s ease-in-out infinite;
 }
 
-.huguenots.action {
+body[data-noanims="true"] .space.theater.action {
+    border: 4px solid yellow;
+}
+
+body[data-noanims="false"] .huguenots.action {
     animation: action-pulse 4s ease-in-out infinite;
 }
+
+body[data-noanims="true"] .huguenots.action {
+    border: 4px solid yellow;
+}
+
 
 @keyframes action-pulse {
     0%, 100% {
@@ -317,10 +351,18 @@ body.shift .marker { opacity: 25% }
     }
 }
 
-
-.space.market.action, .space.political.action, .space.territory.action {
+body[data-noanims="false"] .space.market.action,
+body[data-noanims="false"] .space.political.action,
+body[data-noanims="false"] .space.territory.action {
 	animation: action-pulse 4s ease-in-out infinite;
 }
+
+body[data-noanims="true"] .space.market.action,
+body[data-noanims="true"] .space.political.action,
+body[data-noanims="true"] .space.territory.action {
+    border: 4px solid yellow;
+}
+
 
 body[data-noanims="false"] .space.naval.action,
 body[data-noanims="false"] .space.fort.action  {
@@ -333,17 +375,25 @@ body[data-noanims="false"] .space.fort.action  {
 .space.naval.action,
 .space.fort.action {
     transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     background-color: yellow;
+}
+
+body[data-noanims="false"] .space.advantage.action {
+    transform: scale(1.2);
+    -webkit-mask: url(images/pentagon.svg) no-repeat center;
+    mask: url(images/pentagon.svg) no-repeat center;
+    animation: action-pulse-shape 4s ease-in-out infinite;
 }
 
 .space.advantage.action {
     transform: scale(1.2);
     -webkit-mask: url(images/pentagon.svg) no-repeat center;
     mask: url(images/pentagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
+    background-color: yellow;
 }
+
 
 .marker.hex {
 	width: 77px;
@@ -397,20 +447,36 @@ body[data-noanims="false"] .space.fort.action  {
 	border-radius: 12px;
 }
 
-.marker.investment.action {
+body[data-noanims="false"] .marker.investment.action {
     animation: action-pulse 4s ease-in-out infinite;
 	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
 }
 
-.marker.advantage.action {
+.marker.investment.action {
+    box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+}
+
+
+body[data-noanims="false"] .marker.advantage.action {
     animation: action-pulse 4s ease-in-out infinite;
     /* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
 }
 
-.card.action {
+.marker.advantage.action {
+    box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+}
+
+
+body[data-noanims="false"] .card.action {
     animation: action-pulse-card 4s ease-in-out infinite;
     /* box-shadow: 0 0 0 3px yellow; */
 }
+
+
+.card.action {
+    box-shadow: 0 0 0 3px yellow;
+}
+
 
 /* COMPONENT OVERLAYS */
 
@@ -508,7 +574,9 @@ body[data-noanims="false"] .space.fort.action  {
 .marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
 
 /* BR-- this could probably be less brutal with a different piece of art */
-.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
+body[data-noanims="false"] .marker.conflict.action:before,
+body[data-noanims="false"] .marker.conflict.plus-one.action:before,
+body[data-noanims="false"] .marker.damaged.action:before {
     content: "";
     display: flex;
     height: 100px;
@@ -517,6 +585,17 @@ body[data-noanims="false"] .space.fort.action  {
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    background-color: yellow;
 }
 
 
@@ -963,8 +1042,30 @@ body[data-noanims="false"] .space.fort.action  {
 .marker.war-basic.fr { background-image: url(tiles75/hex/warbasic_reverse_fr.png) }
 .marker.war-basic.fr.action { background-image: url(tiles75/hex/warbasic_reverse_fr.png)/* , url(images/hex-sm-yellow.svg) */ }
 
+/* BR - possibly less brutal ways to accomplish this? (But if brute force isn't working, you're not using enough brute force!) */
+body[data-noanims="false"] .marker.war-7yw.br.action:before, body[data-noanims="false"] .marker.war-7yw.fr.action:before, body[data-noanims="false"] .marker.war-awi.br.action:before, body[data-noanims="false"] .marker.war-awi.fr.action:before, body[data-noanims="false"] .marker.war-was.br.action:before, body[data-noanims="false"] .marker.war-was.fr.action:before, body[data-noanims="false"] .marker.war-wss.br.action:before, body[data-noanims="false"] .marker.war-wss.fr.action:before, body[data-noanims="false"] .marker.war-basic.fr.action:before, marker.war-basic.br.action:before,
+body[data-noanims="false"] .marker.war0.action:before, body[data-noanims="false"] .marker.war1.action:before, body[data-noanims="false"] .marker.war2.action:before, body[data-noanims="false"] .marker.war3.action:before, body[data-noanims="false"] .marker.war4.action:before, body[data-noanims="false"] .marker.war5.action:before, body[data-noanims="false"] .marker.war6.action:before, body[data-noanims="false"] .marker.war7.action:before, body[data-noanims="false"] .marker.war8.action:before, body[data-noanims="false"] .marker.war9.action:before,
+body[data-noanims="false"] .marker.war10.action:before, body[data-noanims="false"] .marker.war11.action:before, body[data-noanims="false"] .marker.war12.action:before, body[data-noanims="false"] .marker.war13.action:before, body[data-noanims="false"] .marker.war14.action:before, body[data-noanims="false"] .marker.war15.action:before, body[data-noanims="false"] .marker.war16.action:before, body[data-noanims="false"] .marker.war17.action:before, body[data-noanims="false"] .marker.war18.action:before, body[data-noanims="false"] .marker.war19.action:before,
+body[data-noanims="false"] .marker.war20.action:before, body[data-noanims="false"] .marker.war21.action:before, body[data-noanims="false"] .marker.war22.action:before, body[data-noanims="false"] .marker.war23.action:before, body[data-noanims="false"] .marker.war24.action:before, body[data-noanims="false"] .marker.war25.action:before, body[data-noanims="false"] .marker.war26.action:before, body[data-noanims="false"] .marker.war27.action:before, body[data-noanims="false"] .marker.war28.action:before, body[data-noanims="false"] .marker.war29.action:before,
+body[data-noanims="false"] .marker.war30.action:before, body[data-noanims="false"] .marker.war31.action:before, body[data-noanims="false"] .marker.war32.action:before, body[data-noanims="false"] .marker.war33.action:before, body[data-noanims="false"] .marker.war34.action:before, body[data-noanims="false"] .marker.war35.action:before, body[data-noanims="false"] .marker.war36.action:before, body[data-noanims="false"] .marker.war37.action:before, body[data-noanims="false"] .marker.war38.action:before, body[data-noanims="false"] .marker.war39.action:before,
+body[data-noanims="false"] .marker.war40.action:before, body[data-noanims="false"] .marker.war41.action:before, body[data-noanims="false"] .marker.war42.action:before, body[data-noanims="false"] .marker.war43.action:before, body[data-noanims="false"] .marker.war44.action:before, body[data-noanims="false"] .marker.war45.action:before, body[data-noanims="false"] .marker.war46.action:before, body[data-noanims="false"] .marker.war47.action:before, body[data-noanims="false"] .marker.war48.action:before, body[data-noanims="false"] .marker.war49.action:before,
+body[data-noanims="false"] .marker.war50.action:before, body[data-noanims="false"] .marker.war51.action:before, body[data-noanims="false"] .marker.war52.action:before, body[data-noanims="false"] .marker.war53.action:before, body[data-noanims="false"] .marker.war54.action:before, body[data-noanims="false"] .marker.war55.action:before, body[data-noanims="false"] .marker.war56.action:before, body[data-noanims="false"] .marker.war57.action:before, body[data-noanims="false"] .marker.war58.action:before, body[data-noanims="false"] .marker.war59.action:before,
+body[data-noanims="false"] .marker.war60.action:before, body[data-noanims="false"] .marker.war61.action:before, body[data-noanims="false"] .marker.war62.action:before, body[data-noanims="false"] .marker.war63.action:before, body[data-noanims="false"] .marker.war64.action:before, body[data-noanims="false"] .marker.war65.action:before, body[data-noanims="false"] .marker.war66.action:before, body[data-noanims="false"] .marker.war67.action:before, body[data-noanims="false"] .marker.war68.action:before, body[data-noanims="false"] .marker.war69.action:before,
+body[data-noanims="false"] .marker.war70.action:before, body[data-noanims="false"] .marker.war71.action:before, body[data-noanims="false"] .marker.war72.action:before, body[data-noanims="false"] .marker.war73.action:before, body[data-noanims="false"] .marker.war74.action:before, body[data-noanims="false"] .marker.war75.action:before, body[data-noanims="false"] .marker.war76.action:before, body[data-noanims="false"] .marker.war77.action:before, body[data-noanims="false"] .marker.war78.action:before, body[data-noanims="false"] .marker.war79.action:before,
+body[data-noanims="false"] .marker.war80.action:before, body[data-noanims="false"] .marker.war81.action:before, body[data-noanims="false"] .marker.war82.action:before, body[data-noanims="false"] .marker.war83.action:before, body[data-noanims="false"] .marker.war84.action:before, body[data-noanims="false"] .marker.war85.action:before, body[data-noanims="false"] .marker.war86.action:before, body[data-noanims="false"] .marker.war87.action:before, body[data-noanims="false"] .marker.war88.action:before, body[data-noanims="false"] .marker.war89.action:before,
+body[data-noanims="false"] .marker.war90.action:before, body[data-noanims="false"] .marker.war91.action:before, body[data-noanims="false"] .marker.war92.action:before, body[data-noanims="false"] .marker.war93.action:before, body[data-noanims="false"] .marker.war94.action:before, body[data-noanims="false"] .marker.war95.action:before, body[data-noanims="false"] .marker.war96.action:before, body[data-noanims="false"] .marker.war97.action:before, body[data-noanims="false"] .marker.war98.action:before, body[data-noanims="false"] .marker.war99.action:before,
+body[data-noanims="false"] .marker.war-basic0.action:before, body[data-noanims="false"] .marker.war-basic1.action:before, body[data-noanims="false"] .marker.war-basic2.action:before, body[data-noanims="false"] .marker.war-basic3.action:before, body[data-noanims="false"] .marker.war-basic4.action:before, body[data-noanims="false"] .marker.war-basic5.action:before, body[data-noanims="false"] .marker.war-basic6.action:before, body[data-noanims="false"] .marker.war-basic7.action:before, body[data-noanims="false"] .marker.war-basic8.action:before, body[data-noanims="false"] .marker.war-basic9.action:before, body[data-noanims="false"] .marker.war-basic10.action:before, body[data-noanims="false"] .marker.war-basic11.action:before, body[data-noanims="false"] .marker.war-basic12.action:before, body[data-noanims="false"] .marker.war-basic13.action:before, body[data-noanims="false"] .marker.war-basic14.action:before, body[data-noanims="false"] .marker.war-basic15.action:before, body[data-noanims="false"] .marker.war-basic16.action:before, body[data-noanims="false"] .marker.war-basic17.action:before, body[data-noanims="false"] .marker.war-basic18.action:before, body[data-noanims="false"] .marker.war-basic19.action:before, body[data-noanims="false"] .marker.war-basic20.action:before, body[data-noanims="false"] .marker.war-basic21.action:before, body[data-noanims="false"] .marker.war-basic22.action:before, body[data-noanims="false"] .marker.war-basic23.action:before, body[data-noanims="false"] .marker.war-basic24.action:before, body[data-noanims="false"] .marker.war-basic25.action:before, body[data-noanims="false"] .marker.war-basic26.action:before, body[data-noanims="false"] .marker.war-basic27.action:before, body[data-noanims="false"] .marker.war-basic28.action:before, body[data-noanims="false"] .marker.war-basic29.action:before, body[data-noanims="false"] .marker.war-basic30.action:before, body[data-noanims="false"] .marker.war-basic31.action:before
+{
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.83) translateX(-15px) translateY(-20px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: action-pulse-shape 4s ease-in-out infinite;
+}
 
-/* BR - possibly less brutal ways to accomplish this */
 .marker.war-7yw.br.action:before, .marker.war-7yw.fr.action:before, .marker.war-awi.br.action:before, .marker.war-awi.fr.action:before, .marker.war-was.br.action:before, .marker.war-was.fr.action:before, .marker.war-wss.br.action:before, .marker.war-wss.fr.action:before, .marker.war-basic.fr.action:before, marker.war-basic.br.action:before,
 .marker.war0.action:before, .marker.war1.action:before, .marker.war2.action:before, .marker.war3.action:before, .marker.war4.action:before, .marker.war5.action:before, .marker.war6.action:before, .marker.war7.action:before, .marker.war8.action:before, .marker.war9.action:before,
 .marker.war10.action:before, .marker.war11.action:before, .marker.war12.action:before, .marker.war13.action:before, .marker.war14.action:before, .marker.war15.action:before, .marker.war16.action:before, .marker.war17.action:before, .marker.war18.action:before, .marker.war19.action:before,
@@ -985,7 +1086,7 @@ body[data-noanims="false"] .space.fort.action  {
     transform: scale(.83) translateX(-15px) translateY(-20px);
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
+    background-color: yellow;
 }
 
 .marker.exhausted { background-image: url(tiles75/square-sm/exhausted.png) }
