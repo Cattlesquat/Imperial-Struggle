@@ -3571,7 +3571,7 @@ function handle_navy_box()
 	G.navy_to = -1
 	G.navy_from = -1
 	G.navy_displace = false
-	call ("navy_decisions")
+	call ("naval_decisions")
 }
 
 
