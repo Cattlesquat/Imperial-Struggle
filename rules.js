@@ -573,8 +573,9 @@ function on_setup(scenario, options) {
 	G.flags = []
 
 	// Any changes to indexed space since last investment tile? If so, highlight them!
+	// ALSO! Use to check if a navy has already deployed this action round.
 	// <br><b>
-	// G.dirty[space]
+	// set_has(G.dirty, s)
 	G.dirty = []
 
 	// Which player made the most recent changes to spaces
@@ -660,13 +661,16 @@ function on_setup(scenario, options) {
 		}
 	}
 
-	// How many squadrons left in each player's navy box
+	// How many squadrons left in each player's navy box. For *unbuilt* squadrons see G.unbuilt_squadrons[who] instead.
 	// <br><b>
 	// G.navy_box[who]
 	G.navy_box = []
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
 
+	// How many squadrons a player has left unbuilt (total supply per player is 8). For squadrons *in the Navy Box* see G.navy_box[who] instead.
+	// <br><br>
+	// G.unbuilt_squadrons[who]
 	G.unbuilt_squadrons = []
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		G.unbuilt_squadrons[who] = NUM_SQUADRONS - G.navy_box[who]
@@ -1047,8 +1051,8 @@ function set_conflict_marker(s, n = 1) {
 }
 
 function remove_conflict_marker(s) {
+	if (has_conflict_marker(s)) log ("Conflict removed at " + data.spaces[s].name)
 	map_delete(G.conflicts, s)
-	log ("Conflict removed at " + data.spaces[s].name)
 	update_flag_counts()
 }
 
@@ -3008,10 +3012,12 @@ function action_eligible_spaces_mil(region)
 			/* 5.6.4 - Repair a fort */
 			if (space.type === FORT) {
 				if (!is_damaged_fort(space.num)) continue
-
 			}
 
-			//TODO: move my existing ship
+			/* Move my existing ship */
+			if (space.type === NAVAL) {
+				if (set_has(G.dirty, space.num)) continue /* A given Squadron can only deploy once per action round */
+			}
 		}
 		else {
 			if (space.type === FORT) {
@@ -3458,6 +3464,7 @@ function free_theaters(who) {
 
 function handle_buy_bonus_war_tile()
 {
+	action_cost_setup(-1, MIL)
 	G.action_header = "BUY BONUS WAR TILE: "
 	G.action_cost   = 2
 	if (free_theaters(G.active).length < 1) {
@@ -3483,10 +3490,6 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 
 
 P.buy_bonus_war_tile_flow = script(`
-    if (G.action_points_available_debt < L.min_cost) {
-    	return // If we can't even afford it w/ debt and trps, we shouldn't be here
-    }    
-    
     call decide_how_and_whether_to_spend_action_points
 	if (!G.paid_action_cost) {
 		eval { G.action_header = "" }         
@@ -3562,11 +3565,194 @@ P.bonus_war_tile_decisions = {
 }
 
 
-function reflag_space(s, who) {
+function handle_navy_box()
+{
+	G.navy_from_navy_box = true
+	G.navy_to = -1
+	G.navy_from = -1
+	G.navy_displace = false
+	call ("navy_decisions")
+}
+
+
+function handle_naval_space(s)
+{
+	G.navy_from_navy_box = false;
+	G.navy_displace = false
+
+	if (G.flags[s] === G.active) {
+		G.navy_from = s
+		G.navy_to = -1
+	}
+	else {
+		G.navy_from = -1
+		G.navy_to = s
+
+		if (G.flags[s] !== NONE) {
+			G.navy_displace = true
+		}
+	}
+
+	call ("naval_decisions")
+}
+
+function action_naval_sources()
+{
+	if (G.navy_box[G.active] > 0) action_navy_box()
+
+	// Naval spaces containing our own naval units, except ones we've already moved this round
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		if (G.flags[s] !== G.active) continue
+		if (set_has(G.dirty, s)) continue
+		action_space(s)
+	}
+}
+
+function action_naval_destinations()
+{
+	// Naval spaces that are either empty or contain an enemy squadron (which we could therefore displace)
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		if (G.flags[s] === G.active) continue
+		action_space(s)
+	}
+}
+
+
+P.naval_decisions = {
+	_begin() {
+		action_cost_setup(-1, MIL)
+	},
+	prompt() {
+		let header = ""
+		let msg = ""
+		if (G.navy_displace) {
+			header = "DISPLACE SQUADRON: "
+		} else {
+			if (G.navy_from_navy_box) {
+				header = "DEPLOY SQUADRON: "
+			} else if (G.navy_from >= 0) {
+				header = "MOVE SQUADRON: "
+			} else {
+				header = "DEPLOY SQUADRON: "
+			}
+		}
+
+		if (G.navy_to >= 0) {
+			msg = "Select squadron to move to " + data.spaces[G.navy_to].name + " (from map or Navy Box)."
+			action_naval_sources()
+		} else if (G.navy_from_navy_box || (G.navy_from >= 0)) {
+			msg = "Select target naval space."
+			action_naval_destinations()
+		} else {
+			msg = "Select a naval space and/or squadron."
+			action_naval_sources()
+			action_naval_destinations()
+		}
+
+		V.prompt = say_action_header(header) + say_action(msg) + say_action_points()
+	},
+	space(s) {
+		push_undo()
+		if (G.navy_to >= 0) {
+			G.navy_from = s
+		} else {
+			G.navy_to = s
+		}
+		if ((G.navy_to >= 0) && ((G.navy_from >= 0) || G.navy_from_navy_box)) {
+			goto ("naval_flow")
+		}
+	},
+	navy_box() {
+		push_undo()
+		G.navy_from_navy_box = true
+		if (G.navy_to >= 0) goto ("naval_flow")
+	}
+}
+
+function get_naval_cost()
+{
+	if (G.flags[G.navy_to] === NONE) return 1
+	return G.navy_from_navy_box ? 3 : 2
+}
+
+P.naval_flow = script(`
+    eval {
+    	G.action_cost = get_naval_cost()
+    }
+
+    call decide_how_and_whether_to_spend_action_points
+	if (!G.paid_action_cost) {
+		eval { G.action_header = "" }         
+		return
+	}
+
+    eval { execute_naval_move() }    	
+`)
+
+function execute_naval_move()
+{
+	// If we're displacing an enemy fleet, send it back to the Navy Box
+	if (G.navy_displace && (G.navy_to >= 0)) {
+		let whom = 1 - G.active
+		G.navy_box[whom]++
+	}
+
+	// If we're moving from the Navy Box, subtract it
+	if (G.navy_from_navy_box) {
+		if (G.navy_box[G.active] < 1) {
+			throw new Error("Allowed move from Navy Box when no " + data.flags[G.active].adj + " squadrons were there!")
+		} else {
+			G.navy_box[G.active]--
+		}
+	}
+
+	// If we're moving from a space on the board, remove the navy from it
+	if (G.navy_from >= 0) {
+		reflag_space (G.navy_from, NONE, true)
+	}
+
+	// Check if we somehow didn't move a navy from *anywhere*
+	if (!G.navy_from_navy_box && (G.navy_from < 0)) {
+		throw new Error("Naval move with no source! G.navy_to: " + G.navy_to)
+	}
+
+	// Put a navy in the space we're moving to
+	if (G.navy_to >= 0) {
+		reflag_space (G.navy_to, G.active, true)
+	} else {
+		throw new Error("Naval move with no destination! G.navy_from: " + G.navy_from)
+	}
+
+	// Log the result
+	let msg = data.flags[G.active].name + " "
+	if (G.navy_displace) {
+		msg += " DISPLACES " + data.flags[1 - G.active].adj + " squadron at " + data.spaces[G.navy_to].name
+		if (G.navy_from_navy_box) {
+			msg += " with a squadron from the Navy Box."
+		} else {
+			msg += " with its squadron from " + data.spaces[G.navy_from].name + "."
+		}
+	} else if (G.navy_from_navy_box) {
+		msg += " deploys a squadron from the Navy Box to " + data.spaces[G.navy_to].name + "."
+	} else {
+		msg += " moves its squadron from " + data.spaces[G.navy_from].name + " to " + data.spaces[G.navy_to].name + "."
+	}
+	log (msg)
+
+	if (G.navy_from_navy_box || G.navy_displace) {
+		msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
+		log (italic(msg))
+	}
+}
+
+
+function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
-		log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+		if (!silent) log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 	}
 
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
@@ -3635,6 +3821,11 @@ function action_cost_setup(s, t) {
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
 function handle_space_click(s, force_type = -1)
 {
+	if (data.spaces[s].type === NAVAL) {
+		handle_naval_space(s)
+		return
+	}
+
 	action_cost_setup(s, (force_type > 0) ? force_type : space_action_type(s))
 
 	G.action_cost = action_point_cost(G.active, s, G.action_type)
@@ -3978,7 +4169,7 @@ P.action_round_core = {
 			button ("draw_event")
 		}
 		if (G.action_points_eligible[MIL]) {
-			action_navy_box()
+			if (G.navy_box[G.active] > 0) action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 			button ("buy_bonus_war_tile")
 		}
@@ -4021,9 +4212,8 @@ P.action_round_core = {
 		handle_military_upgrade(t)
 	},
 	navy_box() {
-		//TODO deploy, not construct. This is just to have an action here for the moment.
 		push_undo()
-		handle_construct_squadron_button()
+		handle_navy_box()
 	},
 	buy_bonus_war_tile() {	// buy a bonus war tile, and deploy it into the next war
 		push_undo()
@@ -4033,9 +4223,6 @@ P.action_round_core = {
 
 	},
 	buy_economic_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
-
-	},
-	deploy_squadron() { // TBD: deploy from navy box (or move one from somewhere else)
 
 	},
 	confirm_pass_to_reduce_debt() {
