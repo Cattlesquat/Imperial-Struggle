@@ -3591,32 +3591,61 @@ function handle_naval_space(s)
 		if (G.flags[s] !== NONE) {
 			G.navy_displace = true
 		}
+
+		// If there simply aren't any other available squadrons on the map, autopick the Navy Box
+		if (num_available_squadrons(G.active) < 1) {
+			if (G.navy_box[G.active] > 0) {
+				G.navy_from_navy_box = true
+				goto ("naval_flow")
+			}
+		}
 	}
 
-	call ("naval_decisions")
+	goto ("naval_decisions")
+}
+
+
+function num_available_squadrons(who) {
+	let avail = 0
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		if (G.flags[s] !== G.active) continue
+		if (set_has(G.dirty, s)) continue
+		avail++
+	}
+	return avail
 }
 
 function action_naval_sources()
 {
 	if (G.navy_box[G.active] > 0) action_navy_box()
 
+	let avail = 0
 	// Naval spaces containing our own naval units, except ones we've already moved this round
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
 		if (G.flags[s] !== G.active) continue
 		if (set_has(G.dirty, s)) continue
 		action_space(s)
+		avail++
 	}
+
+	return avail
 }
 
 function action_naval_destinations()
 {
+	let avail = 0
+
 	// Naval spaces that are either empty or contain an enemy squadron (which we could therefore displace)
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
 		if (G.flags[s] === G.active) continue
 		action_space(s)
+		avail++
 	}
+
+	return avail
 }
 
 
@@ -3642,9 +3671,16 @@ P.naval_decisions = {
 		if (G.navy_to >= 0) {
 			msg = "Select squadron to move to " + data.spaces[G.navy_to].name + " (from map or Navy Box)."
 			action_naval_sources()
+
+			if ((G.navy_box[G.active] < 1) && num_available_squadrons(G.active) < 1) {
+				msg = "You have no available squadrons to move there."
+			}
 		} else if (G.navy_from_navy_box || (G.navy_from >= 0)) {
 			msg = "Select target naval space."
-			action_naval_destinations()
+			let avail = action_naval_destinations()
+			if (avail < 1) {
+				msg = "There are no naval spaces available for you to deploy to." // I'm not sure this can actually happen
+			}
 		} else {
 			msg = "Select a naval space and/or squadron."
 			action_naval_sources()
@@ -3902,10 +3938,6 @@ P.space_flow = script(`
 P.decide_how_and_whether_to_spend_action_points = script(`
 	eval { 	G.paid_action_cost = false }
 	
-    if (G.action_points_available_debt < G.action_cost) {
-    	return // If we can't even afford it w/ debt and trps, we shouldn't be here
-    }
-    
     if (G.eligible_minor) {
     	if (G.action_points_available_debt < G.action_cost + 2) {
         	eval { G.action_minor = true }  // If the only way we can do this is as a minor action, we don't need to make a choice
@@ -3944,6 +3976,16 @@ function pay_action_cost() {
 	G.paid_action_cost = true
 
 	// TODO spend weird "region restricted" action points if available
+
+	let msg = data.flags[G.active].name + " spends " + G.action_cost + " " + data.action_points[G.action_type].name + " action points."
+	if (G.action_points_eligible_major[G.action_type] && G.action_points_minor[G.action_type] > 0) {
+		if (G.action_minor) {
+			msg += " (Minor action)"
+		} else {
+			msg += " (Major action)"
+		}
+	}
+	log(italic(msg))
 
 	if (G.action_minor) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
@@ -4184,7 +4226,7 @@ P.action_round_core = {
 			}
 		}
 
-		// I'm presently undecided whether to have these here (or only when you try to spend extra, or just have you click on the debt counters)
+		// TODO: *possibly* let you click debt/TRP counters to directly spend some in advance of an action
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
 
