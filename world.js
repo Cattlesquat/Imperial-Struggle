@@ -1142,14 +1142,14 @@ function init_preference_checkbox(name, initial) {
 		close_toolbar_menus()
 		on_update()
 	}
-	document.body.classList.toggle(name, value)
+	document.body.setAttribute("data-" + name, value)
 }
 
 function _update_preference_checkbox(name) {
 	var input = document.getElementById(name)
 	var value = input.checked
 	set_preference(name, value)
-	document.body.classList.toggle(name, value)
+	document.body.setAttribute("data-" + name, value)
 }
 
 function init_preference_radio(name, initial) {

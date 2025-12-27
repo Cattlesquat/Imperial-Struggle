@@ -322,8 +322,8 @@ body.shift .marker { opacity: 25% }
 	animation: action-pulse 4s ease-in-out infinite;
 }
 
-.space.naval.action,
-.space.fort.action  {
+body[data-noanims="false"] .space.naval.action,
+body[data-noanims="false"] .space.fort.action  {
     transform: scale(1.2);
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
