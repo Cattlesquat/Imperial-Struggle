@@ -3772,11 +3772,8 @@ function get_naval_cost()
 P.naval_flow = script(`
     eval {
     	G.action_cost = get_naval_cost()
+    	require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
     }
-    
-  	eval {
-		require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
-	}
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
 	}
