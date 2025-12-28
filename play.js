@@ -627,15 +627,11 @@ function on_update() {
 				populate ("huguenot-space", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
 			}
 		}
-
 		let dirty = set_has(V.dirty, s.num)
-		update_keyword("space", s.num, "dirty_br", dirty && (V.dirty_who === BRITAIN))
-		update_keyword("space", s.num, "dirty_fr", dirty && (V.dirty_who !== BRITAIN))
+		let tracksies = get_preference("tracksies", true)
+		update_keyword("space", s.num, "dirty_br", dirty && (V.dirty_who === BRITAIN) && tracksies)
+		update_keyword("space", s.num, "dirty_fr", dirty && (V.dirty_who !== BRITAIN) && tracksies)
 	}
-
-	init_preference_checkbox("noflipsies", false)
-	init_preference_checkbox("downanddirty", false)
-	init_preference_checkbox("tracksies", true)
 
 	let noflipsies = get_preference("noflipsies", false)
 	let downanddirty = get_preference("downanddirty", false)
