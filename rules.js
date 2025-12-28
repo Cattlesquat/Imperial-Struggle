@@ -2219,6 +2219,7 @@ P.select_investment_tile = {
 		end()
 	},
 	ministry_card(m) {
+		push_undo()
 		handle_ministry_card_click(m)
 	},
 }
@@ -2522,7 +2523,6 @@ P.event_carnatic_war = {
 
 function handle_ministry_card_click(m)
 {
-	push_undo()
 	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministry "m" id)
 	// <br><b>
 	// G.ministry[R][G.ministry_index] </b> contains card id (m) the card the player clicked on
@@ -2959,7 +2959,10 @@ P.ministry_jacobite_uprisings = {
 }
 
 
-
+function handle_advantage_click(a)
+{
+	/////
+}
 
 /* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
 function allowed_to_shift_market(s, who)
@@ -4375,7 +4378,7 @@ P.action_round_core = {
 	advantage(a) {
 		push_undo()
 		advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS) // Can't play an event after using an advantage
-		// TODO - handle_advantage_click
+		handle_advantage_click(a)
 	},
 	event_card(c) {
 		push_undo()
