@@ -420,8 +420,6 @@ function on_init() {
 			.keyword("square advantage a" + a.num)
 			.tooltip(bold(a.name) + ": " + italic(a.desc))
 			.tooltip_image(advantage_tooltip_image)
-		//marker.element.setAttribute('onmouseenter', `on_focus_advantage_tip(${a.num})`)
-		//marker.element.setAttribute('onmouseleave', 'on_blur_advantage_tip()')
 	}
 
 	for (a of data.investments) {
@@ -608,7 +606,7 @@ function on_update() {
 		populate("lout-navy", "squadron-br-navy", i)
 		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	}
-	
+
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE)
@@ -635,19 +633,28 @@ function on_update() {
 		update_keyword("space", s.num, "dirty_fr", dirty && (V.dirty_who !== BRITAIN))
 	}
 
-	for (a = 0; a < NUM_ADVANTAGES; ++a) {
-		var layout, index
+	init_preference_checkbox("noflipsies", false)
+	init_preference_checkbox("downanddirty", false)
+	init_preference_checkbox("tracksies", true)
+
+	let noflipsies = get_preference("noflipsies", false)
+	let downanddirty = get_preference("downanddirty", false)
+
+	for (a = 0; a < NUM_ADVANTAGES; ++a) { ///
+		var layout, index, reverse
 		if (V.advantages[a] === NONE) {
 			layout = "lout-advantage"
 			index = a
+			reverse = downanddirty || (is_advantage_exhausted(a) && !noflipsies)
 		} else {
 			layout = "panel-advantage"
 			index = V.advantages[a]
+			reverse = (is_advantage_exhausted(a) && !noflipsies)
 		}
 		populate(layout, index, "advantage", a)
-		if (is_advantage_exhausted(a)) {
-			update_keyword("advantage", a, "exhausted", true)
-		}
+
+		update_keyword("advantage", a, "reverse", reverse)
+		update_keyword("advantage", a, "exhausted", is_advantage_exhausted(a) && (noflipsies || (downanddirty && V.advantages[a] === NONE)))
 	}
 
 	if (V.all_ministries)
