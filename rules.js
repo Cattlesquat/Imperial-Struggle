@@ -400,6 +400,8 @@ function setup_procs()
 	data.ministries[JACOBITE_UPRISINGS].proc = "ministry_jacobite_uprisings"
 
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
+
+	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 }
 
 /* SETUP */
@@ -2959,9 +2961,74 @@ P.ministry_jacobite_uprisings = {
 }
 
 
+
+function advantage_prompt(who, a, string1 = "") {
+	var header = data.advantages[a].name.toUpperCase() + ": "
+
+	var prompt = ""
+	if (G.action_round_subphase === BEFORE_PICKING_TILE) {
+		prompt += "You must pick an investment tile before you can activate advantages."
+	}
+	else if (is_advantage_exhausted(a)) {
+		prompt += "Advantage Exhausted."
+	}
+	else {
+		prompt += string1 + "."
+	}
+	return say_action_header(header) + say_action(prompt)
+}
+
+
+
 function handle_advantage_click(a)
 {
-	/////
+	G.active_advantage = a
+	call ("advantage_flow")
+}
+
+
+P.advantage_flow = script (`  
+	if (data.advantages[G.active_advantage].proc !== undefined) {
+		goto (data.advantages[G.active_advantage].proc)
+	} 
+	
+	//if (!advantage_activatable_now(G.active_advantage)) {
+	//	goto advantage_not_activatable
+	//}
+			
+	goto advantage_not_implemented
+`)
+
+
+P.advantage_not_implemented = {
+	prompt() {
+		let msg = "Advantage not yet implemented."
+		V.prompt = advantage_prompt(R, G.active_advantage, msg)
+		button ("pass")
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
+
+P.advantage_baltic_trade = {
+	prompt() {
+		if (G.debt[R] <= 0) {
+			V.prompt = advantage_prompt(R, G.active_advantage, "You currently have no debt.")
+		} else {
+			let amount = Math.min(2, G.debt[R])
+			V.prompt = advantage_prompt(R, G.active_advantage, "Use advantage to reduce debt by " + amount + "?")
+			if (amount === 1) V.prompt += " (You currently have only 1 debt)"
+			action ("use_advantage")
+		}
+	},
+	use_advantage() {
+		push_undo()
+		exhaust_advantage(BALTIC_TRADE)
+		reduce_debt(R, Math.min(2, G.debt[R]))
+		end()
+	}
 }
 
 /* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
@@ -2973,7 +3040,7 @@ function allowed_to_shift_market(s, who)
 		if (data.spaces[link].type === MARKET) {
 			if (has_conflict_marker(link)) continue						// Not if conflict
 			if (is_isolated_market(link)) continue						// Not if isolated
-			if (!set_has(G.controlled_start_of_round, link)) continue	// Can't "daisy chain" from market we shifted THIS round
+			if (!set_has(G.controlled_start_of_round, link)) continue       // Can't "daisy chain" from market we shifted THIS round
 			return true
 		}
 	}
