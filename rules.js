@@ -402,6 +402,8 @@ function setup_procs()
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
+	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_algonquin_raids"
+	data.advantages[WHEAT].proc = "advantage_wheat"
 }
 
 /* SETUP */
@@ -869,7 +871,7 @@ function pay_treaty_points(who, amount) {
 
 function reduce_debt(who, amount)
 {
-	amount = Math.max(amount, G.debt[who])
+	amount = Math.min(amount, G.debt[who])
 	if (amount > 0) {
 		G.debt[who] -= amount
 		log(data.flags[who].adj + " Debt reduced by " + amount)
@@ -2970,11 +2972,11 @@ function advantage_prompt(who, a, string1 = "") {
 	if (G.action_round_subphase === BEFORE_PICKING_TILE) {
 		prompt += "You must pick an investment tile before you can activate advantages."
 	}
-	else if (is_advantage_exhausted(a)) {
+	else if (G.advantage_already_exhausted) {
 		prompt += "Advantage Exhausted."
 	}
 	else {
-		prompt += string1 + "."
+		prompt += string1
 	}
 	return say_action_header(header) + say_action(prompt)
 }
@@ -2984,6 +2986,9 @@ function advantage_prompt(who, a, string1 = "") {
 function handle_advantage_click(a)
 {
 	G.active_advantage = a
+	G.advantages_used_this_turn++
+	G.advantage_already_exhausted = is_advantage_exhausted(a)
+	if (!G.advantage_already_exhausted) exhaust_advantage(a)
 	call ("advantage_flow")
 }
 
@@ -3026,11 +3031,66 @@ P.advantage_baltic_trade = {
 	},
 	use_advantage() {
 		push_undo()
-		exhaust_advantage(BALTIC_TRADE)
 		reduce_debt(R, Math.min(2, G.debt[R]))
 		end()
 	}
 }
+
+P.advantage_algonquin_raids = {
+	prompt() {
+		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict in a Fur Market.")
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== MARKET) continue
+			if (data.spaces[s].market !== FURS) continue
+			if (has_conflict_marker(s)) continue
+			action_space(s)
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		end()
+	}
+}
+
+P.advantage_wheat = {
+	prompt() {
+		let msg = "Pick an eligible market in North America to unflag for 1 Econ action point."
+		if (!G.action_points_eligible[ECON] ) {
+			msg = "You must have an Economic action available to unflag markets."
+		} else {
+			let any = false
+			let any_flagged = false
+			let any_non_conflict = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
+				if (data.spaces[s].type !== MARKET) continue
+				if (G.flags[s] !== 1 - G.active) continue
+				any_flagged = true
+				if (!allowed_to_shift_market(s, R)) continue
+				if (!has_conflict_marker(s)) any_non_conflict = true
+				if (!G.action_points_eligible_major[ECON] && !eligible_for_minor_action(s, R)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any_flagged) {
+				msg = "There are no enemy-flagged North American markets right now."
+			} else if (any_non_conflict && G.action_points_minor[ECON] > 0) {
+				msg = "With a minor action you can only unflag markets that have a conflict marker."
+			} else if (!any) {
+				msg = "You do not have eligible connections to any enemy-flagged North American markets."
+			}
+		}
+		V.prompt = advantage_prompt(R, G.active_advantage, msg)
+	},
+	space(s) {
+		push_undo()
+		action_cost_setup(s, ECON)
+		G.action_cost = 1
+		goto ("space_flow")
+	}
+}
+
 
 /* 5.4.1 - In order to shift a Market, that Market must be connected to a Territory, Fort, or Naval space the player controls, or be connected to another Market the player controls that does not contain a Conflict marker, is not Isolated, and did not change control during the current Action Round. */
 function allowed_to_shift_market(s, who)
@@ -3984,6 +4044,12 @@ function action_cost_setup(s, t) {
 
 	// Have we spent any TRP on the current action
 	G.treaty_points_spent = 0
+
+	// Do we need to flip a ministry in order to get a discount or be able to do the action (if so, this is the card id of the ministry)
+	G.needs_to_flip_ministry = -1
+
+	// Eligible to use Huguenots discount?
+	G.eligible_for_huguenots = false
 }
 
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
