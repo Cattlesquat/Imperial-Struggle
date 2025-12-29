@@ -576,12 +576,31 @@ function is_ministry_partially_exhausted(who, m)
 }
 
 
+function available_debt(who)
+{
+	return G.debt_limit[who] - G.debt[who]
+}
+
+function available_debt_plus_trps(who)
+{
+	return available_debt(who) + G.treaty_points[who]
+}
+
+function update_debt_display()
+{
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		let avail = available_debt_plus_trps(who)
+		roles[who].stat.innerHTML = avail + " Debt + TRPs"
+	}
+}
 
 
 function on_update() {
 	var i, r, s, a
 
 	begin_update()
+
+	update_debt_display()
 
 	populate("general-track", V.vp, "victory-points")
 
