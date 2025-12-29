@@ -2171,6 +2171,7 @@ function selected_a_tile(tile)
 
 	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
 	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
+	G.action_minor_type = data.investments[G.played_tile].minortype // Easier to remember
 
 	// Bonus points (ECON, DIPLO, MIL) committed during the current specific action (e.g. a bonus military point for Choiseul)
 	G.action_points_committed_bonus = [ 0, 0, 0 ]
@@ -3178,6 +3179,7 @@ function action_territories_debug() {
 
 function action_eligible_spaces(type, region)
 {
+	if (!G.action_points_eligible_major[type] && (G.action_points_minor[type] <= 0)) return
 	switch (type) {
 		case ECON:
 			action_eligible_spaces_econ(region)
@@ -3959,11 +3961,11 @@ function action_cost_setup(s, t) {
 	// Flavor of action we're trying to perform (i.e. ECON, DIPLO, MIL)
 	G.action_type = t
 
-	// Have we decided on a minor action
+	// Have we committed to a minor action
 	G.action_minor = false
 
 	// Is this action eligible to be a minor one (e.g. not removing enemy flag, and we have minor action points available)
-	G.eligible_minor = eligible_for_minor_action(s, G.active) && G.action_points_minor[G.action_type] > 0
+	G.eligible_minor = eligible_for_minor_action(s, G.active) && (G.action_points_minor[G.action_type] > 0)
 
 	// How many action points (of the active flavor) are immediately available (without taking debt, spending TRP, or otherwise invoking an ability to gain more)
 	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false)
@@ -4192,7 +4194,14 @@ function add_action_point()
 // Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
 P.confirm_spend_debt_or_trps = {
 	prompt() {
-		if (G.action_points_available_now < G.action_cost) {
+		if (!G.action_points_eligible_major[G.action_type] && (G.action_points_minor[G.action_type] <= 0)) {
+			V.prompt = say_action_header()
+			if (G.action_type === G.action_minor_type) {
+				V.prompt += say_action("You cannot conduct another action using " + data.action_points[G.action_type].name + " points, as you have already conducted a minor action. ")
+			} else { // Probably/Hopefully can't get here, but if you do you have to hit Undo
+				V.prompt += say_action("You aren't eligible to conduct an action using " + data.action_points[G.action_type].name + " points.")
+			}
+		} else if (G.action_points_available_now < G.action_cost) {
 			V.prompt = say_action_header()
 			V.prompt += say_action(("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")" + ((G.action_string !== "") ? " " + G.action_string : ""))) + ". (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += say_action_points()
