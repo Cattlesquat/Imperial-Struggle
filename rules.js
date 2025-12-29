@@ -402,7 +402,8 @@ function setup_procs()
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
-	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_algonquin_raids"
+	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_fur_market_raids"
+	data.advantages[IROQUOIS_RAIDS].proc = "advantage_fur_market_raids"
 	data.advantages[WHEAT].proc = "advantage_wheat"
 }
 
@@ -3036,7 +3037,7 @@ P.advantage_baltic_trade = {
 	}
 }
 
-P.advantage_algonquin_raids = {
+P.advantage_fur_market_raids = {
 	prompt() {
 		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict in a Fur Market.")
 		for (let s = 0; s < NUM_SPACES; s++) {
