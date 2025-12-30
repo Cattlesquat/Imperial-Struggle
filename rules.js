@@ -402,9 +402,17 @@ function setup_procs()
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
-	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_fur_market_raids"
-	data.advantages[IROQUOIS_RAIDS].proc = "advantage_fur_market_raids"
+	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
+	data.advantages[IROQUOIS_RAIDS].proc = "advantage_place_conflict"
+	data.advantages[PATRIOT_AGITATION].proc = "advantage_place_conflict"
 	data.advantages[WHEAT].proc = "advantage_wheat"
+	data.advantages[RAIDS_AND_INCURSIONS].proc = "advantage_place_conflict"
+	data.advantages[SEPARATIST_WARS].proc = "advantage_place_conflict"
+	data.advantages[POWER_STRUGGLE].proc = "advantage_place_conflict"
+	data.advantages[LETTERS_OF_MARQUE].proc = "advantage_place_conflict"
+	data.advantages[PIRATE_HAVENS].proc = "advantage_place_conflict"
+	data.advantages[MEDITERRANEAN_INTRIGUE].proc = "advantage_place_conflict"
+	data.advantages[CENTRAL_EUROPE_CONFLICT].proc = "advantage_place_conflict"
 }
 
 /* SETUP */
@@ -2647,6 +2655,7 @@ function reveal_ministry(who, index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
+		if (!G.has_required_ministry) end()
 		if (G.ministry_revealed[R][G.ministry_index] && !G.prompt_to_exhaust) end()
 	},
 	prompt() {
@@ -3020,6 +3029,7 @@ P.advantage_not_implemented = {
 }
 
 P.advantage_baltic_trade = {
+
 	prompt() {
 		if (G.debt[R] <= 0) {
 			V.prompt = advantage_prompt(R, G.active_advantage, "You currently have no debt.")
@@ -3037,15 +3047,91 @@ P.advantage_baltic_trade = {
 	}
 }
 
-P.advantage_fur_market_raids = {
+P.advantage_place_conflict = {
+	_begin() {
+		let a = G.active_advantage
+		L.adv_region = -1
+		L.adv_market_only = false
+		L.adv_market_type = -1
+		switch (a) {
+			case RAIDS_AND_INCURSIONS:
+				L.adv_string = "in a market in India."
+				L.adv_market_only = true
+				L.adv_region = REGION_INDIA
+				break;
+			case SEPARATIST_WARS:
+				L.adv_string = "in a Cotton market."
+				L.adv_market_only = true
+				L.adv_market_type = COTTON
+				break;
+			case POWER_STRUGGLE:
+				L.adv_string = "in a Carnatic Coast market."
+				L.adv_region = REGION_INDIA
+				L.adv_market_only = true
+				// unique code for Carnatic Coast specifically
+				break;
+			case LETTERS_OF_MARQUE:
+			case PIRATE_HAVENS:
+				L.adv_string = "in an unprotected Caribbean market."
+				L.adv_market_only = true
+				L.adv_region = REGION_CARIBBEAN
+				// unique code for unprotected
+				break;
+			case PATRIOT_AGITATION:
+				L.adv_string = "in North America."
+				L.adv_region = REGION_NORTH_AMERICA
+				break;
+			case IROQUOIS_RAIDS:
+			case ALGONQUIN_RAIDS:
+				L.adv_string = "in a Fur Market."
+				L.adv_market_only = true
+				L.adv_market_type = FURS
+				break;
+			case MEDITERRANEAN_INTRIGUE:
+				L.adv_string = "in Spain or Austria."
+				// unique code
+				break;
+			case CENTRAL_EUROPE_CONFLICT:
+				L.adv_string = "in an alliance space in Europe."
+				L.adv_region = REGION_EUROPE
+				// unique code for alliance
+				break;
+		}
+	},
 	prompt() {
 		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict in a Fur Market.")
+		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].type !== MARKET) continue
-			if (data.spaces[s].market !== FURS) continue
+			if (L.adv_market_only || (data.spaces[s].type !== POLITICAL)) {
+				if (data.spaces[s].type !== MARKET) continue
+			}
+			if ((L.adv_market_type >= 0) && (data.spaces[s].market !== L.adv_market_type)) continue
+			if ((L.adv_region >= 0) && (data.spaces[s].region !== L.adv_region)) continue
+
+			switch (G.active_advantage) {
+				case POWER_STRUGGLE:
+					if (data.spaces[s].subreg !== SUBREGION_CARNATIC_COAST) continue;
+					break;
+
+				case LETTERS_OF_MARQUE:
+				case PIRATE_HAVENS:
+					if (is_protected(s)) continue;
+					break;
+
+				case MEDITERRANEAN_INTRIGUE:
+					if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
+					break;
+
+				case CENTRAL_EUROPE_CONFLICT:
+					if (data.spaces[s].alliance.length <= 0) continue
+					break;
+			}
+
 			if (has_conflict_marker(s)) continue
 			action_space(s)
+			any = true
 		}
+		if (!any) V.prompt += " (None eligible)"
 	},
 	space(s) {
 		push_undo()
@@ -3786,6 +3872,7 @@ function handle_naval_space(s)
 			if (G.navy_box[G.active] > 0) {
 				G.navy_from_navy_box = true
 				goto ("naval_flow")
+				return
 			}
 		}
 	}
