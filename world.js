@@ -1099,7 +1099,7 @@ function escape_tip_light(text, re, log_className, action, names) {
 	)
 }
 
-function escape_tip_class(text, re, log_className, tip_className, names) {
+function escape_tip_class_sub(text, re, log_className, tip_className, names) {
 	return text.replace(re, (m,x) => `<span
 		class="${log_className}"
 		onmouseenter="_tip_focus_class('${tip_className.replace("$1",x)}')"
@@ -1142,14 +1142,14 @@ function init_preference_checkbox(name, initial) {
 		close_toolbar_menus()
 		on_update()
 	}
-	document.body.setAttribute("data-" + name, value)
+	document.body.dataset[name] = value
 }
 
 function _update_preference_checkbox(name) {
 	var input = document.getElementById(name)
 	var value = input.checked
 	set_preference(name, value)
-	document.body.setAttribute("data-" + name, value)
+	document.body.dataset[name] = value
 }
 
 function init_preference_radio(name, initial) {

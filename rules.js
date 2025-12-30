@@ -1421,7 +1421,7 @@ P.deal_cards_discard = {
 				} else {
 					V.prompt += " ("
 				}
-				V.prompt += data.cards[c].name
+				V.prompt += "E" + c
 				any = true
 			}
 			if (any) V.prompt += ")"
@@ -1483,7 +1483,7 @@ P.choose_ministry_cards = {
 			var list = ""
 			for (const i of G.ministry[R]) {
 				if (any) list += ", ";
-				list += data.ministries[i].name
+				list += "M" + i
 				any = true;
 			}
 			if (any) list += "."
@@ -1772,7 +1772,7 @@ function exhaust_ministry (who, m, ability = 0)
     set_add(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 
 	log_br()
-	let msg = "Ministry exhausted: " + data.ministries[m].name
+	let msg = "Ministry exhausted: M" + m
 	if (data.ministries[m].abilities > 1) {
 		msg += " (Ability #" + (ability + 1) + ")"
 	}
@@ -1969,7 +1969,7 @@ P.scoring_phase = function () {
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
 				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-					log(data.ministries[COURT_OF_THE_SUN_KING].name + " increases VP value of Europe award by +1")
+					log("M" + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1")
 					vp++
 				}
 			}
@@ -2017,7 +2017,7 @@ P.scoring_phase = function () {
 			}
 		}
 		vp = Math.min(vp, 3)
-		log (data.ministries[EAST_INDIA_COMPANY].name + " adds +" + vp + " VP for Britain")
+		log ("M" + EAST_INDIA_COMPANY + " adds +" + vp + " VP for Britain")
 		adjust_victory_points(BRITAIN, vp)
 	}
 
@@ -2273,7 +2273,7 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
-	log_h2(data.flags[R].name + " plays Event: \n" + data.cards[c].name)
+	log_h2(data.flags[R].name + " plays Event: \nE" + c)
 	G.played_events.push(c)
 
 	if (G.qualifies_for_bonus) {
@@ -2401,7 +2401,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "") {
-	var header = data.cards[c].name.toUpperCase() + ": "
+	var header = "EE" + c + ": "
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || !G.qualifies_for_bonus) {
@@ -2555,7 +2555,10 @@ function handle_ministry_card_click(m)
 	// String reason we are requesting/suggesting the player flip up a ministry
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
+		log ("Clicked M" + m)
 		call ("ministry_card_flow")
+	} else {
+		log ("Clicked M" + m)
 	}
 }
 
@@ -2608,7 +2611,7 @@ function ministry_useful_this_phase(m, subphase)
 
 function say_ministry_header()
 {
-	return say_action_header(data.ministries[G.ministry_id].name.toUpperCase() + ": ")
+	return say_action_header("MM" + G.ministry_id + ": ")
 }
 
 function ministry_prompt(who, m, string1, string2 = "") {
@@ -2753,7 +2756,7 @@ P.ministry_robert_walpole = {
 		// No end() - we stay in this state. I think that's okay?
 	},
 	event_card(c) {
-		log (data.flags[R].name + " discards event: " + data.cards[c].name)
+		log (data.flags[R].name + " discards event: E" + c)
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
 		G.discard_pile.push(c)
@@ -2820,7 +2823,7 @@ P.ministry_edmond_halley = {
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
 		G.discard_pile.push(c);
-		log (data.flags[R].name + " discards event: " + data.cards[c].name)
+		log (data.flags[R].name + " discards event: E" + c)
 
 		G.treaty_points[R]++
 		log (data.flags[R].name + " gains 1 Treaty Point")

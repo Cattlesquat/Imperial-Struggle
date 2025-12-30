@@ -120,6 +120,8 @@ body.Britain #events_br { grid-row: 2 }
 	height: 5px;
 }
 
+.tip-event, .tip-ministry { font-style: italic }
+.tip-event-uc, .tip-ministry-uc { text-transform: uppercase }
 
 /* TRACKS & LAYOUTS */
 

@@ -831,7 +831,14 @@ function update_war_display() {
 	}
 }
 
+const event_card_names = data.cards.map(x => x?.name)
+const ministry_card_names = data.ministries.map(x => x?.name)
+
 function escape_text(text) {
+	text = escape_tip_class_sub(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bMM(\d+)\b/g, "tip-ministry-uc", "card ministry_card c$1", ministry_card_names)
+	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bM(\d+)\b/g, "tip-ministry", "card ministry_card c$1", ministry_card_names)
 	return escape_typography(text)
 }
 
@@ -933,28 +940,17 @@ function advantage_tooltip_image(a, onoff) {
 }
 
 function on_focus_advantage_tip(a) {
-	let tooltip = document.getElementById("tooltip")
-	tooltip.innerHTML = `<div class="marker square advantage a${a} advantage-front"></div><div class="marker square advantage a${a} reverse advantage-back"></div>`
-	tooltip.classList.add("show")
+	world.tip.hidden = false
+	world.tip.innerHTML = `
+		<div class="marker square advantage a${a} reverse advantage-back"></div>
+		<div class="marker square advantage a${a} advantage-front"></div>
+	`
 }
 
 function on_blur_advantage_tip() {
-	let tooltip = document.getElementById("tooltip")
-	tooltip.classList.remove("show")
-	tooltip.innerHTML = ""
+	world.tip.hidden = true
+	world.tip.innerHTML = ""
 }
-
-/*
-
-document.addEventListener("mousemove", function(e) {
-	let tooltip = document.querySelector("#tooltip")
-	if (tooltip.classList.contains("show")) {
-		tooltip.style.left = (e.clientX - tooltip.offsetWidth / 2) + "px"
-		tooltip.style.top = (e.clientY - tooltip.offsetHeight - 15) + "px"
-	}
-})
-
-*/
 
 function advantage_class_name(a) {
 	return `advantage.a${a}`
