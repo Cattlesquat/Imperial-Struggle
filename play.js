@@ -416,6 +416,7 @@ function on_init() {
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_space("advantage", a.num, resize_rect(rect, 88, 88))
 			.tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
+			.tooltip_image(advantage_tooltip_image)
 		let marker = define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(bold(a.name) + ": " + italic(a.desc))
