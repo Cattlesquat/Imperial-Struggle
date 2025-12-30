@@ -405,7 +405,8 @@ function setup_procs()
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
 	data.advantages[IROQUOIS_RAIDS].proc = "advantage_place_conflict"
 	data.advantages[PATRIOT_AGITATION].proc = "advantage_place_conflict"
-	data.advantages[WHEAT].proc = "advantage_wheat"
+	data.advantages[WHEAT].proc = "advantage_unflag_na_market_for_one"
+	data.advantages[FUR_TRADE].proc = "advantage_unflag_na_market_for_one"
 	data.advantages[RAIDS_AND_INCURSIONS].proc = "advantage_place_conflict"
 	data.advantages[SEPARATIST_WARS].proc = "advantage_place_conflict"
 	data.advantages[POWER_STRUGGLE].proc = "advantage_place_conflict"
@@ -3140,7 +3141,7 @@ P.advantage_place_conflict = {
 	}
 }
 
-P.advantage_wheat = {
+P.advantage_unflag_na_market_for_one = {
 	prompt() {
 		let msg = "Pick an eligible market in North America to unflag for 1 Econ action point."
 		if (!G.action_points_eligible[ECON] ) {
@@ -4192,9 +4193,7 @@ function handle_space_click(s, force_type = -1)
 		}
 	}
 
-	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[s].region) && (G.action_cost > 1)
-
-    call("space_flow")
+	call("space_flow")
 }
 
 P.space_flow = script(`
@@ -4203,6 +4202,21 @@ P.space_flow = script(`
     		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
     	    G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
     	}	    	
+    }
+    
+    // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
+    	if (!G.used_required_advantage) {
+    		eval { require_advantage(R, WHEAT, "To reduce action cost to 1", true) }
+    	}
+    	if (G.used_required_advantage) {
+    		eval { G.action_cost = 1 }
+    	}
+    }
+    
+    eval {
+    	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.action_cost > 1)
     }
     
     if (G.eligible_for_huguenots) {
