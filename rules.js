@@ -1774,7 +1774,7 @@ function exhaust_ministry (who, m, ability = 0)
     set_add(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 
 	log_br()
-	let msg = "Ministry exhausted: M" + m
+	let msg = "Ministry Exhausted: " + say_ministry(m, who)
 	if (data.ministries[m].abilities > 1) {
 		msg += " (Ability #" + (ability + 1) + ")"
 	}
@@ -2403,7 +2403,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "") {
-	var header = say_event(c, G.active, true) + ": "
+	var header = say_event(c, -1, true) + ": "
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || !G.qualifies_for_bonus) {
@@ -2622,7 +2622,6 @@ function say_stuff(key, id, who, all_caps)
 function say_advantage(a, who = -1, all_caps = false)
 {
 	return say_stuff("A", a, who, all_caps)
-
 }
 
 function say_event(e, who = -1, all_caps = false)
@@ -2638,7 +2637,7 @@ function say_ministry(m, who = -1, all_caps = false)
 
 function say_ministry_header()
 {
-	return say_action_header(say_ministry(G.ministry_id, G.active, true) + ": ")
+	return say_action_header(say_ministry(G.ministry_id, -1, true) + ": ")
 }
 
 function ministry_prompt(who, m, string1, string2 = "") {
@@ -2678,7 +2677,7 @@ function reveal_ministry(who, index) {
 
 	let m = G.ministry[who][index]
 	G.ministry_revealed[who][index] = true
-	log ("\nMINISTRY REVEALED: " + data.ministries[m].name)
+	log ("\nMinistry Revealed: \n" + say_ministry(m, who, true))
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 }
@@ -2686,7 +2685,7 @@ function reveal_ministry(who, index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
-		if (!G.has_required_ministry) end()
+		if (G.has_required_ministry === false) end()
 		if (G.ministry_revealed[R][G.ministry_index] && !G.prompt_to_exhaust) end()
 	},
 	prompt() {
