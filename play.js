@@ -837,9 +837,20 @@ const ministry_card_names = data.ministries.map(x => x?.name)
 
 function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bEEF(\d+)\b/g, "tip-event-uc-fr", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bEEB(\d+)\b/g, "tip-event-uc-br", "card event_card c$1", event_card_names)
 	text = escape_tip_class_sub(text, /\bMM(\d+)\b/g, "tip-ministry-uc", "card ministry_card c$1", ministry_card_names)
+	text = escape_tip_class_sub(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names)
+	text = escape_tip_class_sub(text, /\bMMB(\d+)\b/g, "tip-ministry-uc-br", "card ministry_card c$1", ministry_card_names)
+
 	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names)
+	text = escape_tip_class_sub(text, /\bEB(\d+)\b/g, "tip-event-br", "card event_card c$1", event_card_names)
+
 	text = escape_tip_class_sub(text, /\bM(\d+)\b/g, "tip-ministry", "card ministry_card c$1", ministry_card_names)
+	text = escape_tip_class_sub(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names)
+	text = escape_tip_class_sub(text, /\bMB(\d+)\b/g, "tip-ministry-br", "card ministry_card c$1", ministry_card_names)
+
 	return escape_typography(text)
 }
 

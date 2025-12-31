@@ -739,6 +739,8 @@ function on_setup(scenario, options) {
 /* VIEW & ACTIONS */
 
 function on_view() {
+	V.active = G.active
+
 	V.turn = G.turn
 	V.vp = G.vp
 	V.initiative = G.initiative
@@ -1421,7 +1423,7 @@ P.deal_cards_discard = {
 				} else {
 					V.prompt += " ("
 				}
-				V.prompt += "E" + c
+				V.prompt += "E" + ((G.active === FRANCE) ? "F" : "B") + c
 				any = true
 			}
 			if (any) V.prompt += ")"
@@ -2273,7 +2275,7 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
-	log_h2(data.flags[R].name + " plays Event: \nE" + c)
+	log_h2(data.flags[R].name + " plays Event: \nE" + R + c)
 	G.played_events.push(c)
 
 	if (G.qualifies_for_bonus) {
@@ -2401,7 +2403,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "") {
-	var header = "EE" + c + ": "
+	var header = say_event(c, G.active, true) + ": "
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || !G.qualifies_for_bonus) {
@@ -2538,7 +2540,7 @@ P.event_carnatic_war = {
 
 function handle_ministry_card_click(m)
 {
-	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministry "m" id)
+	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministr" id)
 	// <br><b>
 	// G.ministry[R][G.ministry_index] </b> contains card id (m) the card the player clicked on
 	G.ministry_index = G.ministry[R].indexOf(m)
@@ -2555,10 +2557,8 @@ function handle_ministry_card_click(m)
 	// String reason we are requesting/suggesting the player flip up a ministry
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
-		log ("Clicked M" + m)
+		log ("Clicked " + say_ministry(m, G.active))
 		call ("ministry_card_flow")
-	} else {
-		log ("Clicked M" + m)
 	}
 }
 
@@ -2609,9 +2609,36 @@ function ministry_useful_this_phase(m, subphase)
 	}
 }
 
+
+function say_stuff(key, id, who, all_caps)
+{
+	let msg = key
+	if (all_caps) msg += key
+	if (who >= 0) msg += (who === FRANCE) ? "F" : "B"
+	msg += id
+	return msg
+}
+
+function say_advantage(a, who = -1, all_caps = false)
+{
+	return say_stuff("A", a, who, all_caps)
+
+}
+
+function say_event(e, who = -1, all_caps = false)
+{
+	return say_stuff("E", e, who, all_caps)
+}
+
+function say_ministry(m, who = -1, all_caps = false)
+{
+	return say_stuff("M", m, who, all_caps)
+}
+
+
 function say_ministry_header()
 {
-	return say_action_header("MM" + G.ministry_id + ": ")
+	return say_action_header(say_ministry(G.ministry_id, G.active, true) + ": ")
 }
 
 function ministry_prompt(who, m, string1, string2 = "") {
