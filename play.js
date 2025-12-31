@@ -845,9 +845,9 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names)
 	text = escape_tip_class_sub(text, /\bMMB(\d+)\b/g, "tip-ministry-uc-br", "card ministry_card c$1", ministry_card_names)
 
-	text = escape_tip_class_sub(text, /\bAA(\d+)\b/g, "tip-advantage-uc", "marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bAA(\d+)\b/g, "tip-advantage-uc", "square marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "square marker advantage a$1", advantage_names)
 
 	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
 	text = escape_tip_class_sub(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names)
@@ -857,9 +857,9 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names)
 	text = escape_tip_class_sub(text, /\bMB(\d+)\b/g, "tip-ministry-br", "card ministry_card c$1", ministry_card_names)
 
-	text = escape_tip_class_sub(text, /\bA(\d+)\b/g, "tip-advantage", "marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAB(\d+)\b/g, "tip-advantage-br", "marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bA(\d+)\b/g, "tip-advantage", "square marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names)
+	text = escape_tip_class_sub(text, /\bAB(\d+)\b/g, "tip-advantage-br", "square marker advantage a$1", advantage_names)
 
 	return escape_typography(text)
 }
