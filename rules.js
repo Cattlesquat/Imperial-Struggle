@@ -955,7 +955,7 @@ function exhaust_advantage(a)
 	G.advantages_exhausted |= (1 << a)
 
 	log_br()
-	log("Advantage used: " + data.advantages[a].name)
+	log("Advantage used: \n" + say_advantage(a, G.advantages[a]))
 	log_br()
 }
 
@@ -3005,7 +3005,7 @@ P.ministry_jacobite_uprisings = {
 
 
 function advantage_prompt(who, a, string1 = "") {
-	var header = data.advantages[a].name.toUpperCase() + ": "
+	var header = say_advantage(a, -1, true) + ": "
 
 	var prompt = ""
 	if (G.action_round_subphase === BEFORE_PICKING_TILE) {
@@ -3128,7 +3128,7 @@ P.advantage_place_conflict = {
 		}
 	},
 	prompt() {
-		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict in a Fur Market.")
+		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict " + L.adv_string)
 		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
 			if (L.adv_market_only || (data.spaces[s].type !== POLITICAL)) {

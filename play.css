@@ -120,40 +120,40 @@ body.Britain #events_br { grid-row: 2 }
 	height: 5px;
 }
 
-.tip-event-fr, .tip-ministry-fr {
+.tip-event-fr, .tip-ministry-fr, .tip-advantage-fr {
     font-style: italic;
     text-decoration: underline;
     color: royalblue;
 }
 
-.tip-event-uc-fr, .tip-ministry-uc-fr {
+.tip-event-uc-fr, .tip-ministry-uc-fr, .tip-advantage-uc-fr {
     text-transform: uppercase;
     text-decoration: underline;
     color: royalblue;
 }
 
-.tip-event-br, .tip-ministry-br {
+.tip-event-br, .tip-ministry-br, .tip-advantage-br {
     font-style: italic;
     text-decoration: underline;
     color: crimson;
 }
 
-.tip-event-uc-br, .tip-ministry-uc-br {
+.tip-event-uc-br, .tip-ministry-uc-br, .tip-advantage-uc-br {
     text-transform: uppercase;
     text-decoration: underline;
     color: crimson;
 }
 
-.tip-event-fr, .tip-ministry-fr {
+.tip-event, .tip-ministry, .tip-advantage {
     font-style: italic;
     text-decoration: underline;
-    color: grey;
+    /* color: grey; */
 }
 
-.tip-event-uc-fr, .tip-ministry-uc-fr {
+.tip-event-uc, .tip-ministry-uc, .tip-advantage-uc {
     text-transform: uppercase;
     text-decoration: underline;
-    color: grey;
+    /* color: grey; */
 }
 
 /* TRACKS & LAYOUTS */
