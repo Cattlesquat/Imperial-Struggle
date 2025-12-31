@@ -955,7 +955,7 @@ function exhaust_advantage(a)
 	G.advantages_exhausted |= (1 << a)
 
 	log_br()
-	log("Advantage used: \n" + say_advantage(a, G.advantages[a]))
+	log("Advantage used: " + say_advantage(a, G.advantages[a]))
 	log_br()
 }
 
@@ -2275,7 +2275,7 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
-	log_h2(data.flags[R].name + " plays Event: \n" + say_event(c, R))
+	log("\nEvent played: " + say_event(c, R))
 	G.played_events.push(c)
 
 	if (G.qualifies_for_bonus) {
@@ -2689,15 +2689,17 @@ P.confirm_reveal_ministry = {
 	},
 	prompt() {
 		if (!G.ministry_revealed[R][G.ministry_index]) {
-			V.prompt = say_action_header() + say_action("Reveal " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card?") + say_action_points()
+			V.prompt = say_action_header() + say_action("Reveal " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card?")
 			action("reveal_ministry")
-			if (G.ministry_optional) action("dont_reveal_ministry")
 		} else {
-			V.prompt = say_action_header() + say_action("Exhaust " + data.ministries[G.ministry[R][G.ministry_index]].name + " Ministry Card Ability?") + say_action_points()
-			if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += " (" + G.ministry_required_because + ")"
+			V.prompt = say_action_header() + say_action("Exhaust " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card Ability?")
 			action ("exhaust_ministry")
-			if (G.ministry_optional) action("dont_exhaust_ministry")
+
 		}
+		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
+		V.prompt += say_action_points()
+		if (G.ministry_optional) action("dont_exhaust_ministry")
+
 	},
 	reveal_ministry() {
 		push_undo()
@@ -2807,7 +2809,7 @@ P.ministry_bank_of_england = {
 		exhaust_ministry(R, BANK_OF_ENGLAND)
 		G.debt_limit[R]++
 		log_br()
-		log(bold(data.flags[R].name + " Debt Limit increased by 1"))
+		log(bold(data.flags[R].name + " Debt Limit +1"))
 		log_br()
 		end()
 	},
