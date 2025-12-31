@@ -405,8 +405,8 @@ function setup_procs()
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
 	data.advantages[IROQUOIS_RAIDS].proc = "advantage_place_conflict"
 	data.advantages[PATRIOT_AGITATION].proc = "advantage_place_conflict"
-	data.advantages[WHEAT].proc = "advantage_unflag_na_market_for_one"
-	data.advantages[FUR_TRADE].proc = "advantage_unflag_na_market_for_one"
+	data.advantages[WHEAT].proc = "advantage_unflag_discount"
+	data.advantages[FUR_TRADE].proc = "advantage_unflag_discount"
 	data.advantages[RAIDS_AND_INCURSIONS].proc = "advantage_place_conflict"
 	data.advantages[SEPARATIST_WARS].proc = "advantage_place_conflict"
 	data.advantages[POWER_STRUGGLE].proc = "advantage_place_conflict"
@@ -414,6 +414,15 @@ function setup_procs()
 	data.advantages[PIRATE_HAVENS].proc = "advantage_place_conflict"
 	data.advantages[MEDITERRANEAN_INTRIGUE].proc = "advantage_place_conflict"
 	data.advantages[CENTRAL_EUROPE_CONFLICT].proc = "advantage_place_conflict"
+	data.advantages[RUM].proc = "advantage_unflag_discount"
+	data.advantages[FRUIT].proc = "advantage_unflag_discount"
+	data.advantages[TEXTILES].proc = "advantage_unflag_discount"
+	data.advantages[SILK].proc = "advantage_unflag_discount"
+	data.advantages[GERMAN_DIPLOMACY].proc = "advantage_unflag_discount"
+	data.advantages[SILESIA_NEGOTIATIONS].proc = "advantage_unflag_discount"
+	data.advantages[ITALY_INFLUENCE].proc = "advantage_unflag_discount"
+	data.advantages[NAVAL_BASTION].proc = "advantage_naval_bastion"
+	data.advantages[SLAVING_CONTRACTS].proc = "advantage_slaving_contracts"
 }
 
 /* SETUP */
@@ -2841,6 +2850,7 @@ P.ministry_edmond_halley = {
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
 		G.prepicked_ministry = EDMOND_HALLEY
+		G.prepicked_advantage = -1
 		goto ("construct_squadron_flow")
 	},
 	event_card(c) {
@@ -3060,7 +3070,6 @@ P.advantage_not_implemented = {
 }
 
 P.advantage_baltic_trade = {
-
 	prompt() {
 		if (G.debt[R] <= 0) {
 			V.prompt = advantage_prompt(R, G.active_advantage, "You currently have no debt.")
@@ -3074,6 +3083,54 @@ P.advantage_baltic_trade = {
 	use_advantage() {
 		push_undo()
 		reduce_debt(R, Math.min(2, G.debt[R]))
+		end()
+	}
+}
+
+
+P.advantage_slaving_contracts = function() {
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+	action_cost_setup(-1, MIL)
+	G.action_string = "to construct a squadron"
+	G.prepicked_advantage = SLAVING_CONTRACTS
+	G.prepicked_ministry = -1
+	goto ("construct_squadron_flow")
+}
+
+
+P.advantage_naval_bastion = {
+	_begin() {
+		action_cost_setup(-1, MIL)
+	},
+	prompt() {
+		if (!G.action_points_eligible[MIL]) {
+			V.prompt = advantage_prompt(R, G.active_advantage, "You need an available Military action to use this advantage.")
+		} else {
+			let any = false;
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== NAVAL) continue
+				if (G.flags[s] !== 1 - R) continue
+				action_space(s)
+				any = true
+			}
+
+			if (any) {
+				V.prompt = advantage_prompt(R, G.active_advantage, "Select opposing squadron to return to Navy Box for 1 military action point.")
+			} else {
+				V.prompt = advantage_prompt(R, G.active_advantage, "Your opponent has no deployed squadrons.")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		G.navy_box[1 - R]++
+		reflag_space(s, NONE, true)
+
+		log (bold(data.flags[1-R].adj + " squadron returned to Navy Box."))
+
+		let msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
+		log (italic(msg))
+
 		end()
 	}
 }
@@ -3171,40 +3228,108 @@ P.advantage_place_conflict = {
 	}
 }
 
-P.advantage_unflag_na_market_for_one = {
+P.advantage_unflag_discount = {
+	_begin() {
+		let a = G.active_advantage
+		L.adv_region = -1
+		L.adv_market = true
+		L.adv_market_type = -1
+		L.adv_for_one = false
+		switch (a) {
+			case FUR_TRADE:
+				L.adv_string = "market in North America"
+				L.adv_plural = "markets in North America"
+				L.adv_region = REGION_NORTH_AMERICA
+				L.adv_market = true
+				L.adv_for_one = true
+				break;
+			case WHEAT:
+				L.adv_string = "market in North America"
+				L.adv_plural = "markets in North America"
+				L.adv_region = REGION_NORTH_AMERICA
+				L.adv_market = true
+				break;
+			case TEXTILES:
+			case SILK:
+				L.adv_string = "market in India"
+				L.adv_plural = "markets in India"
+				L.adv_region = REGION_INDIA
+				L.adv_market = true
+				break;
+			case RUM:
+			case FRUIT:
+				L.adv_string = "market in the Caribbean"
+				L.adv_plural = "markets in the Caribbean"
+				L.adv_region = REGION_CARIBBEAN
+				L.adv_market = true
+				break
+			case GERMAN_DIPLOMACY:
+				L.adv_string = "space in Russia, Silesia, or Bavaria"
+				L.adv_plural = "spaces in Russia, Silesia, or Bavaria"
+				L.adv_region = REGION_EUROPE
+				L.adv_market = true
+				L.adv_for_one = true
+				break
+			case SILESIA_NEGOTIATIONS:
+				L.adv_string = "space in Prussia or the German States"
+				L.adv_plural = "spaces in Prussia or the German States"
+				L.adv_region = REGION_EUROPE
+				L.adv_market = true
+				L.adv_for_one = true
+				break
+			case ITALY_INFLUENCE:
+				L.adv_string = "space in Spain or Austria"
+				L.adv_plural = "spaces in Spain or Austria"
+				L.adv_region = REGION_EUROPE
+				L.adv_market = true
+				L.adv_for_one = true
+				break
+		}
+	},
+
 	prompt() {
-		let msg = "Pick an eligible market in North America to unflag for 1 Econ action point."
-		if (!G.action_points_eligible[ECON] ) {
-			msg = "You must have an Economic action available to unflag markets."
+		let msg = "Pick a " + L.adv_string + " to unflag " + (L.adv_for_one ? "for 1 action point." : "for one fewer action points.")
+		let type = L.adv_market ? ECON : DIPLO
+		let space_type = L.adv_market ? MARKET : POLITICAL
+		if (!G.action_points_eligible[type] ) {
+			if (type === ECON) {
+				msg = "You must have an Economic action available to unflag markets."
+			} else {
+				msg = "You must have a Diplomatic action available to unflag political spaces."
+			}
 		} else {
 			let any = false
 			let any_flagged = false
 			let any_non_conflict = false
 			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
-				if (data.spaces[s].type !== MARKET) continue
+				if (data.spaces[s].region !== L.adv_region) continue
+				if (data.spaces[s].type !== L.space_type) continue
 				if (G.flags[s] !== 1 - G.active) continue
 				any_flagged = true
 				if (!allowed_to_shift_market(s, R)) continue
 				if (!has_conflict_marker(s)) any_non_conflict = true
-				if (!G.action_points_eligible_major[ECON] && !eligible_for_minor_action(s, R)) continue
+				if (!G.action_points_eligible_major[type] && !eligible_for_minor_action(s, R)) continue
 				action_space(s)
 				any = true
 			}
 			if (!any_flagged) {
-				msg = "There are no enemy-flagged North American markets right now."
-			} else if (any_non_conflict && G.action_points_minor[ECON] > 0) {
-				msg = "With a minor action you can only unflag markets that have a conflict marker."
+				msg = "There are no enemy-flagged " + L.adv_plural + " right now."
+			} else if (any_non_conflict && G.action_points_minor[type] > 0) {
+				msg = "With a minor action you can only unflag spaces that have a conflict marker."
 			} else if (!any) {
-				msg = "You do not have eligible connections to any enemy-flagged North American markets."
+				msg = "You do not have eligible connections to any " + L.adv_plural + "."
 			}
 		}
 		V.prompt = advantage_prompt(R, G.active_advantage, msg)
 	},
 	space(s) {
 		push_undo()
-		action_cost_setup(s, ECON)
-		G.action_cost = 1
+		action_cost_setup(s, L.adv_market ? ECON : DIPLO)
+		if (L.adv_for_one) {
+			G.action_cost = 1
+		} else {
+			G.action_cost = G.action_cost - 1
+		}
 		goto ("space_flow")
 	}
 }
@@ -3479,7 +3604,27 @@ function handle_construct_squadron_button() {
 	G.action_string = "to construct a squadron"
 	G.action_header = "CONSTRUCT SQUADRON: "
 	G.prepicked_ministry = -1
+	G.prepicked_advantage = -1
 	call ("construct_squadron_flow")
+}
+
+
+P.no_military_action_squadron = {
+	prompt() {
+		V.prompt = say_action_header() + say_action("You need a military action available to construct a squadron.")
+	}
+}
+
+P.noff_noff_money_squadron = {
+	prompt() {
+		V.prompt = say_action_header() + say_action("You don't have enough debt, treaty points, and action points to construct a squadron.")
+	}
+}
+
+P.noff_noff_squadrons = {
+	prompt() {
+		V.prompt = say_action_header() + say_action("You already have the maximum 8 squadrons in play.")
+	}
 }
 
 
@@ -3490,15 +3635,21 @@ P.construct_squadron_flow = script(`
     	L.min_cost = cost_to_build_squadron(G.active, true, L.info)
     	L.flipped_something = false
     }        
+    if (!G.action_points_eligible[MIL] {
+    	call no_military_action_squadron
+    	return
+    }
     if (G.action_points_available_debt < L.min_cost) {
+    	call noff_noff_money_squadron
     	return // If we can't even afford it w/ debt and trps, we shouldn't be here
     }    
     if (G.unbuilt_squadrons[G.active] <= 0) {
+    	call noff_noff_squadrons
     	return // If we don't have any available squadrons
     }
     
     // Possible option to flip relevant ministry
-    if (L.info.ministry !== undefined) {
+    if ((L.info.ministry !== undefined) && (G.prepicked_advantage === -1)) {
         eval {
         	if (G.prepicked_ministry === L.info.ministry) {
         		G.has_required_ministry = true
@@ -3519,7 +3670,7 @@ P.construct_squadron_flow = script(`
     }
 
 	// Possible option to use advantage
-	if ((L.info.advantage !== undefined) && !L.flipped_something) {
+	if ((L.info.advantage !== undefined) && !L.flipped_something && (G.prepicked_advantage === -1)) {
 		eval {
 			require_advantage(R, L.info.advantage, "To reduce cost of squadron by 2", G.action_points_available_debt >= G.action_cost)
 		}
@@ -3532,7 +3683,11 @@ P.construct_squadron_flow = script(`
 		if (!G.used_required_advantage && (G.action_points_available_debt < L.min_cost)) {
 			return // If it's now impossible to afford cost because we didn't use the advantage		    
 		}
-	}	  
+	} else {
+		if (G.prepicked_advantage >= 0) {
+			eval { G.action_cost = (L.info.ability !== undefined) ? 0 : 2 }
+		}
+	}  
 	        
   	call decide_how_and_whether_to_spend_action_points	
     if (!G.paid_action_cost) {
@@ -4237,12 +4392,72 @@ P.space_flow = script(`
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
     if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
     	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
-    	if (!G.used_required_advantage) {
-    		eval { require_advantage(R, WHEAT, "To reduce action cost to 1", true) }
-    	}
+    	//if (!G.used_required_advantage) {
+    	//	eval { require_advantage(R, WHEAT, "To reduce action cost to 1", true) }
+    	//}
     	if (G.used_required_advantage) {
     		eval { G.action_cost = 1 }
     	}
+    }
+    
+    // These advantages reduce the cost of unflagging a *market* in *north america* BY 1 action point
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    	eval { require_advantage(R, WHEAT, "To reduce action cost by 1", true) }
+    	if (G.used_required_advantage) {
+    		eval { G.action_cost = G.action_cost - 1 }
+    	}
+    }
+    
+    // These advantages reduce the cost of unflagging a *market* in *india* BY 1 action point
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    	eval { require_advantage(R, TEXTILES, "To reduce action cost by 1", true) }
+    	if (G.used_required_advantage) {
+    		eval { G.action_cost = G.action_cost - 1 }
+    	}
+    	if ((G.action_cost > 1) && (G.advantages_used_this_turn < 2)) {
+			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
+			if (G.used_required_advantage) {
+				eval { G.action_cost = G.action_cost - 1 }
+			}
+		}
+    }
+    
+    // These advantages reduce the cost of unflagging a *market* in *the caribbean* BY 1 action point
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    	eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
+    	if (G.used_required_advantage) {
+    		eval { G.action_cost = G.action_cost - 1 }
+    	}
+    	if ((G.action_cost > 1) && (G.advantages_used_this_turn < 2)) {
+			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
+			if (G.used_required_advantage) {
+				eval { G.action_cost = G.action_cost - 1 }
+			}
+		}
+    }
+    
+    // European reduce-cost-to-1 unflagging advantages
+    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    	if ((G.active_space === RUSSIA) || (G.active_space === SWEDEN) || (G.active_space === BAVARIA)) {
+    	    eval { require_advantage(R, GERMAN_DIPLOMACY, "To reduce action cost to 1", true) }
+    		if (G.used_required_advantage) {
+    			eval { G.action_cost = 1 }
+    		}
+    	} else {
+			if (((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) {
+				eval { require_advantage(R, SILESIA_NEGOTIATIONS, "To reduce action cost to 1", true) }
+				if (G.used_required_advantage) {
+					eval { G.action_cost = 1 }
+				}
+			} else {
+				if (((G.active_space >= SPAIN_1) && (G.active_space <= SPAIN_4)) || ((G.active_space >= AUSTRIA_1) && (G.active_space <= AUSTRIA_4))) {
+					eval { require_advantage(R, ITALY_INFLUENCE, "To reduce action cost to 1", true) }
+					if (G.used_required_advantage) {
+						eval { G.action_cost = 1 }
+					}    	
+				}
+			}
+		}
     }
     
     eval {
