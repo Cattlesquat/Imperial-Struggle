@@ -1423,7 +1423,7 @@ P.deal_cards_discard = {
 				} else {
 					V.prompt += " ("
 				}
-				V.prompt += "E" + ((G.active === FRANCE) ? "F" : "B") + c
+				V.prompt += say_event(c)
 				any = true
 			}
 			if (any) V.prompt += ")"
@@ -1485,7 +1485,7 @@ P.choose_ministry_cards = {
 			var list = ""
 			for (const i of G.ministry[R]) {
 				if (any) list += ", ";
-				list += "M" + i
+				list += say_ministry(i)
 				any = true;
 			}
 			if (any) list += "."
@@ -1912,7 +1912,7 @@ P.resolve_remaining_powers = function () {
 				announced = true
 				log("=Resolve Remaining Powers Phase")
 			}
-			log (bold("JOHN LAW ministry reduces French debt by " + debt_reduction))
+			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces French debt by " + debt_reduction))
 		}
 	}
 
@@ -1971,7 +1971,7 @@ P.scoring_phase = function () {
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
 				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-					log("M" + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1")
+					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1")
 					vp++
 				}
 			}
@@ -2019,7 +2019,7 @@ P.scoring_phase = function () {
 			}
 		}
 		vp = Math.min(vp, 3)
-		log ("M" + EAST_INDIA_COMPANY + " adds +" + vp + " VP for Britain")
+		log (say_ministry(EAST_INDIA_COMPANY, BRITAIN) + " adds +" + vp + " VP for Britain")
 		adjust_victory_points(BRITAIN, vp)
 	}
 
@@ -2275,7 +2275,7 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
-	log_h2(data.flags[R].name + " plays Event: \nE" + R + c)
+	log_h2(data.flags[R].name + " plays Event: \n" + say_event(c, R))
 	G.played_events.push(c)
 
 	if (G.qualifies_for_bonus) {
@@ -2557,7 +2557,6 @@ function handle_ministry_card_click(m)
 	// String reason we are requesting/suggesting the player flip up a ministry
 	G.minister_required_because = ""
 	if (G.ministry_index >= 0) {
-		log ("Clicked " + say_ministry(m, G.active))
 		call ("ministry_card_flow")
 	}
 }
@@ -2980,7 +2979,7 @@ P.ministry_jacobite_uprisings = {
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_cost = 3
-		G.action_string = "to score " + jacobite_vp_value() + " VP with Jacobite Uprisings"
+		G.action_string = "to score " + jacobite_vp_value() + " VP with " + say_ministry(JACOBITE_UPRISINGS)
 		G.action_header = say_ministry_header()
 		goto ("jacobite_vp_flow")
 	},
