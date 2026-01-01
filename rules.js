@@ -5453,7 +5453,7 @@ function _parse(text) {
 				++p
 			}
 			if (p >= n && x > 0)
-				throw new Error("unterminated string")
+				throw new Error("unterminated quote string " + a + b)
 			words.push(s.substring(m, p))
 		}
 
@@ -5468,7 +5468,7 @@ function _parse(text) {
 				++p
 			}
 			if (p >= n && x > 0)
-				throw new Error("unterminated string")
+				throw new Error("unterminated bracket string " + a + b)
 			words.push(s.substring(m, p))
 		}
 
