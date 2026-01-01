@@ -3635,7 +3635,7 @@ P.construct_squadron_flow = script(`
     	L.min_cost = cost_to_build_squadron(G.active, true, L.info)
     	L.flipped_something = false
     }        
-    if (!G.action_points_eligible[MIL] {
+    if (!G.action_points_eligible[MIL]) {
     	call no_military_action_squadron
     	return
     }
