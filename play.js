@@ -251,7 +251,7 @@ function on_init() {
 	define_panel("#advantage_br", "panel-advantage", BRITAIN)
 
 	define_panel("#all_ministries", "panel-all-ministries")
-	define_panel("#played", "panel-played")
+	define_panel("#played", "panel-played", 0)
 	define_panel("#available_investment_tiles", "panel-available-investments")
 	define_panel("#used_investment_tiles", "panel-used-investments")
 
@@ -656,7 +656,7 @@ function on_update() {
 	let noflipsies = get_preference("noflipsies", false)
 	let downanddirty = get_preference("downanddirty", false)
 
-	for (a = 0; a < NUM_ADVANTAGES; ++a) { ///
+	for (a = 0; a < NUM_ADVANTAGES; ++a) {
 		var layout, index, reverse
 		if (V.advantages[a] === NONE) {
 			layout = "lout-advantage"
@@ -702,6 +702,11 @@ function on_update() {
 
 	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
 	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+
+	//BR// Show any event played THIS action round in the played event slot
+	if (V.played_event > 0) {
+		populate("panel-played", 0, "event_card", V.played_event, "card event_card deck")
+	}
 
 	map_for_each(V.conflicts, (s, n) => {
 		populate("conflict-space", s, "conflict", s)

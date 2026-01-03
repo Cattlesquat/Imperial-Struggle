@@ -401,6 +401,7 @@ function setup_procs()
 
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
+	data.cards[TROPICAL_DISEASES].proc = "event_tropical_diseases"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -759,6 +760,11 @@ function on_view() {
 	V.debt = G.debt
 	V.debt_limit = G.debt_limit
 	V.treaty_points = G.treaty_points
+
+	// Discard pile and played event pile are both public. Shuffled event deck is not.
+	V.discard_pile = G.discard_pile
+	V.played_events = G.played_events
+	V.played_event = G.played_event
 
 	// Current available investments, and used investment pile, are public.
 	// Shuffled investment deck is not.
@@ -2258,6 +2264,8 @@ function selected_a_tile(tile)
 	clear_dirty() // Clear highlights of opponent's previous round actions
 	G.dirty_who = G.active
 
+	G.played_event = -1 // Haven't played an event so far
+
 	G.played_investments.push(tile)             //BR// We leave it in available_investments but mark it played
 	G.played_tiles[G.active][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 	G.played_tile = tile
@@ -2372,6 +2380,7 @@ function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
 	log("\nEvent played: " + say_event(c, R))
 	G.played_events.push(c)
+	array_delete_item(G.hand[R], c)
 
 	if (G.qualifies_for_bonus) {
 		log ("BONUS unlocked")
@@ -2447,6 +2456,8 @@ function check_event_bonus_requirements(who) {
 	if (G.played_event === FALKLANDS_CRISIS) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
+
+	//G.qualifies_for_bonus = true // Uncomment for testing
 }
 
 P.event_flow = script (`
@@ -2455,7 +2466,7 @@ P.event_flow = script (`
         	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile")
         }
         if (!G.has_required_ministry) {
-        	eval { G.played_event = 0 }
+        	eval { pop_undo() } 
         	return
 		}
     }
@@ -2465,7 +2476,7 @@ P.event_flow = script (`
         	require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1)
         }
         if (!G.has_required_ministry) {
-        	eval { G.played_event = 0 }
+        	eval { pop_undo() }
         	return
 		}
     }
@@ -2490,18 +2501,21 @@ P.event_flow = script (`
     
     // Here we branch to an unholy number of possible events 
 	if (data.cards[G.played_event].proc !== undefined) {
-		goto (data.cards[G.played_event].proc)
+		call (data.cards[G.played_event].proc)
+		eval { end_event_play(G.played_event) }
+		return
 	} 
 				 		
-    goto event_not_implemented
+    call event_not_implemented
+    eval { end_event_play(G.played_event) }
 `)
 
 
-function event_prompt(who, c, string1, string2 = "") {
+function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
 	var header = say_event(c, -1, true) + ": "
 
 	var prompt = ""
-	if ((string2 === "") || (string2 === null) || !G.qualifies_for_bonus) {
+	if ((string2 === "") || (string2 === null) || (!G.qualifies_for_bonus && !even_if_no_bonus)) {
 		prompt += string1 + "."
 	}
 	else if (string1 === null) {
@@ -2542,7 +2556,6 @@ function carnatic_conflicts(who) {
 // "Place 1 Conflict marker in India for each Local Alliance you control there. BONUS: Damage an enemy Fort or shift a Cotton market in India."
 P.event_carnatic_war = {
 	_begin() {
-		//G.qualifies_for_bonus = true  //uncomment for testing w/ bonuses
 		L.conflicts_placed = 0     // Progress trackers
 		L.done_bonus       = false
 		L.cant_do_bonus    = false
@@ -2663,7 +2676,7 @@ P.event_acts_of_union = {
 				if (data.spaces[s].type !== POLITICAL) continue
 				if ((s >= SPAIN_1) && (s <= SPAIN_4)) continue
 				if ((s >= AUSTRIA_1) && (s <= AUSTRIA_4)) continue
-				if ((G.flags[s] !== FRANCE) && (G.flags[s] !== BRITAIN)) continue
+				if (G.flags[s] !== 1 - R) continue // It's "unflag" which means it can't be a friendly flag
 				action_space(s)
 				any = true
 			}
@@ -2682,6 +2695,60 @@ P.event_acts_of_union = {
 		end()
 	}
 }
+
+
+// Remove 1 enemy flag, then 1 friendly flag, from Markets in the Caribbean. Bonus: Remove an additional enemy flag from a Market in the Caribbean
+P.event_tropical_diseases = {
+	_begin() {
+		L.enemy_done    = 0
+		L.enemy_to_do   = 1 + (G.qualifies_for_bonus ? 1 : 0)
+		L.friendly_done = 0
+	},
+	prompt() {
+		let any_friendly = false
+		let any_enemy = false
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+			if (data.spaces[s].type !== MARKET) continue
+			if (G.flags[s] === R) {
+				any_friendly = true
+				if (L.friendly_done === 0) action_space(s)
+			} else if (G.flags[s] === 1 - R) {
+				any_enemy = true
+				if (L.enemy_done < L.enemy_to_do) action_space(s)
+			}
+		}
+		let gauge = ((any_enemy || (L.enemy_done >= L.enemy_to_do)) ? L.enemy_done + "/" + L.enemy_to_do : "DONE")
+		let gauge2 = ((any_friendly || (L.friendly_done > 0)) ? L.friendly_done + "/1" : "DONE")
+		V.prompt = event_prompt(R, G.played_event, "Remove " + L.enemy_to_do + " enemy flag" + ((L.enemy_to_do !== 1) ? "s" : "") + " from " + ((L.enemy_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge), "remove 1 friendly flag from a market in the Caribbean " + parens(gauge2), true)
+
+		if (!any_enemy || (L.enemy_done >= L.enemy_to_do)) {
+			if (!any_friendly || (L.friendly_done > 0)) {
+				button ("done")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+
+		if (G.flags[s] === R) {
+			L.friendly_done++
+		} else if (G.flags[s] === 1 - R) {
+			L.enemy_done++
+		}
+
+		reflag_space(s, NONE)
+
+		if ((L.friendly_done > 0) && (L.enemy_done >= L.enemy_to_do)) {
+			end()
+		}
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
 
 
 
@@ -4895,7 +4962,7 @@ function say_action_points(space = true, brackets = true) {
 
 					tell += G.action_points_major[i] //+ " major"
 					if (G.action_points_minor[i]) {
-						tell += "/"
+						tell += ", "
 						early[i] = true
 					}
 				}
@@ -5130,9 +5197,14 @@ P.action_round_core = {
 			}
 		}
 	},
-	cheat_cheat() {
+	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = ACTS_OF_UNION
+		G.hand[BRITAIN][0] = TROPICAL_DISEASES
+		G.hand[BRITAIN][1] = ACTS_OF_UNION
+
+		G.hand[FRANCE][0] = TROPICAL_DISEASES
+		G.hand[FRANCE][1] = ACTS_OF_UNION
+
 	}
 }
 
@@ -6345,6 +6417,17 @@ function log_h3(msg) {
 	log_br()
 }
 
+
+
+function pad(s, condition = true) {
+	if (!condition) return s
+	return " " + s + " "
+}
+
+function parens(s, condition = true) {
+	if (!condition) return s
+	return "(" + s + ")"
+}
 
 function bold (s, condition = true)
 {
