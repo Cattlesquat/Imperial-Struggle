@@ -1134,7 +1134,7 @@ function set_preference(name, value) {
 }
 
 function init_preference_checkbox(name, initial) {
-	var input = document.getElementById(name)
+	var input = document.querySelector(`input[name="${name}"]`)
 	var value = get_preference(name, initial)
 	input.checked = value
 	input.onchange = function () {
@@ -1146,7 +1146,7 @@ function init_preference_checkbox(name, initial) {
 }
 
 function _update_preference_checkbox(name) {
-	var input = document.getElementById(name)
+	var input = document.querySelector(`input[name="${name}"]`)
 	var value = input.checked
 	set_preference(name, value)
 	document.body.dataset[name] = value
