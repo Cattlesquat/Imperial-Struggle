@@ -400,6 +400,7 @@ function setup_procs()
 	data.ministries[JACOBITE_UPRISINGS].proc = "ministry_jacobite_uprisings"
 
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
+	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -2155,6 +2156,88 @@ function is_action_phase()
 }
 
 
+const RULE_UNFLAG_EUROPE = "Unflagging in Europe only"
+
+// For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
+function add_contingent(type, amount, rule) {
+	let contingent = { "type": type, "amount": amount, "rule": rule }
+	G.action_points_contingent.push(contingent)
+}
+
+// Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
+function get_contingent(type, rules)
+{
+	let amount = 0
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.action_points_contingent.length; i++) {
+					if (G.action_points_contingent[i].type !== type) continue
+					if (G.action_points_contingent[i].rule !== rule) continue
+					amount += G.action_points_contingent[i].amount
+				}
+			}
+		} else {
+			for (let i = 0; i < G.action_points_contingent.length; i++) {
+				if (G.action_points_contingent[i].type !== type) continue
+				if (G.action_points_contingent[i].rule !== rules) continue
+				amount += G.action_points_contingent[i].amount
+			}
+		}
+	}
+	return amount
+}
+
+// True if ANY contingent action points of the specified type (ECON, DIPLO, MIL) theoretically available based on array of rules we're eligible for (or a single rule). Even if we've spent it all we can still use debt/TRPs in that category.
+function any_contingent(type, rules) {
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.action_points_contingent.length; i++) {
+					if (G.action_points_contingent[i].type !== type) continue
+					if (G.action_points_contingent[i].rule !== rule) continue
+					return true
+				}
+			}
+		} else {
+			for (let i = 0; i < G.action_points_contingent.length; i++) {
+				if (G.action_points_contingent[i].type !== type) continue
+				if (G.action_points_contingent[i].rule !== rules) continue
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Use up contingent action points matching a specific rule, to the extent available. Returns amount that wasn't satisfied from contingent points (still to be paid)
+function use_contingent(amount, type, rule)
+{
+	for (let i = 0; i < G.action_points_contingent.length; i++) {
+		if (G.action_points_contingent[i].type !== type) continue
+		if (G.action_points_contingent[i].rule !== rule) continue
+		if (G.action_points_contingent[i].amount <= 0) continue
+		while ((amount > 0) && (G.action_points_contingent[i].amount > 0)) {
+			amount--
+			G.action_points_contingent[i].amount--
+		}
+	}
+
+	return amount
+}
+
+
+// Adds unrestricted major action points of the specified type
+function add_action_points(type, amount)
+{
+	G.action_points_major[type] += amount
+	G.action_points_eligible[type] = true
+	G.action_points_eligible_major[type] = true
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + ((amount !== 1) ? "s" : ""))
+}
+
+
+
 // Active player has picked an investment tile.
 function selected_a_tile(tile)
 {
@@ -2198,6 +2281,9 @@ function selected_a_tile(tile)
 
 	// Bonus points (ECON, DIPLO, MIL) committed during the current specific action (e.g. a bonus military point for Choiseul)
 	G.action_points_committed_bonus = [ 0, 0, 0 ]
+
+	// Contingent action points (e.g. restricted to an area)
+	G.action_points_contingent = []
 
 	//TODO: ministries might increase our amounts right away
 
@@ -2545,6 +2631,58 @@ P.event_carnatic_war = {
 		end()
 	}
 }
+
+
+
+// BR: 1 Diplo (unflagging in Europe only), Bonus: Score 2 VP
+// FR: 2 Diplo. Bonus: Unflag a political space in Europe (not in Spain or Austria)
+P.event_acts_of_union = {
+	_begin() {
+		if (R === BRITAIN) {
+			log ("+1 Diplomatic point (unflagging in Europe only)")
+			add_contingent(DIPLO, 1, RULE_UNFLAG_EUROPE)
+			if (G.qualifies_for_bonus) {
+				award_vp(BRITAIN, 2)
+			}
+		} else {
+			add_action_points(DIPLO, 2)
+		}
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "Confirm event play to gain unflag-in-Europe action", "score 2 VP")
+			button("confirm")
+		} else if (!G.qualifies_for_bonus) {
+			V.prompt = event_prompt(R, G.played_event, "Confirm event play to gain 2 diplomatic points.")
+			button("confirm")
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "Unflag a political space in Europe (not in Spain or Austria)")
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_EUROPE) continue
+				if (data.spaces[s].type !== POLITICAL) continue
+				if ((s >= SPAIN_1) && (s <= SPAIN_4)) continue
+				if ((s >= AUSTRIA_1) && (s <= AUSTRIA_4)) continue
+				if ((G.flags[s] !== FRANCE) && (G.flags[s] !== BRITAIN)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				V.prompt = event_prompt(R, G.played_event, "Confirm event play to gain 2 diplomatic points. No bonus possible, no spaces available to unflag.")
+				button("confirm")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+	},
+	confirm() {
+		push_undo()
+		end()
+	}
+}
+
 
 
 function handle_ministry_card_click(m)
@@ -3057,6 +3195,7 @@ P.advantage_flow = script (`
 `)
 
 
+// Should never get here anymore
 P.advantage_not_implemented = {
 	prompt() {
 		let msg = "Advantage not yet implemented."
@@ -3308,7 +3447,7 @@ P.advantage_unflag_discount = {
 				any_flagged = true
 				if (!allowed_to_shift_market(s, R)) continue
 				if (!has_conflict_marker(s)) any_non_conflict = true
-				if (!G.action_points_eligible_major[type] && !eligible_for_minor_action(s, R)) continue
+				if (!action_points_eligible_major(type, space_rules(s, type)) && !eligible_for_minor_action(s, R)) continue
 				action_space(s)
 				any = true
 			}
@@ -3351,6 +3490,7 @@ function allowed_to_shift_market(s, who)
 	return false
 }
 
+/* 5.3.2 "Minor Actions may not be used to remove opposing flags or Squadrons, unless the space has a Conflict Marker." Returns true if eligible for a minor action in the space (enemy spaces can only be unflagged if a conflict marker is present, or the Jonathan Swift ministry exception) */
 function eligible_for_minor_action(s, who)
 {
 	if ((s >= 0) && (G.flags[s] !== NONE) && (G.flags[s] !== who)) {
@@ -3367,27 +3507,77 @@ function eligible_for_minor_action(s, who)
 }
 
 
-function action_points_available(who, s, type, allow_debt_and_trps)
-{
-	if (!G.action_points_eligible[type]) return 0
-
-	var eligible_minor = eligible_for_minor_action(s, who)
-	if (!G.action_points_eligible_major[type] && !eligible_minor) return 0
-
-	return G.action_points_major[type] + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+// Returns true if eligible for an action of this type (minor or major), checking the optional list of rules for potential contingent points
+function action_points_eligible(type, rules = []) {
+	return G.action_points_eligible[type] || any_contingent(type, rules)
 }
 
-function can_afford_to_shift(s, who, allow_debt_and_trps)
+
+// Returns true if eligible for a major action of this type, checking the optional list of rules for potential contingent points
+function action_points_eligible_major(type, rules = []) {
+	return G.action_points_eligible_major[type] || any_contingent(type, rules)
+}
+
+
+// Returns the number of major action points available of the type, checking the optional list of rules for potential contingent points
+function action_points_major(type, rules = []) {
+	return G.action_points_major[type] + get_contingent(type, rules)
+}
+
+// Returns a list of all presently-active contingent action point rules
+function active_rules() {
+	let rules = []
+	for (const contingency of G.action_points_contingent) {
+		rules.push(contingency.rule)
+	}
+	return rules
+}
+
+// Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
+function space_rules(s, type)
+{
+	let qualified_rules = []
+
+	if ((s >= 0) && (type === space_action_type(s))) {
+		for (let rule of active_rules()) {
+			switch (rule) {
+				case RULE_UNFLAG_EUROPE:
+					if (data.spaces[s].region === REGION_EUROPE) {
+						if (G.flags[s] !== NONE) {
+							qualified_rules.push(rule)
+						}
+					}
+					break
+			}
+		}
+	}
+
+	return qualified_rules
+}
+
+
+function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
+{
+	if (!action_points_eligible(type, rules)) return 0
+
+	var eligible_minor = eligible_for_minor_action(s, who)
+	if (!action_points_eligible_major(type, rules) && !eligible_minor) return 0
+
+	return action_points_major(type, rules) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+}
+
+// True if we're legally allowed to shift the space (includes minor action rules). NOTE: also returns false if there's no conceivable way we could currently afford it
+function is_shift_allowed_and_affordable(s, who, allow_debt_and_trps, rules = [])
 {
 	var type = space_action_type(s)
 
-	if (!G.action_points_eligible[type]) return false
+	if (!action_points_eligible(type, rules)) return false
 
 	var eligible_minor = eligible_for_minor_action(s, who)
-	if (!G.action_points_eligible_major[type] && !eligible_minor) return false
+	if (!action_points_eligible_major(type, rules) && !eligible_minor) return false
 
 	var cost = action_point_cost(who, s, type)
-    var avail = action_points_available(who, s, type, allow_debt_and_trps)
+    var avail = action_points_available(who, s, type, allow_debt_and_trps, rules)
 	//TODO forts and navies different behaviors
 
 	return (avail >= cost)
@@ -3401,7 +3591,8 @@ function action_eligible_spaces_econ(region)
 		if (space.type !== MARKET) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
-		if (!can_afford_to_shift(space.num, R, true)) continue
+		if (!action_points_eligible(ECON, space_rules(space.num, ECON))) continue
+		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, ECON))) continue
 
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
@@ -3414,7 +3605,8 @@ function action_eligible_spaces_diplo(region)
 		if (space.type !== POLITICAL) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
-		if (!can_afford_to_shift(space.num, R, true)) continue
+		if (!action_points_eligible(DIPLO, space_rules(space.num, DIPLO))) continue
+		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, DIPLO))) continue
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
 }
@@ -3482,7 +3674,7 @@ function action_territories_debug() {
 
 function action_eligible_spaces(type, region)
 {
-	if (!G.action_points_eligible_major[type] && (G.action_points_minor[type] <= 0)) return
+	if (!action_points_eligible_major(type, active_rules()) && (G.action_points_minor[type] <= 0)) return
 	switch (type) {
 		case ECON:
 			action_eligible_spaces_econ(region)
@@ -3498,7 +3690,7 @@ function action_eligible_spaces(type, region)
 
 function action_all_eligible_spaces() {
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-		if (!G.action_points_eligible[i]) continue
+		if (!action_points_eligible(i, active_rules())) continue
 		action_eligible_spaces(i, REGION_ALL)
 	}
 }
@@ -4302,10 +4494,10 @@ function action_cost_setup(s, t) {
 	G.eligible_minor = eligible_for_minor_action(s, G.active) && (G.action_points_minor[G.action_type] > 0)
 
 	// How many action points (of the active flavor) are immediately available (without taking debt, spending TRP, or otherwise invoking an ability to gain more)
-	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false)
+	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false, space_rules(G.active_space, G.action_type))
 
 	// How many action points (of the active flavor) would we have total, if we took all possible debt and spent all our TRP. Our notional absolute maximum w/o needing an ability/advantage.
-	G.action_points_available_debt = action_points_available(G.active, G.active_space, G.action_type, true)
+	G.action_points_available_debt = action_points_available(G.active, G.active_space, G.action_type, true, space_rules(G.active_space, G.action_type))
 
 	// Clause to remind player why he might be wanting to cough up enough debt or whatever (e.g. "... to unflag Denmark")
 	G.action_string = ""
@@ -4382,6 +4574,9 @@ function handle_space_click(s, force_type = -1)
 }
 
 P.space_flow = script(`
+
+	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action. //TODO - maybe a different highlight?
+
     if (G.needs_to_flip_ministry >= 0) {
     	eval { 
     		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
@@ -4541,6 +4736,11 @@ function pay_action_cost() {
 		G.action_cost = Math.max(0, G.action_cost - 2)
 	}
 
+	// Spent contingent points, if available
+	for (let rule of space_rules(G.active_space, G.action_type)) {
+		G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
+	}
+
 	if (G.action_points_major[G.action_type] >= G.action_cost) {
 		G.action_points_major[G.action_type] -= G.action_cost
 		G.action_cost = 0
@@ -4684,7 +4884,7 @@ function say_action_points(space = true, brackets = true) {
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 			if (G.action_points_eligible === undefined) continue
-			if (G.action_points_eligible[i]) {
+			if (action_points_eligible(i, active_rules())) {
 				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
 
 					if (need_comma) {
@@ -4707,15 +4907,27 @@ function say_action_points(space = true, brackets = true) {
 								tell += ", "
 							}
 							tell += data.action_points[i].short + ": "
-							need_comma = true;
 						}
 
 						tell += G.action_points_minor[i] + " Minor"
+						need_comma = true;
 					}
 
 					if (G.action_points_committed_bonus[i] > 0) {
-						tell += "/"
+						if (need_comma) {
+							tell += ", "
+						}
 						tell += G.action_points_committed_bonus[i] + " Bonus"
+						need_comma = true;
+					}
+
+					for (let rule of active_rules()) {
+						let amount = get_contingent(i, rule)
+						if (any_contingent(i, rule)) {
+							if (need_comma) tell += ", "
+							tell += amount + " " + rule
+							need_comma = true
+						}
 					}
 				}
 			}
@@ -4917,6 +5129,10 @@ P.action_round_core = {
 				set_damaged_fort(s, false)
 			}
 		}
+	},
+	cheat_cheat() {
+		push_undo()
+		G.hand[BRITAIN][0] = ACTS_OF_UNION
 	}
 }
 

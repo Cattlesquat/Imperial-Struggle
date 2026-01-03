@@ -942,12 +942,15 @@ window.addEventListener("keydown", function (evt) {
 		case "h":
 			send_message("action", [ "cheat_huguenots", null, game_cookie ])
 			break;
-		case "c":
+		case "o":
 			send_message("action", [ "cheat_conflict", null, game_cookie])
 			break;
 		case "d":
 		case "y":
 			send_message("action", [ "cheat_damage", null, game_cookie])
+			break;
+		case "c":
+			send_message("action", ["cheat_cheat", null, game_cookie])
 			break;
 	}
 })
