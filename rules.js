@@ -2521,7 +2521,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
-	var header = G.transient_bitflags[1][0] + " " + say_event(c, -1, true) + ": "
+	var header = say_event(c, -1, true) + ": "
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || (!G.qualifies_for_bonus && !even_if_no_bonus)) {
@@ -2759,6 +2759,13 @@ P.event_tropical_diseases = {
 }
 
 
+function apply_south_sea_bonus()
+{
+	log ("Bonus: -2 military cost of next squadron constructed this round")
+	set_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)
+}
+
+
 // Unflag a Market whose removal does not Isolate any other Markets. Bonus: -2 Mil to construct a new Squadron this AR (This can result in the Construct Squadron action costing 0 Mil)
 P.event_south_sea_speculation = {
 	_begin() {
@@ -2801,10 +2808,6 @@ P.event_south_sea_speculation = {
 				button("done")
 			}
 		} else if (G.qualifies_for_bonus) {
-			debug_log ("Setting!")
-			set_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)
-			debug_log ("Verifying... " + has_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT))
-			log ("Bonus: -2 military cost of next squadron constructed this round")
 			V.prompt = event_prompt(R, G.played_event, "-2 military cost to construct squadron this round")
 			if (action_points_eligible(MIL, active_rules())) button("construct_squadron")
 			button("pass")
@@ -2814,11 +2817,14 @@ P.event_south_sea_speculation = {
 		push_undo()
 		reflag_space(s, NONE)
 		L.unflagged = true
-		if (!G.qualifies_for_bonus) end()
+		if (G.qualifies_for_bonus) {
+			apply_south_sea_bonus()
+		} else {
+			end()
+		}
 	},
 	construct_squadron() {
 		push_undo()
-		debug_log("HERE WE GO!")
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
@@ -2830,11 +2836,14 @@ P.event_south_sea_speculation = {
 	done() {
 		push_undo()
 		if (L.unflagged) {
-			debug_log("ENDING!")
 			end()
 		} else {
 			L.unflagged = true
-			if (!G.qualifies_for_bonus) end()
+			if (G.qualifies_for_bonus) {
+				apply_south_sea_bonus()
+			} else {
+				end()
+			}
 		}
 	},
 	pass() {
@@ -3911,7 +3920,6 @@ function has_transient(who, t) {
 
 function set_transient(who, t, on = true) {
 	//G.transient_bitflags[who][t] = on
-	debug_log ("SETTING! Who: " + who + "  Index: " + t + "   Value: " + on)
 	bit_set(G.transient_bitflags[who], t, on)
 }
 
@@ -3943,9 +3951,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 		info.advantage = SLAVING_CONTRACTS
 	}
 
-	debug_log ("Checking: " + who + " - " + has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT) + " " + has_transient(BRITAIN, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT))
 	if (has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)) {
-		debug_log ("Finding")
 		info.ability = true
 		cost -= 2
 	}
@@ -5029,8 +5035,8 @@ P.confirm_spend_debt_or_trps = {
 
 function say_action_header(msg = null)
 {
-	if (msg !== null) return G.transient_bitflags[1][0] + " " + bold(msg)
-	return G.transient_bitflags[1][0] + " " + bold(G.action_header?.toUpperCase() ?? "")
+	if (msg !== null) return bold(msg)
+	return bold(G.action_header?.toUpperCase() ?? "")
 }
 
 function say_action(msg)
