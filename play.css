@@ -120,6 +120,37 @@ body.Britain #events_br { grid-row: 2 }
 	height: 5px;
 }
 
+#log .group.fr { 
+    background-color: hsl(206, 85%, 90%); 
+}
+#log .group.br { 
+    background-color: hsl(355, 70%, 90%); 
+}
+#log .group.both { 
+    background-color: gainsboro; 
+}
+
+#log .group { 
+    margin: 0 6px; 
+}
+
+#log .header {
+    padding: 4px;
+    margin-top:8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#log .header.group.fr { 
+    background-color: hsl(206, 85%, 85%); 
+}
+#log .header.group.br { 
+    background-color: hsl(355, 70%, 85%); 
+}
+#log .header.group.both { 
+    background-color: hsl(0, 0%, 80%); 
+}
+
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr {
     font-style: italic;
     text-decoration: underline;

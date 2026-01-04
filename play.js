@@ -879,10 +879,33 @@ function on_prompt(text) {
 	return escape_text(text)
 }
 
-function on_log(text) {
+var log_box_fr = 0
+var log_box_br = 0
+var log_box_both = 0
+
+function on_log(text, ix) {
 	var p = document.createElement("div")
 
+	if (ix < log_box_fr) log_box_fr = 0
+	if (ix < log_box_br) log_box_br = 0
+	if (ix < log_box_both) log_box_both = 0
+
 	switch (text[0]) {
+	case "{":
+		p.classList.add("header")
+		switch (text[1]) {
+			case "0": log_box_fr = ix; break
+			case "1": log_box_br = ix; break
+			case "2": log_box_both = ix; break
+		}
+		text = text.substring(2)
+		break
+	case "}":
+		log_box_fr = 0
+		log_box_br = 0
+		log_box_both = 0
+		text = text.substring(1)
+		break
 	case ">":
 		p.className = "i"
 		text = text.substring(1)
@@ -909,6 +932,10 @@ function on_log(text) {
 		text = text.substring(4)
 		p.className = "h3"
 	}
+
+	if (log_box_fr) p.classList.add("group", "fr")
+	if (log_box_br) p.classList.add("group", "br")
+	if (log_box_both) p.classList.add("group", "both")
 
 	p.innerHTML = escape_text(text)
 	return p

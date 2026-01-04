@@ -2343,6 +2343,9 @@ P.select_investment_tile = {
 	_begin() {
 		push_undo() // It was backing out from later points all the way to back to initiative?!
 	},
+	_resume() {
+		log_box_end()
+	},
 	prompt() {
 		V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Select an investment tile or activate a minister.")
 		for (var tile of G.available_investments) {
@@ -3418,7 +3421,8 @@ function reveal_ministry(who, index) {
 
 	let m = G.ministry[who][index]
 	G.ministry_revealed[who][index] = true
-	log ("\nMinistry Revealed: \n" + say_ministry(m, who, true))
+	log_box_begin(G.active, say_ministry(m, who, false))
+	log ("Ministry Revealed: \n" + say_ministry(m, who, false))
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 }
@@ -5571,6 +5575,9 @@ P.action_round_core = {
 	_begin() {
 		push_undo() // Possibly keep it from backing straight out of e.g. "Confirm reveal ministry?" all the way back to the select-investment-tile step? If I undo from "confirm reveal ministry" I want to be back where I was when I clicked the ministry
 	},
+	_resume() {
+		log_box_end()
+	},
 	prompt() {
 		var header = "ACTION ROUND " + G.round + ": "
 		var prompt = ""
@@ -6005,6 +6012,14 @@ function log(s) {
 	} else {
 		G.log.push(s)
 	}
+}
+
+function log_box_begin(who, header) {
+	log("{" + who + header)
+}
+
+function log_box_end() {
+	log("}")
 }
 
 
