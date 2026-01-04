@@ -405,6 +405,8 @@ function setup_procs()
 	data.cards[SOUTH_SEA_SPECULATION].proc = "event_south_sea_speculation"
 	data.cards[WAR_OF_JENKINS_EAR].proc = "event_war_of_jenkins_ear"
 	data.cards[NATIVE_AMERICAN_ALLIANCES].proc = "event_native_american_alliances"
+	data.cards[AUSTRO_SPANISH_RIVALRY].proc = "event_austro_spanish_rivalry"
+	data.cards[TAX_REFORM].proc = "event_tax_reform"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -2178,6 +2180,7 @@ function is_action_phase()
 
 const RULE_UNFLAG_EUROPE = "Unflagging in Europe only"
 const RULE_NORTH_AMERICA = "North America only"
+const RULE_INDIA         = "India only"
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 function add_contingent(type, amount, rule) {
@@ -3028,6 +3031,252 @@ P.event_native_american_alliances = {
 			}
 		}
 	},
+}
+
+
+// BR: Place one Conflict marker in Spain. Bonus: Remove a FR Bonus War tile from the next War (returning it to their pool)
+// FR: Unflag a space in the Dutch Republic. Bonus: 2 Diplo or 2 Econ in India
+P.event_austro_spanish_rivalry = {
+	_begin() {
+		if (R === BRITAIN) {
+			L.conflicts_placed = 0
+			L.picked_bonus_tile = -1
+			L.theater = 0
+		} else {
+			L.unflagged = 0
+		}
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = ""
+			if (!L.conflicts_placed) {
+				msg = "Place 1 conflict marker in Spain"
+				let any = false
+				for (let s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4] ) {
+					if (has_conflict_marker(s)) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+			} else if (L.theater <= 0) {
+				msg  = "Remove a French bonus war tile from the next war, returning it to their pool"
+				let any= false
+				for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 through theaters inclusive is correct
+					if (G.theater_bonus_war_tiles[FRANCE][theater].length < 1) continue;
+					any = true
+					action_theater(theater)
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+			} else {
+				msg = "Confirm removal of French bonus tile from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "? (CANNOT BE UNDONE!)"
+				button("confirm")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg)
+		} else {
+			let msg = ""
+			if (!L.unflagged) {
+				msg = "Unflag a space in the Dutch Republic"
+				let any = false
+				for (let s of [DUTCH_1, DUTCH_2]) {
+					if (G.flags[s] !== 1 - R) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+			} else {
+				msg = "Choose +2 Diplomatic or +2 Economic action points in India"
+				button ("diplomatic2")
+				button ("economic2")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg)
+		}
+	},
+	space(s) {
+		push_undo()
+		if (R === BRITAIN) {
+			set_conflict_marker(s)
+			L.conflicts_placed++
+			if (!G.qualifies_for_bonus) end()
+		} else {
+			reflag_space(s, NONE)
+			L.unflagged++
+			if (!G.qualifies_for_bonus) end()
+		}
+	},
+	theater(t) {
+		push_undo()
+		L.theater = t
+	},
+	confirm() {
+		clear_undo() // No going back once we've effectively revealed a war tile
+
+		log ("French bonus war tile removed from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+
+		// Randomize the choice without disrupting owner's present tile order
+		let choices = G.theater_basic_war_tiles[1 - G.active][L.theater].slice()
+		shuffle(choices)
+
+		L.picked_bonus_tile = choices[0]
+		array_delete_item(G.theater_basic_war_tiles[1 - G.active][L.theater], L.picked_bonus_tile)
+		G.bonus_war_tiles[1 - G.active].push(L.picked_bonus_tile)
+		shuffle(G.bonus_war_tiles[1 - G.active])
+		end()
+	},
+	diplomatic2() {
+		push_undo()
+		add_contingent(DIPLO, 2, RULE_INDIA)
+		end()
+	},
+	economic2() {
+		add_contingent(ECON, 2, RULE_INDIA)
+		push_undo()
+		end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			if (!L.conflicts_placed) {
+				L.conflicts_placed++
+				if (!G.qualifies_for_bonus) end()
+			} else {
+				end()
+			}
+		} else {
+			end()
+		}
+	}
+}
+
+
+P.event_tax_reform = {
+	_begin() {
+		L.reduction_amount = G.qualifies_for_bonus ? 3 : 2
+		if (L.reduction_amount <= G.debt[R]) {
+			L.economic_points = 0
+		} else {
+			L.economic_points  = L.reduction_amount - G.debt[R]
+			L.reduction_amount = G.debt[R]
+		}
+	},
+	prompt() {
+		let msg = ""
+		if (L.reduction_amount === 0) {
+			msg = "Confirm award of +" + L.economic_points + " Economic action points in lieu of debt reduction"
+		} else if (L.economic_points === 0) {
+			msg = "Confirm debt reduction of " + L.reduction_amount
+		} else {
+			msg = "Confirm debt reduction of " + L.reduction_amount + " and +" + L.economic_points + " Economic action point" + ((L.economic_action_points !== 1) ? "s" : "")
+		}
+		V.prompt = event_prompt(R, G.played_event, msg)
+		button ("confirm")
+	},
+	confirm() {
+		push_undo()
+		if (L.reduction_amount > 0) reduce_debt(R, L.reduction_amount)
+		if (L.economic_points > 0) add_action_points(ECON, L.economic_points)
+		end()
+	}
+}
+
+
+P.event_great_northern_war = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_vatican_politics = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_calico_acts = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_military_spending_overruns = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_alberonis_ambition = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_famine_in_ireland = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+P.event_interest_payments = {
+	_begin() {
+
+	},
+	prompt() {
+
+	},
+	done() {
+		push_undo()
+		end()
+	}
 }
 
 
@@ -3901,6 +4150,11 @@ function space_rules(s, type)
 						qualified_rules.push(rule)
 					}
 					break
+				case RULE_INDIA:
+					if (data.spaces[s].region === REGION_INDIA) {
+						qualified_rules.push(rule)
+					}
+					break
 			}
 		}
 	}
@@ -3944,6 +4198,9 @@ function action_eligible_spaces_econ(region)
 		if (space.type !== MARKET) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
+		if (!action_points_eligible_major(ECON, space_rules(space.num, ECON))) { // We either need eligibility for major action *at this space*, or else we need to have non-zero minor action points remaining
+			if (!G.action_points_minor[ECON]) continue
+		}
 		if (!action_points_eligible(ECON, space_rules(space.num, ECON))) continue
 		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, ECON))) continue
 
@@ -3959,7 +4216,9 @@ function action_eligible_spaces_diplo(region)
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
 		if (((space.num === USA_1) || (space.num === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
-		if (!action_points_eligible(DIPLO, space_rules(space.num, DIPLO))) continue
+		if (!action_points_eligible_major(DIPLO, space_rules(space.num, DIPLO))) { // We either need eligibility for major action *at this space*, or else we need to have non-zero minor action points remaining
+			if (!G.action_points_minor[DIPLO]) continue
+		}
 		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, DIPLO))) continue
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
@@ -4382,6 +4641,16 @@ function get_theater_from_basic_war_tile(who, tile) {
 	console.error ("Could not find theater for basic war tile. Who: " + who + "  Tile: " + tile)
 	return 1
 }
+
+
+function get_theater_from_bonus_war_tile(who, tile) {
+	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
+		if (G.theater_bonus_war_tiles[who][theater].includes(tile)) return theater
+	}
+	console.error ("Could not find theater for bonus war tile. Who: " + who + "  Tile: " + tile)
+	return 1
+}
+
 
 
 P.military_upgrade_decisions = {
@@ -5039,7 +5308,7 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     	if (G.action_points_available_debt < G.action_cost + 2) {
         	eval { G.action_minor = true }  // If the only way we can do this is as a minor action, we don't need to make a choice
         }
-        if (!G.action_points_eligible_major[G.action_type]) {
+        if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type))) { 
 			eval { G.action_minor = true }  // If we're not eligible for a major action in this category, we don't need to make a choice    
         }
     }
@@ -5488,11 +5757,11 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = NATIVE_AMERICAN_ALLIANCES
-		G.hand[BRITAIN][1] = WAR_OF_JENKINS_EAR
+		G.hand[BRITAIN][0] = AUSTRO_SPANISH_RIVALRY
+		G.hand[BRITAIN][1] = TAX_REFORM
 
-		G.hand[FRANCE][0] = NATIVE_AMERICAN_ALLIANCES
-		G.hand[FRANCE][1] = WAR_OF_JENKINS_EAR
+		G.hand[FRANCE][0] = AUSTRO_SPANISH_RIVALRY
+		G.hand[FRANCE][1] = TAX_REFORM
 
 		G.flags[NIAGARA] = FRANCE
 
@@ -6284,7 +6553,6 @@ function push_undo() {
 }
 
 function pop_undo() {
-	console.log ("******************************** POP UNDO")
 	if (G.undo) {
 		var save_log = G.log
 		var save_undo = G.undo

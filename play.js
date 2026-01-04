@@ -764,6 +764,8 @@ function on_update() {
 
 	action_button("shift_market", "Shift Market")
 	action_button("place_conflict_marker", "Place Conflict Marker")
+	action_button("diplomatic2", "+2 Diplomatic")
+	action_button("economic2", "+2 Economic")
 
 	action_button ("use_advantage", "Use")
 	action_button ("dont_use_advantage", "Don't Use")
