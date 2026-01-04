@@ -402,6 +402,7 @@ function setup_procs()
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
 	data.cards[TROPICAL_DISEASES].proc = "event_tropical_diseases"
+	data.cards[SOUTH_SEA_SPECULATION].proc = "event_south_sea_speculation"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -2107,7 +2108,7 @@ function clear_dirty() {
 }
 
 
-// Checks if a specified market (space) qualifies as isolated per 5.4.1
+
 function check_if_market_isolated(market)
 {
 	let who = G.flags[market]
@@ -2137,7 +2138,15 @@ function check_if_market_isolated(market)
 		}
 	}
 
-    if (!connected) {
+	return !connected
+}
+
+
+
+// Checks if a specified market (space) qualifies as isolated per 5.4.1
+function check_and_mark_if_market_isolated(market)
+{
+    if (check_if_market_isolated(market)) {
 		set_isolated_market(market)
 	}
 }
@@ -2152,7 +2161,7 @@ function find_isolated_markets()
 
 	for (var s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== MARKET) continue
-		check_if_market_isolated(s)
+		check_and_mark_if_market_isolated(s)
 	}
 }
 
@@ -2457,7 +2466,7 @@ function check_event_bonus_requirements(who) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
 
-	//G.qualifies_for_bonus = true // Uncomment for testing
+	G.qualifies_for_bonus = true // Uncomment for testing
 }
 
 P.event_flow = script (`
@@ -2512,7 +2521,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
-	var header = say_event(c, -1, true) + ": "
+	var header = G.transient_bitflags[1][0] + " " + say_event(c, -1, true) + ": "
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || (!G.qualifies_for_bonus && !even_if_no_bonus)) {
@@ -2750,6 +2759,89 @@ P.event_tropical_diseases = {
 }
 
 
+// Unflag a Market whose removal does not Isolate any other Markets. Bonus: -2 Mil to construct a new Squadron this AR (This can result in the Construct Squadron action costing 0 Mil)
+P.event_south_sea_speculation = {
+	_begin() {
+		L.unflagged = false
+	},
+	prompt() {
+	    if (!L.unflagged) {
+			V.prompt = event_prompt(R, G.played_event, "Unflag a market whose removal does not isolate any other markets")
+
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== MARKET) continue
+				if (G.flags[s] !== 1 - R) continue
+
+				let okay = true
+				for (const s2 of data.spaces[s].connects) {
+					if (data.spaces[s2].type !== MARKET) continue
+					if (G.flags[s2] !== 1 - R) continue
+
+					if (check_if_market_isolated(s2)) continue // If connected market is *already* isolated, then removing target flag by definition doesn't *cause* it to become isolated
+
+					G.flags[s] = NONE // temporarily unflag our target space
+					let now_isolated = check_if_market_isolated(s2) // check if it isolates this adjacent space
+					G.flags[s] = 1 - R // set target space back
+
+					if (now_isolated) {
+						okay = false
+						break
+					}
+				}
+
+				if (okay) {
+					action_space(s)
+					any = true
+				}
+			}
+
+			if (!any) {
+				V.prompt = event_prompt(R, G.played_event, "Unflag a market whose removal does not isolate any other markets (None Possible)")
+				button("done")
+			}
+		} else if (G.qualifies_for_bonus) {
+			debug_log ("Setting!")
+			set_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)
+			debug_log ("Verifying... " + has_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT))
+			log ("Bonus: -2 military cost of next squadron constructed this round")
+			V.prompt = event_prompt(R, G.played_event, "-2 military cost to construct squadron this round")
+			if (action_points_eligible(MIL, active_rules())) button("construct_squadron")
+			button("pass")
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+		L.unflagged = true
+		if (!G.qualifies_for_bonus) end()
+	},
+	construct_squadron() {
+		push_undo()
+		debug_log("HERE WE GO!")
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+		action_cost_setup(-1, MIL)
+		G.action_string = "to construct a squadron"
+		G.action_header = "CONSTRUCT SQUADRON: "
+		G.prepicked_ministry = -1
+		G.prepicked_advantage = -1
+		goto ("construct_squadron_flow")
+	},
+	done() {
+		push_undo()
+		if (L.unflagged) {
+			debug_log("ENDING!")
+			end()
+		} else {
+			L.unflagged = true
+			if (!G.qualifies_for_bonus) end()
+		}
+	},
+	pass() {
+		push_undo()
+		end()
+	}
+}
 
 
 function handle_ministry_card_click(m)
@@ -3813,10 +3905,13 @@ function squadrons_in_region(who, region) {
 
 
 function has_transient(who, t) {
-	return bit_get(G.transient_bitflags[who], t)
+	//return G.transient_bitflags[who][t]
+	return !!bit_get(G.transient_bitflags[who], t)
 }
 
 function set_transient(who, t, on = true) {
+	//G.transient_bitflags[who][t] = on
+	debug_log ("SETTING! Who: " + who + "  Index: " + t + "   Value: " + on)
 	bit_set(G.transient_bitflags[who], t, on)
 }
 
@@ -3848,7 +3943,9 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 		info.advantage = SLAVING_CONTRACTS
 	}
 
+	debug_log ("Checking: " + who + " - " + has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT) + " " + has_transient(BRITAIN, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT))
 	if (has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)) {
+		debug_log ("Finding")
 		info.ability = true
 		cost -= 2
 	}
@@ -4257,7 +4354,7 @@ P.bonus_war_tile_decisions = {
 		V.prompt = msg
 	},
 	confirm() {
-		push_undo() //clear_undo() // Drew a tile - so there's no going back!
+		clear_undo() // Drew a tile - so there's no going back!
 		L.confirmed = true
 		L.new_tile = draw_bonus_war_tile(G.active, 0)
 	},
@@ -4932,8 +5029,8 @@ P.confirm_spend_debt_or_trps = {
 
 function say_action_header(msg = null)
 {
-	if (msg !== null) return bold(msg)
-	return bold(G.action_header?.toUpperCase() ?? "")
+	if (msg !== null) return G.transient_bitflags[1][0] + " " + bold(msg)
+	return G.transient_bitflags[1][0] + " " + bold(G.action_header?.toUpperCase() ?? "")
 }
 
 function say_action(msg)
@@ -5199,11 +5296,13 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = TROPICAL_DISEASES
+		G.hand[BRITAIN][0] = SOUTH_SEA_SPECULATION
 		G.hand[BRITAIN][1] = ACTS_OF_UNION
 
-		G.hand[FRANCE][0] = TROPICAL_DISEASES
+		G.hand[FRANCE][0] = SOUTH_SEA_SPECULATION
 		G.hand[FRANCE][1] = ACTS_OF_UNION
+
+		G.flags[NIAGARA] = FRANCE
 
 	}
 }
@@ -5993,6 +6092,7 @@ function push_undo() {
 }
 
 function pop_undo() {
+	console.log ("******************************** POP UNDO")
 	if (G.undo) {
 		var save_log = G.log
 		var save_undo = G.undo
