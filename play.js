@@ -870,6 +870,10 @@ function escape_text(text) {
 }
 
 function on_prompt(text) {
+	if (text === null) {
+		console.error("V.prompt is NULL")
+		return "V.prompt is NULL"
+	}
 	return escape_text(text)
 }
 

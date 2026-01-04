@@ -403,6 +403,8 @@ function setup_procs()
 	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
 	data.cards[TROPICAL_DISEASES].proc = "event_tropical_diseases"
 	data.cards[SOUTH_SEA_SPECULATION].proc = "event_south_sea_speculation"
+	data.cards[WAR_OF_JENKINS_EAR].proc = "event_war_of_jenkins_ear"
+	data.cards[NATIVE_AMERICAN_ALLIANCES].proc = "event_native_american_alliances"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -593,7 +595,7 @@ function on_setup(scenario, options) {
 	G.advantages_exhausted       = 0
 
 	// Integer: the number of advantages the G.active player has already used this turn
-	G.advantages_used_this_turn  = 0
+	G.advantages_used_this_round  = 0
 
 	// All the flags on the map by space: G.flags[space]
 	// <br><b>
@@ -720,6 +722,9 @@ function on_setup(scenario, options) {
 	// <br><b>
 	// G.demand_flag_count[FRANCE][COTTON]
 	G.demand_flag_count = [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]
+
+	// Number of USA flags placed in the game
+	G.usa_flags = 0
 
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
@@ -983,14 +988,13 @@ function refresh_advantage(a)
 
 
 /* 8.0 - Advantages */
-function has_advantage_eligible(who, a)
+function has_advantage_eligible(who, a, ignore_exhaustion = false)
 {
-	if (!has_advantage(who, a)) return false				  // 8.1 - control all the connected spaces
-	if (G.advantages_newly_acquired & (1 << a)) return false  // 8.0 - Can only be used the round *after* control is gained
-	if ((G.advantages_exhausted & (1 << a))) return false	  // 8.1 - Exhausted when used
-	if (is_advantage_conflicted(a)) return false		      // 8.1 - can't be used if any conflict markers, but remains "controlled"
-	if (G.advantages_used_this_turn >= 2) return false        // Can only use 2 advantages per turn
-
+	if (!has_advantage(who, a)) return false				                     // 8.1 - control all the connected spaces
+	if (G.advantages_newly_acquired & (1 << a)) return false                     // 8.0 - Can only be used the round *after* control is gained
+	if ((G.advantages_exhausted & (1 << a)) && !ignore_exhaustion) return false	 // 8.1 - Exhausted when used
+	if (is_advantage_conflicted(a)) return false		                         // 8.1 - can't be used if any conflict markers, but remains "controlled"
+	if (G.advantages_used_this_round >= 2) return false                          // 8.2 - Can only use 2 advantages per action round
 	return true
 }
 
@@ -2055,6 +2059,7 @@ P.victory_check_phase = function () {
 P.final_scoring_phase = function () {
 	log("=Final Scoring Phase")
 	// TODO
+	// TODO - USA flags count as FR flags during final scoring
 	end()
 }
 
@@ -2088,7 +2093,7 @@ function start_action_round() {
 	// Advantages we acquired last round now "age in" and are available to be used. Any we acquire *after* this point won't be available until the following round
 	update_advantages()
 	advantages_acquired_last_round_now_available()
-	G.advantages_used_this_turn = 0
+	G.advantages_used_this_round = 0
 
 	G.bonus_war_tiles_bought_this_round = 0
 
@@ -2172,6 +2177,7 @@ function is_action_phase()
 
 
 const RULE_UNFLAG_EUROPE = "Unflagging in Europe only"
+const RULE_NORTH_AMERICA = "North America only"
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 function add_contingent(type, amount, rule) {
@@ -2466,7 +2472,7 @@ function check_event_bonus_requirements(who) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
 
-	G.qualifies_for_bonus = true // Uncomment for testing
+	G.qualifies_for_bonus = true // Uncomment for testing //TODO comment back out!!!
 }
 
 P.event_flow = script (`
@@ -2850,6 +2856,178 @@ P.event_south_sea_speculation = {
 		push_undo()
 		end()
 	}
+}
+
+
+// BR: Reduce your Debt by 2. Bonus: Add 1 FR Debt.
+// FR: Place a conflict marker in a BR-flagged Market in the Caribbean. Bonus: 1 Diplo
+P.event_war_of_jenkins_ear = {
+	_begin() {
+		if (R === BRITAIN) {
+			reduce_debt(BRITAIN, 2)
+			if (G.qualifies_for_bonus) increase_debt(FRANCE, 1)
+			L.finished = true
+		} else {
+			L.conflicts_placed = 0
+			L.finished = false
+			L.doing_bonus = false
+		}
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "British debt reduced", "French debt increased")
+			button("done")
+		} else {
+			if ((L.conflicts_placed <= 0) && !L.doing_bonus) {
+				let msg = "Place a conflict marker in a BR-flagged market in the Caribbean"
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+					if (data.spaces[s].type !== MARKET) continue
+					if (has_conflict_marker(s)) continue
+					if (G.flags[s] !== BRITAIN) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button ("done")
+				}
+				V.prompt = event_prompt(R, G.played_event, msg)
+			} else {
+				V.prompt = event_prompt (R, G.played_event, "+1 Diplomatic action point")
+				button ("done")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		L.conflicts_placed++
+	},
+	done() {
+		push_undo()
+		if (!L.finished && !L.doing_bonus && G.qualifies_for_bonus) {
+			L.doing_bonus = true
+		} else {
+			if ((R === FRANCE) && G.qualifies_for_bonus) {
+				add_action_points(DIPLO, 1)
+			}
+			end()
+		}
+	}
+}
+
+
+// BR: Shift a local alliance in North America. Bonus: Immediately activate an advantage you control in North America (ignoring Exhaustion)
+// FR: 2 Econ (North America only). Bonus: Unflag a Local Alliance in North America.
+P.event_native_american_alliances = {
+	_begin() {
+		L.done_alliance = false
+		L.done_action_points = false
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			if (!L.done_alliance) {
+				let msg = "Shift a local alliance in North America"
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
+					if (data.spaces[s].type !== POLITICAL) continue
+					if (data.spaces[s].era > current_era()) continue // Some diplomatic spaces are era-locked
+					if (((s === USA_1) || (s === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
+					if (G.flags[s] === R) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+				V.prompt = event_prompt(R, G.played_event, msg)
+			} else {
+				let msg = "Immediately activate an advantage you control in North America, ignoring exhaustion"
+				let any = false
+				for (let a of [ ALGONQUIN_RAIDS, FUR_TRADE, IROQUOIS_RAIDS, PATRIOT_AGITATION, WHEAT ]) {
+					if (!has_advantage_eligible(R, a, true)) continue
+					action_advantage(a)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				} else {
+					button("pass") //BR// Among other things, we might have an advantage that is available but doesn't have any valid targets, so the activation will fail and player will have to undo back to here (and needs a way out of the flow)
+				}
+				V.prompt = event_prompt(R, G.played_event, msg)
+			}
+		} else {
+			if (!L.done_action_points) {
+				V.prompt = "+2 Economic action points in North America only"
+				button("done")
+			} else {
+				let msg = "Unflag a local alliance in North America"
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
+					if (data.spaces[s].type !== POLITICAL) continue
+					if (G.flags[s] !== 1 - R) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+				V.prompt = event_prompt(R, G.played_event, msg)
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		if (G.flags[s] === NONE) {
+			debug_log ("Flag")
+			reflag_space(s, R)
+		} else {
+			debug_log ("Unflag")
+			reflag_space(s, NONE)
+		}
+		L.done_alliance = true
+		if (R === BRITAIN) {
+			if (!G.qualifies_for_bonus) end()
+		} else {
+			end()
+		}
+	},
+	advantage(a) {
+		push_undo()
+		G.active_advantage = a
+		G.advantages_used_this_round++
+		G.advantage_already_exhausted = false
+		if (!is_advantage_exhausted(a)) exhaust_advantage(a)
+		goto ("advantage_flow")
+	},
+	pass() {
+		push_undo()
+		end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			if (L.done_alliance || !G.qualifies_for_bonus) {
+				end()
+			} else {
+				L.done_alliance = true
+			}
+		} else {
+			if (L.done_action_points || !G.qualifies_for_bonus) {
+				end()
+			} else {
+				add_contingent(ECON, 2, RULE_NORTH_AMERICA)
+				L.done_action_points = true
+			}
+		}
+	},
 }
 
 
@@ -3274,7 +3452,7 @@ P.ministry_jacobite_uprisings = {
 					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0)) {
 						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 							if (G.flags[s] !== FRANCE) {
-								if ((G.flags[s] === NONE) || G.action_points_eligible_major[MIL]) { // If we're unflagging, can't use minor action
+								if ((G.flags[s] === NONE) || action_points_eligible_major(MIL, space_rules(s, MIL))) { // If we're unflagging, can't use minor action
 									action_space(s, INCLUDE_CONFLICT)
 								}
 							}
@@ -3343,7 +3521,7 @@ function advantage_prompt(who, a, string1 = "") {
 function handle_advantage_click(a)
 {
 	G.active_advantage = a
-	G.advantages_used_this_turn++
+	G.advantages_used_this_round++
 	G.advantage_already_exhausted = is_advantage_exhausted(a)
 	if (!G.advantage_already_exhausted) exhaust_advantage(a)
 	call ("advantage_flow")
@@ -3502,6 +3680,8 @@ P.advantage_place_conflict = {
 			}
 			if ((L.adv_market_type >= 0) && (data.spaces[s].market !== L.adv_market_type)) continue
 			if ((L.adv_region >= 0) && (data.spaces[s].region !== L.adv_region)) continue
+			if (data.spaces[s].era > current_era()) continue // Some diplomatic spaces are era-locked
+			if (((s === USA_1) || (s === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
 
 			switch (G.active_advantage) {
 				case POWER_STRUGGLE:
@@ -3716,6 +3896,11 @@ function space_rules(s, type)
 						}
 					}
 					break
+				case RULE_NORTH_AMERICA:
+					if (data.spaces[s].region === REGION_NORTH_AMERICA) {
+						qualified_rules.push(rule)
+					}
+					break
 			}
 		}
 	}
@@ -3773,6 +3958,7 @@ function action_eligible_spaces_diplo(region)
 		if (space.type !== POLITICAL) continue
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
+		if (((space.num === USA_1) || (space.num === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
 		if (!action_points_eligible(DIPLO, space_rules(space.num, DIPLO))) continue
 		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, DIPLO))) continue
 		action_space(space.num, INCLUDE_CONFLICT)
@@ -3874,7 +4060,7 @@ function action_eligible_ministries() {
 }
 
 function action_eligible_advantages() {
-	if (G.advantages_used_this_turn >= 2) return
+	if (G.advantages_used_this_round >= 2) return
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
 		if (has_advantage_eligible(R, a)) action_advantage(a)
 	}
@@ -4865,7 +5051,7 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     		if (!G.action_minor) {
     			G.eligible_minor = false
     			G.action_points_available_debt -= G.action_points_minor[G.action_type]
-    			G.action_points_available      -= G.action_points_minor[G.action_type]
+    			G.action_points_available_now  -= G.action_points_minor[G.action_type]
     		}
     	}  	
     }
@@ -4889,7 +5075,7 @@ function pay_action_cost() {
 	// TODO spend weird "region restricted" action points if available
 
 	let msg = data.flags[G.active].name + " spends " + G.action_cost + " " + data.action_points[G.action_type].name + " action points."
-	if (G.action_points_eligible_major[G.action_type] && G.action_points_minor[G.action_type] > 0) {
+	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.action_points_minor[G.action_type] > 0) {
 		if (G.action_minor) {
 			msg += " (Minor action)"
 		} else {
@@ -4977,7 +5163,7 @@ function add_action_point()
 // Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
 P.confirm_spend_debt_or_trps = {
 	prompt() {
-		if (!G.action_points_eligible_major[G.action_type] && (G.action_points_minor[G.action_type] <= 0)) {
+		if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && (G.action_points_minor[G.action_type] <= 0)) {
 			V.prompt = say_action_header()
 			if (G.action_type === G.action_minor_type) {
 				V.prompt += say_action("You cannot conduct another action using " + data.action_points[G.action_type].name + " points, as you have already conducted a minor action. ")
@@ -5065,7 +5251,7 @@ function say_action_points(space = true, brackets = true) {
 
 					tell += G.action_points_major[i] //+ " major"
 					if (G.action_points_minor[i]) {
-						tell += ", "
+						tell += " Major, " // only explicitly say Major if we also have Minor
 						early[i] = true
 					}
 				}
@@ -5267,7 +5453,7 @@ P.action_round_core = {
 		push_undo()
 		debug_log("Advantages Refreshed")
 		advantages_acquired_last_round_now_available()
-		G.advantages_used_this_turn = 0
+		G.advantages_used_this_round = 0
 	},
 	cheat_huguenots() {
 		push_undo()
@@ -5302,11 +5488,11 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = SOUTH_SEA_SPECULATION
-		G.hand[BRITAIN][1] = ACTS_OF_UNION
+		G.hand[BRITAIN][0] = NATIVE_AMERICAN_ALLIANCES
+		G.hand[BRITAIN][1] = WAR_OF_JENKINS_EAR
 
-		G.hand[FRANCE][0] = SOUTH_SEA_SPECULATION
-		G.hand[FRANCE][1] = ACTS_OF_UNION
+		G.hand[FRANCE][0] = NATIVE_AMERICAN_ALLIANCES
+		G.hand[FRANCE][1] = WAR_OF_JENKINS_EAR
 
 		G.flags[NIAGARA] = FRANCE
 
