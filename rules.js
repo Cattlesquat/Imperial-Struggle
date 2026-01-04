@@ -407,6 +407,8 @@ function setup_procs()
 	data.cards[NATIVE_AMERICAN_ALLIANCES].proc = "event_native_american_alliances"
 	data.cards[AUSTRO_SPANISH_RIVALRY].proc = "event_austro_spanish_rivalry"
 	data.cards[TAX_REFORM].proc = "event_tax_reform"
+	data.cards[GREAT_NORTHERN_WAR].proc = "event_great_northern_war"
+	data.cards[VATICAN_POLITICS].proc = "event_vatican_politics"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -3140,8 +3142,8 @@ P.event_austro_spanish_rivalry = {
 		end()
 	},
 	economic2() {
-		add_contingent(ECON, 2, RULE_INDIA)
 		push_undo()
+		add_contingent(ECON, 2, RULE_INDIA)
 		end()
 	},
 	done() {
@@ -3191,15 +3193,53 @@ P.event_tax_reform = {
 }
 
 
+function score_northern_war(who)
+{
+	///
+}
+
+
 P.event_great_northern_war = {
 	_begin() {
-
+		L.shifted_space = false
 	},
 	prompt() {
+		if (R === BRITAIN) {
+			let msg = ""
+			if (!L.shifted_space) {
+				msg = "Shift a political space in the German States. If both are now BR-flagged, score 2 VP"
+				let any = false
+				for (let s of [ GERMAN_STATES_1, GERMAN_STATES_2 ]) {
+					if (G.flags[s] === BRITAIN) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (Both spaces already BR-flagged)"
+					button("done")
+				}
+			} else {
+				msg = "Bonus: +1 Diplomatic action point"
+				button("done")
+			}
+		}
 
 	},
-	done() {
+	space(s) {
 		push_undo()
+		if (R === BRITAIN) {
+			L.shifted_space = true
+			if (G.flags[s] === NONE) {
+				reflag_space(s, BRITAIN)
+			} else {
+				reflag_space(s, NONE)
+			}
+			score_northern_war(R)
+			if (!G.qualifies_for_bonus) end()
+		}
+	},
+	done() {
+		push_undo() ////
 		end()
 	}
 }
@@ -5764,7 +5804,7 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = AUSTRO_SPANISH_RIVALRY
+		G.hand[BRITAIN][0] = NATIVE_AMERICAN_ALLIANCES
 		G.hand[BRITAIN][1] = TAX_REFORM
 
 		G.hand[FRANCE][0] = AUSTRO_SPANISH_RIVALRY
