@@ -479,6 +479,14 @@ body[data-noanims="false"] .space.advantage.action {
 	background-size: 77px 69px;
 }
 
+.marker.hex.fleet_fr,
+.marker.hex.fleet_br {
+    width: 77px;
+    height: 69px;
+    background-size: 77px 69px;
+    pointer-events: none; /* Squadron markers don't get pointer events */
+}
+
 .marker.hex-sm {
 	width: 66px;
 	height: 60px;
