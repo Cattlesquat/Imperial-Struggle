@@ -411,6 +411,9 @@ function setup_procs()
 	data.cards[VATICAN_POLITICS].proc = "event_vatican_politics"
 	data.cards[CALICO_ACTS].proc = "event_calico_acts"
 	data.cards[MILITARY_SPENDING_OVERRUNS].proc = "event_military_spending_overruns"
+	data.cards[ALBERONIS_AMBITION].proc = "event_alberonis_ambition"
+	data.cards[FAMINE_IN_IRELAND].proc = "event_famine_in_ireland"
+	data.cards[INTEREST_PAYMENTS].proc = "event_interest_payments"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -929,8 +932,8 @@ function increase_debt(who, amount) {
 		log (data.flags[who].adj + " Debt increased by " + amount + ". (Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
-		award_vp(who, -penalty, true)
-		log (bold(data.flags[who].name + " loses " + penalty + " VP for Debt Limit overrun. VP Marker: " + G.VP))
+		award_vp(who, -penalty, false, "Debit Limit overrun")
+		//log (bold(data.flags[who].name + " loses " + penalty + " VP for Debt Limit overrun. VP Marker: " + G.VP))
 	}
 }
 
@@ -943,18 +946,19 @@ function add_treaty_points(who, amount)
 }
 
 
-function award_vp(who, amount, silent = false)
+function award_vp(who, amount, silent = false, reason = null)
 {
 	if (who === BRITAIN) {
 		amount = 0 - amount
 	}
 
+	G.vp += amount
+
 	if (!silent) {
-		if (amount > 0) {
-			log(bold(data.flags[who].name + " gains " + amount + " VP. VP Marker: " + G.vp))
-		} else {
-			log(bold(data.flags[who].name + " loses " + amount + " VP. VP Marker: " + G.vp))
-		}
+		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + amount + " VP"
+		if (reason) msg += " " + parens(reason)
+		msg += ". VP Marker: " + G.vp
+		log (bold(msg))
 	}
 }
 
@@ -2189,6 +2193,7 @@ const RULE_INDIA                = "India only"
 const RULE_GERMAN_PRUSSIA_DUTCH = "German States, Prussia, or the Dutch Republic"
 const RULE_EUROPE               = "Europe only"
 const RULE_UNFLAG_MARKETS       = "Unflagging markets only"
+const RULE_MARKET_MARKET        = "Flag markets next to a BR-flagged market"
 
 // Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
 function space_rules(s, type)
@@ -2219,17 +2224,27 @@ function space_rules(s, type)
 					if ([ GERMAN_STATES_1, GERMAN_STATES_2, PRUSSIA_1, PRUSSIA_2, PRUSSIA_3, PRUSSIA_4, DUTCH_1, DUTCH_2 ].includes(s)) {
 						qualified_rules.push(rule)
 					}
-					break;
+					break
 				case RULE_EUROPE:
 					if (data.spaces[s].region === REGION_EUROPE) {
 						qualified_rules.push(rule)
 					}
-					break;
+					break
 				case RULE_UNFLAG_MARKETS:
 					if (G.flags[s] !== NONE) {
 						qualified_rules.push(rule)
 					}
-					break;
+					break
+				case RULE_MARKET_MARKET: // Alberoni's Ambition -- flag markets next to a BR-flagged market
+					if ((G.flags[s] === NONE) && (data.spaces[s].connects !== undefined))  {
+						for (const s2 of data.spaces[s].connects) {
+							if (data.spaces[s2].type !== MARKET) continue
+							if (G.flags[s2] !== BRITAIN) continue
+							qualified_rules.push(rule)
+							break
+						}
+					}
+					break
 			}
 		}
 	}
@@ -2252,6 +2267,7 @@ function active_rules() {
 function add_contingent(type, amount, rule) {
 	let contingent = { "type": type, "amount": amount, "rule": rule }
 	G.action_points_contingent.push(contingent)
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + ((amount !== 1) ? "s" : "") + " (" + rule +")")
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
@@ -2740,7 +2756,7 @@ P.event_acts_of_union = {
 			log ("+1 Diplomatic point (unflagging in Europe only)")
 			add_contingent(DIPLO, 1, RULE_UNFLAG_EUROPE)
 			if (G.qualifies_for_bonus) {
-				award_vp(BRITAIN, 2)
+				award_vp(BRITAIN, 2, false, "Event Bonus")
 			}
 		} else {
 			add_action_points(DIPLO, 2)
@@ -3221,7 +3237,8 @@ P.event_austro_spanish_rivalry = {
 	}
 }
 
-
+// Reduce your debt by 2. Bonus: Reduce your debt by an additional 1.
+// If you are unable to reduce debt, you make take 1 Econ for each debt reduction not taken.
 P.event_tax_reform = {
 	_begin() {
 		L.reduction_amount = G.qualifies_for_bonus ? 3 : 2
@@ -3256,11 +3273,13 @@ P.event_tax_reform = {
 function score_northern_war()
 {
 	if ((G.flags[GERMAN_STATES_1] === BRITAIN) && (G.flags[GERMAN_STATES_2] === BRITAIN)) {
-		award_vp(BRITAIN, 2)
+		award_vp(BRITAIN, 2, false, "German States all BR-flagged")
 	}
 }
 
 
+// BR: Shift a politicial space in the German States. If both are now BR-flagged, score 2 VP. Bonus: 1 Diplo
+// FR: Shift Russia. If it's already FR-flagged, score 2 VP instead. Bonus: 1 Diplo
 P.event_great_northern_war = {
 	_begin() {
 		L.shifted_space = false
@@ -3337,7 +3356,7 @@ P.event_great_northern_war = {
 			if (!L.shifted_space) {
 				L.shifted_space = true
 				if (G.flags[RUSSIA] === FRANCE) {
-					award_vp(FRANCE, 2)
+					award_vp(FRANCE, 2, false, "Russia already FR-flagged")
 				} else if (G.flags[RUSSIA] === NONE) {
 					reflag_space(RUSSIA, FRANCE)
 				} else {
@@ -3362,11 +3381,12 @@ function score_vatican_politics() {
 	}
 
 	if (!any) {
-		award_vp(FRANCE, 2)
+		award_vp(FRANCE, 2, false, "No BR flags in Spain or Austria")
 	}
 }
 
-
+// BR: 2 Diplo (must be spent in the German States, Prussia, or the Dutch Republic). Bonus: 1 Diplo (Europe)
+// FR: Shift any Spain or Austria space. Bonus: If there are no BR flags in Spain and Austria, score 2 VP.
 P.event_vatican_politics = {
 	_begin() {
 		L.shifted_space = false
@@ -3417,6 +3437,8 @@ P.event_vatican_politics = {
 }
 
 
+// BR: 2 Econ (must be used to unflag markets). Bonus: You may score Cotton (as if in Global Demand)
+// FR: Unflag a Cotton Market. Bonus: Move a BR Squadron from the map to the Navy Box.
 P.event_calico_acts = {
 	_begin() {
 		L.unflagged_markets = false
@@ -3425,7 +3447,7 @@ P.event_calico_acts = {
 		let msg = ""
 		if (R === BRITAIN) {
 			if (!L.unflagged_markets) {
-				msg = "+2 Economic action points; must be used to unflag market(s)"
+				msg = "+2 Economic action points; must be used to unflag markets"
 				button("done")
 			} else {
 				msg = "You may score Cotton (as if in Global Demand)"
@@ -3547,6 +3569,7 @@ P.event_military_spending_overruns = {
 	}
 }
 
+// Your opponent must damage a fort, remove a squadron (to Navy Box), or remove a Bonus War Tile from the next war (returning it to their pool). Bonus: Your opponent must do so again (does not have to be the same choice)
 P.do_military_spending_overruns = {
 	_begin() {
 		L.removals_done = 0
@@ -3614,25 +3637,172 @@ P.do_military_spending_overruns = {
 	}
 }
 
+// BR: 2 Econ. Must be spent to flag market(s) next to a BR-flagged market. Bonus: 1 Econ, similarly restricted.
+// FR: Shift an Alliance space in Austria, the Dutch Republic, or Spain. Bonus: if both Savoy and Sardinia are FR-flagged, score 3 VP.
 P.event_alberonis_ambition = {
 	_begin() {
-
+		if (R === BRITAIN) {
+			L.econ_amount = G.qualifies_for_bonus ? 3 : 2
+		} else {
+			L.shifted_alliance = false
+			L.savoy_sardinia = ((G.flags[SAVOY] === FRANCE) && (G.flags[SARDINIA] === FRANCE))
+		}
 	},
 	prompt() {
-
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "+" + L.econ_amount + " Economic action points (must be spent to flag markets next to a British-flagged market.")
+			button("done")
+		} else {
+			if (!L.shifted_alliance) {
+				let msg = "Shift an Alliance space in Austria, the Dutch Republic, or Spain"
+				let any = false
+				for (let s of [ SPAIN_1, SPAIN_3, AUSTRIA_1, AUSTRIA_3, DUTCH_1 ]) {
+					if (G.flags[s] === R) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None Possible)"
+					button("done")
+				}
+				V.prompt = event_prompt(R, G.played_event, msg, "if both Savoy and Sardinia are FR-flagged, score 3 VP")
+			} else {
+				V.prompt = event_prompt(R, G.played_event, L.savoy_sardinia ? "+3 VP for flags in both Savoy and Sardinia" : "No VP bonus as France does not have flags in both Savoy and Sardinia")
+				button("done")
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
+		L.shifted_alliance = true
+		if (!G.qualifies_for_bonus) end()
 	},
 	done() {
 		push_undo()
+		if (R === BRITAIN) {
+			add_contingent(ECON, L.econ_amount, RULE_MARKET_MARKET)
+		} else {
+			if (!L.shifted_alliance) {
+				L.shifted_alliance = true
+				if (!G.qualifies_for_bonus) end()
+			}
+			if (L.savoy_sardinia) {
+				award_vp(FRANCE, 3, false, "France has flags in both Savoy and Sardinia")
+			} else {
+				log ("No VP Bonus: France does not have flags in both Savoy and Sardinia.")
+			}
+		}
 		end()
 	}
 }
 
+// BR: Unflag a FR space in Ireland or Scotland
+// FR: Draw one Bonus War Tile for each space you control in Ireland, and add them to the Jacobite Rebellion theater in the next war
 P.event_famine_in_ireland = {
 	_begin() {
+		if (R === FRANCE) {
+			L.tiles_to_draw = 0
+			L.drawn_tiles = false
+			L.placing_displaced_tile = false
+			if (G.flags[IRELAND_1] === FRANCE) L.tiles_to_draw++
+			if (G.flags[IRELAND_2] === FRANCE) L.tiles_to_draw++
 
+			L.already = num_bonus_tiles_in_play(R)
+		}
 	},
 	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Unflag a French space in Ireland or Scotland"
+			let any = false
+			for (let s of [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ] ) {
+				if (G.flags[s] !== FRANCE) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				button ("done")
+				msg += " (None Possible)"
+			}
+			V.prompt = event_prompt(R, G.played_event, msg)
+		} else {
+			if (!L.drawn_tiles) {
+				let msg = ""
+				if (G.turn >= PEACE_TURN_4) {
+					msg = "No Jacobite Rebellion theater in next war. No war tiles drawn."
+					button("done")
+				} else if (L.tiles_to_draw === 0) {
+					msg = "France controls no spaces in Ireland. No war tiles drawn."
+					button("done")
+				} else if (L.already >= data.wars[G.next_war].theaters * 2) {
+					msg = "You cannot draw any bonus war tiles, as all theaters in the next war already contain the maximum 2 bonus war tiles"
+					button("done")
+				} else if ((L.tiles_to_draw === 2) && (L.already >= (data.wars[G.next_war].theaters * 2) - 1)) {
+					msg = "Confirm drawing only ONE bonus war tile even though you have TWO spaces in Ireland, as you have room for only one more on the war mat (CANNOT BE UNDONE!)"
+					button("confirm")
+				} else {
+					msg = "Confirm draw of " + L.tiles_to_draw + " bonus war tile" + ((L.tiles_to_draw !== 1) ? "s" : "") + " to Jacobite Rebellion theater (CANNOT BE UNDONE!)"
+					button("confirm")
+				}
+				V.prompt = event_prompt(R, G.played_event, msg)
+			} else {
+				if (!L.placing_displaced_tile) {
+					for (let index = 0; index < G.theater_bonus_war_tiles[R][4].length; index++) {
+						if ((L.displaced_a_new_one || (L.tiles_to_displace === 1)) && (index >= 2)) continue // If we only drew one tile, don't displace that one. If we displaced a new one the first time, we can't do it on a second time.
+						action_bonus_war_tile(G.theater_bonus_war_tiles[R][4][index])
+					}
+					V.prompt = event_prompt(R, G.played_event, "Theater has more than 2 bonus war tiles. Select a tile to displace to a different theater")
+				} else {
+					for (let theater of free_theaters(R)) {
+						action_theater(theater)
+					}
+					V.prompt = event_prompt(R, G.played_event, "Select a new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile")
+				}
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+		end()
+	},
+	bonus_war(t) {
+		L.placing_displaced_tile = true
+		L.displaced_tile = t
+		if (G.theater_bonus_war_tiles[FRANCE][4].indexOf(t) >= 2) L.displaced_a_new_one = true
+	},
+	theater(theater) {
+		array_delete_item(G.theater_bonus_war_tiles[FRANCE][4], L.displaced_tile)
+		G.theater_bonus_war_tiles[FRANCE][theater].push(L.displaced_tile)
+		let msg = "France displaces a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
 
+		if (G.theater_bonus_war_tiles[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
+			end()
+		} else {
+			L.placing_displaced_tile = false // Loop back for another displacement if we need to
+		}
+	},
+	confirm() {
+		clear_undo()
+		let oops = (L.tiles_to_draw === 2) && ((L.already >= (data.wars[G.next_war].theaters * 2) - 1))
+		if (oops) L.tiles_to_draw = 1
+		let msg = "France draws " + L.tiles_to_draw + " bonus war tile" + ((L.tiles_to_draw !== 1) ? "s" : "") + " to Jacobite Rebellion theater"
+		if (oops) msg += " (theaters only had room for 1 more tile)"
+		msg += "."
+		log (msg)
+		L.new_tiles = []
+		for (let i = 0; i < L.tiles_to_draw; i++) {
+			L.new_tiles.push(draw_bonus_war_tile(R, 4))
+		}
+		L.drawn_tiles = true
+
+		if (G.theater_bonus_war_tiles[R][4].length <= 2) {
+			end()
+		} else {
+			L.tiles_to_displace = G.theater_bonus_war_tiles[R][4].length - 2
+			L.displaced_a_new_one = false
+			L.placing_displaced_tile = false
+		}
 	},
 	done() {
 		push_undo()
@@ -3640,15 +3810,29 @@ P.event_famine_in_ireland = {
 	}
 }
 
+// Reduce your opponent's debt limit by one. If your opponent was at debt limit, reduce their debt by one as well, then score 1 VP. Bonus: reduce your own debt by 2.
 P.event_interest_payments = {
 	_begin() {
-
+		L.penalty = available_debt(1 - R) < 1
+		L.debt_reduction = Math.min(2, G.debt[R])
 	},
 	prompt() {
-
+		let msg = "Reduces your opponent's Debt Limit by one"
+		if (L.penalty) msg += ". This also reduces their debt by one and you will score 1 VP"
+		V.prompt = event_prompt(R, G.played_event, msg, "reduces your own debt by " + L.debt_reduction)
+		button("done")
 	},
 	done() {
 		push_undo()
+		G.debt_limit[1 - R]--
+		log (bold(data.flags[1 - R].adj + " debt limit reduced by 1."))
+		if (L.penalty) {
+			G.debt[1 - R]--
+			award_vp(R, 1, false, "Britsh Debt Limit overrun")
+		}
+		if (G.qualifies_for_bonus && (L.debt_reduction > 0)) {
+			reduce_debt(R, L.debt_reduction)
+		}
 		end()
 	}
 }
@@ -4027,7 +4211,7 @@ function jacobite_vp_value()
 
 function do_award_jacobite_vp()
 {
-	award_vp(FRANCE, jacobite_vp_value())
+	award_vp(FRANCE, jacobite_vp_value(), false, "Jacobite Uprisings")
 }
 
 P.jacobite_vp_flow = script (`
@@ -4979,7 +5163,7 @@ P.military_upgrade_decisions = {
 		L.theater = get_theater_from_basic_war_tile(G.active, G.upgrading_basic_tile)
 	},
 	prompt() {
-		let msg = say_action_header("MILITARY_UPGRADE: ")
+		let msg = say_action_header("MILITARY UPGRADE: ")
 
 		if (!L.confirmed) {
 			//TODO - optional rule would allow choice of swap or draw
@@ -5035,6 +5219,7 @@ P.military_upgrade_decisions = {
 
 }
 
+// Returns an array of theater numbers where the player currently has fewer than the maximum 2 bonus war tiles
 function free_theaters(who) {
 	let theaters = []
 	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
@@ -5043,6 +5228,17 @@ function free_theaters(who) {
 	}
 	return theaters
 }
+
+
+// Returns the total number of bonus war tiles a player already has on the next war mat
+function num_bonus_tiles_in_play(who) {
+    let num = 0
+	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
+		num += G.theater_bonus_war_tiles[who][theater].length
+	}
+	return num
+}
+
 
 function handle_buy_bonus_war_tile()
 {
@@ -6080,11 +6276,13 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = CALICO_ACTS
-		G.hand[BRITAIN][1] = MILITARY_SPENDING_OVERRUNS
+		G.hand[BRITAIN][0] = ALBERONIS_AMBITION
+		G.hand[BRITAIN][1] = FAMINE_IN_IRELAND
+		G.hand[BRITAIN][2] = INTEREST_PAYMENTS
 
-		G.hand[FRANCE][0] = CALICO_ACTS
-		G.hand[FRANCE][1] = MILITARY_SPENDING_OVERRUNS
+		G.hand[FRANCE][0] = ALBERONIS_AMBITION
+		G.hand[FRANCE][1] = FAMINE_IN_IRELAND
+		G.hand[FRANCE][2] = INTEREST_PAYMENTS
 
 		G.flags[NIAGARA] = FRANCE
 
