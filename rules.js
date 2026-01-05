@@ -3056,10 +3056,8 @@ P.event_native_american_alliances = {
 	space(s) {
 		push_undo()
 		if (G.flags[s] === NONE) {
-			debug_log ("Flag")
 			reflag_space(s, R)
 		} else {
-			debug_log ("Unflag")
 			reflag_space(s, NONE)
 		}
 		L.done_alliance = true
@@ -3604,7 +3602,6 @@ P.do_military_spending_overruns = {
 		push_undo()
 		L.removals_done++
 		let theater = get_theater_from_bonus_war_tile(G.active, t)
-		debug_log("Theater: " + theater + "  Tile: " + t)
 		array_delete_item(G.theater_bonus_war_tiles[G.active][theater], t)
 		G.bonus_war_tiles[G.active].push(t)
 		shuffle(G.bonus_war_tiles[G.active])
@@ -4967,15 +4964,6 @@ function get_theater_from_basic_war_tile(who, tile) {
 
 function get_theater_from_bonus_war_tile(who, tile) {
 	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
-		debug_log ("Theater: " + theater)
-		for (const tile of G.theater_bonus_war_tiles[who][theater]) {
-			debug_log ("   Tile: " + tile)
-		}
-		//if (G.theater_bonus_war_tiles[who][theater].includes(tile)) return theater
-	}
-
-
-	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
 		if (G.theater_bonus_war_tiles[who][theater].includes(tile)) return theater
 	}
 	console.error ("Could not find theater for bonus war tile. Who: " + who + "  Tile: " + tile)
@@ -5120,7 +5108,7 @@ P.bonus_war_tile_decisions = {
 
 		if (!L.confirmed) {
 			if (G.bonus_war_tiles[G.active].length < 1) {
-				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
+				msg += say_action("You do not have any bonus war tiles left to draw from.")
 				button ("done")
 			} else {
 				msg += say_action("Confirm drawing tile for 2 military action points? (CANNOT BE UNDONE!)" + say_action_points())
@@ -5154,11 +5142,11 @@ P.bonus_war_tile_decisions = {
 		push_undo()
 		if (L.theater <= 0) {
 			L.theater = t
-			G.theater_bonus_war_tiles[G.active][t].push(L.new_tile)
-			array_delete_item(G.theater_bonus_war_tiles[G.active][0], t) // Remove from the "just drawn tiles" list
+			G.theater_bonus_war_tiles[G.active][L.theater].push(L.new_tile)
+			array_delete_item(G.theater_bonus_war_tiles[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
 			G.bonus_war_tiles_bought_this_round++
 			log(data.flags[G.active].name + " draws a bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
-			if (G.theater_bonus_war_tiles[G.active][t].length <= 2) {
+			if (G.theater_bonus_war_tiles[G.active][L.theater].length <= 2) {
 				end() // If we don't need to displace another tile, we're done
 			}
 		} else {
