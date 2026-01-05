@@ -3857,6 +3857,8 @@ function handle_ministry_card_click(m)
 	G.ministry_already_revealed  = false
 	G.ministry_prompt_to_exhaust = false
 
+	G.ministry_manually_clicked  = true
+
 	G.has_required_ministry = undefined
 	// String reason we are requesting/suggesting the player flip up a ministry
 	G.ministry_required_because = ""
@@ -3866,13 +3868,17 @@ function handle_ministry_card_click(m)
 	}
 }
 
-P.ministry_card_flow = script (`
-
-	eval { log_box_begin(G.active, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) }
-
+P.ministry_card_flow = script (`	
     if (!G.ministry_revealed[R][G.ministry_index]) {
     	call confirm_reveal_ministry
     	eval { G.just_revealed = true }
+    	if (G.ministry_manually_clicked && !ministry_useful_this_phase(G.ministry_id, G.action_round_subphase)) {
+    		return // If we manually revealed the minister, but he can't do anything right now, don't proceed into the you-can't-use-him-right-now part
+    	}
+    }
+    
+    eval { 
+    	if (!G.log_box) log_box_begin(G.active, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) 
     }
     
     if (G.ministry_revealed[R][G.ministry_index]) {
@@ -3887,7 +3893,10 @@ P.ministry_card_flow = script (`
 		}
     }
     
-    eval { log_box_end() } 
+    eval {
+    	G.ministry_manually_clicked = false
+    	log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
+    } 
 `)
 
 
@@ -4006,12 +4015,20 @@ P.confirm_reveal_ministry = {
 
 		}
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
+
+		if (G.ministry_manually_clicked && !ministry_useful_this_phase(G.ministry_id, G.action_round_subphase)) {
+			V.prompt += say_action(" (NOTE: abilities cannot activate yet -- e.g. must pick investment tile, or must be beginning of round, or similar reason)")
+		}
+
 		V.prompt += say_action_points()
 		if (G.ministry_optional) action("dont_exhaust_ministry")
 
 	},
 	reveal_ministry() {
 		push_undo()
+		if (G.ministry_manually_clicked && !G.log_box) {
+			log_box_begin(R, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
+		}
 		reveal_ministry(R, G.ministry_index)
 		end()
 	},
@@ -6026,6 +6043,7 @@ function say_action(msg)
 function say_action_points(space = true, brackets = true) {
 
 	if (!is_action_phase()) return ""
+	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
 
 	var need_comma = false;
 	var early = [ false, false, false ]
@@ -6551,7 +6569,8 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	G.log_box = type
 }
 
-function log_box_end() {
+function log_box_end(type = 0) {
+	if ((type !== 0) && (G.log_box !== type)) return // If we were asked to *only* cancel log box if we're currently inside a particular type
 	if (G.log_box) log("}")
 	G.log_box = 0
 }
