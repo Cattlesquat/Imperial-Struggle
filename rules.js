@@ -2183,6 +2183,61 @@ function is_action_phase()
 const RULE_UNFLAG_EUROPE = "Unflagging in Europe only"
 const RULE_NORTH_AMERICA = "North America only"
 const RULE_INDIA         = "India only"
+const RULE_GERMAN_PRUSSIA_DUTCH = "German States, Prussia, or the Dutch Republic"
+const RULE_EUROPE			    = "Europe only"
+
+// Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
+function space_rules(s, type)
+{
+	let qualified_rules = []
+
+	if ((s >= 0) && (type === space_action_type(s))) {
+		for (let rule of active_rules()) {
+			switch (rule) {
+				case RULE_UNFLAG_EUROPE:
+					if (data.spaces[s].region === REGION_EUROPE) {
+						if (G.flags[s] !== NONE) {
+							qualified_rules.push(rule)
+						}
+					}
+					break
+				case RULE_NORTH_AMERICA:
+					if (data.spaces[s].region === REGION_NORTH_AMERICA) {
+						qualified_rules.push(rule)
+					}
+					break
+				case RULE_INDIA:
+					if (data.spaces[s].region === REGION_INDIA) {
+						qualified_rules.push(rule)
+					}
+					break
+				case RULE_GERMAN_PRUSSIA_DUTCH:
+					if ([ GERMAN_STATES_1, GERMAN_STATES_2, PRUSSIA_1, PRUSSIA_2, PRUSSIA_3, PRUSSIA_4, DUTCH_1, DUTCH_2 ].includes(s)) {
+						qualified_rules.push(rule)
+					}
+					break;
+				case RULE_EUROPE:
+					if (data.spaces[s].region === REGION_EUROPE) {
+						qualified_rules.push(rule)
+					}
+					break;
+			}
+		}
+	}
+
+	return qualified_rules
+}
+
+
+// Returns a list of all presently-active contingent action point rules
+function active_rules() {
+	let rules = []
+	for (const contingency of G.action_points_contingent) {
+		rules.push(contingency.rule)
+	}
+	return rules
+}
+
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 function add_contingent(type, amount, rule) {
@@ -2252,7 +2307,6 @@ function use_contingent(amount, type, rule)
 	return amount
 }
 
-
 // Adds unrestricted major action points of the specified type
 function add_action_points(type, amount)
 {
@@ -2261,7 +2315,6 @@ function add_action_points(type, amount)
 	G.action_points_eligible_major[type] = true
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + ((amount !== 1) ? "s" : ""))
 }
-
 
 
 // Active player has picked an investment tile.
@@ -3193,9 +3246,11 @@ P.event_tax_reform = {
 }
 
 
-function score_northern_war(who)
+function score_northern_war()
 {
-	///
+	if ((G.flags[GERMAN_STATES_1] === BRITAIN) && (G.flags[GERMAN_STATES_2] === BRITAIN)) {
+		award_vp(BRITAIN, 2)
+	}
 }
 
 
@@ -3204,8 +3259,8 @@ P.event_great_northern_war = {
 		L.shifted_space = false
 	},
 	prompt() {
+		let msg = ""
 		if (R === BRITAIN) {
-			let msg = ""
 			if (!L.shifted_space) {
 				msg = "Shift a political space in the German States. If both are now BR-flagged, score 2 VP"
 				let any = false
@@ -3222,8 +3277,22 @@ P.event_great_northern_war = {
 				msg = "Bonus: +1 Diplomatic action point"
 				button("done")
 			}
+		} else {
+			if (!L.shifted_space) {
+				msg = "Shift Russia. If it's already FR-flagged, score 2 VP instead"
+				if (G.flags[RUSSIA] === FRANCE) {
+					msg += " (Already FR-flagged)"
+					button("done")
+				} else {
+					action_space(RUSSIA)
+					button("done")
+				}
+			} else {
+				msg = "Bonus: +1 Diplomatic action point"
+				button("done")
+			}
 		}
-
+		V.prompt = event_prompt(R, G.played_event, msg)
 	},
 	space(s) {
 		push_undo()
@@ -3234,28 +3303,112 @@ P.event_great_northern_war = {
 			} else {
 				reflag_space(s, NONE)
 			}
-			score_northern_war(R)
+			score_northern_war()
+			if (!G.qualifies_for_bonus) end()
+		} else {
+			L.shifted_space = true
+			if (G.flags[RUSSIA] === NONE) {
+				reflag_space(RUSSIA, FRANCE)
+			} else {
+				reflag_space(RUSSIA, NONE)
+			}
 			if (!G.qualifies_for_bonus) end()
 		}
 	},
 	done() {
-		push_undo() ////
-		end()
+		push_undo()
+		if (R === BRITAIN) {
+			if (!L.shifted_space) {
+				L.shifted_space = true
+				score_northern_war()
+				if (!G.qualifies_for_bonus()) end()
+			} else {
+				add_action_points(DIPLO, 1)
+				end()
+			}
+		} else {
+			if (!L.shifted_space) {
+				L.shifted_space = true
+				if (G.flags[RUSSIA] === FRANCE) {
+					award_vp(FRANCE, 2)
+				} else if (G.flags[RUSSIA] === NONE) {
+					reflag_space(RUSSIA, FRANCE)
+				} else {
+					reflag_space(RUSSIA, NONE)
+				}
+				if (!G.qualifies_for_bonus) end()
+			} else {
+				add_action_points(DIPLO, 1)
+				end()
+			}
+		}
 	}
 }
+
+
+function score_vatican_politics() {
+	let any = false
+	for (let s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4 ]) {
+		if (G.flags[s] !== BRITAIN) continue
+		any = true
+		break
+	}
+
+	if (!any) {
+		award_vp(FRANCE, 2)
+	}
+}
+
 
 P.event_vatican_politics = {
 	_begin() {
-
+		L.shifted_space = false
 	},
 	prompt() {
-
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "+2 Diplomatic action points (German States, Prussia, Dutch Republic)", "+1 Diplomatic action point (Europe)")
+			button ("done")
+		} else {
+			if (!L.shifted_space) {
+				V.prompt = event_prompt(R, G.played_event, "Shift any Spain or Austria space", "if there are afterwards no BR flags in Spain and Austria, score 2 VP")
+				let any = false
+				for (let s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4 ]) {
+					if (G.flags[s] === FRANCE) continue // already friendly flagged
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					V.prompt = event_prompt(R, G.played_event, "No Spain or Austria spaces remain to be shifted", "score 2 VP for no BR flags in the region")
+					button("done")
+				}
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		if (G.flags[s] === NONE) {
+			reflag_space(s, FRANCE)
+		} else {
+			reflag_space(s, NONE)
+		}
+		if (G.qualifies_for_bonus) {
+			score_vatican_politics()
+		}
+		end()
 	},
 	done() {
 		push_undo()
-		end()
+		if (R === BRITAIN) {
+			add_contingent(DIPLO, 2, RULE_GERMAN_PRUSSIA_DUTCH)
+			if (G.qualifies_for_bonus) add_contingent(DIPLO, 1, RULE_EUROPE)
+			end()
+		} else {
+			if (G.qualifies_for_bonus) score_vatican_politics()
+			end()
+		}
 	}
 }
+
 
 P.event_calico_acts = {
 	_begin() {
@@ -3269,6 +3422,7 @@ P.event_calico_acts = {
 		end()
 	}
 }
+
 
 P.event_military_spending_overruns = {
 	_begin() {
@@ -4163,47 +4317,6 @@ function action_points_eligible_major(type, rules = []) {
 // Returns the number of major action points available of the type, checking the optional list of rules for potential contingent points
 function action_points_major(type, rules = []) {
 	return G.action_points_major[type] + get_contingent(type, rules)
-}
-
-// Returns a list of all presently-active contingent action point rules
-function active_rules() {
-	let rules = []
-	for (const contingency of G.action_points_contingent) {
-		rules.push(contingency.rule)
-	}
-	return rules
-}
-
-// Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
-function space_rules(s, type)
-{
-	let qualified_rules = []
-
-	if ((s >= 0) && (type === space_action_type(s))) {
-		for (let rule of active_rules()) {
-			switch (rule) {
-				case RULE_UNFLAG_EUROPE:
-					if (data.spaces[s].region === REGION_EUROPE) {
-						if (G.flags[s] !== NONE) {
-							qualified_rules.push(rule)
-						}
-					}
-					break
-				case RULE_NORTH_AMERICA:
-					if (data.spaces[s].region === REGION_NORTH_AMERICA) {
-						qualified_rules.push(rule)
-					}
-					break
-				case RULE_INDIA:
-					if (data.spaces[s].region === REGION_INDIA) {
-						qualified_rules.push(rule)
-					}
-					break
-			}
-		}
-	}
-
-	return qualified_rules
 }
 
 
@@ -5804,11 +5917,11 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.hand[BRITAIN][0] = NATIVE_AMERICAN_ALLIANCES
-		G.hand[BRITAIN][1] = TAX_REFORM
+		G.hand[BRITAIN][0] = VATICAN_POLITICS
+		G.hand[BRITAIN][1] = GREAT_NORTHERN_WAR
 
-		G.hand[FRANCE][0] = AUSTRO_SPANISH_RIVALRY
-		G.hand[FRANCE][1] = TAX_REFORM
+		G.hand[FRANCE][0] = VATICAN_POLITICS
+		G.hand[FRANCE][1] = GREAT_NORTHERN_WAR
 
 		G.flags[NIAGARA] = FRANCE
 
