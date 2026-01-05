@@ -759,6 +759,9 @@ function on_setup(scenario, options) {
 	// can be populated with a reminder of what the main action the player is trying to do (e.g. "UNFLAG IRELAND: ")
 	G.action_header = ""
 
+	// Internal for tracking if a log box is going
+	G.log_box = 0
+
 	call("main")
 }
 
@@ -3854,14 +3857,19 @@ function handle_ministry_card_click(m)
 	G.ministry_already_revealed  = false
 	G.ministry_prompt_to_exhaust = false
 
+	G.has_required_ministry = undefined
 	// String reason we are requesting/suggesting the player flip up a ministry
-	G.minister_required_because = ""
+	G.ministry_required_because = ""
+
 	if (G.ministry_index >= 0) {
 		call ("ministry_card_flow")
 	}
 }
 
 P.ministry_card_flow = script (`
+
+	eval { log_box_begin(G.active, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) }
+
     if (!G.ministry_revealed[R][G.ministry_index]) {
     	call confirm_reveal_ministry
     	eval { G.just_revealed = true }
@@ -3869,22 +3877,23 @@ P.ministry_card_flow = script (`
     
     if (G.ministry_revealed[R][G.ministry_index]) {
 		if (data.ministries[G.ministry_id].proc !== undefined) {
-			goto (data.ministries[G.ministry_id].proc)
-		} 
-		
-		if (!ministry_has_activatable_abilities(G.ministry_id)) {
-			goto ministry_not_activatable
+			call (data.ministries[G.ministry_id].proc)
+		} else {
+			if (!ministry_has_activatable_abilities(G.ministry_id)) {
+				call ministry_not_activatable
+			} else {		 		
+				call ministry_not_implemented
+			}
 		}
-		 		
-    	goto ministry_not_implemented
     }
+    
+    eval { log_box_end() } 
 `)
 
 
 function ministry_has_activatable_abilities(m)
 {
 	return ![JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE].includes(m);
-
 }
 
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
@@ -3976,7 +3985,6 @@ function reveal_ministry(who, index) {
 
 	let m = G.ministry[who][index]
 	G.ministry_revealed[who][index] = true
-	log_box_begin(G.active, say_ministry(m, who, false))
 	log ("Ministry Revealed: \n" + say_ministry(m, who, false))
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
@@ -6528,12 +6536,24 @@ function log(s) {
 	}
 }
 
-function log_box_begin(who, header) {
+
+const LOG_BOX_MISC 		= 1
+const LOG_BOX_MINISTRY	= 2
+const LOG_BOX_EVENT		= 3
+
+
+function log_box_begin(who, header, type = LOG_BOX_MISC) {
+	if (G.log_box) {
+		console.error("Started new log box when one is already active. Old: " + G.log_box + " New: " + type)
+		log ("}") // Terminate the old one
+	}
 	log("{" + who + header)
+	G.log_box = type
 }
 
 function log_box_end() {
-	log("}")
+	if (G.log_box) log("}")
+	G.log_box = 0
 }
 
 
