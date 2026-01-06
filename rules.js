@@ -5647,7 +5647,9 @@ function advance_action_round_subphase(subphase)
 	G.action_round_subphase = subphase
 
 	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
-		log ("\nNo Event played.")
+		log_box_begin(G.active, "NO EVENT PLAYED", LOG_BOX_EVENT)
+		log_box_end(LOG_BOX_EVENT)
+		//log ("\nNo Event played.")
 	}
 }
 
@@ -5887,9 +5889,9 @@ P.decide_how_and_whether_to_spend_action_points = script(`
 
 
 function pay_action_cost() {
-	G.paid_action_cost = true
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
-	// TODO spend weird "region restricted" action points if available
+	G.paid_action_cost = true
 
 	let msg = data.flags[G.active].name + " spends " + G.action_cost + " " + data.action_points[G.action_type].name + " action points."
 	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.action_points_minor[G.action_type] > 0) {
@@ -5924,8 +5926,6 @@ function pay_action_cost() {
 		G.action_points_major[G.action_type] = 0
 		G.action_cost = 0
 	}
-
-	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 }
 
 function do_reflag_space(repair_if_damaged = true) {
