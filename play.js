@@ -767,6 +767,8 @@ function on_update() {
 	action_button("diplomatic2", "+2 Diplomatic")
 	action_button("economic2", "+2 Economic")
 	action_button("scorecotton", "Score Cotton")
+	action_button("construct_squadron_now", "Build Squadron Now")
+	action_button("defer", "Defer")
 
 	action_button ("use_advantage", "Use")
 	action_button ("dont_use_advantage", "Don't Use")
@@ -880,31 +882,62 @@ function on_prompt(text) {
 	return escape_text(text)
 }
 
-var log_box_fr = 0
-var log_box_br = 0
-var log_box_both = 0
+//var log_box_fr = 0
+//var log_box_br = 0
+//var log_box_both = 0
+
+var log_box_history = []
+
+function most_recent_log_box() {
+	if (log_box_history.length === 0) return { "start" : -1, "end" : -1, "flavor": -1 }
+	return log_box_history.slice(-1).pop()
+}
+
+function start_log_box(ix, flavor)
+{
+	log_box_history.push( { "start" : ix, "end": -1, "flavor" : flavor } ) // End at -1 means box is still open
+}
+
+
+function close_log_box(ix) {
+	if (log_box_history.length > 0) {
+		log_box_history[log_box_history.length - 1].end = ix
+	}
+}
+
+function validate_log_box(ix) {
+	// Get rid of any boxes where we've regressed to-or-beyond the start of them
+	while (ix <= most_recent_log_box().start) {
+		log_box_history.pop()
+	}
+
+	// If we've backed up past the *end* of a log box, remove its end marker
+	if (ix <= most_recent_log_box().end) {
+		log_box_history[log_box_history.length - 1].end = -1
+	}
+}
+
+function current_log_box_flavor(ix) {
+	let current = most_recent_log_box()
+	if ((ix >= current.start) && ((ix <= current.end) || (current.end < 0))) {
+		return current.flavor
+	}
+	return -1
+}
 
 function on_log(text, ix) {
 	var p = document.createElement("div")
 
-	if (ix < log_box_fr) log_box_fr = 0
-	if (ix < log_box_br) log_box_br = 0
-	if (ix < log_box_both) log_box_both = 0
+	validate_log_box(ix)
 
 	switch (text[0]) {
 	case "{":
 		p.classList.add("header")
-		switch (text[1]) {
-			case "0": log_box_fr = ix; break
-			case "1": log_box_br = ix; break
-			case "2": log_box_both = ix; break
-		}
+		start_log_box(ix, text[1])
 		text = text.substring(2)
 		break
 	case "}":
-		log_box_fr = 0
-		log_box_br = 0
-		log_box_both = 0
+		close_log_box(ix)
 		text = text.substring(1)
 		break
 	case ">":
@@ -934,9 +967,22 @@ function on_log(text, ix) {
 		p.className = "h3"
 	}
 
-	if (log_box_fr) p.classList.add("group", "fr")
-	if (log_box_br) p.classList.add("group", "br")
-	if (log_box_both) p.classList.add("group", "both")
+	console.log ("ix: " + ix)
+	console.log ("  flavor: " + current_log_box_flavor(ix))
+	console.log ("  start: " + most_recent_log_box().start)
+	console.log ("  end:  " + most_recent_log_box().end)
+
+	switch (current_log_box_flavor(ix)) {
+		case "0":
+			p.classList.add("group", "fr")
+			break;
+		case "1":
+			p.classList.add("group", "br")
+			break;
+		case "2":
+			p.classList.add("group", "both")
+			break;
+	}
 
 	p.innerHTML = escape_text(text)
 	return p

@@ -986,13 +986,17 @@ function is_advantage_exhausted(a)
 	return !!(G.advantages_exhausted & (1 << a))
 }
 
-function exhaust_advantage(a)
+function exhaust_advantage(a, close_box, reason = "", silent = false)
 {
 	G.advantages_exhausted |= (1 << a)
+	if (!silent) {
+		let msg = "ADVANTAGE Used"
+		msg += "\n" + say_advantage(a, G.advantages[a])
 
-	log_br()
-	log("Advantage used: " + say_advantage(a, G.advantages[a]))
-	log_br()
+		log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+		if (reason !== "") log(reason)
+		if (close_box) log_box_end(LOG_BOX_ADVANTAGE)
+	}
 }
 
 function refresh_advantage(a)
@@ -1014,22 +1018,30 @@ function has_advantage_eligible(who, a, ignore_exhaustion = false)
 
 /* 8.0 - Advantages */
 function update_advantages(silent = false) {
-	for (var i = 0; i < NUM_ADVANTAGES; i++) {
-		var old = G.advantages[i]
-		if (has_advantage(FRANCE, i))
-			G.advantages[i] = FRANCE
-		else if (has_advantage(BRITAIN, i))
-			G.advantages[i] = BRITAIN
+	for (var a = 0; a < NUM_ADVANTAGES; a++) {
+		var old = G.advantages[a]
+		if (has_advantage(FRANCE, a))
+			G.advantages[a] = FRANCE
+		else if (has_advantage(BRITAIN, a))
+			G.advantages[a] = BRITAIN
 		else
-			G.advantages[i] = NONE
+			G.advantages[a] = NONE
 
-		if (old !== G.advantages[i]) {
-			G.advantages_newly_acquired |= (1 << i)
+		if (old !== G.advantages[a]) {
+			G.advantages_newly_acquired |= (1 << a)
 			if (!silent) {
-				if (G.advantages[i] !== NONE) {
-					log(data.flags[G.advantages[i]].name + " GAINS " + data.advantages[i].name + " Advantage")
+				if (G.advantages[a] !== NONE) {
+					let msg = "ADVANTAGE Gained"
+					msg += "\n" + say_advantage(a, G.advantages[a])
+					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+					//log(data.flags[G.advantages[a]].name + " GAINS " + data.advantages[a].name + " Advantage")
+					log_box_end(LOG_BOX_ADVANTAGE)
 				} else {
-					log(data.flags[old].name + " LOSES " + data.advantages[i].name + " Advantage")
+					let msg = "ADVANTAGE Lost"
+					msg += "\n" + say_advantage(a, G.advantages[a])
+					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+					log(data.flags[old].name + " loses Advantage")
+					log_box_end(LOG_BOX_ADVANTAGE)
 				}
 			}
 		}
@@ -1665,10 +1677,6 @@ P.advantage_is_required = script (`
 `)
 
 
-function use_advantage(who, a) {
-	exhaust_advantage(a)
-}
-
 
 P.confirm_use_advantage = {
 	_begin() {
@@ -1683,7 +1691,7 @@ P.confirm_use_advantage = {
 	},
 	use_advantage() {
 		push_undo()
-		use_advantage(R, G.advantage)
+		exhaust_advantage(G.advantage, true, G.advantage_required_because)
 		end()
 	},
 	dont_use_advantage() {
@@ -2909,9 +2917,9 @@ P.event_south_sea_speculation = {
 				button("done")
 			}
 		} else if (G.qualifies_for_bonus) {
-			V.prompt = event_prompt(R, G.played_event, "-2 military cost to construct squadron this round")
-			if (action_points_eligible(MIL, active_rules())) button("construct_squadron")
-			button("pass")
+			V.prompt = event_prompt(R, G.played_event, "-2 military cost to construct a squadron this action round (you may construct immediately or pass until later in the round)")
+			if (action_points_eligible(MIL, active_rules())) button("construct_squadron_now")
+			button("defer")
 		}
 	},
 	space(s) {
@@ -2924,7 +2932,7 @@ P.event_south_sea_speculation = {
 			end()
 		}
 	},
-	construct_squadron() {
+	construct_squadron_now() {
 		push_undo()
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
@@ -2947,7 +2955,7 @@ P.event_south_sea_speculation = {
 			}
 		}
 	},
-	pass() {
+	defer() {
 		push_undo()
 		end()
 	}
@@ -3097,7 +3105,6 @@ P.event_native_american_alliances = {
 		G.active_advantage = a
 		G.advantages_used_this_round++
 		G.advantage_already_exhausted = false
-		if (!is_advantage_exhausted(a)) exhaust_advantage(a)
 		goto ("advantage_flow")
 	},
 	pass() {
@@ -4350,21 +4357,30 @@ function handle_advantage_click(a)
 	G.active_advantage = a
 	G.advantages_used_this_round++
 	G.advantage_already_exhausted = is_advantage_exhausted(a)
-	if (!G.advantage_already_exhausted) exhaust_advantage(a)
 	call ("advantage_flow")
 }
 
 
 P.advantage_flow = script (`  
+	eval { 
+		if (!G.advantage_already_exhausted) {
+			exhaust_advantage(G.active_advantage, false) //NB: This also begins a log box with LOG_BOX_ADVANTAGE
+		} else {
+			log_box_begin(R, say_advantage(G.active_advantage, R), LOG_BOX_ADVANTAGE)
+		} 
+	}
+
 	if (data.advantages[G.active_advantage].proc !== undefined) {
-		goto (data.advantages[G.active_advantage].proc)
+		call (data.advantages[G.active_advantage].proc)
 	} 
 	
 	//if (!advantage_activatable_now(G.active_advantage)) {
-	//	goto advantage_not_activatable
+	//	call advantage_not_activatable
 	//}
 			
-	goto advantage_not_implemented
+	call advantage_not_implemented
+	
+	eval { log_box_end(LOG_BOX_ADVANTAGE) }
 `)
 
 
@@ -5744,10 +5760,8 @@ function handle_space_click(s, force_type = -1)
 		}
 	}
 
-	//TODO include weird "region restricted" action points if available
-	//TODO navies different behaviors
-
 	//TODO - ministries and stuff that might give discounts
+
 	G.needs_to_flip_ministry = -1
 	if ((G.action_type === DIPLO) && [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ].includes(s) && (G.flags[s] === NONE)) {
 		if (has_inactive_ministry(G.active, JONATHAN_SWIFT)) {
@@ -5772,9 +5786,6 @@ P.space_flow = script(`
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
     if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
     	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
-    	//if (!G.used_required_advantage) {
-    	//	eval { require_advantage(R, WHEAT, "To reduce action cost to 1", true) }
-    	//}
     	if (G.used_required_advantage) {
     		eval { G.action_cost = 1 }
     	}
