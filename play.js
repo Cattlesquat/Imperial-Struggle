@@ -882,43 +882,40 @@ function on_prompt(text) {
 	return escape_text(text)
 }
 
-//var log_box_fr = 0
-//var log_box_br = 0
-//var log_box_both = 0
 
 var log_box_history = []
 
-function most_recent_log_box() {
+function log_box_get_most_recent() {
 	if (log_box_history.length === 0) return { "start" : -1, "end" : -1, "flavor": -1 }
 	return log_box_history.slice(-1).pop()
 }
 
-function start_log_box(ix, flavor)
+function log_box_open(ix, flavor)
 {
 	log_box_history.push( { "start" : ix, "end": -1, "flavor" : flavor } ) // End at -1 means box is still open
 }
 
 
-function close_log_box(ix) {
+function log_box_close(ix) {
 	if (log_box_history.length > 0) {
 		log_box_history[log_box_history.length - 1].end = ix
 	}
 }
 
-function validate_log_box(ix) {
+function log_box_validate(ix) {
 	// Get rid of any boxes where we've regressed to-or-beyond the start of them
-	while (ix <= most_recent_log_box().start) {
+	while (ix <= log_box_get_most_recent().start) {
 		log_box_history.pop()
 	}
 
 	// If we've backed up past the *end* of a log box, remove its end marker
-	if (ix <= most_recent_log_box().end) {
+	if (ix <= log_box_get_most_recent().end) {
 		log_box_history[log_box_history.length - 1].end = -1
 	}
 }
 
-function current_log_box_flavor(ix) {
-	let current = most_recent_log_box()
+function log_box_get_current_flavor(ix) {
+	let current = log_box_get_most_recent()
 	if ((ix >= current.start) && ((ix <= current.end) || (current.end < 0))) {
 		return current.flavor
 	}
@@ -928,16 +925,16 @@ function current_log_box_flavor(ix) {
 function on_log(text, ix) {
 	var p = document.createElement("div")
 
-	validate_log_box(ix)
+	log_box_validate(ix)
 
 	switch (text[0]) {
 	case "{":
 		p.classList.add("header")
-		start_log_box(ix, text[1])
+		log_box_open(ix, text[1])
 		text = text.substring(2)
 		break
 	case "}":
-		close_log_box(ix)
+		log_box_close(ix)
 		text = text.substring(1)
 		break
 	case ">":
@@ -968,11 +965,11 @@ function on_log(text, ix) {
 	}
 
 	console.log ("ix: " + ix)
-	console.log ("  flavor: " + current_log_box_flavor(ix))
-	console.log ("  start: " + most_recent_log_box().start)
-	console.log ("  end:  " + most_recent_log_box().end)
+	console.log ("  flavor: " + log_box_get_current_flavor(ix))
+	console.log ("  start: " + log_box_get_most_recent().start)
+	console.log ("  end:  " + log_box_get_most_recent().end)
 
-	switch (current_log_box_flavor(ix)) {
+	switch (log_box_get_current_flavor(ix)) {
 		case "0":
 			p.classList.add("group", "fr")
 			break;
