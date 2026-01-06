@@ -6577,12 +6577,11 @@ function log(s) {
 }
 
 
-const LOG_BOX_MISC 		= 1
-const LOG_BOX_MINISTRY	= 2
-const LOG_BOX_EVENT		= 3
+const LOG_BOX_MINISTRY	= 1
+const LOG_BOX_EVENT	= 2
+const LOG_BOX_ADVANTAGE= 3
 
-
-function log_box_begin(who, header, type = LOG_BOX_MISC) {
+function log_box_begin(who, header, type = LOG_BOX_MINISTRY) {
 	if (!G.log_box) {
 		G.log_box = []
 	}
