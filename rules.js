@@ -760,7 +760,7 @@ function on_setup(scenario, options) {
 	G.action_header = ""
 
 	// Internal for tracking if a log box is going
-	G.log_box = 0
+	G.log_box = null
 
 	call("main")
 }
@@ -944,7 +944,7 @@ function add_treaty_points(who, amount)
 {
 	G.treaty_points[who] += amount
 	if (amount > 0) {
-		log (data.flags[who].name + " gains " + amount + " Treaty Point" + ((amount !== 1) ? "s" : "") + ".")
+		log (data.flags[who].name + " gains " + amount + " Treaty Point" + s(amount) + ".")
 	}
 }
 
@@ -2270,7 +2270,7 @@ function active_rules() {
 function add_contingent(type, amount, rule) {
 	let contingent = { "type": type, "amount": amount, "rule": rule }
 	G.action_points_contingent.push(contingent)
-	log ("+" + amount + " " + data.action_points[type].name + " action point" + ((amount !== 1) ? "s" : "") + " (" + rule +")")
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")")
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
@@ -2341,7 +2341,7 @@ function add_action_points(type, amount)
 	G.action_points_major[type] += amount
 	G.action_points_eligible[type] = true
 	G.action_points_eligible_major[type] = true
-	log ("+" + amount + " " + data.action_points[type].name + " action point" + ((amount !== 1) ? "s" : ""))
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount))
 }
 
 
@@ -2830,7 +2830,7 @@ P.event_tropical_diseases = {
 		}
 		let gauge = ((any_enemy || (L.enemy_done >= L.enemy_to_do)) ? L.enemy_done + "/" + L.enemy_to_do : "DONE")
 		let gauge2 = ((any_friendly || (L.friendly_done > 0)) ? L.friendly_done + "/1" : "DONE")
-		V.prompt = event_prompt(R, G.played_event, "Remove " + L.enemy_to_do + " enemy flag" + ((L.enemy_to_do !== 1) ? "s" : "") + " from " + ((L.enemy_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge), "remove 1 friendly flag from a market in the Caribbean " + parens(gauge2), true)
+		V.prompt = event_prompt(R, G.played_event, "Remove " + L.enemy_to_do + " enemy flag" + s(L.enemy_to_do) + " from " + ((L.enemy_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge), "remove 1 friendly flag from a market in the Caribbean " + parens(gauge2), true)
 
 		if (!any_enemy || (L.enemy_done >= L.enemy_to_do)) {
 			if (!any_friendly || (L.friendly_done > 0)) {
@@ -3265,7 +3265,7 @@ P.event_tax_reform = {
 		} else if (L.economic_points === 0) {
 			msg = "Confirm debt reduction of " + L.reduction_amount
 		} else {
-			msg = "Confirm debt reduction of " + L.reduction_amount + " and +" + L.economic_points + " Economic action point" + ((L.economic_action_points !== 1) ? "s" : "")
+			msg = "Confirm debt reduction of " + L.reduction_amount + " and +" + L.economic_points + " Economic action point" + s(L.economic_points)
 		}
 		V.prompt = event_prompt(R, G.played_event, msg)
 		button ("confirm")
@@ -3748,7 +3748,7 @@ P.event_famine_in_ireland = {
 					msg = "Confirm drawing only ONE bonus war tile even though you have TWO spaces in Ireland, as you have room for only one more on the war mat (CANNOT BE UNDONE!)"
 					button("confirm")
 				} else {
-					msg = "Confirm draw of " + L.tiles_to_draw + " bonus war tile" + ((L.tiles_to_draw !== 1) ? "s" : "") + " to Jacobite Rebellion theater (CANNOT BE UNDONE!)"
+					msg = "Confirm draw of " + L.tiles_to_draw + " bonus war tile" + s(L.tiles_to_draw) + " to Jacobite Rebellion theater (CANNOT BE UNDONE!)"
 					button("confirm")
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
@@ -3793,7 +3793,7 @@ P.event_famine_in_ireland = {
 		clear_undo()
 		let oops = (L.tiles_to_draw === 2) && ((L.already >= (data.wars[G.next_war].theaters * 2) - 1))
 		if (oops) L.tiles_to_draw = 1
-		let msg = "France draws " + L.tiles_to_draw + " bonus war tile" + ((L.tiles_to_draw !== 1) ? "s" : "") + " to Jacobite Rebellion theater"
+		let msg = "France draws " + L.tiles_to_draw + " bonus war tile" + s(L.tiles_to_draw) + " to Jacobite Rebellion theater"
 		if (oops) msg += " (theaters only had room for 1 more tile)"
 		msg += "."
 		log (msg)
@@ -5619,7 +5619,17 @@ function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
-		if (!silent) log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+		//if (!silent) log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
+		if (!silent) {
+			let msg = data.spaces[s].name + " "
+			if (who === NONE) {
+				msg += "unflagged"
+			} else {
+				msg += "flagged " + data.flags[G.flags[s]].adj
+			}
+			msg += "."
+			log(bold(msg))
+		}
 	}
 
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
@@ -5887,13 +5897,18 @@ P.decide_how_and_whether_to_spend_action_points = script(`
 `)
 
 
+// Returns an "s" if the amount is anything but 1; returns "" if amount is one
+function s(amount) {
+	if (amount !== 1) return "s"
+	return ""
+}
 
 function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
 	G.paid_action_cost = true
 
-	let msg = data.flags[G.active].name + " spends " + G.action_cost + " " + data.action_points[G.action_type].name + " action points."
+	let msg = G.action_cost + " " + data.action_points[G.action_type].name + " action point" + s(G.action_cost) + " spent."
 	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.action_points_minor[G.action_type] > 0) {
 		if (G.action_minor) {
 			msg += " (Minor action)"
@@ -6568,18 +6583,19 @@ const LOG_BOX_EVENT		= 3
 
 
 function log_box_begin(who, header, type = LOG_BOX_MISC) {
-	if (G.log_box) {
-		console.error("Started new log box when one is already active. Old: " + G.log_box + " New: " + type)
-		log ("}") // Terminate the old one
+	if (!G.log_box) {
+		G.log_box = []
 	}
+	G.log_box.push({ "type": type, "who": who })
 	log("{" + who + header)
-	G.log_box = type
 }
 
 function log_box_end(type = 0) {
-	if ((type !== 0) && (G.log_box !== type)) return // If we were asked to *only* cancel log box if we're currently inside a particular type
-	if (G.log_box) log("}")
-	G.log_box = 0
+	if (!G.log_box) return
+	if ((type !== 0) && (G.log_box.slice(-1)[0].type !== type)) return // If we were asked to *only* cancel log box if we're currently inside a particular type
+	log ("}")
+	G.log_box.pop()
+	if (G.log_box.length <= 0) G.log_box = null // Null is falsey
 }
 
 
