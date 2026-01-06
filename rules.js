@@ -2482,15 +2482,20 @@ function handle_event_card_click(c) {
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
-	log("\nEvent played: " + say_event(c, R))
 	G.played_events.push(c)
 	array_delete_item(G.hand[R], c)
 
+	let msg = ""
 	if (G.qualifies_for_bonus) {
-		log ("BONUS unlocked")
+		msg += "EVENT (with Bonus)"
 	} else if (G.card_has_bonus) {
-		log ("No bonus received")
+		msg += "EVENT (no Bonus)"
+	} else {
+		msg += "EVENT"
 	}
+	msg += "\n" + say_event(c, R, true)
+
+	log_box_begin(R, msg, LOG_BOX_EVENT)
 }
 
 
@@ -2498,6 +2503,7 @@ function end_event_play(c)
 {
 	advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS)
 	G.action_header = ""
+	log_box_end(LOG_BOX_EVENT)
 }
 
 
