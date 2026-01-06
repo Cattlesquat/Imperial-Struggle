@@ -3502,8 +3502,7 @@ P.event_calico_acts = {
 			let msg = data.flags[G.active].adj + " player moves British squadron from " + data.spaces[s].name + " to Navy Box."
 			log (msg)
 
-			msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
-			log (italic(msg))
+			log (say_navy_box())
 
 			end()
 		}
@@ -3620,8 +3619,7 @@ P.do_military_spending_overruns = {
 			let msg = data.flags[G.active].adj + " player removes squadron from " + data.spaces[s].name + " to Navy Box."
 			log (msg)
 
-			msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
-			log (italic(msg))
+			log (say_navy_box())
 		}
 	},
 	bonus_war(t) {
@@ -3924,6 +3922,11 @@ function ministry_useful_this_phase(m, subphase)
 
 			return true
 	}
+}
+
+
+function say_navy_box() {
+	return italic("Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")")
 }
 
 
@@ -4431,8 +4434,7 @@ P.advantage_naval_bastion = {
 
 		log (bold(data.flags[1-R].adj + " squadron returned to Navy Box."))
 
-		let msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
-		log (italic(msg))
+		log (say_navy_box())
 
 		end()
 	}
@@ -5602,8 +5604,7 @@ function execute_naval_move()
 	log (msg)
 
 	if (G.navy_from_navy_box || G.navy_displace) {
-		msg = "Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")"
-		log (italic(msg))
+		log (say_navy_box())
 	}
 }
 
