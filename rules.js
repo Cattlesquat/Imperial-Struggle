@@ -1997,10 +1997,30 @@ function demand_flag_delta(demand) {
 }
 
 
+P.scoring_review = {
+	_begin() {
+		G.active = [ FRANCE, BRITAIN ]
+	},
+	prompt() {
+		let msg = say_action_header("SCORING PHASE: ")
+		msg += say_action(G.scoring_review)
+		V.prompt = msg
+		button("done")
+	},
+	done() {
+		set_delete(G.active, R)
+		if (G.active.length === 0) {
+			end()
+		}
+	}
+}
+
 /* 4.1.12 - SCORING PHASE */
 
 P.scoring_phase = function () {
 	log("=Scoring Phase")
+
+	G.won_all_scorings = -1
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
@@ -2022,7 +2042,16 @@ P.scoring_phase = function () {
 			award_vp(winner, vp)
 			add_treaty_points(winner, trp)
 
+			// Tracking if anybody won ALL the scorings
+			if (G.won_all_scorings < 0) {
+				G.won_all_scorings = winner
+			} else if (winner !== G.won_all_scorings) {
+				G.won_all_scorings = NONE
+			}
+
 			//TODO announce winner & amounts
+		} else {
+			G.won_all_scorings = NONE
 		}
 
 		// Prestige awards are sort notionally done alongside the Europe award
@@ -2030,9 +2059,21 @@ P.scoring_phase = function () {
 			winner = prestige_winner()
 			if (winner !== NONE) {
 				award_vp(winner, 2)
+
+				// Tracking if anybody won ALL the scorings
+				if (G.won_all_scorings < 0) {
+					G.won_all_scorings = winner
+				} else if (winner !== G.won_all_scorings) {
+					G.won_all_scorings = NONE
+				}
+			} else {
+				G.won_all_scorings = NONE
 			}
 			//TODO announce winner & amounts
 		}
+
+		G.scoring_review = "Review regional scoring for " + data.regions[region].name
+		call ("scoring_review")
 	}
 
 	for (const d of G.global_demand) {
@@ -2050,8 +2091,16 @@ P.scoring_phase = function () {
 				increase_debt(winner, debt)
 			}
 			// TODO - announce winner and amounts
-		}
 
+			// Tracking if anybody won ALL the scorings
+			if (G.won_all_scorings < 0) {
+				G.won_all_scorings = winner
+			} else if (winner !== G.won_all_scorings) {
+				G.won_all_scorings = NONE
+			}
+		} else {
+			G.won_all_scorings = NONE
+		}
 	}
 
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
@@ -2066,13 +2115,21 @@ P.scoring_phase = function () {
 		award_vp(BRITAIN, vp)
 	}
 
-	end()
+	G.scoring_review = "Review global demand scoring"
+	goto ("scoring_review")
 }
 
 /* 4.1.13 - VICTORY CHECK PHASE */
 
 P.victory_check_phase = function () {
-	// TODO
+	if (G.won_all_scorings !== NONE) {
+		log (data.flags[G.won_all_scorings].name + " wins the game! (Won all regional and demand scorings)")
+	} else if (G.vp <= 0) {
+		log ("Britain wins the game! (VP 0 or fewer)")
+	} else if (G.vp >= 30) {
+		log ("France wins the game! (VP 30 or greater)")
+	}
+	// TODO - actually end the game
 	end()
 }
 
