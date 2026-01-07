@@ -883,66 +883,21 @@ function on_prompt(text) {
 }
 
 
-// Keeps a history of which log lines belong in which types of boxes,
-// so that we can accurately roll back unlimited numbers of moves without
-// disrupting the log color scheme
-var log_box_history = []
-
-function log_box_get_most_recent() {
-	if (log_box_history.length === 0) return { "start" : -1, "end" : -1, "flavor": -1 }
-	return log_box_history.slice(-1).pop()
-}
-
-function log_box_open(ix, flavor)
-{
-	log_box_history.push( { "start" : ix, "end": -1, "flavor" : flavor } ) // End at -1 means box is still open
-}
-
-
-function log_box_close(ix) {
-	if (log_box_history.length > 0) {
-		log_box_history[log_box_history.length - 1].end = ix
-	}
-}
-
-function log_box_validate(ix) {
-	// Get rid of any boxes where we've regressed to-or-beyond the start of them
-	while (ix <= log_box_get_most_recent().start) {
-		log_box_history.pop()
-	}
-
-	// If we've backed up past the *end* of a log box, remove its end marker
-	if (ix <= log_box_get_most_recent().end) {
-		log_box_history[log_box_history.length - 1].end = -1
-	}
-}
-
-// Returns an array of the flavors of log boxes which are currently active. If only a single box is
-// active, returns a one element array. Nested boxes are indicated by multiple array elements. The *first*
-// item in the array is the *inner* element.
-function log_box_get_current_flavors(ix) {
-	let current = []
-	for (let l = log_box_history.length - 1; l >= 0; l--) {
-		if ((ix >= current.start) && ((ix <= current.end) || (current.end < 0))) {
-			current.push(log_box_history[l].flavor)
-		}
-	}
-	return current
-}
+const log_box_keywords = [ "fr", "br", "both" ]
 
 function on_log(text, ix) {
 	var p = document.createElement("div")
 
-	log_box_validate(ix)
+	update_log_boxes(ix)
 
 	switch (text[0]) {
 	case "{":
 		p.classList.add("header")
-		log_box_open(ix, text[1])
+		open_log_box(ix, log_box_keywords[text[1]])
 		text = text.substring(2)
 		break
 	case "}":
-		log_box_close(ix)
+		close_log_box(ix)
 		text = text.substring(1)
 		break
 	case ">":
@@ -972,20 +927,7 @@ function on_log(text, ix) {
 		p.className = "h3"
 	}
 
-	let flavors = log_box_get_current_flavors(ix)
-	if (flavors.length > 0) {
-		switch (flavors[0]) { // First element is the "inner" box color (or the *only* box color, of course). If flavors[1] exists (i.e. flavors.length >= 2) then it holds the "outer" box color.
-			case "0":
-				p.classList.add("group", "fr")
-				break;
-			case "1":
-				p.classList.add("group", "br")
-				break;
-			case "2":
-				p.classList.add("group", "both")
-				break;
-		}
-	}
+	apply_log_boxes(ix, p, "group")
 
 	p.innerHTML = escape_text(text)
 	return p

@@ -82,6 +82,7 @@ const world = {
 	animate_list: [],
 	keyword_list: [],
 	text_list: [],
+	log_boxes: [],
 	focus: null,
 	mouse_focus: false,
 	last_focus: null,
@@ -825,7 +826,7 @@ function _animate_position(thing, inv_scale, max_duration) {
 
 function begin_update() {
 	G = V = view
-	R = roles[player].index
+	R = roles[player]?.index ?? -1
 
 	// reset unused element cache
 	for (var key in world.generic_used) {
@@ -1099,6 +1100,15 @@ function escape_tip_light(text, re, log_className, action, names) {
 	)
 }
 
+function escape_tip_class(text, re, log_className, tip_classNames, names) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_class('${tip_classNames[x]}')"
+		onmouseleave="_tip_blur_class()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
 function escape_tip_class_sub(text, re, log_className, tip_className, names) {
 	return text.replace(re, (m,x) => `<span
 		class="${log_className}"
@@ -1115,6 +1125,43 @@ function escape_tip_clone(text, re, log_className, action, names) {
 		onmouseleave="_tip_blur_clone()"
 		>${escape_typography(names[x])}</span>`
 	)
+}
+
+/* GROUPED BOXES IN LOG */
+
+function update_log_boxes(ix) {
+	// forget open/close markers when log is undone
+	for (var box of world.log_boxes) {
+		if (ix <= box.open)
+			box.open = -1
+		if (ix <= box.close)
+			box.close = -1
+	}
+	// remove boxes that are popped out of existence
+	world.log_boxes = world.log_boxes.filter(box => box.open >= 0 || box.close >= 0)
+}
+
+function open_log_box(ix, keyword) {
+	world.log_boxes.push({ open: ix, close: -1, keyword })
+}
+
+function close_log_box(ix) {
+	if (world.log_boxes.length > 0)
+		world.log_boxes[world.log_boxes.length-1].close = ix
+}
+
+function apply_log_boxes(ix, div, common) {
+	var result = []
+	for (var box of world.log_boxes) {
+		// add to class if box is open and not yet closed!
+		if (ix >= box.open && (ix < box.close || box.close < 0))
+			result.push(box.keyword)
+	}
+	if (result.length > 0) {
+		console.log("log-boxes", common, result)
+		div.classList.add(common)
+		div.classList.add(result.join("-"))
+	}
 }
 
 /* PREFERENCES (WIP) */
