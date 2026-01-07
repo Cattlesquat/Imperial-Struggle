@@ -883,6 +883,9 @@ function on_prompt(text) {
 }
 
 
+// Keeps a history of which log lines belong in which types of boxes,
+// so that we can accurately roll back unlimited numbers of moves without
+// disrupting the log color scheme
 var log_box_history = []
 
 function log_box_get_most_recent() {
@@ -914,6 +917,9 @@ function log_box_validate(ix) {
 	}
 }
 
+// Returns an array of the flavors of log boxes which are currently active. If only a single box is
+// active, returns a one element array. Nested boxes are indicated by multiple array elements. The *first*
+// item in the array is the *inner* element.
 function log_box_get_current_flavors(ix) {
 	let current = []
 	for (let l = log_box_history.length - 1; l >= 0; l--) {
@@ -968,7 +974,7 @@ function on_log(text, ix) {
 
 	let flavors = log_box_get_current_flavors(ix)
 	if (flavors.length > 0) {
-		switch (flavors[flavors.length - 1]) {
+		switch (flavors[0]) {
 			case "0":
 				p.classList.add("group", "fr")
 				break;
