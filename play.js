@@ -914,12 +914,14 @@ function log_box_validate(ix) {
 	}
 }
 
-function log_box_get_current_flavor(ix) {
-	let current = log_box_get_most_recent()
-	if ((ix >= current.start) && ((ix <= current.end) || (current.end < 0))) {
-		return current.flavor
+function log_box_get_current_flavors(ix) {
+	let current = []
+	for (let l = log_box_history.length - 1; l >= 0; l--) {
+		if ((ix >= current.start) && ((ix <= current.end) || (current.end < 0))) {
+			current.push(log_box_history[l].flavor)
+		}
 	}
-	return -1
+	return current
 }
 
 function on_log(text, ix) {
@@ -964,21 +966,19 @@ function on_log(text, ix) {
 		p.className = "h3"
 	}
 
-	console.log ("ix: " + ix)
-	console.log ("  flavor: " + log_box_get_current_flavor(ix))
-	console.log ("  start: " + log_box_get_most_recent().start)
-	console.log ("  end:  " + log_box_get_most_recent().end)
-
-	switch (log_box_get_current_flavor(ix)) {
-		case "0":
-			p.classList.add("group", "fr")
-			break;
-		case "1":
-			p.classList.add("group", "br")
-			break;
-		case "2":
-			p.classList.add("group", "both")
-			break;
+	let flavors = log_box_get_current_flavors(ix)
+	if (flavors.length > 0) {
+		switch (flavors[flavors.length - 1]) {
+			case "0":
+				p.classList.add("group", "fr")
+				break;
+			case "1":
+				p.classList.add("group", "br")
+				break;
+			case "2":
+				p.classList.add("group", "both")
+				break;
+		}
 	}
 
 	p.innerHTML = escape_text(text)
