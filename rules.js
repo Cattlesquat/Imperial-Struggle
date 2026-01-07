@@ -4372,13 +4372,14 @@ P.advantage_flow = script (`
 
 	if (data.advantages[G.active_advantage].proc !== undefined) {
 		call (data.advantages[G.active_advantage].proc)
-	} 
-	
-	//if (!advantage_activatable_now(G.active_advantage)) {
-	//	call advantage_not_activatable
-	//}
-			
-	call advantage_not_implemented
+	} else {
+		
+		//if (!advantage_activatable_now(G.active_advantage)) {
+		//	call advantage_not_activatable
+		//}
+				
+		call advantage_not_implemented
+	}
 	
 	eval { log_box_end(LOG_BOX_ADVANTAGE) }
 `)
