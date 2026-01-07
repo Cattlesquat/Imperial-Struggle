@@ -974,7 +974,7 @@ function on_log(text, ix) {
 
 	let flavors = log_box_get_current_flavors(ix)
 	if (flavors.length > 0) {
-		switch (flavors[0]) {
+		switch (flavors[0]) { // First element is the "inner" box color (or the *only* box color, of course). If flavors[1] exists (i.e. flavors.length >= 2) then it holds the "outer" box color.
 			case "0":
 				p.classList.add("group", "fr")
 				break;
