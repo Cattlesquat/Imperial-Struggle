@@ -4187,10 +4187,11 @@ P.confirm_reveal_ministry = {
 		if (!G.ministry_revealed[R][G.ministry_index]) {
 			V.prompt = say_action_header() + say_action("Reveal " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card?")
 			action("reveal_ministry")
+			if (G.ministry_optional) action("dont_reveal_ministry")
 		} else {
 			V.prompt = say_action_header() + say_action("Exhaust " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card Ability?")
 			action ("exhaust_ministry")
-
+			if (G.ministry_optional) action("dont_exhaust_ministry")
 		}
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
 
@@ -4199,8 +4200,6 @@ P.confirm_reveal_ministry = {
 		}
 
 		V.prompt += say_action_points()
-		if (G.ministry_optional) action("dont_exhaust_ministry")
-
 	},
 	reveal_ministry() {
 		push_undo()
