@@ -928,7 +928,7 @@ function reduce_debt(who, amount)
 	amount = Math.min(amount, G.debt[who])
 	if (amount > 0) {
 		G.debt[who] -= amount
-		log(data.flags[who].adj + " Debt reduced by " + amount)
+		log(data.flags[who].adj + " Debt reduced by " + amount + " -- more spending available.")
 	}
 }
 
@@ -940,7 +940,7 @@ function increase_debt(who, amount) {
 	}
 	if (amount > 0) {
 		G.debt[who] += amount
-		log (data.flags[who].adj + " Debt increased by " + amount + ". (Available: " + available_debt(who) + ")")
+		log (data.flags[who].adj + " Debt increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
 		award_vp(who, -penalty, false, "Debit Limit overrun")
@@ -959,11 +959,9 @@ function add_treaty_points(who, amount)
 
 function award_vp(who, amount, silent = false, reason = null)
 {
-	if (who === BRITAIN) {
-		amount = 0 - amount
-	}
+	let true_delta = (who === FRANCE) ? amount : 0 - amount
 
-	G.vp += amount
+	G.vp += true_delta
 
 	if (!silent) {
 		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + amount + " VP"
@@ -1973,7 +1971,7 @@ P.resolve_remaining_powers = function () {
 				announced = true
 				log("=Resolve Remaining Powers Phase")
 			}
-			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces French debt by " + debt_reduction))
+			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces French debt by " + debt_reduction + "."))
 		}
 	}
 
@@ -2034,6 +2032,7 @@ P.scoring_review = {
 		} else {
 			msg += say_action("Review additional bonus scoring")
 		}
+		msg += "."
 
 		V.prompt = msg
 		button("done")
@@ -2090,11 +2089,12 @@ P.scoring_phase = function () {
 		//TODO - probably go region by region with both players confirming the results from each region and demand
 
 		if (winner !== NONE) {
+			log_box_begin(winner, "Scoring: " + data.regions[region].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + region_flag_delta(region))
 			let vp = data.awards[award].vp
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
 				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1")
+					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1.")
 					vp++
 				}
 			}
@@ -2108,16 +2108,19 @@ P.scoring_phase = function () {
 			} else if (winner !== G.won_all_scorings) {
 				G.won_all_scorings = NONE
 			}
-
-			//TODO announce winner & amounts
 		} else {
+			log_box_begin(NONE, "Scoring: " + data.regions[region].name.toUpperCase() + "\n" +
+				(!region_flag_delta(region) ? "TIE! No score." : "NO WINNER: " + data.flags[region_flag_winner(region)].name + " +" + region_flag_delta(region) + " Insufficient."))
 			G.won_all_scorings = NONE
 		}
+		log_box_end()
 
 		// Prestige awards are sort notionally done alongside the Europe award
 		if (region === REGION_EUROPE) {
 			winner = prestige_winner()
 			if (winner !== NONE) {
+				log_box_begin(winner, "Scoring: PRESTIGE" + "\n" + data.flags[winner].name + " +" + prestige_flag_delta(region))
+
 				award_vp(winner, 2)
 
 				// Tracking if anybody won ALL the scorings
@@ -2127,20 +2130,20 @@ P.scoring_phase = function () {
 					G.won_all_scorings = NONE
 				}
 			} else {
+				log_box_begin(NONE, "Scoring: PRESTIGE " + "\n" + "TIE! No score.")
 				G.won_all_scorings = NONE
 			}
-			//TODO announce winner & amounts
+			log_box_end()
 		}
 
-		G.scoring_region_indices.push(G.log.length - 1)
-
-		//G.scoring_review = "Review regional scoring for " + data.regions[region].name
-		//call ("scoring_review")
+		G.scoring_region_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
+		//TODO bookmark VP/debt/TRP levels
 	}
 
 	for (const d of G.global_demand) {
 		let winner = demand_flag_winner(d)
 		if (winner !== NONE) {
+			log_box_begin(winner, "Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d))
 			let vp = data.demands[d].awards[current_era()].vp
 			let trp = data.demands[d].awards[current_era()].trp
 			let debt = data.demands[d].awards[current_era()].debt
@@ -2152,7 +2155,6 @@ P.scoring_phase = function () {
 			} else if (debt > 0) {
 				increase_debt(winner, debt)
 			}
-			// TODO - announce winner and amounts
 
 			// Tracking if anybody won ALL the scorings
 			if (G.won_all_scorings < 0) {
@@ -2161,10 +2163,13 @@ P.scoring_phase = function () {
 				G.won_all_scorings = NONE
 			}
 		} else {
+			log_box_begin(winner, "Scoring: " + data.demands[d].name.toUpperCase() + "\n" + "TIE! No score.")
 			G.won_all_scorings = NONE
 		}
+		log_box_end()
 
-		G.scoring_demand_indices.push(G.log.length - 1)
+		G.scoring_demand_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
+		//TODO bookmark VP/debt/TRP levels
 	}
 
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
@@ -2179,13 +2184,10 @@ P.scoring_phase = function () {
 		award_vp(BRITAIN, vp)
 	}
 
-	G.scoring_extra_index = G.log.length - 1
+	G.scoring_extra_index = G.log.length - 1 // Bookmark in log how much to display when reviewing bonus scoring (NB: in this case just to know IF we have a bonus step with any content since the last bookmark)
 	G.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
 
 	goto ("scoring_review")
-
-	//G.scoring_review = "Review global demand scoring"
-	//goto ("scoring_review")
 }
 
 /* 4.1.13 - VICTORY CHECK PHASE */
@@ -6783,11 +6785,13 @@ function log(s) {
 const LOG_BOX_MINISTRY	= 1
 const LOG_BOX_EVENT	= 2
 const LOG_BOX_ADVANTAGE= 3
+const LOG_BOX_MISC     = 4		// Used in other situations -- scoring, wars, etc.
 
-function log_box_begin(who, header, type = LOG_BOX_MINISTRY) {
+function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	if (!G.log_box) {
 		G.log_box = []
 	}
+	if (who > BRITAIN) who = 2 // Turns e.g. NONE into "both"
 	G.log_box.push({ "type": type, "who": who })
 	log("{" + who + header)
 }
