@@ -1875,7 +1875,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
-	console.log ("START ACTION PHASE")
+	//console.log ("START ACTION PHASE")
 }
 
 /* 4.1.9 - ACTION PHASE */
@@ -1892,7 +1892,6 @@ P.action_phase = script (`
 		call action_round
 		set G.active (1-G.active)
 	}
-	eval { console.log ("DONE ACTION PHASE") }
 `)
 
 function tell_first_player_choice()
@@ -2064,10 +2063,8 @@ P.scoring_review = {
 		}
 
 		if (done) {
-			console.log ("DONE SCORING REVIEW, PLAYER " + R)
 			set_delete(G.active, R)
 			if (G.active.length === 0) {
-				console.log ("SCORING REVIEW ENDS")
 				G.log_hide_after = [-1, -1] // Stop hiding any part of the log
 				end()
 			}
@@ -2078,7 +2075,6 @@ P.scoring_review = {
 /* 4.1.12 - SCORING PHASE */
 
 P.scoring_phase = function () {
-	console.log ("SCORING PHASE")
 	log("=Scoring Phase")
 
 	G.won_all_scorings = -1
@@ -2136,7 +2132,6 @@ P.scoring_phase = function () {
 			//TODO announce winner & amounts
 		}
 
-		log ("LAST LINE OF REGION: " + region)
 		G.scoring_region_indices.push(G.log.length - 1)
 
 		//G.scoring_review = "Review regional scoring for " + data.regions[region].name
@@ -2169,7 +2164,6 @@ P.scoring_phase = function () {
 			G.won_all_scorings = NONE
 		}
 
-		log ("LAST LINE OF DEMAND: " + d)
 		G.scoring_demand_indices.push(G.log.length - 1)
 	}
 
@@ -2186,23 +2180,7 @@ P.scoring_phase = function () {
 	}
 
 	G.scoring_extra_index = G.log.length - 1
-	G.log_hide_after = []
-	G.log_hide_after[FRANCE] = G.scoring_region_indices[0]
-	G.log_hide_after[BRITAIN] = G.scoring_region_indices[0]
-
-	for (let i = 0; i < G.scoring_region_indices.length; i++) {
-		console.log ("Region " + i + ": " + G.scoring_region_indices[i])
-	}
-
-	console.log (G.log_hide_after[FRANCE])
-	console.log (G.log_hide_after[BRITAIN])
-	console.log (G.log.length)
-
-	//console.log ("HIDE AFTER: " + G.log_hide_after[FRANCE] + "," + G.log_hide_after[BRITAIN] + "   (max: " + G.log.length - 1 + ")")
-
-	//G.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
-
-	console.log ("PROCEED TO SCORING REVIEW")
+	G.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
 
 	goto ("scoring_review")
 
@@ -2213,7 +2191,6 @@ P.scoring_phase = function () {
 /* 4.1.13 - VICTORY CHECK PHASE */
 
 P.victory_check_phase = function () {
-	console.log ("VICTORY CHECK PHASE")
 	log ("=Victory Check Phase")
 	if ((G.won_all_scorings !== NONE) && (G.won_all_scorings >= 0)) {
 		let msg = bold(data.flags[G.won_all_scorings].name + " wins the game by winning all regional and demand scorings!")
@@ -6579,7 +6556,6 @@ P.end_of_action_round = {
 /* 7.0 WAR TURNS */
 
 P.war_turn = script (`
-	eval { console.log ("WAR TURN") }
 	call war_resolution_phase
 	call war_victory_check_phase
 	call war_reset_phase
@@ -6618,8 +6594,6 @@ P.war_theater_review = {
 /* 7.1 - WAR RESOLUTION PHASE */
 
 P.war_resolution_phase = function() {
-	console.log ("War Resolution Phase")
-
 	log ("#" + data.wars[G.next_war].name + "\n" + data.turns[G.turn].dates)
 	log ("=War Resolution Phase")
 	goto ("war_theater_review")
@@ -6634,7 +6608,6 @@ P.war_resolution_phase = function() {
 /* 7.4 - WAR RESOLUTION PHASE */
 
 P.war_victory_check_phase = function() {
-	console.log ("War Victory Check Phase")
 	log ("=War Victory Check Phase")
 	//TODO If one player won all theaters by maximum level, they immediately win the game
 	end()

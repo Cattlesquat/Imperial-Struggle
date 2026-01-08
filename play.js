@@ -595,6 +595,11 @@ function update_debt_display()
 	}
 }
 
+function scroll_log_to_end() {
+	let div = document.getElementById("log")
+	div.scrollTop = div.scrollHeight
+}
+
 
 function on_update() {
 	var i, r, s, a
@@ -786,30 +791,24 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
-	console.log ("on_update()")
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
-		console.log ("  HIDING after " + V.log_hide_after[R])
 		log_partially_hidden = true
-		console.log ("    Log Length: " + V.log_length)
 		for (let ix = 0; ix < V.log_length; ix++) {
-			console.log (ix)
-			let logline = document.getElementById(ix)
-			console.log (logline)
-			if (logline) {
-				if (ix > V.log_hide_after[R]) console.log ("    HID " + ix)
-				logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
-			}
+			//let logline = document.getElementById(ix)
+			let logline = world.log.children[ix]
+			if (logline) logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
 		}
+
+		scroll_log_to_end()
 	} else if (log_partially_hidden) { // We don't have to unhide everything every time -- only if we know some part of it was hidden before
-		console.log ("  REVEALING all")
 
 		log_partially_hidden = false
 		for (let ix = 0; ix < V.log_length; ix++) {
 			let logline = document.getElementById(ix)
 			if (logline) logline.style.display = "block"
 		}
-	} else {
-		console.log ("  NO ACTION")
+
+		scroll_log_to_end()
 	}
 
 	end_update()
@@ -962,8 +961,7 @@ function on_log(text, ix) {
 
 	apply_log_boxes(ix, p, "group")
 
-	console.log ("Set id attribute: " + ix)
-	p.setAttribute("id", ix) // So we can find it later
+	//p.setAttribute("id", ix) // So we can find it later
 	p.innerHTML = escape_text(text)
 	return p
 }
