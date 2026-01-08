@@ -456,7 +456,7 @@ function on_setup(scenario, options) {
 	// G.ministry[FRANCE][0] contains an index into data.ministries[]
 	G.ministry = [[], []]
 
-	// Global VP count (tug-of-war)
+	// Global VP count (tug-of-war). Notionally 0 to 30 but values above and below that range are explicitly legal.
 	G.vp = 15
 
 	// Current turn. CAUTION: index does *not* match turn "number" because of war turns. Use the constants provided.
@@ -776,13 +776,13 @@ function on_view() {
 	V.active = G.active
 
 	V.turn = G.turn
-	V.vp = G.vp
+	V.vp = G.temp_vp ?? G.vp
 	V.initiative = G.initiative
 
 	// Player debts/TRPs always visible
-	V.debt = G.debt
+	V.debt = G.temp_debt ?? G.debt
 	V.debt_limit = G.debt_limit
-	V.treaty_points = G.treaty_points
+	V.treaty_points = G.temp_trp ?? G.treaty_points
 
 	// Discard pile and played event pile are both public. Shuffled event deck is not.
 	V.discard_pile = G.discard_pile
@@ -2013,7 +2013,35 @@ function demand_flag_delta(demand) {
 }
 
 
-// Idea is to for each player to review the scoring step by step (region by region, demand by demand). Each player clicks
+// Causes the VP/TRP/Debt markers to be shown in adjusted positions (from mid-points in scoring phase)
+function adjust_scoring_view_region() {
+	// Show VP markers temporarily at intermediate positions (during scoring phase)
+	G.temp_vp   = G.scoring_region_vp[L.region_ticker[R]]
+
+	// Show TRP markers temporarily at intermediate positions (during scoring phase)
+	G.temp_trp  = G.scoring_region_trp[L.region_ticker[R]]
+
+	// Show Debt markers temporarily at intermediate positions (during scoring phase)
+	G.temp_debt = G.debt
+}
+
+
+function adjust_scoring_view_demand() {
+	G.temp_vp   = G.scoring_demand_vp[L.demand_ticker[R]]
+	G.temp_trp  = G.scoring_demand_trp[L.demand_ticker[R]]
+	G.temp_debt = G.scoring_demand_debt[L.demand_ticker[R]]
+}
+
+
+// Stop showing temporary VP/TRP/Debt values and revert to the true current ones
+function close_scoring_view() {
+	G.temp_vp   = undefined
+	G.temp_trp  = undefined
+	G.temp_debt = undefined
+}
+
+
+// Each player now can review the scoring step by step (region by region, demand by demand). Each player clicks
 // once for each step, and we reveal that part of the log to him. Neither player is blocked until they get to the end of all
 // the scoring -- only then do they have to wait for the other player to catch up.
 P.scoring_review = {
@@ -2021,6 +2049,8 @@ P.scoring_review = {
 		G.active = [ FRANCE, BRITAIN ]
 		L.region_ticker = [0, 0] // How many regions each player has progressed through region scoring
 		L.demand_ticker = [0, 0] // How many regions each player has progressed through demand scoring
+
+		adjust_scoring_view_region()
 	},
 	prompt() {
 		let msg = say_action_header("SCORING PHASE: ")
@@ -2036,24 +2066,28 @@ P.scoring_review = {
 
 		V.prompt = msg
 		button("done")
+		if (L.region_ticker[R] > 0) button("undo")
 	},
 	done() {
-		push_undo()
-
 		// Advance the appropriate ticker
 		if (L.region_ticker[R] < NUM_REGIONS) {
 			L.region_ticker[R]++
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			L.demand_ticker[R]++
+		} else {
+			close_scoring_view()
 		}
 
 		// Update which part of the log we are hiding (and check if this player is done with this phase)
 		let done = false
 		if (L.region_ticker[R] < NUM_REGIONS) {
 			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
+			adjust_scoring_view_region()
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			G.log_hide_after[R] = G.scoring_demand_indices[L.demand_ticker[R]]
+			adjust_scoring_view_demand()
 		} else {
+			close_scoring_view()
 			if (G.log_hide_after[R] === G.scoring_extra_index) { // This step may not even happen if nothing got written to the log in that step
 				done = true
 			} else {
@@ -2068,6 +2102,17 @@ P.scoring_review = {
 				end()
 			}
 		}
+	},
+	undo() {
+		if (L.demand_ticker[R] > 0) {
+			L.demand_ticker[R]--
+			G.log_hide_after[R] = G.scoring_demand_indices[L.demand_ticker[R]]
+			adjust_scoring_view_demand()
+		} else if (L.region_ticker[R] > 0) {
+			L.region_ticker[R]--
+			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
+			adjust_scoring_view_region()
+		}
 	}
 }
 
@@ -2080,6 +2125,11 @@ P.scoring_phase = function () {
 
 	G.scoring_region_indices = []
 	G.scoring_demand_indices = []
+	G.scoring_region_vp   = []
+	G.scoring_region_trp  = []
+	G.scoring_demand_vp   = []
+	G.scoring_demand_trp  = []
+	G.scoring_demand_debt = []
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
@@ -2137,7 +2187,8 @@ P.scoring_phase = function () {
 		}
 
 		G.scoring_region_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
-		//TODO bookmark VP/debt/TRP levels
+		G.scoring_region_vp.push(G.vp.slice())
+		G.scoring_region_trp.push(G.treaty_points.slice())
 	}
 
 	for (const d of G.global_demand) {
@@ -2169,7 +2220,9 @@ P.scoring_phase = function () {
 		log_box_end()
 
 		G.scoring_demand_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
-		//TODO bookmark VP/debt/TRP levels
+		G.scoring_demand_vp.push(G.vp)
+		G.scoring_demand_trp.push(G.treaty_points.slice())
+		G.scoring_demand_debt.push(G.debt.slice())
 	}
 
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
