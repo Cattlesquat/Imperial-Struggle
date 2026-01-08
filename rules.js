@@ -1583,6 +1583,9 @@ P.choose_ministry_cards = {
 }
 
 P.replace_ministry_cards = {
+	_begin() {
+		G.active = [ FRANCE, BRITAIN ]
+	},
 	prompt() {
 		if (!G.ministry_revealed[R].includes(false)) {
 			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("No ministries eligible for mid-era replacement (see 4.1.7).")
@@ -1590,7 +1593,7 @@ P.replace_ministry_cards = {
 		}
 		else {
 			//TODO: allow replacement of ministries mid-era
-			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Select any unrevealed ministries you wish to replace. (TODO! For now, just suck it)")
+			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Select any unrevealed ministries you wish to replace. (TODO! TODO! TODO! For now, just suck it)")
 			button("confirm")
 		}
 	},
