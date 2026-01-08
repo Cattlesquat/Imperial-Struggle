@@ -2189,7 +2189,18 @@ P.scoring_phase = function () {
 	G.log_hide_after = []
 	G.log_hide_after[FRANCE] = G.scoring_region_indices[0]
 	G.log_hide_after[BRITAIN] = G.scoring_region_indices[0]
-	//.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
+
+	for (let i = 0; i < G.scoring_region_indices.length; i++) {
+		console.log ("Region " + i + ": " + G.scoring_region_indices[i])
+	}
+
+	console.log (G.log_hide_after[FRANCE])
+	console.log (G.log_hide_after[BRITAIN])
+	console.log (G.log.length)
+
+	//console.log ("HIDE AFTER: " + G.log_hide_after[FRANCE] + "," + G.log_hide_after[BRITAIN] + "   (max: " + G.log.length - 1 + ")")
+
+	//G.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
 
 	console.log ("PROCEED TO SCORING REVIEW")
 

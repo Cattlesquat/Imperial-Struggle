@@ -786,18 +786,24 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
+	console.log ("on_update()")
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
+		console.log ("  HIDING after " + V.log_hide_after[R])
 		log_partially_hidden = true
 		for (let ix = 0; ix < V.log_length; ix++) {
 			let logline = document.getElementById(ix)
 			if (logline) logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
 		}
 	} else if (log_partially_hidden) { // We don't have to unhide everything every time -- only if we know some part of it was hidden before
+		console.log ("  REVEALING all")
+
 		log_partially_hidden = false
 		for (let ix = 0; ix < V.log_length; ix++) {
 			let logline = document.getElementById(ix)
 			if (logline) logline.style.display = "block"
 		}
+	} else {
+		console.log ("  NO ACTION")
 	}
 
 	end_update()
