@@ -76,6 +76,7 @@ const world = {
 	mapwrap: $("#mapwrap"),
 	panzoom: $("#pan_zoom_main"),
 	tip: $("#tip"),
+	log: $("#log"),
 	parent_list: [],
 	stack_list: [],
 	action_list: [],
@@ -1158,7 +1159,6 @@ function apply_log_boxes(ix, div, common) {
 			result.push(box.keyword)
 	}
 	if (result.length > 0) {
-		console.log("log-boxes", common, result)
 		div.classList.add(common)
 		div.classList.add(result.join("-"))
 	}
