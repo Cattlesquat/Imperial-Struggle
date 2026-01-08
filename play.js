@@ -689,11 +689,14 @@ function on_update() {
 				update_keyword("ministry_card", m, "revealed", V.ministry_revealed[who][i] && !is_ministry_partially_exhausted(who, m))
 				update_keyword("ministry_card", m, "hidden", !V.ministry_revealed[who][i])
 
-				for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
-					if (is_ministry_exhausted(who, m, ability)) {
-						update_keyword("ministry_card", m, "exhausted-" + (ability + 1), true)
-					}
+				for (let ability = 0; ability < 2; ability++) {
+					update_keyword("ministry_card", m, "exhausted-" + (ability + 1), is_ministry_exhausted(who, m, ability))
 				}
+				//for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
+				//	if (is_ministry_exhausted(who, m, ability)) {
+				//		update_keyword("ministry_card", m, "exhausted-" + (ability + 1), true)
+				//	}
+				//}
 			} else {
 				populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br"))
 			}
@@ -783,8 +786,26 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
+	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
+		log_partially_hidden = true
+		for (let ix = 0; ix < V.log_length; ix++) {
+			let logline = document.getElementById(ix)
+			if (logline) logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
+		}
+	} else if (log_partially_hidden) { // We don't have to unhide everything every time -- only if we know some part of it was hidden before
+		log_partially_hidden = false
+		for (let ix = 0; ix < V.log_length; ix++) {
+			let logline = document.getElementById(ix)
+			if (logline) logline.style.display = "block"
+		}
+	}
+
 	end_update()
 }
+
+
+var log_partially_hidden = false
+
 
 const war_display = [
 	$("#war_wss"),
@@ -929,6 +950,7 @@ function on_log(text, ix) {
 
 	apply_log_boxes(ix, p, "group")
 
+	p.setAttribute("id", ix) // So we can find it later
 	p.innerHTML = escape_text(text)
 	return p
 }
@@ -982,6 +1004,29 @@ window.addEventListener("keydown", function (evt) {
 		case "c":
 			send_message("action", ["cheat_cheat", null, game_cookie])
 			break;
+			/*
+		case "[":
+			for (let i = 0; i < 500; i++) {
+				let logline = document.getElementById(i)
+				if (logline) {
+					if (i > 10) {
+						logline.style.display = "none"
+					}
+				}
+			}
+			break;
+		case "]":
+			for (let i = 0; i < 500; i++) {
+				let logline = document.getElementById(i)
+				if (logline) {
+					if (i > 10) {
+						logline.style.display = "block"
+					}
+				}
+			}
+			break;
+			 */
+
 	}
 })
 

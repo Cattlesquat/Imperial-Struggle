@@ -762,6 +762,11 @@ function on_setup(scenario, options) {
 	// Internal for tracking if a log box is going
 	G.log_box = null
 
+	// During scoring reviews (which otherwise would generate an overwhelming amount of logging all at once), we hide
+	// parts of the log and let each player step through at their own pace. -1 means not hiding any part of the log; otherwise
+	// an index means hide anything after that index
+	G.log_hide_after = [-1, -1]
+
 	call("main")
 }
 
@@ -873,6 +878,9 @@ function on_view() {
 
 	V.huguenots = G.huguenots
 	V.huguenots_spent = G.huguenots_spent
+
+	V.log_hide_after = G.log_hide_after
+	V.log_length     = G.log.length
 }
 
 
@@ -1234,6 +1242,7 @@ function set_isolated_market(s, isolated = true)
 	} else {
 		set_add(G.isolated_markets, s)
 	}
+
 }
 
 
@@ -1249,10 +1258,15 @@ P.main = script (`
 	}
 `)
 
+function log_turn() {
+	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
+}
 
 /* 4.1 - PEACE TURNS */
 
 P.peace_turn = script (`
+	eval { log_turn()  }
+	
 	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
 		call deck_phase
 		call debt_limit_increase_phase
@@ -1858,6 +1872,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
+	console.log ("START ACTION PHASE")
 }
 
 /* 4.1.9 - ACTION PHASE */
@@ -1874,6 +1889,7 @@ P.action_phase = script (`
 		call action_round
 		set G.active (1-G.active)
 	}
+	eval { console.log ("DONE ACTION PHASE") }
 `)
 
 function tell_first_player_choice()
@@ -1997,20 +2013,61 @@ function demand_flag_delta(demand) {
 }
 
 
+// Idea is to for each player to review the scoring step by step (region by region, demand by demand). Each player clicks
+// once for each step, and we reveal that part of the log to him. Neither player is blocked until they get to the end of all
+// the scoring -- only then do they have to wait for the other player to catch up.
 P.scoring_review = {
 	_begin() {
 		G.active = [ FRANCE, BRITAIN ]
+		L.region_ticker = [0, 0] // How many regions each player has progressed through region scoring
+		L.demand_ticker = [0, 0] // How many regions each player has progressed through demand scoring
 	},
 	prompt() {
 		let msg = say_action_header("SCORING PHASE: ")
-		msg += say_action(G.scoring_review)
+
+		if (L.region_ticker[R] < NUM_REGIONS) {
+			msg += say_action("Review region scoring for " + data.regions[L.region_ticker[R]].name)
+		} else if (L.demand_ticker[R] < G.global_demand.length) {
+			msg += say_action("Review demand scoring for " + data.demands[L.demand_ticker[R]].name)
+		} else {
+			msg += say_action("Review additional bonus scoring")
+		}
+
 		V.prompt = msg
 		button("done")
 	},
 	done() {
-		set_delete(G.active, R)
-		if (G.active.length === 0) {
-			end()
+		push_undo()
+
+		// Advance the appropriate ticker
+		if (L.region_ticker[R] < NUM_REGIONS) {
+			L.region_ticker[R]++
+		} else if (L.demand_ticker[R] < G.global_demand.length) {
+			L.demand_ticker[R]++
+		}
+
+		// Update which part of the log we are hiding (and check if this player is done with this phase)
+		let done = false
+		if (L.region_ticker[R] < NUM_REGIONS) {
+			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
+		} else if (L.demand_ticker[R] < G.global_demand.length) {
+			G.log_hide_after[R] = G.scoring_demand_indices[L.demand_ticker[R]]
+		} else {
+			if (G.log_hide_after[R] === G.scoring_extra_index) { // This step may not even happen if nothing got written to the log in that step
+				done = true
+			} else {
+				G.log_hide_after[R] = G.scoring_extra_index
+			}
+		}
+
+		if (done) {
+			console.log ("DONE SCORING REVIEW, PLAYER " + R)
+			set_delete(G.active, R)
+			if (G.active.length === 0) {
+				console.log ("SCORING REVIEW ENDS")
+				G.log_hide_after = [-1, -1] // Stop hiding any part of the log
+				end()
+			}
 		}
 	}
 }
@@ -2018,9 +2075,13 @@ P.scoring_review = {
 /* 4.1.12 - SCORING PHASE */
 
 P.scoring_phase = function () {
+	console.log ("SCORING PHASE")
 	log("=Scoring Phase")
 
 	G.won_all_scorings = -1
+
+	G.scoring_region_indices = []
+	G.scoring_demand_indices = []
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
@@ -2072,8 +2133,11 @@ P.scoring_phase = function () {
 			//TODO announce winner & amounts
 		}
 
-		G.scoring_review = "Review regional scoring for " + data.regions[region].name
-		call ("scoring_review")
+		log ("LAST LINE OF REGION: " + region)
+		G.scoring_region_indices.push(G.log.length - 1)
+
+		//G.scoring_review = "Review regional scoring for " + data.regions[region].name
+		//call ("scoring_review")
 	}
 
 	for (const d of G.global_demand) {
@@ -2101,6 +2165,9 @@ P.scoring_phase = function () {
 		} else {
 			G.won_all_scorings = NONE
 		}
+
+		log ("LAST LINE OF DEMAND: " + d)
+		G.scoring_demand_indices.push(G.log.length - 1)
 	}
 
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
@@ -2115,21 +2182,40 @@ P.scoring_phase = function () {
 		award_vp(BRITAIN, vp)
 	}
 
-	G.scoring_review = "Review global demand scoring"
+	G.scoring_extra_index = G.log.length - 1
+	G.log_hide_after = []
+	G.log_hide_after[FRANCE] = G.scoring_region_indices[0]
+	G.log_hide_after[BRITAIN] = G.scoring_region_indices[0]
+	//.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
+
+	console.log ("PROCEED TO SCORING REVIEW")
+
 	goto ("scoring_review")
+
+	//G.scoring_review = "Review global demand scoring"
+	//goto ("scoring_review")
 }
 
 /* 4.1.13 - VICTORY CHECK PHASE */
 
 P.victory_check_phase = function () {
-	if (G.won_all_scorings !== NONE) {
-		log (data.flags[G.won_all_scorings].name + " wins the game! (Won all regional and demand scorings)")
+	console.log ("VICTORY CHECK PHASE")
+	log ("=Victory Check Phase")
+	if ((G.won_all_scorings !== NONE) && (G.won_all_scorings >= 0)) {
+		let msg = bold(data.flags[G.won_all_scorings].name + " wins the game by winning all regional and demand scorings!")
+		log (msg)
+		finish (G.won_all_scorings, msg)
 	} else if (G.vp <= 0) {
-		log ("Britain wins the game! (VP 0 or fewer)")
+		let msg = bold("Britain wins the game: VP 0 or fewer!")
+		log(msg)
+		finish(BRITAIN, msg)
 	} else if (G.vp >= 30) {
-		log ("France wins the game! (VP 30 or greater)")
+		let msg = bold("France wins the game: VP 30 or greater!")
+		log(msg)
+		finish(FRANCE, msg)
+	} else {
+		log ("No automatic victory.")
 	}
-	// TODO - actually end the game
 	end()
 }
 
@@ -2139,6 +2225,34 @@ P.final_scoring_phase = function () {
 	log("=Final Scoring Phase")
 	// TODO
 	// TODO - USA flags count as FR flags during final scoring
+
+	log ("=Game Over")
+	if (G.vp >= 16) {
+		let msg = bold("France wins! VP marker at " + G.vp + "!")
+		finish (FRANCE, msg)
+	} else if (G.vp <= 14) {
+		let msg = bold("Britain wins! VP marker at " + G.vp + "!")
+		finish (BRITAIN, msg)
+	} else {
+		let msg = bold("Victory points tied at 15.")
+		log (msg)
+		if (available_debt(FRANCE) > available_debt(BRITAIN)) {
+			msg = bold("France wins! Tie-breaker: more available debt!")
+			log (msg)
+			finish (FRANCE, msg)
+		} else if (available_debt(BRITAIN) > available_debt(FRANCE)) {
+			msg = bold("Britain wins! Tie-breaker: more available debt!")
+			log (msg)
+			finish (BRITAIN, msg)
+		} else {
+			msg = bold("Available debt tied at " + available_debt(FRANCE) + ".")
+			log (msg)
+			msg = bold("Britain wins! Final tie-breaker!")
+			log (msg)
+			finish (BRITAIN, msg)
+		}
+	}
+
 	end()
 }
 
@@ -4920,10 +5034,13 @@ function action_all_eligible_spaces() {
 
 function action_eligible_ministries() {
 	for (var index = 0; index < G.ministry[R].length; index++) {
-		//BR// Removing this for now - for flexibility, allow players to flip ministries at any notionally legal time, even if ministry isn't technically "useful" right at that second.
-		//if (G.ministry_revealed[R][index]) {
-		//	if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
-		//}
+
+		if (G.ministry_revealed[R][index]) {
+			if (is_ministry_fully_exhausted(R, index)) continue
+
+			//BR// Removing this for now - for flexibility, allow players to flip ministries at any notionally legal time, even if ministry isn't technically "useful" right at that second.
+			//if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
+		}
 		action_ministry_card(G.ministry[R][index])
 	}
 }
@@ -6392,6 +6509,7 @@ P.action_round_core = {
 		}
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
+
 		push_undo()
 		G.hand[BRITAIN][0] = ALBERONIS_AMBITION
 		G.hand[BRITAIN][1] = FAMINE_IN_IRELAND
@@ -6402,7 +6520,6 @@ P.action_round_core = {
 		G.hand[FRANCE][2] = INTEREST_PAYMENTS
 
 		G.flags[NIAGARA] = FRANCE
-
 	}
 }
 
@@ -6448,6 +6565,7 @@ P.end_of_action_round = {
 /* 7.0 WAR TURNS */
 
 P.war_turn = script (`
+	eval { console.log ("WAR TURN") }
 	call war_resolution_phase
 	call war_victory_check_phase
 	call war_reset_phase
@@ -6464,22 +6582,46 @@ function conquest_point_cost(s)
 }
 
 
+
+P.war_theater_review = {
+	_begin() {
+		G.active = [ FRANCE, BRITAIN ]
+	},
+	prompt() {
+		let msg = say_action_header("WAR TURN: ")
+		msg += say_action("Not Yet Implemented")
+		V.prompt = msg
+		button("done")
+	},
+	done() {
+		set_delete(G.active, R)
+		if (G.active.length === 0) {
+			end()
+		}
+	}
+}
+
 /* 7.1 - WAR RESOLUTION PHASE */
 
 P.war_resolution_phase = function() {
-	log ("=War Turn: " + data.wars[G.next_war].name)
+	console.log ("War Resolution Phase")
+
+	log ("#" + data.wars[G.next_war].name + "\n" + data.turns[G.turn].dates)
+	log ("=War Resolution Phase")
+	goto ("war_theater_review")
 	//TODO One theater at a time, in numberical order:
 	//TODO   Flip up all war tiles for both players in that theater
 	//TODO   Display initial Total Theater Strength
 	//TODO   Apply "war tile effects" (e.g. damage-a-fleet, unflag-a-space) - order is exotic, see 7.1.2 - updating Total Theater Strength
 	//TODO	 Resolve "Theater Spoils" 7.2
-	end()
 }
 
 
 /* 7.4 - WAR RESOLUTION PHASE */
 
 P.war_victory_check_phase = function() {
+	console.log ("War Victory Check Phase")
+	log ("=War Victory Check Phase")
 	//TODO If one player won all theaters by maximum level, they immediately win the game
 	end()
 }
@@ -6488,6 +6630,7 @@ P.war_victory_check_phase = function() {
 /* 7.5 - WAR RESET PHASE */
 
 P.war_reset_phase = function () {
+	log ("=War Reset Phase")
 	//TODO remove all the current bonus war tiles
 	//TODO remove any conflict markers that generated strength in this war
 	end()
@@ -6515,7 +6658,9 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 	shuffle(G.basic_war_tiles[FRANCE])
 	shuffle(G.basic_war_tiles[BRITAIN])
 
-	G.bonus_war_tile_revealed = [ [], [] ] // Turn them all back face down
+	// Turn them all back face down
+	G.bonus_war_tile_revealed = [ [], [] ]
+	G.basic_war_tile_revealed = [ [], [] ]
 }
 
 
@@ -6537,6 +6682,7 @@ P.war_layout_phase = function () {
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
 			current_war_bonus_tiles[who] += G.theater_bonus_war_tiles[who][theater].length
+			G.theater_bonus_war_tiles[who][theater] = [] // We just delete the old bonus war tiles, because we're getting a whole new set for the next war
 		}
 	}
 
@@ -6558,6 +6704,8 @@ P.war_layout_phase = function () {
 			}
 		}
 	}
+
+	//TODO On their respective first action rounds of Turn 4, players place their bonus war tiles into the theaters
 
 	end()
 }
