@@ -790,9 +790,15 @@ function on_update() {
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
 		console.log ("  HIDING after " + V.log_hide_after[R])
 		log_partially_hidden = true
+		console.log ("    Log Length: " + V.log_length)
 		for (let ix = 0; ix < V.log_length; ix++) {
+			console.log (ix)
 			let logline = document.getElementById(ix)
-			if (logline) logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
+			console.log (logline)
+			if (logline) {
+				if (ix > V.log_hide_after[R]) console.log ("    HID " + ix)
+				logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
+			}
 		}
 	} else if (log_partially_hidden) { // We don't have to unhide everything every time -- only if we know some part of it was hidden before
 		console.log ("  REVEALING all")
@@ -956,6 +962,7 @@ function on_log(text, ix) {
 
 	apply_log_boxes(ix, p, "group")
 
+	console.log ("Set id attribute: " + ix)
 	p.setAttribute("id", ix) // So we can find it later
 	p.innerHTML = escape_text(text)
 	return p
