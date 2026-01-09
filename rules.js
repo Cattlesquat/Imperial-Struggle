@@ -928,7 +928,7 @@ function reduce_debt(who, amount)
 	amount = Math.min(amount, G.debt[who])
 	if (amount > 0) {
 		G.debt[who] -= amount
-		log(data.flags[who].adj + " Debt reduced by " + amount + " -- more spending available.")
+		log(say_spending(data.flags[who].adj + " Debt", who) + " reduced by " + amount + " -- more spending available.")
 	}
 }
 
@@ -940,10 +940,10 @@ function increase_debt(who, amount) {
 	}
 	if (amount > 0) {
 		G.debt[who] += amount
-		log (data.flags[who].adj + " Debt increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
+		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
-		award_vp(who, -penalty, false, "Debit Limit overrun")
+		award_vp(who, -penalty, false, "Debt Limit overrun")
 		//log (bold(data.flags[who].name + " loses " + penalty + " VP for Debt Limit overrun. VP Marker: " + G.VP))
 	}
 }
@@ -952,7 +952,7 @@ function add_treaty_points(who, amount)
 {
 	G.treaty_points[who] += amount
 	if (amount > 0) {
-		log (data.flags[who].name + " gains " + amount + " Treaty Point" + s(amount) + ".")
+		log (data.flags[who].name + " gains " + say_spending(amount + " Treaty Point" + s(amount), who) + ".")
 	}
 }
 
@@ -1327,8 +1327,8 @@ P.deck_phase = function () {
 P.debt_limit_increase_phase = function () {
 	if (beginning_of_era() && (current_era() !== SUCCESSION_ERA)) {
 		log("=Debt Limit Increase Phase")
-		log ("French DEBT LIMIT increased by 4")
-		log ("British DEBT LIMIT increased by 4")
+		log ("French " + say_spending("DEBT LIMIT", FRANCE) + " increased by 4")
+		log ("British " + say_spending("DEBT LIMIT", BRITAIN) + " increased by 4")
 		G.debt_limit[FRANCE]  += 4
 		G.debt_limit[BRITAIN] += 4
 	}
@@ -1974,7 +1974,7 @@ P.resolve_remaining_powers = function () {
 				announced = true
 				log("=Resolve Remaining Powers Phase")
 			}
-			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces French debt by " + debt_reduction + "."))
+			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces " + say_spending("French debt", FRANCE) + " by " + debt_reduction + "."))
 		}
 	}
 
@@ -2635,7 +2635,7 @@ function selected_a_tile(tile)
 
 	if (G.military_upgrade && (G.turn === PEACE_TURN_6)) {
 		G.military_upgrade = false;
-		log (data.flags[G.active].name + " gains 1 Treaty Point for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
+		log (data.flags[G.active].name + " gains " + say_spending("1 Treaty Point", G.active) + " for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
 		add_treaty_points(G.active, 1)
 	}
 
@@ -4224,6 +4224,10 @@ function say_demand(d, who = -1, all_caps = false) {
 	return say_stuff("D", d, who, all_caps)
 }
 
+function say_spending(msg, who = -1) {
+	return "[" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + msg + "]"
+}
+
 
 function say_ministry_header()
 {
@@ -4452,7 +4456,7 @@ P.ministry_edmond_halley = {
 		log (data.flags[R].name + " discards event: E" + c)
 
 		G.treaty_points[R]++
-		log (data.flags[R].name + " gains 1 Treaty Point")
+		log (data.flags[R].name + " gains " + say_spending("1 Treaty Point", R))
 		end()
 	},
 	pass() {
@@ -6313,10 +6317,12 @@ P.confirm_spend_debt_or_trps = {
 	confirm() {
 		push_undo()
 		if (G.debt_spent > 0) {
-			log (data.flags[R].adj + " Debt: " + (G.debt[R] - G.debt_spent) + " -> " + G.debt[R])
+			log (data.flags[R].name + " spends " + say_spending(G.debt_spent + " debt.", R))
+			//log (data.flags[R].adj + " Debt: " + (G.debt[R] - G.debt_spent) + " -> " + G.debt[R])
 		}
 		if (G.treaty_points_spent > 0) {
-			log (data.flags[R].adj + " Treaty Points: " + (G.treaty_points_spent[R] + G.treaty_points_spent) + " -> " + G.treaty_points[R])
+			log (data.flags[R].name + " spends " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
+			//log (data.flags[R].adj + " Treaty Points: " + (G.treaty_points[R] + G.treaty_points_spent) + " -> " + G.treaty_points[R])
 		}
 		end()
 	}
@@ -6505,7 +6511,7 @@ P.action_round_core = {
 	confirm_pass_to_reduce_debt() {
 		push_undo()
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		log(data.flags[R].name + " passes to reduce debt by " + debt_reduction + ".")
+		log(data.flags[R].name + " passes to " + say_spending("reduce debt by " + debt_reduction, R) + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
 	},

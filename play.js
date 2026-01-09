@@ -953,7 +953,53 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
+	text = escape_square_brackets(text)
+
 	return escape_typography(text)
+}
+
+
+function _tip_focus_spending(who) {
+	world.status.innerHTML = available_debt_tooltip(who)
+}
+
+function _tip_blur_spending() {
+	world.status.innerHTML = ""
+}
+
+
+function escape_square_brackets(text)
+{
+	let runaway = 0
+	let match = ""
+
+	do {
+		match = text.match(/\[.*?]/) // Get the whole expression including the brackets
+		console.log (match)
+		if (match) {
+			let inside = match[0].match(/\[(.*?)]/) // Get the inside-the-brackets bit.
+			let key = inside[1][0]                  // First character tells us what nation color to use, if any
+			let msg = inside[1].slice(1)            // Rest of string is the message
+
+			let who = (key === "F") ? FRANCE : (key === "B") ? BRITAIN : NONE
+
+			let className = "tip-spending" + ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+
+			let tooltip_text = `<span 
+			class="${className}"
+			onmouseenter="_tip_focus_spending(${who})"
+			onmouseleave="_tip_blur_spending()"
+			>${escape_typography(msg)}</span>`
+
+			text = text.replace(/\[.*?]/, tooltip_text)
+		}
+
+		if (++runaway > 500) {
+			throw new Error("Runaway Square Brackets escape sequence: " + text.slice(0, 40))
+		}
+	} while (match)
+
+	return text
 }
 
 

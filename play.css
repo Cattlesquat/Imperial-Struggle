@@ -151,7 +151,7 @@ body.Britain #events_br { grid-row: 2 }
     background-color: hsl(0, 0%, 80%); 
 }
 
-.tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr {
+.tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr {
     font-style: italic;
     text-decoration: underline;
     color: royalblue;
@@ -163,7 +163,7 @@ body.Britain #events_br { grid-row: 2 }
     color: royalblue;
 }
 
-.tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br {
+.tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br, .tip-spending-br {
     font-style: italic;
     text-decoration: underline;
     color: crimson;
@@ -175,7 +175,7 @@ body.Britain #events_br { grid-row: 2 }
     color: crimson;
 }
 
-.tip-event, .tip-ministry, .tip-advantage, .tip-demand {
+.tip-event, .tip-ministry, .tip-advantage, .tip-demand, .tip-spending {
     font-style: italic;
     text-decoration: underline;
     /* color: grey; */
