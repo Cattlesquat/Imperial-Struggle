@@ -203,6 +203,46 @@ function demand_tooltip(demand)
 	return bold(data.demands[demand].name) + ": " + italic(awards_string) + bold(data.flags[demand_flag_winner(demand)].name2) + " +" + demand_flag_delta(demand)
 }
 
+
+function say_event_effect(label, effect, bonus) {
+
+	let text = ""
+	if (label !== "") {
+		text += label
+		text += ": "
+	}
+	if (effect !== "") {
+		text += effect
+	}
+
+	if (bonus !== "") {
+		text += italic(" (" + bonus + ")")
+	}
+
+	return text
+}
+
+function event_tooltip(who, c)
+{
+	let msg = bold(data.cards[c].name)
+
+	if (data.cards[c].keylabel !== "") {
+		msg += " " + parens(data.cards[c].keylabel)
+	}
+
+	msg += ": "
+
+	if ((data.cards[c].label !== "" ) || (data.cards[c].effect !== "")) {
+		msg += say_event_effect(data.cards[c].label, data.cards[c].effect, data.cards[c].bonus)
+	} else if (who === FRANCE) {
+		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
+	} else {
+		msg += say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
+	}
+
+	return msg.trim()
+}
+
 function award_tooltip(region)
 {
 	var award = V.awards[region]
@@ -220,6 +260,17 @@ function available_debt_tooltip(who)
 	return msg
 }
 
+
+
+function pad(s, condition = true) {
+	if (!condition) return s
+	return " " + s + " "
+}
+
+function parens(s, condition = true) {
+	if (!condition) return s
+	return "(" + s + ")"
+}
 
 function bold (s, condition = true)
 {
@@ -923,9 +974,9 @@ const advantage_names = data.advantages.map(x => x?.name)
 const demand_names = data.demands.map(x => x?.name)
 
 function escape_text(text) {
-	text = escape_tip_class_sub(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names)
-	text = escape_tip_class_sub(text, /\bEEF(\d+)\b/g, "tip-event-uc-fr", "card event_card c$1", event_card_names)
-	text = escape_tip_class_sub(text, /\bEEB(\d+)\b/g, "tip-event-uc-br", "card event_card c$1", event_card_names)
+	text = escape_event(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names, NONE)
+	text = escape_event(text, /\bEEF(\d+)\b/g, "tip-event-uc-fr", "card event_card c$1", event_card_names, FRANCE)
+	text = escape_event(text, /\bEEB(\d+)\b/g, "tip-event-uc-br", "card event_card c$1", event_card_names, BRITAIN)
 
 	text = escape_tip_class_sub(text, /\bMM(\d+)\b/g, "tip-ministry-uc", "card ministry_card c$1", ministry_card_names)
 	text = escape_tip_class_sub(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names)
@@ -939,9 +990,9 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDDF(\d+)\b/g, "tip-demand-uc-fr", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDDB(\d+)\b/g, "tip-demand-uc-br", "marker square-sm demand $1", demand_names)
 
-	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
-	text = escape_tip_class_sub(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names)
-	text = escape_tip_class_sub(text, /\bEB(\d+)\b/g, "tip-event-br", "card event_card c$1", event_card_names)
+	text = escape_event(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names, NONE)
+	text = escape_event(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names, FRANCE)
+	text = escape_event(text, /\bEB(\d+)\b/g, "tip-event-br", "card event_card c$1", event_card_names, BRITAIN)
 
 	text = escape_tip_class_sub(text, /\bM(\d+)\b/g, "tip-ministry", "card ministry_card c$1", ministry_card_names)
 	text = escape_tip_class_sub(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names)
@@ -1069,6 +1120,30 @@ function escape_demand(text, re, log_className, tip_className, names) {
 		>${escape_typography(names[x])}</span>`
 	)
 }
+
+
+function _tip_focus_event(who, c, name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = false
+	world.status.innerHTML = event_tooltip(who, c)
+}
+
+function _tip_blur_event(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function escape_event(text, re, log_className, tip_className, names, who) {
+	return text.replace(re, (m, x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_event('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseleave="_tip_blur_event()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
 
 
 
