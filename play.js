@@ -608,6 +608,14 @@ function on_update() {
 
 	begin_update()
 
+	if (R === FRANCE) {
+		update_favicon("favicon-fr.png")
+	} else if (R === BRITAIN) {
+		update_favicon("favicon-br.png")
+	} else {
+		update_favicon("favicon1.png")
+	}
+
 	update_debt_display()
 
 	populate("general-track", V.vp, "victory-points")
