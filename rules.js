@@ -1905,6 +1905,11 @@ P.choose_first_player = {
 		V.prompt = say_action_header("INITIATIVE PHASE: ") + say_action("Choose the player to go first in each action round this turn.")
 		button("france")
 		button("britain")
+
+		//BR// An idea... maybe too distracting when thinking about the decision though
+		//for (let s = 0; s < NUM_SPACES; s++) {
+		//	if ((G.flags[s] === FRANCE) || (G.flags[s] === BRITAIN)) action_space(s)
+		//}
 	},
 	france() {
 		push_undo()
@@ -1915,6 +1920,12 @@ P.choose_first_player = {
 	britain() {
 		push_undo()
 		G.first_player = BRITAIN
+		tell_first_player_choice()
+		end()
+	},
+	space(s) {
+		push_undo()
+		G.first_player = G.flags[s]
 		tell_first_player_choice()
 		end()
 	},
