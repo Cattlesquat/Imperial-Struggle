@@ -234,6 +234,8 @@ function strike (s, condition = true )
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
+	update_favicon("favicon1.png")
+
 	init_preference_checkbox("noanims", false)
 	init_preference_checkbox("noflipsies", false)
 	init_preference_checkbox("downanddirty", false)
