@@ -366,7 +366,7 @@ function on_init() {
 		}
 	}
 
-	for (i = 0; i <= 36; ++i) {
+	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
 		define_stack("general-track", i,
 			resize_rect(find_layout_node("record track " + i), 49, 49),
 			-5, -5,
