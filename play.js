@@ -877,6 +877,7 @@ function update_war_display() {
 const event_card_names = data.cards.map(x => x?.name)
 const ministry_card_names = data.ministries.map(x => x?.name)
 const advantage_names = data.advantages.map(x => x?.name)
+const demand_names = data.demands.map(x => x?.name)
 
 function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names)
@@ -891,6 +892,10 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "square marker advantage a$1", advantage_names)
 
+	text = escape_tip_class_sub_function(text, /\bDD(\d+)\b/g, "tip-demand-uc", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_tip_class_sub_function(text, /\bDDF(\d+)\b/g, "tip-demand-uc-fr", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_tip_class_sub_function(text, /\bDDB(\d+)\b/g, "tip-demand-uc-br", "marker square-sm demand $1", demand_names, demand_name)
+
 	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
 	text = escape_tip_class_sub(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names)
 	text = escape_tip_class_sub(text, /\bEB(\d+)\b/g, "tip-event-br", "card event_card c$1", event_card_names)
@@ -903,7 +908,25 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAB(\d+)\b/g, "tip-advantage-br", "square marker advantage a$1", advantage_names)
 
+	text = escape_tip_class_sub_function(text, /\bD(\d+)\b/g, "tip-demand", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_tip_class_sub_function(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_tip_class_sub_function(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names, demand_name)
+
 	return escape_typography(text)
+}
+
+
+function demand_name(d) {
+	return data.demands[d].name.toLowerCase() // Eventually different treatments by era, but for now...
+}
+
+function escape_tip_class_sub_function(text, re, log_className, tip_className, names, func) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_class('${tip_className.replace("$1",func(x))}')"
+		onmouseleave="_tip_blur_class()"
+		>${escape_typography(names[x])}</span>`
+	)
 }
 
 function on_prompt(text) {

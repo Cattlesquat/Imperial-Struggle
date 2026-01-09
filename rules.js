@@ -1371,7 +1371,8 @@ P.global_demand_phase = function () {
 	G.global_demand = []
 	for (var i = 0; i < 3; i++) {
 		var chit = global_demand_chits.pop()
-		log(data.demands[chit].name)
+		log(say_demand(chit))
+		//log(data.demands[chit].name)
 		G.global_demand.push(chit)
 	}
 
@@ -4217,6 +4218,10 @@ function say_event(e, who = -1, all_caps = false)
 function say_ministry(m, who = -1, all_caps = false)
 {
 	return say_stuff("M", m, who, all_caps)
+}
+
+function say_demand(d, who = -1, all_caps = false) {
+	return say_stuff("D", d, who, all_caps)
 }
 
 
