@@ -35,6 +35,7 @@ body.hide-pieces .piece { display: none }
 
 /* TIP (ENGLARGED CARD VIEW) */
 
+/*
 #tip {
 	pointer-events: none;
 	position: fixed;
@@ -52,6 +53,7 @@ body.hide-pieces .piece { display: none }
 		margin: auto;
 	}
 }
+*/
 
 /* PANELS */
 

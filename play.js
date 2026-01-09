@@ -269,6 +269,7 @@ function on_init() {
 	init_preference_checkbox("noflipsies", false)
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
+	init_preference_checkbox("tipsies", true)
 
 	set_available_debt_tooltips()
 
@@ -1018,8 +1019,38 @@ function escape_tip_class_sub_function(text, re, log_className, tip_className, n
 }
 
 
+function position_tip_image() {
+	let tipsies = get_preference("tipsies", true)
+	if (tipsies) {
+		world.tip.style.left = "0px"
+		world.tip.style.bottom = "25px"
+		world.tip.style.display = "flex"
+		world.tip.style.right = ""
+		world.tip.style.top = ""
+	} else {
+		world.tip.style.left = ""
+		world.tip.style.bottom = ""
+		world.tip.style.display = "block"
+		world.tip.style.right = "240px"
+		world.tip.style.top = "60px"
+	}
+}
+
+function _tip_focus_class(name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = false
+}
+
+function _tip_blur_class(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+}
+
+
 function _tip_focus_demand(d, name) {
 	world.tip.setAttribute("class", name)
+	position_tip_image()
 	world.tip.hidden = false
 	world.status.innerHTML = demand_tooltip(d)
 }
@@ -1038,6 +1069,8 @@ function escape_demand(text, re, log_className, tip_className, names) {
 		>${escape_typography(names[x])}</span>`
 	)
 }
+
+
 
 
 function on_prompt(text) {

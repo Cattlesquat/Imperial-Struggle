@@ -204,9 +204,11 @@ class Thing {
 		var id = this.my_id
 		this.element.addEventListener("mouseenter", function () {
 			if (typeof tip === "function") tip(id, true)
+			position_tip_image()
 		})
 		this.element.addEventListener("mouseleave", function () {
 			if (typeof tip === "function") tip(id, false)
+			position_tip_image()
 		})
 		return this
 	}
@@ -1055,6 +1057,7 @@ function escape_icon(text, re, icons) {
 	return text.replace(re, (m) => icons[m] ?? m)
 }
 
+/*
 function _tip_focus_class(name) {
 	world.tip.setAttribute("class", name)
 	world.tip.hidden = false
@@ -1064,6 +1067,8 @@ function _tip_blur_class(action, id) {
 	world.tip.removeAttribute("class")
 	world.tip.hidden = true
 }
+*/
+
 
 function _tip_focus_clone(action, id) {
 	var thing = lookup_thing(action, id)

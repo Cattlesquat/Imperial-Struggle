@@ -1324,6 +1324,48 @@ tiles75/square/investment_reverse.png
     border-style: solid;
 }
 
+
+#tip {
+    pointer-events: none;
+    position: fixed;
+    z-index: 1000;
+
+    /* display: flex; */
+    /* left: 0px; */
+    /* bottom: 25px; */
+
+    /* right: 240px; */
+    /* top: 60px; */
+
+    /* background: #f0dcbd; &&/
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+#tip .advantage-front,
+#tip .advantage-back {
+    width: 74px;
+    height: 74px;
+    background-size: 74px 74px;
+    margin: 3px;
+    /* border-width: 4px;
+    border-color: #48143a; /* deep purple color grabbed from mapboard frame
+    border-style: double;
+    */
+}
+
+@media (max-width: 800px) {
+    #tip {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
+
 #tooltip {
 	display: none;
 	pointer-events: none;
