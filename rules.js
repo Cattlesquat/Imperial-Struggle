@@ -2611,7 +2611,7 @@ function selected_a_tile(tile)
 {
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
-	log ("=Action Round " + G.round + " (" + data.flags[G.active].adj + ")")
+	log (((G.active === FRANCE ? "=fr" : "=br") + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
 	log (data.flags[G.active].name + " selects investment tile: ");
 	log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
 	var major = data.investments[tile].majorval

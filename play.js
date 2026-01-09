@@ -1055,6 +1055,16 @@ function on_log(text, ix) {
 
 	update_log_boxes(ix)
 
+	if (text.startsWith("=br")) {
+		text = text.substring(3)
+		p.className = "h2 br"
+	}
+
+	if (text.startsWith("=fr")) {
+		text = text.substring(3)
+		p.className = "h2 fr"
+	}
+
 	switch (text[0]) {
 	case "{":
 		p.classList.add("header")
