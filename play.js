@@ -379,6 +379,7 @@ function on_init() {
 	}
 
 	for (s of data.bizarro_spaces) {
+		if (s.layout.includes("record track")) continue
 		var rect = find_layout_node(s.layout ?? s.name)
 		if (!rect) {
 			console.log("No layout for Bizarro Space: " + s.name)
