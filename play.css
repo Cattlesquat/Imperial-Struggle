@@ -1364,3 +1364,7 @@ menu li.separator {
     padding: 0;
     border-top: 1px solid black;
 }
+
+.role_stat:hover {
+    text-decoration: underline;
+}

@@ -212,6 +212,15 @@ function award_tooltip(region)
 	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
 }
 
+
+function available_debt_tooltip(who)
+{
+	let msg = bold (data.flags[who].adj + " " + "Available Spending: " + available_debt_plus_trps(who) + ".")
+	msg += italic(" (Debt: " + V.debt[who] + ", Debt Limit: " + V.debt_limit[who] + ", Treaty Points: " + V.treaty_points[who] + ")")
+	return msg
+}
+
+
 function bold (s, condition = true)
 {
 	if (!condition) return s
@@ -231,6 +240,26 @@ function strike (s, condition = true )
 }
 
 
+function set_available_debt_tooltips()
+{
+	var id = roles[FRANCE].stat.my_id
+	roles[FRANCE].stat.addEventListener("mouseenter", function () {
+		world.status.innerHTML = available_debt_tooltip(FRANCE)
+	})
+	roles[FRANCE].stat.addEventListener("mouseleave", function () {
+		world.status.innerHTML = ""
+	})
+
+	 id = roles[BRITAIN].stat.my_id
+	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
+		world.status.innerHTML = available_debt_tooltip(BRITAIN)
+	})
+	roles[FRANCE].stat.addEventListener("mouseleave", function () {
+		world.status.innerHTML = ""
+	})
+}
+
+
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
@@ -240,6 +269,8 @@ function on_init() {
 	init_preference_checkbox("noflipsies", false)
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
+
+	set_available_debt_tooltips()
 
 	//BR// get_preference("noanims", false) (second argument is the "default" value if it's not set or has been deleted)
 	//BR// body[data-noanims="true"] .space.action { non-animated css }
