@@ -258,6 +258,11 @@ function ministry_tooltip(who, m)
 	return msg
 }
 
+
+function advantage_tooltip(a) {
+	return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc)
+}
+
 function award_tooltip(region)
 {
 	var award = V.awards[region]
@@ -997,9 +1002,9 @@ function escape_text(text) {
 	text = escape_ministry(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names, FRANCE)
 	text = escape_ministry(text, /\bMMB(\d+)\b/g, "tip-ministry-uc-br", "card ministry_card c$1", ministry_card_names, BRITAIN)
 
-	text = escape_tip_class_sub(text, /\bAA(\d+)\b/g, "tip-advantage-uc", "square marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "square marker advantage a$1", advantage_names)
+	text = escape_advantage(text, /\bAA(\d+)\b/g, "tip-advantage-uc", "square marker advantage a$1", advantage_names, NONE)
+	text = escape_advantage(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names, FRANCE)
+	text = escape_advantage(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "square marker advantage a$1", advantage_names, BRITAIN)
 
 	text = escape_demand(text, /\bDD(\d+)\b/g, "tip-demand-uc", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDDF(\d+)\b/g, "tip-demand-uc-fr", "marker square-sm demand $1", demand_names)
@@ -1013,9 +1018,9 @@ function escape_text(text) {
 	text = escape_ministry(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names, FRANCE)
 	text = escape_ministry(text, /\bMB(\d+)\b/g, "tip-ministry-br", "card ministry_card c$1", ministry_card_names, BRITAIN)
 
-	text = escape_tip_class_sub(text, /\bA(\d+)\b/g, "tip-advantage", "square marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names)
-	text = escape_tip_class_sub(text, /\bAB(\d+)\b/g, "tip-advantage-br", "square marker advantage a$1", advantage_names)
+	text = escape_advantage(text, /\bA(\d+)\b/g, "tip-advantage", "square marker advantage a$1", advantage_names, NONE)
+	text = escape_advantage(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names, FRANCE)
+	text = escape_advantage(text, /\bAB(\d+)\b/g, "tip-advantage-br", "square marker advantage a$1", advantage_names, BRITAIN)
 
 	text = escape_demand(text, /\bD(\d+)\b/g, "tip-demand", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names)
@@ -1181,6 +1186,31 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 		>${escape_typography(names[x])}</span>`
 	)
 }
+
+
+function _tip_focus_advantage(who, a, name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = false
+	world.status.innerHTML = advantage_tooltip(a)
+}
+
+function _tip_blur_advantage(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function escape_advantage(text, re, log_className, tip_className, names, who) {
+	return text.replace(re, (m, x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_advantage('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseleave="_tip_blur_advantage()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
+
 
 
 
