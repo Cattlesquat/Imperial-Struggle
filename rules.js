@@ -966,7 +966,9 @@ function award_vp(who, amount, silent = false, reason = null)
 	if (!silent) {
 		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + amount + " VP"
 		if (reason) msg += " " + parens(reason)
-		msg += ". VP Marker: " + G.vp
+		msg += "."
+		log (bold(msg))
+		msg = "VP: " + G.vp
 		log (bold(msg))
 	}
 }
@@ -2013,6 +2015,15 @@ function demand_flag_delta(demand) {
 }
 
 
+function adjust_scoring_view_prestige() {
+	G.temp_trp = G.scoring_start_trp
+	if (L.score_prestige < 0) {
+		G.temp_vp = G.scoring_start_vp
+	} else if (L.score_prestige === 0) {
+		G.temp_vp = G.scoring_prestige_vp
+	}
+}
+
 // Causes the VP/TRP/Debt markers to be shown in adjusted positions (from mid-points in scoring phase)
 function adjust_scoring_view_region() {
 	// Show VP markers temporarily at intermediate positions (during scoring phase)
@@ -2047,15 +2058,20 @@ function close_scoring_view() {
 P.scoring_review = {
 	_begin() {
 		G.active = [ FRANCE, BRITAIN ]
-		L.region_ticker = [0, 0] // How many regions each player has progressed through region scoring
-		L.demand_ticker = [0, 0] // How many regions each player has progressed through demand scoring
+		L.score_prestige = 0 // 0 = not done prestige, 1 = done prestige, -1 = backed up to very beginning of round *before* prestige
+		L.region_ticker  = [0, 0] // How many regions each player has progressed through region scoring
+		L.demand_ticker  = [0, 0] // How many regions each player has progressed through demand scoring
 
-		adjust_scoring_view_region()
+		adjust_scoring_view_prestige()
 	},
 	prompt() {
 		let msg = say_action_header("SCORING PHASE: ")
 
-		if (L.region_ticker[R] < NUM_REGIONS) {
+		if (L.score_prestige < 0) {
+			msg += say_action("Beginning of Scoring")
+		} else if (L.score_prestige === 0) {
+			msg += say_action("Review scoring for Prestige")
+		} else if (L.region_ticker[R] < NUM_REGIONS) {
 			msg += say_action("Review region scoring for " + data.regions[L.region_ticker[R]].name)
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			msg += say_action("Review demand scoring for " + data.demands[L.demand_ticker[R]].name)
@@ -2066,11 +2082,13 @@ P.scoring_review = {
 
 		V.prompt = msg
 		button("done")
-		if (L.region_ticker[R] > 0) button("undo")
+		if (L.score_prestige >= 0) button("undo")
 	},
 	done() {
 		// Advance the appropriate ticker
-		if (L.region_ticker[R] < NUM_REGIONS) {
+		if (L.score_prestige < 1) {
+			L.score_prestige++
+		} else if (L.region_ticker[R] < NUM_REGIONS) {
 			L.region_ticker[R]++
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			L.demand_ticker[R]++
@@ -2080,7 +2098,10 @@ P.scoring_review = {
 
 		// Update which part of the log we are hiding (and check if this player is done with this phase)
 		let done = false
-		if (L.region_ticker[R] < NUM_REGIONS) {
+		if (L.score_prestige === 0) {
+			G.log_hide_after[R] = G.scoring_prestige_index
+			adjust_scoring_view_prestige()
+		} else if (L.region_ticker[R] < NUM_REGIONS) {
 			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
 			adjust_scoring_view_region()
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
@@ -2112,6 +2133,14 @@ P.scoring_review = {
 			L.region_ticker[R]--
 			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
 			adjust_scoring_view_region()
+		} else if (L.score_prestige > -1) {
+			L.score_prestige--
+			if (L.score_prestige === 0) {
+				G.log_hide_after[R] = G.scoring_prestige_index
+			} else {
+				G.log_hide_after[R] = G.scoring_start_index
+			}
+			adjust_scoring_view_prestige()
 		}
 	}
 }
@@ -2123,6 +2152,9 @@ P.scoring_phase = function () {
 
 	G.won_all_scorings = -1
 
+	G.scoring_start_index    = G.log.length - 1
+	G.scoring_start_vp       = G.vp
+	G.scoring_start_trp      = G.treaty_points.slice()
 	G.scoring_region_indices = []
 	G.scoring_demand_indices = []
 	G.scoring_region_vp   = []
@@ -2130,6 +2162,28 @@ P.scoring_phase = function () {
 	G.scoring_demand_vp   = []
 	G.scoring_demand_trp  = []
 	G.scoring_demand_debt = []
+
+	// Prestige awards are sort notionally done alongside the Europe award, so we go first with that.
+	let winner = prestige_winner()
+	if (winner !== NONE) {
+		log_box_begin(winner, "Scoring: PRESTIGE" + "\n" + data.flags[winner].name + " +" + prestige_flag_delta() + " flags")
+
+		award_vp(winner, 2)
+
+		// Tracking if anybody won ALL the scorings
+		if (G.won_all_scorings < 0) {
+			G.won_all_scorings = winner
+		} else if (winner !== G.won_all_scorings) {
+			G.won_all_scorings = NONE
+		}
+	} else {
+		log_box_begin(NONE, "Scoring: PRESTIGE " + "\n" + "TIE! No score.")
+		G.won_all_scorings = NONE
+	}
+	log_box_end()
+
+	G.scoring_prestige_vp    = G.vp
+	G.scoring_prestige_index = G.log.length - 1
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let award = G.awards[region]
@@ -2139,7 +2193,7 @@ P.scoring_phase = function () {
 		//TODO - probably go region by region with both players confirming the results from each region and demand
 
 		if (winner !== NONE) {
-			log_box_begin(winner, "Scoring: " + data.regions[region].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + region_flag_delta(region))
+			log_box_begin(winner, "Scoring: " + data.regions[region].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + region_flag_delta(region) + " flags")
 			let vp = data.awards[award].vp
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
@@ -2165,36 +2219,15 @@ P.scoring_phase = function () {
 		}
 		log_box_end()
 
-		// Prestige awards are sort notionally done alongside the Europe award
-		if (region === REGION_EUROPE) {
-			winner = prestige_winner()
-			if (winner !== NONE) {
-				log_box_begin(winner, "Scoring: PRESTIGE" + "\n" + data.flags[winner].name + " +" + prestige_flag_delta(region))
-
-				award_vp(winner, 2)
-
-				// Tracking if anybody won ALL the scorings
-				if (G.won_all_scorings < 0) {
-					G.won_all_scorings = winner
-				} else if (winner !== G.won_all_scorings) {
-					G.won_all_scorings = NONE
-				}
-			} else {
-				log_box_begin(NONE, "Scoring: PRESTIGE " + "\n" + "TIE! No score.")
-				G.won_all_scorings = NONE
-			}
-			log_box_end()
-		}
-
 		G.scoring_region_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
-		G.scoring_region_vp.push(G.vp.slice())
+		G.scoring_region_vp.push(G.vp)
 		G.scoring_region_trp.push(G.treaty_points.slice())
 	}
 
 	for (const d of G.global_demand) {
 		let winner = demand_flag_winner(d)
 		if (winner !== NONE) {
-			log_box_begin(winner, "Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d))
+			log_box_begin(winner, "Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d) + " flags")
 			let vp = data.demands[d].awards[current_era()].vp
 			let trp = data.demands[d].awards[current_era()].trp
 			let debt = data.demands[d].awards[current_era()].debt
@@ -2233,12 +2266,14 @@ P.scoring_phase = function () {
 			}
 		}
 		vp = Math.min(vp, 3)
-		log (say_ministry(EAST_INDIA_COMPANY, BRITAIN) + " adds +" + vp + " VP for Britain")
+		log_box_begin((vp > 0) ? BRITAIN : NONE, bold("Bonus Scoring") + "\n" + say_ministry(EAST_INDIA_COMPANY, BRITAIN))
+		//log ( + " adds +" + vp + " VP for Britain")
 		award_vp(BRITAIN, vp)
+		log_box_end()
 	}
 
 	G.scoring_extra_index = G.log.length - 1 // Bookmark in log how much to display when reviewing bonus scoring (NB: in this case just to know IF we have a bonus step with any content since the last bookmark)
-	G.log_hide_after = [ G.scoring_region_indices[0], G.scoring_region_indices[0] ] // We start by hiding all of the scoring part of the log except for the European scoring
+	G.log_hide_after = [ G.scoring_prestige_index, G.scoring_prestige_index ] // We start by hiding all of the scoring part of the log except for the Prestige scoring
 
 	goto ("scoring_review")
 }
