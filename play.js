@@ -892,9 +892,9 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAAB(\d+)\b/g, "tip-advantage-uc-br", "square marker advantage a$1", advantage_names)
 
-	text = escape_tip_class_sub_function(text, /\bDD(\d+)\b/g, "tip-demand-uc", "marker square-sm demand $1", demand_names, demand_name)
-	text = escape_tip_class_sub_function(text, /\bDDF(\d+)\b/g, "tip-demand-uc-fr", "marker square-sm demand $1", demand_names, demand_name)
-	text = escape_tip_class_sub_function(text, /\bDDB(\d+)\b/g, "tip-demand-uc-br", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_demand(text, /\bDD(\d+)\b/g, "tip-demand-uc", "marker square-sm demand $1", demand_names)
+	text = escape_demand(text, /\bDDF(\d+)\b/g, "tip-demand-uc-fr", "marker square-sm demand $1", demand_names)
+	text = escape_demand(text, /\bDDB(\d+)\b/g, "tip-demand-uc-br", "marker square-sm demand $1", demand_names)
 
 	text = escape_tip_class_sub(text, /\bE(\d+)\b/g, "tip-event", "card event_card c$1", event_card_names)
 	text = escape_tip_class_sub(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names)
@@ -908,9 +908,9 @@ function escape_text(text) {
 	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAB(\d+)\b/g, "tip-advantage-br", "square marker advantage a$1", advantage_names)
 
-	text = escape_tip_class_sub_function(text, /\bD(\d+)\b/g, "tip-demand", "marker square-sm demand $1", demand_names, demand_name)
-	text = escape_tip_class_sub_function(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names, demand_name)
-	text = escape_tip_class_sub_function(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names, demand_name)
+	text = escape_demand(text, /\bD(\d+)\b/g, "tip-demand", "marker square-sm demand $1", demand_names)
+	text = escape_demand(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names)
+	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
 	return escape_typography(text)
 }
@@ -928,6 +928,29 @@ function escape_tip_class_sub_function(text, re, log_className, tip_className, n
 		>${escape_typography(names[x])}</span>`
 	)
 }
+
+
+function _tip_focus_demand(d, name) {
+	world.tip.setAttribute("class", name)
+	world.tip.hidden = false
+	world.status.innerHTML = demand_tooltip(d)
+}
+
+function _tip_blur_demand(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function escape_demand(text, re, log_className, tip_className, names) {
+	return text.replace(re, (m,x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_demand('${x}', '${tip_className.replace("$1",demand_name(x))}')"
+		onmouseleave="_tip_blur_demand()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
 
 function on_prompt(text) {
 	if (text === null) {
