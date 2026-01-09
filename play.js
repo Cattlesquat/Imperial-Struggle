@@ -243,6 +243,21 @@ function event_tooltip(who, c)
 	return msg.trim()
 }
 
+
+function ministry_tooltip(who, m)
+{
+	let msg = bold(data.ministries[m].name)
+
+	if (data.ministries[m].keylabel !== "") {
+		msg += " " + parens(data.ministries[m].keylabel)
+	}
+
+	msg += ": "
+	msg += data.ministries[m].effect
+
+	return msg
+}
+
 function award_tooltip(region)
 {
 	var award = V.awards[region]
@@ -978,9 +993,9 @@ function escape_text(text) {
 	text = escape_event(text, /\bEEF(\d+)\b/g, "tip-event-uc-fr", "card event_card c$1", event_card_names, FRANCE)
 	text = escape_event(text, /\bEEB(\d+)\b/g, "tip-event-uc-br", "card event_card c$1", event_card_names, BRITAIN)
 
-	text = escape_tip_class_sub(text, /\bMM(\d+)\b/g, "tip-ministry-uc", "card ministry_card c$1", ministry_card_names)
-	text = escape_tip_class_sub(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names)
-	text = escape_tip_class_sub(text, /\bMMB(\d+)\b/g, "tip-ministry-uc-br", "card ministry_card c$1", ministry_card_names)
+	text = escape_ministry(text, /\bMM(\d+)\b/g, "tip-ministry-uc", "card ministry_card c$1", ministry_card_names, NONE)
+	text = escape_ministry(text, /\bMMF(\d+)\b/g, "tip-ministry-uc-fr", "card ministry_card c$1", ministry_card_names, FRANCE)
+	text = escape_ministry(text, /\bMMB(\d+)\b/g, "tip-ministry-uc-br", "card ministry_card c$1", ministry_card_names, BRITAIN)
 
 	text = escape_tip_class_sub(text, /\bAA(\d+)\b/g, "tip-advantage-uc", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAAF(\d+)\b/g, "tip-advantage-uc-fr", "square marker advantage a$1", advantage_names)
@@ -994,9 +1009,9 @@ function escape_text(text) {
 	text = escape_event(text, /\bEF(\d+)\b/g, "tip-event-fr", "card event_card c$1", event_card_names, FRANCE)
 	text = escape_event(text, /\bEB(\d+)\b/g, "tip-event-br", "card event_card c$1", event_card_names, BRITAIN)
 
-	text = escape_tip_class_sub(text, /\bM(\d+)\b/g, "tip-ministry", "card ministry_card c$1", ministry_card_names)
-	text = escape_tip_class_sub(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names)
-	text = escape_tip_class_sub(text, /\bMB(\d+)\b/g, "tip-ministry-br", "card ministry_card c$1", ministry_card_names)
+	text = escape_ministry(text, /\bM(\d+)\b/g, "tip-ministry", "card ministry_card c$1", ministry_card_names, NONE)
+	text = escape_ministry(text, /\bMF(\d+)\b/g, "tip-ministry-fr", "card ministry_card c$1", ministry_card_names, FRANCE)
+	text = escape_ministry(text, /\bMB(\d+)\b/g, "tip-ministry-br", "card ministry_card c$1", ministry_card_names, BRITAIN)
 
 	text = escape_tip_class_sub(text, /\bA(\d+)\b/g, "tip-advantage", "square marker advantage a$1", advantage_names)
 	text = escape_tip_class_sub(text, /\bAF(\d+)\b/g, "tip-advantage-fr", "square marker advantage a$1", advantage_names)
@@ -1140,6 +1155,29 @@ function escape_event(text, re, log_className, tip_className, names, who) {
 		class="${log_className}"
 		onmouseenter="_tip_focus_event('${who}', '${x}', '${tip_className.replace("$1",x)}')"
 		onmouseleave="_tip_blur_event()"
+		>${escape_typography(names[x])}</span>`
+	)
+}
+
+
+function _tip_focus_ministry(who, m, name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = false
+	world.status.innerHTML = ministry_tooltip(who, m)
+}
+
+function _tip_blur_ministry(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function escape_ministry(text, re, log_className, tip_className, names, who) {
+	return text.replace(re, (m, x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_ministry('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseleave="_tip_blur_ministry()"
 		>${escape_typography(names[x])}</span>`
 	)
 }
