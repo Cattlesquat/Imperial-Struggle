@@ -271,7 +271,7 @@ function say_event_effect(label, effect, bonus) {
 	return text
 }
 
-function event_tooltip(who, c) {
+function event_tooltip(c, who) {
 	let msg = bold(data.cards[c].name)
 
 	if (data.cards[c].keylabel !== "") {
@@ -284,15 +284,19 @@ function event_tooltip(who, c) {
 		msg += say_event_effect(data.cards[c].label, data.cards[c].effect, data.cards[c].bonus)
 	} else if (who === FRANCE) {
 		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
-	} else {
+	} else if (who === BRITAIN){
 		msg += say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
+	} else {
+		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
+		msg += " / " + say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
 	}
 
 	return msg.trim()
 }
 
 
-function ministry_tooltip(who, m) {
+
+function ministry_tooltip(m, who) {
 	let msg = bold(data.ministries[m].name)
 
 	if (data.ministries[m].keylabel !== "") {
@@ -346,11 +350,11 @@ function available_debt_tooltip(who) {
 }
 
 
-function game_turn_tooltip() {
+function game_turn_tooltip(x) {
 	return bold("Game Turn: ") + data.turns[V.turn].name
 }
 
-function vp_tooltip() {
+function vp_tooltip(x) {
 	return bold("Victory Points: ") + V.vp
 }
 
@@ -430,6 +434,8 @@ function on_init() {
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
+
+	init_preference_radio("actionverbosity", "medium")
 
 	set_available_debt_tooltips()
 
@@ -631,13 +637,13 @@ function on_init() {
 	for (i = 1; i <= 41; ++i) {
 		define_card("event_card", i)
 			.keyword("c" + i)
-			.tooltip(data.cards[i].name)
+			.tooltip(event_tooltip(i))
 	}
 
 	for (i = 1; i <= 26; ++i) {
 		define_card("ministry_card", i)
 			.keyword("c" + i)
-			.tooltip(data.ministries[i].name)
+			.tooltip(ministry_tooltip(i))
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
@@ -1171,7 +1177,14 @@ function escape_square_brackets(text) {
 		match = text.match(/\[.*?]/) // Get the whole expression including the brackets
 		if (match) {
 			let inside = match[0].match(/\[(.*?)]/) // Get the inside-the-brackets bit.
-			let type = inside[1][0]                 // First character tells us what type of thing (S = Spending, A = Award, I = Investment)
+			let type = inside[1][0]                 // First character tells us what type of thing (S = Spending, A = Award, I = Investment, P = action points)
+
+			if (type === "P") {
+				let action_text = say_action_points()
+				text = text.replace(/\[.*?]/, action_text)
+				break; // Gonna cheat and break here, because I only use this at the end of strings. Sorry, future-self-using-it-somewhere-else...
+			}
+
 			let key = inside[1][1]                  // Second character tells us what nation color to use, if any
 			let msg = inside[1].slice(2)            // Rest of string is the message
 			let value = 0
@@ -1304,7 +1317,7 @@ function _tip_focus_event(who, c, name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
 	world.tip.hidden = false
-	world.status.innerHTML = event_tooltip(who, c)
+	world.status.innerHTML = event_tooltip(c, who)
 }
 
 function _tip_blur_event(action, id) {
@@ -1327,7 +1340,7 @@ function _tip_focus_ministry(who, m, name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
 	world.tip.hidden = false
-	world.status.innerHTML = ministry_tooltip(who, m)
+	world.status.innerHTML = ministry_tooltip(m, who)
 }
 
 function _tip_blur_ministry(action, id) {
@@ -1493,29 +1506,6 @@ window.addEventListener("keydown", function (evt) {
 		case "c":
 			send_message("action", ["cheat_cheat", null, game_cookie])
 			break;
-		/*
-	case "[":
-		for (let i = 0; i < 500; i++) {
-			let logline = document.getElementById(i)
-			if (logline) {
-				if (i > 10) {
-					logline.style.display = "none"
-				}
-			}
-		}
-		break;
-	case "]":
-		for (let i = 0; i < 500; i++) {
-			let logline = document.getElementById(i)
-			if (logline) {
-				if (i > 10) {
-					logline.style.display = "block"
-				}
-			}
-		}
-		break;
-		 */
-
 	}
 })
 
@@ -1544,3 +1534,169 @@ function on_blur_advantage_tip() {
 function advantage_class_name(a) {
 	return `advantage.a${a}`
 }
+
+
+// True if ANY contingent action points of the specified type (ECON, DIPLO, MIL) theoretically available based on array of rules we're eligible for (or a single rule). Even if we've spent it all we can still use debt/TRPs in that category.
+function any_contingent(type, rules) {
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.action_points_contingent.length; i++) {
+					if (G.action_points_contingent[i].type !== type) continue
+					if (G.action_points_contingent[i].rule !== rule) continue
+					return true
+				}
+			}
+		} else {
+			for (let i = 0; i < G.action_points_contingent.length; i++) {
+				if (G.action_points_contingent[i].type !== type) continue
+				if (G.action_points_contingent[i].rule !== rules) continue
+				return true
+			}
+		}
+	}
+	return false
+}
+
+
+// Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
+function get_contingent(type, rules)
+{
+	let amount = 0
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.action_points_contingent.length; i++) {
+					if (G.action_points_contingent[i].type !== type) continue
+					if (G.action_points_contingent[i].rule !== rule) continue
+					amount += G.action_points_contingent[i].amount
+				}
+			}
+		} else {
+			for (let i = 0; i < G.action_points_contingent.length; i++) {
+				if (G.action_points_contingent[i].type !== type) continue
+				if (G.action_points_contingent[i].rule !== rules) continue
+				amount += G.action_points_contingent[i].amount
+			}
+		}
+	}
+	return amount
+}
+
+
+function action_points_eligible(type, rules = []) {
+	return G.action_points_eligible[type] || any_contingent(type, rules)
+}
+
+// Returns a list of all presently-active contingent action point rules
+function active_rules() {
+	let rules = []
+	for (const contingency of G.action_points_contingent) {
+		rules.push(contingency.rule)
+	}
+	return rules
+}
+
+
+function active_rules_list() {
+	let rules = []
+	for (const contingency of G.action_points_contingent) {
+		rules.push( { "rule": contingency.rule, "short": contingency.short } )
+	}
+	return rules
+}
+
+
+function is_action_phase()
+{
+	if (V === undefined) return false
+	return V.action_round_subphase !== NOT_ACTION_PHASE
+}
+
+
+function say_action_points(space = true, brackets = true) {
+
+	if (!is_action_phase()) return ""
+	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
+
+	let verbose = get_preference("actionverbosity", "medium")
+	let names = []
+	let shortest = (verbose === "short")
+	for (i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		if (verbose === "short") {
+			names[i] = data.action_points[i].letter
+		} else if (verbose === "long") {
+			names[i] = data.action_points[i].name
+		} else {
+			names[i] = data.action_points[i].short
+		}
+	}
+
+
+	var need_comma = false;
+	var early = [ false, false, false ]
+	var tell = ""
+	for (var level = MAJOR; level <= MINOR; level++) {
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			if (G.action_points_eligible === undefined) continue
+			if (action_points_eligible(i, active_rules())) {
+				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
+
+					if (need_comma) {
+						tell += ", "
+					}
+					tell += names[i] + (shortest ? "" : ": ")
+					need_comma = true;
+
+					tell += G.action_points_major[i] //+ " major"
+					if (G.action_points_minor[i]) {
+						tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
+						early[i] = true
+					}
+				}
+
+				if ((level === MAJOR) === early[i]) {
+					if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+						if (level === MINOR) {
+							if (need_comma) {
+								tell += ", "
+							}
+							tell += names[i] + (shortest ? "" : ": ")
+						}
+
+						tell += G.action_points_minor[i] + (shortest ? "m" : " Minor")
+						need_comma = true;
+					}
+
+					if (G.action_points_committed_bonus[i] > 0) {
+						if (need_comma) {
+							tell += ", "
+						}
+						tell += G.action_points_committed_bonus[i] + " Bonus"
+						need_comma = true;
+					}
+
+					for (let rule of active_rules_list()) {
+						let amount = get_contingent(i, rule.rule)
+						if (any_contingent(i, rule.rule)) {
+							if (need_comma) tell += ", "
+							tell += amount + " " + (shortest ? rule.short : rule.rule)
+							need_comma = true
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (tell === "") return tell
+	if (brackets) tell = "(" + tell + ")"
+	if (space) tell = " " + tell
+	return italic(tell)
+
+
+	//console.log (get_preference("actionverbosity", "medium"))
+}
+
+
+

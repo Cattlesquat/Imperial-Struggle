@@ -881,6 +881,14 @@ function on_view() {
 
 	V.log_hide_after = G.log_hide_after
 	V.log_length     = G.log.length
+
+	V.action_points_major = G.action_points_major
+	V.action_points_minor = G.action_points_minor
+	V.action_points_eligible = G.action_points_eligible
+	V.action_points_eligible_major = G.action_points_eligible_major
+	V.action_points_committed_bonus = G.action_points_committed_bonus
+	V.action_points_contingent = G.action_points_contingent
+	V.action_round_subphase = G.action_round_subphase
 }
 
 
@@ -2470,6 +2478,14 @@ const RULE_EUROPE               = "Europe only"
 const RULE_UNFLAG_MARKETS       = "Unflagging markets only"
 const RULE_MARKET_MARKET        = "Flag markets next to a BR-flagged market"
 
+const SHORT_UNFLAG_EUROPE       = "Unflag Europe"
+const SHORT_NORTH_AMERICA       = "N. Amer"
+const SHORT_INDIA               = "India"
+const SHORT_GERMAN_PRUSSIA_DUTCH= "Ge/Pr/Du"
+const SHORT_EUROPE              = "Europe"
+const SHORT_UNFLAG_MARKETS      = "Unflag Mkts"
+const SHORT_MARKET_MARKET       = "Flg Mkt near BR-Mkt"
+
 // Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
 function space_rules(s, type)
 {
@@ -2539,8 +2555,8 @@ function active_rules() {
 
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
-function add_contingent(type, amount, rule) {
-	let contingent = { "type": type, "amount": amount, "rule": rule }
+function add_contingent(type, amount, rule, short) {
+	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short }
 	G.action_points_contingent.push(contingent)
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")")
 }
@@ -3035,7 +3051,7 @@ P.event_acts_of_union = {
 	_begin() {
 		if (R === BRITAIN) {
 			log ("+1 Diplomatic point (unflagging in Europe only)")
-			add_contingent(DIPLO, 1, RULE_UNFLAG_EUROPE)
+			add_contingent(DIPLO, 1, RULE_UNFLAG_EUROPE, SHORT_UNFLAG_EUROPE)
 			if (G.qualifies_for_bonus) {
 				award_vp(BRITAIN, 2, false, "Event Bonus")
 			}
@@ -3387,7 +3403,7 @@ P.event_native_american_alliances = {
 			if (L.done_action_points || !G.qualifies_for_bonus) {
 				end()
 			} else {
-				add_contingent(ECON, 2, RULE_NORTH_AMERICA)
+				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 				L.done_action_points = true
 			}
 		}
@@ -3494,12 +3510,12 @@ P.event_austro_spanish_rivalry = {
 	},
 	diplomatic2() {
 		push_undo()
-		add_contingent(DIPLO, 2, RULE_INDIA)
+		add_contingent(DIPLO, 2, RULE_INDIA, SHORT_INDIA)
 		end()
 	},
 	economic2() {
 		push_undo()
-		add_contingent(ECON, 2, RULE_INDIA)
+		add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
 		end()
 	},
 	done() {
@@ -3706,8 +3722,8 @@ P.event_vatican_politics = {
 	done() {
 		push_undo()
 		if (R === BRITAIN) {
-			add_contingent(DIPLO, 2, RULE_GERMAN_PRUSSIA_DUTCH)
-			if (G.qualifies_for_bonus) add_contingent(DIPLO, 1, RULE_EUROPE)
+			add_contingent(DIPLO, 2, RULE_GERMAN_PRUSSIA_DUTCH, SHORT_GERMAN_PRUSSIA_DUTCH)
+			if (G.qualifies_for_bonus) add_contingent(DIPLO, 1, RULE_EUROPE, SHORT_EUROPE)
 			end()
 		} else {
 			if (G.qualifies_for_bonus) score_vatican_politics()
@@ -3817,7 +3833,7 @@ P.event_calico_acts = {
 		push_undo()
 		if (R === BRITAIN) {
 			L.unflagged_markets = true
-			add_contingent(ECON, 2, RULE_UNFLAG_MARKETS)
+			add_contingent(ECON, 2, RULE_UNFLAG_MARKETS, SHORT_UNFLAG_MARKETS)
 			if (!G.qualifies_for_bonus) end()
 		} else {
 			if (!L.unflagged_markets) {
@@ -3959,7 +3975,7 @@ P.event_alberonis_ambition = {
 	done() {
 		push_undo()
 		if (R === BRITAIN) {
-			add_contingent(ECON, L.econ_amount, RULE_MARKET_MARKET)
+			add_contingent(ECON, L.econ_amount, RULE_MARKET_MARKET, SHORT_MARKET_MARKET)
 		} else {
 			if (!L.shifted_alliance) {
 				L.shifted_alliance = true
@@ -6362,72 +6378,10 @@ function say_action(msg)
 	return bold (msg)
 }
 
-function say_action_points(space = true, brackets = true) {
-
-	if (!is_action_phase()) return ""
-	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
-
-	var need_comma = false;
-	var early = [ false, false, false ]
-	var tell = ""
-	for (var level = MAJOR; level <= MINOR; level++) {
-		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			if (G.action_points_eligible === undefined) continue
-			if (action_points_eligible(i, active_rules())) {
-				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
-
-					if (need_comma) {
-						tell += ", "
-					}
-					tell += data.action_points[i].short + ": "
-					need_comma = true;
-
-					tell += G.action_points_major[i] //+ " major"
-					if (G.action_points_minor[i]) {
-						tell += " Major, " // only explicitly say Major if we also have Minor
-						early[i] = true
-					}
-				}
-
-				if ((level === MAJOR) === early[i]) {
-					if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
-						if (level === MINOR) {
-							if (need_comma) {
-								tell += ", "
-							}
-							tell += data.action_points[i].short + ": "
-						}
-
-						tell += G.action_points_minor[i] + " Minor"
-						need_comma = true;
-					}
-
-					if (G.action_points_committed_bonus[i] > 0) {
-						if (need_comma) {
-							tell += ", "
-						}
-						tell += G.action_points_committed_bonus[i] + " Bonus"
-						need_comma = true;
-					}
-
-					for (let rule of active_rules()) {
-						let amount = get_contingent(i, rule)
-						if (any_contingent(i, rule)) {
-							if (need_comma) tell += ", "
-							tell += amount + " " + rule
-							need_comma = true
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (tell === "") return tell
-	if (brackets) tell = "(" + tell + ")"
-	if (space) tell = " " + tell
-	return italic(tell)
+function say_action_points() {
+	return "[P]"
 }
+
 
 
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */

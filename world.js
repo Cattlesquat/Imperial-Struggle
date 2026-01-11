@@ -1184,6 +1184,7 @@ function get_preference(name, fallback) {
 function set_preference(name, value) {
 	var key = params.title_id + "/" + name
 	window.localStorage.setItem(key, JSON.stringify(value))
+	window.location.reload() //BR// Refresh page so that display preferences "take"
 	return value
 }
 
