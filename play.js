@@ -1084,7 +1084,6 @@ function escape_square_brackets(text) {
 
 	do {
 		match = text.match(/\[.*?]/) // Get the whole expression including the brackets
-		console.log(match)
 		if (match) {
 			let inside = match[0].match(/\[(.*?)]/) // Get the inside-the-brackets bit.
 			let type = inside[1][0]                 // First character tells us what type of thing (S = Spending, A = Award, I = Investment)
