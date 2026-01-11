@@ -1368,10 +1368,15 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 
 
 function _tip_focus_advantage(who, a, name) {
-	world.tip.setAttribute("class", name)
+	//world.tip.setAttribute("class", name)
 	position_tip_image()
 	world.tip.hidden = false
 	world.status.innerHTML = advantage_tooltip(a)
+
+	// Show BOTH sides of the marker
+	world.tip.innerHTML = `		
+		<div class="marker square advantage a${a} reverse advantage-back"></div>
+		<div class="marker square advantage a${a} advantage-front"></div>		`
 }
 
 function _tip_blur_advantage(action, id) {
@@ -1380,10 +1385,6 @@ function _tip_blur_advantage(action, id) {
 	world.status.innerHTML = ""
 }
 
-/*
-<div className="marker square advantage a${a} reverse advantage-back"></div>
-<div className="marker square advantage a${a} advantage-front"></div>
-*/
 
 function escape_advantage(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
@@ -1528,10 +1529,11 @@ function advantage_tooltip_image(a, onoff) {
 
 function on_focus_advantage_tip(a) {
 	world.tip.hidden = false
+
+	// Show BOTH sides of the marker
 	world.tip.innerHTML = `
 		<div class="marker square advantage a${a} reverse advantage-back"></div>
-		<div class="marker square advantage a${a} advantage-front"></div>
-	`
+		<div class="marker square advantage a${a} advantage-front"></div>	`
 }
 
 function on_blur_advantage_tip() {
