@@ -471,7 +471,7 @@ function on_init() {
 				}
 			}
 			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space("conflict-space", s.num, conflict_rect).tooltip(space_tooltip)
+			define_space("conflict-space", s.num, conflict_rect).tooltip(space_tooltip).tooltip_image(space_tooltip_image)
 		}
 
 		if (s.type === TERRITORY) {
@@ -484,7 +484,7 @@ function on_init() {
 			let damaged_rect = rect.slice()
 			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip)
+			define_space("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip).tooltip_image(space_tooltip_image)
 		}
 
 		define_layout("lout-space", s.num, rect)
