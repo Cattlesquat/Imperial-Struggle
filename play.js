@@ -379,6 +379,42 @@ function initiative_tooltip(who) {
 }
 
 
+function basic_war_tooltip(t, who) {
+	let val = data.basic_war_tiles[t].val
+	let msg = bold(data.flags[who].adj + " Basic War Tile: ") + ((val >= 0) ? "+" + val : val)
+	switch (data.basic_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+		case WAR_FLAG:
+			msg += " with Flag"
+			break
+	}
+	return msg
+}
+
+
+function bonus_war_tooltip(t, who) {
+	let name = data.bonus_war_tiles[t].name
+	let val = data.bonus_war_tiles[t].val
+	let msg = bold(data.flags[who].adj + " Bonus War Tile: ") + name + " (+" + val
+	switch (data.bonus_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+	}
+	msg += ")"
+	return msg
+}
+
+
+
 function pad(s, condition = true) {
 	if (!condition) return s
 	return " " + s + " "
@@ -655,19 +691,19 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
-		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0))
-		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16))
+		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE))
+		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16)).tooltip(basic_war_tooltip(i, BRITAIN))
 	}
 
 	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
-		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0))
-		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12))
-		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24))
-		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36))
-		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48))
-		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60))
-		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72))
-		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84))
+		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84)).tooltip(bonus_war_tooltip(i, BRITAIN))
 	}
 
 	define_board("#war_wss", 1100, 850)
