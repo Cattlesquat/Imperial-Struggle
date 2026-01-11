@@ -77,6 +77,7 @@ const world = {
 	panzoom: $("#pan_zoom_main"),
 	tip: $("#tip"),
 	demand_highlight: $("#demand_highlight"),
+	map_tip: $("#map_tip"),
 	log: $("#log"),
 	parent_list: [],
 	stack_list: [],

@@ -168,6 +168,30 @@ function space_tooltip(s) {
 }
 
 
+function space_tooltip_image(s, onoff)
+{
+	if (onoff) {
+		let rect = find_layout_node(data.spaces[s].layout ?? data.spaces[s].name)
+		if (!rect) return
+
+		if (data.spaces[s].type === POLITICAL) {
+			rect = expand_rect(rect, 30, 30)
+			rect[1] -= 10
+			rect[3] += 10
+		} else {
+			rect = expand_rect(rect, 20, 20)
+		}
+
+		world.map_tip.hidden = false
+		world.map_tip.style.backgroundPosition = "-" + rect[0] + "px -" + rect[1] + "px" //need negative offsets
+		world.map_tip.style.width = rect[2] + "px";
+		world.map_tip.style.height = rect[3] + "px";
+	} else {
+		world.map_tip.hidden = true
+	}
+}
+
+
 function bizarro_space_tooltip(bs) {
 
 	if ((bs >= AWARD_EUROPE) && (bs <= AWARD_INDIA)) {
@@ -423,6 +447,7 @@ function on_init() {
 		define_space("space", s.num, space_rect)
 			.keyword(space_type_class[s.type])
 			.tooltip(space_tooltip)
+			.tooltip_image(space_tooltip_image)
 
 		if ((s.type === POLITICAL) || (s.type === MARKET)) {
 			let conflict_rect = rect.slice()
@@ -672,8 +697,8 @@ function on_init() {
 
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
-		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip)
-		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip)
+		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
 	}
 
 	for (let s = 0; s < NUM_SPACES; s++) {

@@ -1448,3 +1448,22 @@ menu li.separator {
     left:1352px;
     top:264px;
 }
+
+
+
+#map_tip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+
+    border: 2px solid black;
+
+    left: 0px;
+    bottom: 23px;
+
+    display: block;
+    background-image: url(boards75/map.avif);
+    background-size: auto;
+    background-repeat: no-repeat;
+    /* background-position: -500px -200px; */
+}
