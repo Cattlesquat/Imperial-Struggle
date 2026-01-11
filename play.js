@@ -347,11 +347,11 @@ function available_debt_tooltip(who) {
 
 
 function game_turn_tooltip() {
-	return bold("Game Turn: ") + data.turns[G.turn].name
+	return bold("Game Turn: ") + data.turns[V.turn].name
 }
 
 function vp_tooltip() {
-	return bold("Victory Points: ") + G.vp
+	return bold("Victory Points: ") + V.vp
 }
 
 function debt_tooltip(who) {
