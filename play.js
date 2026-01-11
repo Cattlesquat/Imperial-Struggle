@@ -346,6 +346,35 @@ function available_debt_tooltip(who) {
 }
 
 
+function game_turn_tooltip() {
+	return bold("Game Turn: ") + data.turns[G.turn].name
+}
+
+function vp_tooltip() {
+	return bold("Victory Points: ") + G.vp
+}
+
+function debt_tooltip(who) {
+	let msg = bold(data.flags[who].adj + " Debt: ") + V.debt[who]
+	msg += italic(" (Debt Limit: " + V.debt_limit[who] + ")")
+	return msg
+}
+
+function debt_limit_tooltip(who) {
+	let msg = bold(data.flags[who].adj + " Debt Limit: ") + V.debt_limit[who]
+	msg += italic(" (Current Debt: " + V.debt[who] + ")")
+	return msg
+}
+
+function treaty_points_tooltip(who) {
+	return bold(data.flags[who].adj + " Treaty Points: ") + V.treaty_points[who]
+}
+
+function initiative_tooltip(who) {
+	return bold("Initiative: ") + data.flags[who].name
+}
+
+
 function pad(s, condition = true) {
 	if (!condition) return s
 	return " " + s + " "
@@ -540,28 +569,28 @@ function on_init() {
 
 	define_marker("exhausted", undefined, "square-sm")
 
-	define_marker("game-turn", undefined, "square-sm")
-	define_marker("victory-points", undefined, "square-sm black")
-	define_marker("debt", FRANCE, "square-sm fr")
-	define_marker("debt", BRITAIN, "square-sm br")
-	define_marker("debt-limit", FRANCE, "square-sm fr")
-	define_marker("debt-limit", BRITAIN, "square-sm br")
-	define_marker("treaty-points", FRANCE, "square-sm treaty-points-fr")
-	define_marker("treaty-points", BRITAIN, "square-sm treaty-points-br")
-	define_marker("initiative", FRANCE, "square-sm initiative-fr")
-	define_marker("initiative", BRITAIN, "square-sm initiative-br")
+	define_marker("game-turn", undefined, "square-sm").tooltip(game_turn_tooltip)
+	define_marker("victory-points", undefined, "square-sm black").tooltip(vp_tooltip)
+	define_marker("debt", FRANCE, "square-sm fr").tooltip(debt_tooltip)
+	define_marker("debt", BRITAIN, "square-sm br").tooltip(debt_tooltip)
+	define_marker("debt-limit", FRANCE, "square-sm fr").tooltip(debt_limit_tooltip)
+	define_marker("debt-limit", BRITAIN, "square-sm br").tooltip(debt_limit_tooltip)
+	define_marker("treaty-points", FRANCE, "square-sm treaty-points-fr").tooltip(treaty_points_tooltip)
+	define_marker("treaty-points", BRITAIN, "square-sm treaty-points-br").tooltip(treaty_points_tooltip)
+	define_marker("initiative", FRANCE, "square-sm initiative-fr").tooltip(initiative_tooltip)
+	define_marker("initiative", BRITAIN, "square-sm initiative-br").tooltip(initiative_tooltip)
 
 	for (i = 0; i < 4; ++i) {
-		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip("Britain Action Round " + (i + 1))
-		define_marker("action-fr", i, `square-sm action_${i + 1} fr`).tooltip("France Action Round " + (i + 1))
+		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip(bold("Britain Action Round " + (i + 1)))
+		define_marker("action-fr", i, `square-sm action_${i + 1} fr`).tooltip(bold("France Action Round " + (i + 1)))
 	}
 
 	for (i = 0; i < NUM_SPACES; ++i) {
 		let t = data.spaces[i].type
 		if ((t === POLITICAL) || (t === MARKET)) {
-			define_marker("conflict", i, "hex-sm")
+			define_marker("conflict", i, "hex-sm").tooltip(bold("Conflict Marker"))
 		} else if (t === FORT) {
-			define_marker("damaged", i, "hex-sm")
+			define_marker("damaged", i, "hex-sm").tooltip(bold("Fort Damaged Marker"))
 		}
 	}
 
