@@ -1,61 +1,61 @@
 "use strict"
 
 const war_layout = {
-	war_7yw_theater_drawn: [ 353, 0, 667, 93 ],
-	war_7yw_theater_1_france: [ 57, 132, 152, 152 ],
-	war_7yw_theater_1_britain: [ 225, 132, 152, 152 ],
-	war_7yw_theater_2_france: [ 579, 132, 152, 152 ],
-	war_7yw_theater_2_britain: [ 747, 132, 152, 152 ],
-	war_7yw_theater_3_france: [ 57, 503, 152, 152 ],
-	war_7yw_theater_3_britain: [ 225, 503, 152, 152 ],
-	war_7yw_theater_4_france: [ 579, 503, 152, 152 ],
-	war_7yw_theater_4_britain: [ 747, 503, 152, 152 ],
-	war_wss_theater_drawn: [ 240, 0, 667, 93 ],
-	war_wss_theater_1_france: [ 57, 132, 152, 152 ],
-	war_wss_theater_1_britain: [ 225, 132, 152, 152 ],
-	war_wss_theater_2_france: [ 579, 132, 152, 152 ],
-	war_wss_theater_2_britain: [ 747, 132, 152, 152 ],
-	war_wss_theater_3_france: [ 57, 501, 152, 152 ],
-	war_wss_theater_3_britain: [ 225, 504, 152, 152 ],
-	war_wss_theater_4_france: [ 579, 503, 152, 152 ],
-	war_wss_theater_4_britain: [ 747, 503, 152, 152 ],
-	war_was_theater_drawn: [ 233, 0, 667, 93 ],
-	war_was_theater_1_france: [ 57, 116, 152, 152 ],
-	war_was_theater_1_britain: [ 225, 116, 152, 152 ],
-	war_was_theater_2_france: [ 579, 111, 152, 152 ],
-	war_was_theater_2_britain: [ 747, 116, 152, 152 ],
-	war_was_theater_3_france: [ 57, 445, 152, 152 ],
-	war_was_theater_3_britain: [ 225, 445, 152, 152 ],
-	war_was_theater_4_france: [ 579, 445, 152, 152 ],
-	war_was_theater_4_britain: [ 747, 445, 152, 152 ],
-	war_awi_theater_drawn: [ 227, 0, 667, 93 ],
-	war_awi_theater_1_france: [ 57, 132, 152, 152 ],
-	war_awi_theater_1_britain: [ 225, 132, 152, 152 ],
-	war_awi_theater_2_france: [ 579, 443, 152, 152 ],
-	war_awi_theater_2_britain: [ 747, 443, 152, 152 ],
-	war_awi_theater_3_france: [ 115, 613, 152, 152 ],
-	war_awi_theater_3_britain: [ 300, 613, 152, 152 ],
-	war_awi_theater_4_france: [ 577, 132, 152, 152 ],
-	war_awi_theater_4_britain: [ 747, 132, 152, 152 ],
-	war_7yw_theater_1: [ 36, 76, 507, 360 ],
-	war_7yw_theater_2: [ 557, 76, 505, 360 ],
-	war_7yw_theater_3: [ 36, 447, 507, 360 ],
-	war_7yw_theater_4: [ 557, 447, 505, 360 ],
-	war_wss_theater_1: [ 36, 76, 507, 360 ],
-	war_wss_theater_2: [ 557, 76, 505, 360 ],
-	war_wss_theater_3: [ 36, 447, 507, 360 ],
-	war_wss_theater_4: [ 557, 447, 505, 360 ],
-	war_was_theater_1: [ 36, 67, 507, 321 ],
-	war_was_theater_2: [ 557, 67, 505, 321 ],
-	war_was_theater_3: [ 36, 400, 507, 299 ],
-	war_was_theater_4: [ 557, 400, 505, 417 ],
-	war_awi_theater_1: [ 36, 76, 507, 465 ],
-	war_awi_theater_2: [ 557, 76, 505, 297 ],
-	war_awi_theater_3: [ 557, 387, 505, 425 ],
-	war_awi_theater_4: [ 59, 568, 443, 219 ]
+	war_7yw_theater_drawn: [353, 0, 667, 93],
+	war_7yw_theater_1_france: [57, 132, 152, 152],
+	war_7yw_theater_1_britain: [225, 132, 152, 152],
+	war_7yw_theater_2_france: [579, 132, 152, 152],
+	war_7yw_theater_2_britain: [747, 132, 152, 152],
+	war_7yw_theater_3_france: [57, 503, 152, 152],
+	war_7yw_theater_3_britain: [225, 503, 152, 152],
+	war_7yw_theater_4_france: [579, 503, 152, 152],
+	war_7yw_theater_4_britain: [747, 503, 152, 152],
+	war_wss_theater_drawn: [240, 0, 667, 93],
+	war_wss_theater_1_france: [57, 132, 152, 152],
+	war_wss_theater_1_britain: [225, 132, 152, 152],
+	war_wss_theater_2_france: [579, 132, 152, 152],
+	war_wss_theater_2_britain: [747, 132, 152, 152],
+	war_wss_theater_3_france: [57, 501, 152, 152],
+	war_wss_theater_3_britain: [225, 504, 152, 152],
+	war_wss_theater_4_france: [579, 503, 152, 152],
+	war_wss_theater_4_britain: [747, 503, 152, 152],
+	war_was_theater_drawn: [233, 0, 667, 93],
+	war_was_theater_1_france: [57, 116, 152, 152],
+	war_was_theater_1_britain: [225, 116, 152, 152],
+	war_was_theater_2_france: [579, 111, 152, 152],
+	war_was_theater_2_britain: [747, 116, 152, 152],
+	war_was_theater_3_france: [57, 445, 152, 152],
+	war_was_theater_3_britain: [225, 445, 152, 152],
+	war_was_theater_4_france: [579, 445, 152, 152],
+	war_was_theater_4_britain: [747, 445, 152, 152],
+	war_awi_theater_drawn: [227, 0, 667, 93],
+	war_awi_theater_1_france: [57, 132, 152, 152],
+	war_awi_theater_1_britain: [225, 132, 152, 152],
+	war_awi_theater_2_france: [579, 443, 152, 152],
+	war_awi_theater_2_britain: [747, 443, 152, 152],
+	war_awi_theater_3_france: [115, 613, 152, 152],
+	war_awi_theater_3_britain: [300, 613, 152, 152],
+	war_awi_theater_4_france: [577, 132, 152, 152],
+	war_awi_theater_4_britain: [747, 132, 152, 152],
+	war_7yw_theater_1: [36, 76, 507, 360],
+	war_7yw_theater_2: [557, 76, 505, 360],
+	war_7yw_theater_3: [36, 447, 507, 360],
+	war_7yw_theater_4: [557, 447, 505, 360],
+	war_wss_theater_1: [36, 76, 507, 360],
+	war_wss_theater_2: [557, 76, 505, 360],
+	war_wss_theater_3: [36, 447, 507, 360],
+	war_wss_theater_4: [557, 447, 505, 360],
+	war_was_theater_1: [36, 67, 507, 321],
+	war_was_theater_2: [557, 67, 505, 321],
+	war_was_theater_3: [36, 400, 507, 299],
+	war_was_theater_4: [557, 400, 505, 417],
+	war_awi_theater_1: [36, 76, 507, 465],
+	war_awi_theater_2: [557, 76, 505, 297],
+	war_awi_theater_3: [557, 387, 505, 425],
+	war_awi_theater_4: [59, 568, 443, 219]
 }
 
-const layout_theater_drawn = [0,0,1800,70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
+const layout_theater_drawn = [0, 0, 1800, 70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
 
 const space_type_class = [
 	"political",
@@ -75,7 +75,7 @@ function find_layout_node(name) {
 }
 
 function center_rect(xc, yc, w, h) {
-	return [ xc - w/2, yc - h/2, w, h ]
+	return [xc - w / 2, yc - h / 2, w, h]
 }
 
 
@@ -135,25 +135,21 @@ function space_tooltip(s) {
 		} else {
 			typename = "Market"
 		}
-	}
-	else if (type === POLITICAL) {
+	} else if (type === POLITICAL) {
 		var alliance = (data.spaces[s].alliance !== undefined) && (data.spaces[s].alliance.length > 0)
 		var prestige = data.spaces[s].prestige
 		if (prestige && !alliance) {
 			typename = "Prestige"
-		}
-		else if (data.spaces[s].region === REGION_EUROPE) {
+		} else if (data.spaces[s].region === REGION_EUROPE) {
 			if (prestige) {
 				typename = "Prestige + Alliance"
 			} else {
 				typename = "Alliance"
 			}
-		}
-		else {
+		} else {
 			typename = "Local Alliance"
 		}
-	}
-	else {
+	} else {
 		typename = data.space_types[type].name
 	}
 
@@ -168,7 +164,7 @@ function space_tooltip(s) {
 	if (has_conflict_marker(s)) other = "Conflict"
 	if (is_damaged_fort(s)) other = "Damaged"
 
-	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : ""	) + ")") + ((other !== "") ? ": " + other : "")
+	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")") + ((other !== "") ? ": " + other : "")
 }
 
 
@@ -193,8 +189,7 @@ function current_era() {
 }
 
 
-function demand_tooltip(demand)
-{
+function demand_tooltip(demand) {
 	var awards = data.demands[demand].awards[current_era()]
 	var awards_string = awards.vp + " VP"
 	if (awards.trp > 0) awards_string += ", " + awards.trp + " TRP"
@@ -222,8 +217,7 @@ function say_event_effect(label, effect, bonus) {
 	return text
 }
 
-function event_tooltip(who, c)
-{
+function event_tooltip(who, c) {
 	let msg = bold(data.cards[c].name)
 
 	if (data.cards[c].keylabel !== "") {
@@ -232,7 +226,7 @@ function event_tooltip(who, c)
 
 	msg += ": "
 
-	if ((data.cards[c].label !== "" ) || (data.cards[c].effect !== "")) {
+	if ((data.cards[c].label !== "") || (data.cards[c].effect !== "")) {
 		msg += say_event_effect(data.cards[c].label, data.cards[c].effect, data.cards[c].bonus)
 	} else if (who === FRANCE) {
 		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
@@ -244,8 +238,7 @@ function event_tooltip(who, c)
 }
 
 
-function ministry_tooltip(who, m)
-{
+function ministry_tooltip(who, m) {
 	let msg = bold(data.ministries[m].name)
 
 	if (data.ministries[m].keylabel !== "") {
@@ -263,23 +256,40 @@ function advantage_tooltip(a) {
 	return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc)
 }
 
-function award_tooltip(region)
+function investment_tooltip(i)
 {
-	var award = V.awards[region]
-	return bold(data.bizarro_spaces[AWARD_EUROPE + region].name) + ": "
-		   + italic(data.awards[award].name + ((region === REGION_EUROPE) ? " for most total flags and +2 VP for most flagged prestige spaces" : " for most total flags"))
-	       + ". " + bold(data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
-	       + ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
-}
+	let msg = bold("Investment Tile: ") + data.investments[i].name
+	if (V.used_investments.includes(i)) {
+		msg += "(Used on previous turn)"
+	} else {
+		let avail = true
+		for (let whom = FRANCE; whom <= BRITAIN; whom++) {
+			if (V.played_tiles[whom].includes(i)) {
+				msg += italic(" (Chosen by " + data.flags[whom].name + ", action round " + (V.played_tiles[whom].indexOf(i) + 1) + ")")
+				avail = false
+				break
+			}
+		}
 
+		if (avail) msg += italic(" (Available)")
+	}
 
-function available_debt_tooltip(who)
-{
-	let msg = bold (data.flags[who].adj + " " + "Available Spending: " + available_debt_plus_trps(who) + ".")
-	msg += italic(" (Debt: " + V.debt[who] + ", Debt Limit: " + V.debt_limit[who] + ", Treaty Points: " + V.treaty_points[who] + ")")
 	return msg
 }
 
+function award_tooltip(region) {
+	var award = V.awards[region]
+	return bold(data.bizarro_spaces[AWARD_EUROPE + region].name) + ": "
+		+ italic(data.awards[award].name + ((region === REGION_EUROPE) ? " for most total flags and +2 VP for most flagged prestige spaces" : " for most total flags"))
+		+ ". " + bold(data.flags[region_flag_winner(region)].name2 + " +" + region_flag_delta(region)
+			+ ((region === REGION_EUROPE) ? " / " + data.flags[prestige_winner()].name2 + " +" + prestige_flag_delta() : ""))
+}
+
+function available_debt_tooltip(who) {
+	let msg = bold(data.flags[who].adj + " " + "Available Spending: " + available_debt_plus_trps(who) + ".")
+	msg += italic(" (Debt: " + V.debt[who] + ", Debt Limit: " + V.debt_limit[who] + ", Treaty Points: " + V.treaty_points[who] + ")")
+	return msg
+}
 
 
 function pad(s, condition = true) {
@@ -292,27 +302,23 @@ function parens(s, condition = true) {
 	return "(" + s + ")"
 }
 
-function bold (s, condition = true)
-{
+function bold(s, condition = true) {
 	if (!condition) return s
 	return "<b>" + s + "</b>"
 }
 
-function italic (s, condition = true )
-{
+function italic(s, condition = true) {
 	if (!condition) return s
 	return "<i>" + s + "</i>"
 }
 
-function strike (s, condition = true )
-{
+function strike(s, condition = true) {
 	if (!condition) return s
 	return "<s>" + s + "</s>"
 }
 
 
-function set_available_debt_tooltips()
-{
+function set_available_debt_tooltips() {
 	var id = roles[FRANCE].stat.my_id
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(FRANCE)
@@ -321,7 +327,7 @@ function set_available_debt_tooltips()
 		world.status.innerHTML = ""
 	})
 
-	 id = roles[BRITAIN].stat.my_id
+	id = roles[BRITAIN].stat.my_id
 	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(BRITAIN)
 	})
@@ -360,7 +366,7 @@ function on_init() {
 	define_panel("#available_investment_tiles", "panel-available-investments")
 	define_panel("#used_investment_tiles", "panel-used-investments")
 
-	define_board("#map", 2550, 1650, [ 24, 24, 24, 24 ])
+	define_board("#map", 2550, 1650, [24, 24, 24, 24])
 
 	for (s of data.spaces) {
 		let rect = find_layout_node(s.layout ?? s.name)
@@ -393,17 +399,17 @@ function on_init() {
 			if (s.type === MARKET) {
 				if ((s.num === NORTHEAST_CHANNEL) || (s.num === OSWEGO)) {
 					conflict_rect = translate_rect(conflict_rect, -65, -40) // upper left
-				} else if ([ NIAGARA, HAVANA, ANTIGUA, KURPA, MARTINIQUE ].includes(s.num)) {
+				} else if ([NIAGARA, HAVANA, ANTIGUA, KURPA, MARTINIQUE].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -65, 20) // lower left
 				} else {
 					conflict_rect = translate_rect(conflict_rect, 32, 22) // Conflict markers positioning - default lower right
 				}
 			} else if (s.type === POLITICAL) {
-				if ([ PRIVATEERS, IRELAND_1, SCOTLAND_1, DUTCH_1, GERMAN_STATES_1, PRUSSIA_1, PRUSSIA_3, SPAIN_1, SPAIN_3, AUSTRIA_1, AUSTRIA_3 ].includes(s.num)) {
+				if ([PRIVATEERS, IRELAND_1, SCOTLAND_1, DUTCH_1, GERMAN_STATES_1, PRUSSIA_1, PRUSSIA_3, SPAIN_1, SPAIN_3, AUSTRIA_1, AUSTRIA_3].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -63, 27) // Conflict markers positioning - lower right
-				} else if ([ BAVARIA ].includes(s.num)) {
+				} else if ([BAVARIA].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -63, -45) // Conflict markers positioning - upper left
-				} else if ([ DUTCH_2 ].includes(s.num)) {
+				} else if ([DUTCH_2].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -15, 50) // Conflict markers positioning - lower middle
 				} else {
 					conflict_rect = translate_rect(conflict_rect, 30, 27) // Conflict markers positioning - default lower right
@@ -423,7 +429,7 @@ function on_init() {
 			let damaged_rect = rect.slice()
 			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space ("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip)
+			define_space("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip)
 		}
 
 		define_layout("lout-space", s.num, rect)
@@ -432,8 +438,8 @@ function on_init() {
 			if ((s.region === REGION_NORTH_AMERICA) || (s.region === REGION_CARIBBEAN)) {
 				rect = translate_rect(rect, 35, 75) // Huguenot markers displayed at center of territory
 				rect = resize_rect(rect, 51, 51) // fit to the counters
-				define_space ("huguenots", s.num, rect)
-				define_layout ("huguenot-space", s.num, rect)
+				define_space("huguenots", s.num, rect)
+				define_layout("huguenot-space", s.num, rect)
 			}
 		}
 	}
@@ -458,7 +464,7 @@ function on_init() {
 			continue
 		}
 
-	    define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
+		define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
 	}
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
@@ -491,8 +497,8 @@ function on_init() {
 	define_marker("initiative", BRITAIN, "square-sm initiative-br")
 
 	for (i = 0; i < 4; ++i) {
-		define_marker("action-br", i, `square-sm action_${i+1} br`).tooltip ("Britain Action Round " + (i+1))
-		define_marker("action-fr", i, `square-sm action_${i+1} fr`).tooltip ("France Action Round " + (i+1))
+		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip("Britain Action Round " + (i + 1))
+		define_marker("action-fr", i, `square-sm action_${i + 1} fr`).tooltip("France Action Round " + (i + 1))
 	}
 
 	for (i = 0; i < NUM_SPACES; ++i) {
@@ -521,7 +527,9 @@ function on_init() {
 		var rect = find_layout_node(a.name)
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_space("advantage", a.num, resize_rect(rect, 88, 88))
-			.tooltip((a) => { return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc) })
+			.tooltip((a) => {
+				return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc)
+			})
 			.tooltip_image(advantage_tooltip_image)
 		let marker = define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
@@ -532,7 +540,7 @@ function on_init() {
 	for (a of data.investments) {
 		define_marker("investment", a.num)
 			.keyword("square investment i" + a.num)
-			.tooltip(bold("Investment Tile: ") + a.name)
+			.tooltip(investment_tooltip)
 	}
 
 	for (i = 1; i <= 41; ++i) {
@@ -548,19 +556,19 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
-		define_marker("basic_war", i+0, "hex fr war-basic" + (i+0))
-		define_marker("basic_war", i+16, "hex br war-basic" + (i+16))
+		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0))
+		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16))
 	}
 
 	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
-		define_marker("bonus_war", (i+0), "hex fr war" + (i+0))
-		define_marker("bonus_war", (i+12), "hex br war" + (i+12))
-		define_marker("bonus_war", (i+24), "hex fr war" + (i+24))
-		define_marker("bonus_war", (i+36), "hex br war" + (i+36))
-		define_marker("bonus_war", (i+48), "hex fr war" + (i+48))
-		define_marker("bonus_war", (i+60), "hex br war" + (i+60))
-		define_marker("bonus_war", (i+72), "hex fr war" + (i+72))
-		define_marker("bonus_war", (i+84), "hex br war" + (i+84))
+		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0))
+		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12))
+		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24))
+		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36))
+		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48))
+		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60))
+		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72))
+		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84))
 	}
 
 	define_board("#war_wss", 1100, 850)
@@ -653,29 +661,25 @@ function on_init() {
 
 // True if ministry is presently exhausted
 // Some ministries have more than one separately exhaustible ability (in which case can pass a different "ability" number)
-function is_ministry_exhausted (who, m, ability = 0)
-{
+function is_ministry_exhausted(who, m, ability = 0) {
 	if (!V.ministry[who].includes(m)) return false
 	var idx = V.ministry[who].indexOf(m)
 	return set_has(V.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 }
 
-function is_advantage_exhausted(a)
-{
+function is_advantage_exhausted(a) {
 	return !!(V.advantages_exhausted & (1 << a))
 }
 
 
-function is_ministry_fully_exhausted(who, m)
-{
+function is_ministry_fully_exhausted(who, m) {
 	for (let i = 0; i < data.ministries[m].abilities; i++) {
 		if (!is_ministry_exhausted(who, m, i)) return false
 	}
 	return true
 }
 
-function is_ministry_partially_exhausted(who, m)
-{
+function is_ministry_partially_exhausted(who, m) {
 	for (let i = 0; i < data.ministries[m].abilities; i++) {
 		if (is_ministry_exhausted(who, m, i)) return true
 	}
@@ -683,18 +687,15 @@ function is_ministry_partially_exhausted(who, m)
 }
 
 
-function available_debt(who)
-{
+function available_debt(who) {
 	return G.debt_limit[who] - G.debt[who]
 }
 
-function available_debt_plus_trps(who)
-{
+function available_debt_plus_trps(who) {
 	return available_debt(who) + G.treaty_points[who]
 }
 
-function update_debt_display()
-{
+function update_debt_display() {
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		let avail = available_debt_plus_trps(who)
 		roles[who].stat.innerHTML = avail + " Debt + TRPs"
@@ -749,9 +750,9 @@ function on_update() {
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE)
-				populate ("lout-space", s.num, "squadron-fr", s.num)
+				populate("lout-space", s.num, "squadron-fr", s.num)
 			if (V.flags[s.num] === BRITAIN)
-				populate ("lout-space", s.num, "squadron-br", s.num)
+				populate("lout-space", s.num, "squadron-br", s.num)
 		} else {
 			if (V.flags[s.num] === FRANCE)
 				populate_generic("lout-space", s.num, "marker square-sm flag_fr")
@@ -763,7 +764,7 @@ function on_update() {
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
 
 			if ((s.type === TERRITORY) && V.huguenots.includes(s.num)) {
-				populate ("huguenot-space", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
+				populate("huguenot-space", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
 			}
 		}
 		let dirty = set_has(V.dirty, s.num)
@@ -838,7 +839,7 @@ function on_update() {
 	for (s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== FORT) continue
 		if (is_damaged_fort(s)) {
-			populate ("fortdamaged", s, "damaged", s)
+			populate("fortdamaged", s, "damaged", s)
 		}
 	}
 
@@ -874,15 +875,15 @@ function on_update() {
 	confirm_action_button("confirm_end_action_round", "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
 	confirm_action_button("confirm_no_military_upgrade", "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
 
-	action_button ("reveal_ministry", "Reveal")
-	action_button ("dont_reveal_ministry", "Don't Reveal")
-	action_button ("exhaust_ministry", "Exhaust")
-	action_button ("dont_exhaust_ministry", "Don't Exhaust")
+	action_button("reveal_ministry", "Reveal")
+	action_button("dont_reveal_ministry", "Don't Reveal")
+	action_button("exhaust_ministry", "Exhaust")
+	action_button("dont_exhaust_ministry", "Don't Exhaust")
 
-	action_button ("build_squadron", "Build Squadron w/ Discount")
-	action_button ("discard_event_for_trp", "Discard Event for TRP")
-	action_button ("increase_debt_limit", "Increase Debt Limit")
-	action_button ("jacobite_vp", "Score VP")
+	action_button("build_squadron", "Build Squadron w/ Discount")
+	action_button("discard_event_for_trp", "Discard Event for TRP")
+	action_button("increase_debt_limit", "Increase Debt Limit")
+	action_button("jacobite_vp", "Score VP")
 
 	action_button("shift_market", "Shift Market")
 	action_button("place_conflict_marker", "Place Conflict Marker")
@@ -892,16 +893,16 @@ function on_update() {
 	action_button("construct_squadron_now", "Build Squadron Now")
 	action_button("defer", "Defer")
 
-	action_button ("use_advantage", "Use")
-	action_button ("dont_use_advantage", "Don't Use")
+	action_button("use_advantage", "Use")
+	action_button("dont_use_advantage", "Don't Use")
 
-	action_button ("major", "Major")
-	action_button ("minor", "Minor")
+	action_button("major", "Major")
+	action_button("minor", "Minor")
 
-	action_button ("return_to_pool", "Return to Pool")
-	action_button ("remove_from_game", "Remove From Game")
+	action_button("return_to_pool", "Return to Pool")
+	action_button("remove_from_game", "Remove From Game")
 
-    action_button("pass", "Pass")
+	action_button("pass", "Pass")
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
@@ -966,7 +967,7 @@ function update_war_display() {
 		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr")
 		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br")
 
-		populate_with_list( "lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war])
+		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war])
 		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war])
 
 		offset = war * 12 + 1
@@ -1041,29 +1042,100 @@ function _tip_blur_spending() {
 }
 
 
-function escape_square_brackets(text)
+function _tip_focus_award(a, who)
 {
+	world.tip.setAttribute("class", "square-sm marker award a" + a)
+	position_tip_image()
+	world.tip.hidden = false
+
+	for (let region = 0; region < NUM_REGIONS; region++) {
+		if (V.awards[region] === a) world.status.innerHTML = award_tooltip(region)
+	}
+}
+
+function _tip_blur_award() {
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+
+function _tip_focus_investment(i, who)
+{
+	world.tip.setAttribute("class", "square marker investment i" + i)
+	position_tip_image()
+	world.tip.hidden = false
+
+	world.status.innerHTML = investment_tooltip(i)
+}
+
+function _tip_blur_investment() {
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+function is_digit(c) {
+	return (c >= '0') && (c <= '9')
+}
+
+
+function escape_square_brackets(text) {
 	let runaway = 0
 	let match = ""
 
 	do {
 		match = text.match(/\[.*?]/) // Get the whole expression including the brackets
-		console.log (match)
+		console.log(match)
 		if (match) {
 			let inside = match[0].match(/\[(.*?)]/) // Get the inside-the-brackets bit.
-			let key = inside[1][0]                  // First character tells us what nation color to use, if any
-			let msg = inside[1].slice(1)            // Rest of string is the message
+			let type = inside[1][0]                 // First character tells us what type of thing (S = Spending, A = Award, I = Investment)
+			let key = inside[1][1]                  // Second character tells us what nation color to use, if any
+			let msg = inside[1].slice(2)            // Rest of string is the message
+			let value = 0
+
+			if (["I", "A"].includes(type)) {
+				if (is_digit(msg[0])) {
+					value = msg[0] - '0'
+					msg = msg.substring(1)
+					if (is_digit(msg[0])) {
+						value = value * 10 + (msg[0] - '0')
+						msg = msg.substring(1)
+					}
+				}
+			}
 
 			let who = (key === "F") ? FRANCE : (key === "B") ? BRITAIN : NONE
 
-			let className = "tip-spending" + ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+			let tooltip_text = ""
+			let className = ""
+			switch (type) {
+				case "I":
+					className = "tip-investment"
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_investment(${value}, ${who})"
+						onmouseleave="_tip_blur_investment()"
+						>${escape_typography(msg)}</span>`
+					break
+				case "A":
+					className = "tip-award"
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_award(${value}, ${who})"
+						onmouseleave="_tip_blur_award()"
+						>${escape_typography(msg)}</span>`
+					break
+				case "S":
+				default:
+					className = "tip-spending"
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_spending(${who})"
+						onmouseleave="_tip_blur_spending()"
+						>${escape_typography(msg)}</span>`
+					break
+			}
 
-			let tooltip_text = `<span 
-			class="${className}"
-			onmouseenter="_tip_focus_spending(${who})"
-			onmouseleave="_tip_blur_spending()"
-			>${escape_typography(msg)}</span>`
-
+			className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 			text = text.replace(/\[.*?]/, tooltip_text)
 		}
 
@@ -1081,9 +1153,9 @@ function demand_name(d) {
 }
 
 function escape_tip_class_sub_function(text, re, log_className, tip_className, names, func) {
-	return text.replace(re, (m,x) => `<span
+	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_class('${tip_className.replace("$1",func(x))}')"
+		onmouseenter="_tip_focus_class('${tip_className.replace("$1", func(x))}')"
 		onmouseleave="_tip_blur_class()"
 		>${escape_typography(names[x])}</span>`
 	)
@@ -1133,9 +1205,9 @@ function _tip_blur_demand(action, id) {
 }
 
 function escape_demand(text, re, log_className, tip_className, names) {
-	return text.replace(re, (m,x) => `<span
+	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_demand('${x}', '${tip_className.replace("$1",demand_name(x))}')"
+		onmouseenter="_tip_focus_demand('${x}', '${tip_className.replace("$1", demand_name(x))}')"
 		onmouseleave="_tip_blur_demand()"
 		>${escape_typography(names[x])}</span>`
 	)
@@ -1158,7 +1230,7 @@ function _tip_blur_event(action, id) {
 function escape_event(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_event('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseenter="_tip_focus_event('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_event()"
 		>${escape_typography(names[x])}</span>`
 	)
@@ -1181,7 +1253,7 @@ function _tip_blur_ministry(action, id) {
 function escape_ministry(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_ministry('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseenter="_tip_focus_ministry('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_ministry()"
 		>${escape_typography(names[x])}</span>`
 	)
@@ -1201,19 +1273,19 @@ function _tip_blur_advantage(action, id) {
 	world.status.innerHTML = ""
 }
 
+/*
+<div className="marker square advantage a${a} reverse advantage-back"></div>
+<div className="marker square advantage a${a} advantage-front"></div>
+*/
+
 function escape_advantage(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_advantage('${who}', '${x}', '${tip_className.replace("$1",x)}')"
+		onmouseenter="_tip_focus_advantage('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_advantage()"
 		>${escape_typography(names[x])}</span>`
 	)
 }
-
-
-
-
-
 
 
 function on_prompt(text) {
@@ -1225,7 +1297,7 @@ function on_prompt(text) {
 }
 
 
-const log_box_keywords = [ "fr", "br", "both" ]
+const log_box_keywords = ["fr", "br", "both"]
 
 function on_log(text, ix) {
 	var p = document.createElement("div")
@@ -1243,27 +1315,27 @@ function on_log(text, ix) {
 	}
 
 	switch (text[0]) {
-	case "{":
-		p.classList.add("header")
-		open_log_box(ix, log_box_keywords[text[1]])
-		text = text.substring(2)
-		break
-	case "}":
-		close_log_box(ix)
-		text = text.substring(1)
-		break
-	case ">":
-		p.className = "i"
-		text = text.substring(1)
-		break
-	case "#":
-		p.className = "h1"
-		text = text.substring(1)
-		break
-	case "=":
-		p.className = "h2"
-		text = text.substring(1)
-		break
+		case "{":
+			p.classList.add("header")
+			open_log_box(ix, log_box_keywords[text[1]])
+			text = text.substring(2)
+			break
+		case "}":
+			close_log_box(ix)
+			text = text.substring(1)
+			break
+		case ">":
+			p.className = "i"
+			text = text.substring(1)
+			break
+		case "#":
+			p.className = "h1"
+			text = text.substring(1)
+			break
+		case "=":
+			p.className = "h2"
+			text = text.substring(1)
+			break
 	}
 
 	if (text.match(/^\.h1/)) {
@@ -1299,17 +1371,17 @@ window.addEventListener("keydown", function (evt) {
 	switch (evt.key) {
 		case "f":
 		case "F":
-			send_message("action", [ "frenchify", null, game_cookie ])
+			send_message("action", ["frenchify", null, game_cookie])
 			evt.preventDefault()
 			break
 		case "b":
 		case "B":
-			send_message("action", [ "britify", null, game_cookie ])
+			send_message("action", ["britify", null, game_cookie])
 			evt.preventDefault()
 			break
 		case "r":
 		case "R":
-			send_message("action", [ "cheatrefresh", null, game_cookie ])
+			send_message("action", ["cheatrefresh", null, game_cookie])
 			evt.preventDefault()
 			break
 		case " ":
@@ -1323,40 +1395,40 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 		case "h":
-			send_message("action", [ "cheat_huguenots", null, game_cookie ])
+			send_message("action", ["cheat_huguenots", null, game_cookie])
 			break;
 		case "o":
-			send_message("action", [ "cheat_conflict", null, game_cookie])
+			send_message("action", ["cheat_conflict", null, game_cookie])
 			break;
 		case "d":
 		case "y":
-			send_message("action", [ "cheat_damage", null, game_cookie])
+			send_message("action", ["cheat_damage", null, game_cookie])
 			break;
 		case "c":
 			send_message("action", ["cheat_cheat", null, game_cookie])
 			break;
-			/*
-		case "[":
-			for (let i = 0; i < 500; i++) {
-				let logline = document.getElementById(i)
-				if (logline) {
-					if (i > 10) {
-						logline.style.display = "none"
-					}
+		/*
+	case "[":
+		for (let i = 0; i < 500; i++) {
+			let logline = document.getElementById(i)
+			if (logline) {
+				if (i > 10) {
+					logline.style.display = "none"
 				}
 			}
-			break;
-		case "]":
-			for (let i = 0; i < 500; i++) {
-				let logline = document.getElementById(i)
-				if (logline) {
-					if (i > 10) {
-						logline.style.display = "block"
-					}
+		}
+		break;
+	case "]":
+		for (let i = 0; i < 500; i++) {
+			let logline = document.getElementById(i)
+			if (logline) {
+				if (i > 10) {
+					logline.style.display = "block"
 				}
 			}
-			break;
-			 */
+		}
+		break;
+		 */
 
 	}
 })

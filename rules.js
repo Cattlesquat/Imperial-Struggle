@@ -1352,7 +1352,7 @@ P.award_phase = function () {
 	for (var i = 0; i < NUM_REGIONS; i++) {
 		var chit = G.award_chits.pop()
 		G.awards[i] = chit
-		log(data.awards[chit].name + " -> " + data.regions[i].name)
+		log(say_award_tile(data.regions[i].name + " -> " + data.awards[chit].name, chit))
 	}
 
 	end()
@@ -2624,7 +2624,7 @@ function selected_a_tile(tile)
 
 	log (((G.active === FRANCE ? "=fr" : "=br") + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
 	log (data.flags[G.active].name + " selects investment tile: ");
-	log (data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name)
+	log (say_investment_tile(data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + " / " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name, tile))
 	var major = data.investments[tile].majorval
 
 	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
@@ -4236,7 +4236,19 @@ function say_demand(d, who = -1, all_caps = false) {
 }
 
 function say_spending(msg, who = -1) {
-	return "[" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + msg + "]"
+	return "[S" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + msg + "]"
+}
+
+function say_award_tile(msg, t, who = -1) {
+	return "[A" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + "0" + t + msg + "]"
+}
+
+function say_investment_tile(msg, t, who = -1) {
+	let say = "[I" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X")
+	if (t < 10) say += "0" // Because advantage tile names start with a digit, need to make sure we pad out to the maximum 2 digits that the escape_square_brackets function checks
+	say += t
+	say += msg + "]"
+	return say
 }
 
 
