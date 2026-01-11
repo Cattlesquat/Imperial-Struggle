@@ -487,20 +487,30 @@ function on_init() {
 		if ((s.type === POLITICAL) || (s.type === MARKET)) {
 			let conflict_rect = rect.slice()
 			if (s.type === MARKET) {
-				if ((s.num === NORTHEAST_CHANNEL) || (s.num === OSWEGO)) {
+				if ([NORTHEAST_CHANNEL, OSWEGO].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -65, -40) // upper left
-				} else if ([NIAGARA, HAVANA, ANTIGUA, KURPA, MARTINIQUE].includes(s.num)) {
+				} else if ([PUERTO_RICO, CUBA_PASSAGE_EAST, MARTINIQUE].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -15, -65) // Upper middle
+				} else if ([CAICOS, PUERTO_PRINCIPE, TIRUCHIRAPPALLI].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, 32, -40) // Upper right
+				} else if ([NIAGARA, HAVANA, ANTIGUA, KURPA].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -65, 20) // lower left
 				} else {
 					conflict_rect = translate_rect(conflict_rect, 32, 22) // Conflict markers positioning - default lower right
 				}
 			} else if (s.type === POLITICAL) {
-				if ([PRIVATEERS, IRELAND_1, SCOTLAND_1, DUTCH_1, GERMAN_STATES_1, PRUSSIA_1, PRUSSIA_3, SPAIN_1, SPAIN_3, AUSTRIA_1, AUSTRIA_3].includes(s.num)) {
+				if ([PRIVATEERS, IRELAND_1, SCOTLAND_1, DUTCH_1, GERMAN_STATES_1, PRUSSIA_3, SPAIN_3, AUSTRIA_3].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -63, 27) // Conflict markers positioning - lower right
-				} else if ([BAVARIA].includes(s.num)) {
-					conflict_rect = translate_rect(conflict_rect, -63, -45) // Conflict markers positioning - upper left
+				} else if ([PRUSSIA_1, SPAIN_1, BAVARIA].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -63, -55) // Conflict markers positioning - upper left
+				} else if ([USA_1].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -63, 27) // Conflict markers positioning - lower left
 				} else if ([DUTCH_2].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -15, 50) // Conflict markers positioning - lower middle
+				} else if ([AUSTRIA_1].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, -15, -68) // Conflict markers positioning - upper middle
+				} else if ([SPAIN_2, AUSTRIA_2, PRUSSIA_2].includes(s.num)) {
+					conflict_rect = translate_rect(conflict_rect, 30, -55) // Conflict markers positioning - upper right
 				} else {
 					conflict_rect = translate_rect(conflict_rect, 30, 27) // Conflict markers positioning - default lower right
 				}
