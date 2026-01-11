@@ -199,6 +199,36 @@ function demand_tooltip(demand) {
 }
 
 
+const demand_columns = [ "1180px", "1266px", "1352px"]
+const demand_rows = [ "223px", "243px", "264px", "284px", "305px", "325px"]
+
+function demand_tooltip_image(d, onoff) {
+	if (onoff) {
+		world.demand_highlight.hidden = false
+		world.demand_highlight.style.left = demand_columns[current_era()]
+		world.demand_highlight.style.top  = demand_rows[d]
+
+		let winner = demand_flag_winner(d)
+		switch (winner) {
+			case FRANCE:
+				world.demand_highlight.style.borderColor = "skyblue"
+				break
+
+			case BRITAIN:
+				world.demand_highlight.style.borderColor = "salmon"
+				break
+
+			default:
+				world.demand_highlight.style.borderColor = "green"
+				break
+		}
+
+	} else {
+		world.demand_highlight.hidden = true
+	}
+}
+
+
 function say_event_effect(label, effect, bonus) {
 
 	let text = ""
@@ -515,6 +545,7 @@ function on_init() {
 			.keyword("square-sm")
 			.keyword(a.name.toLowerCase())
 			.tooltip(demand_tooltip)
+			.tooltip_image(demand_tooltip_image)
 	}
 
 	for (a of data.awards) {
@@ -1195,12 +1226,14 @@ function _tip_focus_demand(d, name) {
 	position_tip_image()
 	world.tip.hidden = false
 	world.status.innerHTML = demand_tooltip(d)
+	demand_tooltip_image(d, true)
 }
 
 function _tip_blur_demand(action, id) {
 	world.tip.removeAttribute("class")
 	world.tip.hidden = true
 	world.status.innerHTML = ""
+	demand_tooltip_image(0, false)
 }
 
 function escape_demand(text, re, log_className, tip_className, names) {
