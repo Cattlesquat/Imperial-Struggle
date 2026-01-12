@@ -1266,14 +1266,31 @@ P.main = script (`
 	}
 `)
 
-function log_turn() {
+
+// Start a beginning-of-turn log-review stack
+function begin_log_sequence() {
+	G.log_index = []
+	G.log_phase = []
+}
+
+// Push another phase name onto the beginning of turn log-review stack (but only if something happened in the log that phase)
+function log_push(phase) {
+	if ((G.log_index.length === 0) || (G.log_index.slice(-1).pop < G.log_index - 1)) {
+		G.log_index.push(G.log_length - 1)
+		G.log_phase.push(phase)
+	}
+}
+
+function start_of_peace_turn() {
 	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
+	begin_log_sequence()
+	log_push("Start of Peace Turn")
 }
 
 /* 4.1 - PEACE TURNS */
 
 P.peace_turn = script (`
-	eval { log_turn()  }
+	eval { start_of_peace_turn()  }
 	
 	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
 		call deck_phase
@@ -1339,6 +1356,7 @@ P.deck_phase = function () {
 		shuffle(G.deck)
 	}
 
+	log_push("Deck Phase")
 	end()
 }
 
@@ -1352,6 +1370,7 @@ P.debt_limit_increase_phase = function () {
 		G.debt_limit[FRANCE]  += 4
 		G.debt_limit[BRITAIN] += 4
 	}
+	log_push ("Debt Limit Increase Phase")
 	end()
 }
 
@@ -1375,6 +1394,7 @@ P.award_phase = function () {
 		log(say_award_tile(data.regions[i].name + " -> " + data.awards[chit].name, chit))
 	}
 
+	log_push ("Award Phase")
 	end()
 }
 
@@ -1395,7 +1415,7 @@ P.global_demand_phase = function () {
 		//log(data.demands[chit].name)
 		G.global_demand.push(chit)
 	}
-
+	log_push ("Global Demand Phase")
 	end()
 }
 
@@ -1404,7 +1424,7 @@ P.global_demand_phase = function () {
 
 P.reset_phase = function () {
 	if (G.turn !== PEACE_TURN_1) {
-		log("=Global Demand Phase")
+		log("=Reset Phase")
 		log ("All exhausted advantages refreshed")
 		log ("All exhausted ministries refreshed")
 		log ("Remaining investments from previous turn moved to Used Investments")
@@ -1426,6 +1446,7 @@ P.reset_phase = function () {
 
 	G.played_tiles = [ [], [] ]
 
+	log_push("Reset Phase")
 	end()
 }
 
@@ -1456,8 +1477,7 @@ P.deal_cards_phase = function () {
 	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
 	var dealt = [0, 0]
 	for (var i = 0; i < 3; ++i) {
-		for (who = FRANCE; who <= BRITAIN; who++) {
-
+		for (let who = FRANCE; who <= BRITAIN; who++) {
 			let smelt_it_dealt_it = false
 			do {
 				if (G.deck.length === 0) {
