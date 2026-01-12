@@ -557,7 +557,6 @@ function populate_with_list(parent_action, arg2, arg3, arg4, arg5) {
 			}
 		}
 	}
-	console.log(fallbacks)
 	return fallbacks // An array of all the items that went to fallback, for e.g. adding tooltips to them
 }
 
