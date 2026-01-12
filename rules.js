@@ -1387,6 +1387,7 @@ P.global_demand_phase = function () {
 	end()
 }
 
+
 /* 4.1.5 - RESET PHASE */
 
 P.reset_phase = function () {
@@ -1415,6 +1416,15 @@ P.reset_phase = function () {
 
 	end()
 }
+
+
+function log_dealt(dealt) {
+	for (let whom = FRANCE; whom <= BRITAIN; whom++) {
+		if (dealt[whom] > 0) log (dealt[whom] + " cards dealt to " + data.flags[whom].name)
+	}
+}
+
+
 
 /* 4.1.6 - DEAL CARDS PHASE */
 
@@ -1447,29 +1457,41 @@ P.deal_cards_phase = function () {
 	}
 
 	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
-	for (who = FRANCE; who <= BRITAIN; who++) {
-		var dealt = 0;
-		for (var i = 0; i < 3; ++i) {
-			if (G.deck.length === 0) {
-				if (dealt > 0) {
-					log (dealt + " cards dealt to " + data.flags[who].name)
+	var dealt = [0, 0]
+	for (var i = 0; i < 3; ++i) {
+		for (who = FRANCE; who <= BRITAIN; who++) {
+
+			let smelt_it_dealt_it = false
+			do {
+				if (G.deck.length === 0) {
+					log_dealt(dealt)
+					dealt = [0, 0]
+					log (bold("Discard Pile shuffled to form new Event Deck"))
+					G.deck = G.discard_pile
+					shuffle(G.deck)
 				}
-				log ("Discard Pile shuffled to form new Event Deck")
-				G.deck = G.discard_pile
-				shuffle(G.deck)
-			}
-			if (G.deck.length > 0) {
-				G.hand[who].push(G.deck.pop())
-				dealt++
-			} else {
-				log ("Event deck is EMPTY.")
-				break;
-			}
-		}
-		if (dealt > 0) {
-			log (dealt + " cards dealt to " + data.flags[who].name)
+
+				// I don't think this should actually ever happen, but this is how we'd move on from that situation if it did
+				if (G.deck.length === 0) {
+					log_dealt(dealt)
+					log (bold("Event deck is EMPTY."))
+					G.active = [ FRANCE, BRITAIN ]
+					goto ("deal_cards_discard")
+					return
+				}
+
+				let c = G.deck.pop()
+				if ((data.cards[c].era === SUCCESSION_ERA) && (current_era() === REVOLUTION_ERA)) {
+					log ("Succession Era event card removed from game: " + say_event(c, NONE))
+				} else {
+					smelt_it_dealt_it = true
+					G.hand[who].push(c)
+					dealt[who]++
+				}
+			} while (!smelt_it_dealt_it)
 		}
 	}
+	log_dealt(dealt)
 
 	G.active = [ FRANCE, BRITAIN ]
 	goto("deal_cards_discard")
