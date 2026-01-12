@@ -1313,12 +1313,24 @@ P.deck_phase = function () {
 	if (beginning_of_era() && current_era() === REVOLUTION_ERA) {
 		log("=Deck Phase")
 
+		for (var who = FRANCE; who <= BRITAIN; who++) {
+			for (var index = G.hand[who].length - 1; index >= 0; index--) {
+				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
+					log ("Succession Era event discarded from " + data.flags[who].adj + " hand: " + say_event(G.hand[who][index], who) + " (see 4.1.1)")
+					G.hand[who][index].delete()
+				}
+			}
+		}
+
+		// Removed this as it technically is done a card at a time while drawing during Deal Cards Phase (4.1.6)
+		/*
 		log ("Succession Era events REMOVED from Event Deck")
 		for (var index = G.deck.length - 1; index >= 0; index--) {
 			if (data.cards[index].era === SUCCESSION_ERA) {
 				G.deck.delete(index);
 			}
 		}
+		*/
 
 		for (var card = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
 			G.deck.push(i);
@@ -1439,21 +1451,6 @@ P.deal_cards_phase = function () {
 			shuffle(G.investment_tile_stack)
 		}
 		G.available_investments.push(G.investment_tile_stack.pop())
-	}
-
-	if ((current_era() === REVOLUTION_ERA) && beginning_of_era()) {
-		var any = false
-		for (var who = FRANCE; who <= BRITAIN; who++) {
-			for (var index = G.hand[who].length - 1; index >= 0; index--) {
-				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
-					G.hand[who][index].delete()
-                    any = true
-				}
-			}
-		}
-		if (any) {
-			log ("Succession Era cards in players' hands removed from the game (see 4.1.6).")
-		}
 	}
 
 	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
