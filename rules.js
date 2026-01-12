@@ -772,8 +772,24 @@ function on_setup(scenario, options) {
 
 /* VIEW & ACTIONS */
 
+
+// Items that we keep current even when we're in "review mode" looking at an old view
+function absolute_view() {
+	V.active         = G.active
+	V.log_hide_after = G.log_hide_after
+	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
+}
+
 function on_view() {
-	V.active = G.active
+	if (G.temp_view) {
+		if (G.temp_view[R]) {
+			V = G.temp_view[R]
+			absolute_view()
+			return
+		}
+	}
+
+	absolute_view()
 
 	V.turn = G.turn
 	V.vp = G.temp_vp ?? G.vp
@@ -878,9 +894,6 @@ function on_view() {
 
 	V.huguenots = G.huguenots
 	V.huguenots_spent = G.huguenots_spent
-
-	V.log_hide_after = G.log_hide_after
-	V.log_length     = G.log.length
 
 	V.action_points_major = G.action_points_major
 	V.action_points_minor = G.action_points_minor
@@ -1268,23 +1281,53 @@ P.main = script (`
 
 
 // Start a beginning-of-turn log-review stack
-function begin_log_sequence() {
-	G.log_index = []
-	G.log_phase = []
+function review_begin()
+{
+	review_end()
+
+	G.review_index = []
+	G.review_phase = []
+	G.review_view  = []
+	G.review_step  = [ 0, 0 ]
 }
 
 // Push another phase name onto the beginning of turn log-review stack (but only if something happened in the log that phase)
-function log_push(phase) {
-	if ((G.log_index.length === 0) || (G.log_index.slice(-1).pop < G.log_index - 1)) {
-		G.log_index.push(G.log_length - 1)
-		G.log_phase.push(phase)
+function review_push(phase)
+{
+	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
+		G.review_index.push(G.log.length - 1)
+		G.review_phase.push(phase)
+		if (V) {
+			on_view() // Get absolute latest view information before storing it
+		}
+		G.review_view.push(V)
 	}
+}
+
+function review_step(step, who)
+{
+	if (step < G.review_index.length) {
+		G.log_hide_after[who] = G.review_index[step]
+		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
+		G.temp_view[R] = G.review_view[step]
+	} else {
+		G.log_hide_after[who] = -1
+		if (G.temp_view !== undefined) {
+			G.temp_view[R] = undefined
+		}
+	}
+}
+
+function review_end() {
+	G.log_hide_after = [ -1, -1 ]  // Clear any log-hiding
+	G.temp_view = undefined        // Clear any temporary view
+	G.review_view = []             // Clear any stored views
 }
 
 function start_of_peace_turn() {
 	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
-	begin_log_sequence()
-	log_push("Start of Peace Turn")
+	review_begin()
+	review_push("START OF TURN " + data.turns[G.turn].id)
 }
 
 /* 4.1 - PEACE TURNS */
@@ -1356,7 +1399,7 @@ P.deck_phase = function () {
 		shuffle(G.deck)
 	}
 
-	log_push("Deck Phase")
+	review_push("DECK PHASE")
 	end()
 }
 
@@ -1370,7 +1413,7 @@ P.debt_limit_increase_phase = function () {
 		G.debt_limit[FRANCE]  += 4
 		G.debt_limit[BRITAIN] += 4
 	}
-	log_push ("Debt Limit Increase Phase")
+	review_push ("DEBT LIMIT INCREASE PHASE")
 	end()
 }
 
@@ -1394,7 +1437,7 @@ P.award_phase = function () {
 		log(say_award_tile(data.regions[i].name + " -> " + data.awards[chit].name, chit))
 	}
 
-	log_push ("Award Phase")
+	review_push ("AWARD PHASE")
 	end()
 }
 
@@ -1415,7 +1458,7 @@ P.global_demand_phase = function () {
 		//log(data.demands[chit].name)
 		G.global_demand.push(chit)
 	}
-	log_push ("Global Demand Phase")
+	review_push ("GLOBAL DEMAND PHASE")
 	end()
 }
 
@@ -1446,7 +1489,7 @@ P.reset_phase = function () {
 
 	G.played_tiles = [ [], [] ]
 
-	log_push("Reset Phase")
+	review_push("RESET PHASE")
 	end()
 }
 
@@ -1517,9 +1560,15 @@ P.deal_cards_phase = function () {
 P.deal_cards_discard = {
 	_begin() {
 		L.discarded = [ [], [] ]
+		review_step(0, FRANCE)
+		review_step(0, BRITAIN)
 	},
 	prompt() {
-		if (G.hand[R].length > 3) {
+		console.log ("Log Step: " + G.review_step[R] + "  Number of steps: " + G.review_index.length)
+		if (G.review_step[R] < G.review_index.length) {
+			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": Done.")
+			button ("done")
+		} else if (G.hand[R].length > 3) {
 			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
 			for (var c of G.hand[R])
 				action_event_card(c)
@@ -1539,21 +1588,31 @@ P.deal_cards_discard = {
 
 			button("confirm")
 		}
-		if (L.discarded[R].length > 0)
-			button("undo")
+		if (G.review_step[R] > 0) button ("undo")
 	},
 	event_card(c) {
 		array_delete_item(G.hand[R], c)
 		L.discarded[R].push(c)
 	},
+	done() {
+		review_step(++G.review_step[R], R)
+	},
 	undo() {
-		G.hand[R].push(L.discarded[R].pop())
+		if (L.discarded[R].length > 0) {
+			G.hand[R].push(L.discarded[R].pop())
+		} else if (G.review_step[R] > 0) {
+			review_step(--G.review_step[R], R)
+		}
 	},
 	confirm() {
 		set_delete(G.active, R)
 		if (G.active.length === 0) {
+			review_end()
 			// Only when both players are finished do we "reveal" the cards discarded (which are now public information). We also need to maintain a discard pile because it occasionally reshuffles late in the game
 			for (var who = FRANCE; who <= BRITAIN; who++) {
+				for (let c of L.discarded[who]) {
+					log(data.flags[who].name + " discards " + say_event(c, who))
+				}
 				G.discard_pile.push(L.discarded[who]);
 			}
 			end()

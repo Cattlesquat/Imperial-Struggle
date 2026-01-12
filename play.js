@@ -1014,6 +1014,7 @@ function on_update() {
 	action_button("paytrp", "Spend 1 Treaty Point")
 
 	action_button("confirm", "Confirm")
+	action_button("continue", "Continue")
 
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 
