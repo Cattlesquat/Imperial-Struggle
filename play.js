@@ -224,7 +224,8 @@ function demand_tooltip(demand) {
 
 
 const demand_columns = [ "1180px", "1266px", "1352px"]
-const demand_rows = [ "223px", "243px", "264px", "284px", "305px", "325px"]
+//const demand_rows = [ "223px", "243px", "264px", "284px", "305px", "325px"]
+const demand_rows = [ "178px", "198px", "219px", "239px", "260px", "280px"]
 
 function demand_tooltip_image(d, onoff) {
 	if (onoff) {

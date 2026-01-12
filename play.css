@@ -1424,7 +1424,7 @@ menu li.separator {
 
 #demand_highlight {
     pointer-events: none;
-    position: fixed;
+    position: absolute;
     z-index: 1000;
 
     width: 75px;
@@ -1434,17 +1434,6 @@ menu li.separator {
     border-style: solid;
     border-color: springgreen;
 
-    /*left:1180px;*/        /* First column, first row */
-    /*left:1266px;*/
-    /*left:1352px;*/
-
-    /*top:223px; */
-    /*top:243px; */
-    /*top:264px; */
-    /*top:284px; */
-    /*top:305px; */
-    /*top:325px; */
-
     left:1352px;
     top:264px;
 }
@@ -1452,7 +1441,7 @@ menu li.separator {
 
 
 #map_tip {
-    position: relative;
+    position: fixed;
     pointer-events: none;
     z-index: 1000;
 
