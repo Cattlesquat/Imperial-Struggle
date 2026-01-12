@@ -380,8 +380,15 @@ function initiative_tooltip(who) {
 
 
 function basic_war_tooltip(t, who) {
+	let msg = bold(data.flags[who].adj + " Basic War Tile: ")
+
+	if (t < 0) {
+		msg += "Hidden"
+		return msg
+	}
+
 	let val = data.basic_war_tiles[t].val
-	let msg = bold(data.flags[who].adj + " Basic War Tile: ") + ((val >= 0) ? "+" + val : val)
+	msg += ((val >= 0) ? "+" + val : val)
 	switch (data.basic_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -398,9 +405,16 @@ function basic_war_tooltip(t, who) {
 
 
 function bonus_war_tooltip(t, who) {
+	let msg = bold(data.flags[who].adj + " Bonus War Tile: ")
+
+	if (t < 0) {
+		msg += "Hidden"
+		return msg
+	}
+
 	let name = data.bonus_war_tiles[t].name
 	let val = data.bonus_war_tiles[t].val
-	let msg = bold(data.flags[who].adj + " Bonus War Tile: ") + name + " (+" + val
+	msg += name + " (+" + val
 	switch (data.bonus_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -1090,6 +1104,18 @@ const war_reverse = [
 	]
 ]
 
+
+function set_fallback_tips(fallbacks, tip) {
+	for (const f of fallbacks) {
+		f.addEventListener("mouseenter", function () {
+			world.status.innerHTML = tip
+		})
+		f.addEventListener("mouseleave", function () {
+			world.status.innerHTML = ""
+		})
+	}
+}
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -1099,25 +1125,26 @@ function update_war_display() {
 	}
 
 	if (war < NUM_WARS) {
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr")
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br")
-
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war])
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr"), basic_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br"), basic_war_tooltip(-1, BRITAIN))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war]), bonus_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war]), bonus_war_tooltip(-1, BRITAIN))
 
 		offset = war * 12 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
-				populate_with_list(
+				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
 					"basic_war", V.theater_basic_war_tiles[player][theater],
 					(player === FRANCE) ? "marker hex war-basic fr" : "marker hex war-basic br"
-				)
-				populate_with_list(
+				), basic_war_tooltip(-1, player))
+
+				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
 					"bonus_war", V.theater_bonus_war_tiles[player][theater],
 					war_reverse[player][war]
-				)
+				), bonus_war_tooltip(-1, player))
+
 				++offset
 			}
 		}

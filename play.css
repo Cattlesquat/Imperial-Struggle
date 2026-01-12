@@ -1452,7 +1452,7 @@ menu li.separator {
 
 
 #map_tip {
-    position: fixed;
+    position: relative;
     pointer-events: none;
     z-index: 1000;
 

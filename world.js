@@ -215,6 +215,9 @@ class Thing {
 		return this
 	}
 
+
+
+
 	layout(rect, keywords) {
 		var e = this.element
 
@@ -542,14 +545,20 @@ function populate_with_list(parent_action, arg2, arg3, arg4, arg5) {
 	}
 	var parent = lookup_thing(parent_action, parent_id)
 	parent.ensure_parent()
+	var fallbacks = []
 	if (child_id_list) {
 		for (var child_id of child_id_list) {
-			if (child_id < 0)
-				parent.element.appendChild(_create_generic(fallback))
-			else
+			if (child_id < 0) {
+				let child = _create_generic(fallback)
+				parent.element.appendChild(child)
+				fallbacks.push(child)
+			} else {
 				parent.element.appendChild(lookup_thing(child_action, child_id).element)
+			}
 		}
 	}
+	console.log(fallbacks)
+	return fallbacks // An array of all the items that went to fallback, for e.g. adding tooltips to them
 }
 
 function _create_generic(keywords) {
