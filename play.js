@@ -951,6 +951,7 @@ function on_update() {
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		for (i = 0; i < NUM_MINISTRY_SLOTS; ++i) {
+			if (!V.ministry) continue
 			let m = V.ministry[who][i]
 			if (m >= 0) {
 				populate("panel-ministry", who, "ministry_card", m)
@@ -973,8 +974,10 @@ function on_update() {
 		}
 	}
 
-	populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
-	populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+	if (V.hand) {
+		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
+		populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+	}
 
 	//BR// Show any event played THIS action round in the played event slot
 	if (V.played_event > 0) {

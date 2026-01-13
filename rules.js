@@ -454,7 +454,7 @@ function on_setup(scenario, options) {
 	// The current ministers chosen by each player.
 	// <br><b>
 	// G.ministry[FRANCE][0] contains an index into data.ministries[]
-	G.ministry = [[], []]
+	G.ministry = [[-1, -1], [-1, -1]]
 
 	// Global VP count (tug-of-war). Notionally 0 to 30 but values above and below that range are explicitly legal.
 	G.vp = 15
@@ -781,6 +781,10 @@ function absolute_view() {
 }
 
 function on_view() {
+	if (!V) {
+		V = { log: G.log }
+	}
+
 	if (G.temp_view) {
 		if (G.temp_view[R]) {
 			V = G.temp_view[R]
@@ -1270,6 +1274,7 @@ function set_isolated_market(s, isolated = true)
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
+	eval { log ("MAIN LAUNCHED") }
 	for G.turn in 0 to 9 {
 		if (data.turns[G.turn].war) {
 			call war_turn
@@ -1297,10 +1302,9 @@ function review_push(phase)
 	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
 		G.review_index.push(G.log.length - 1)
 		G.review_phase.push(phase)
-		if (V) {
-			on_view() // Get absolute latest view information before storing it
-		}
-		G.review_view.push(V)
+		if (G.temp_view) G.temp_view.delete()
+		on_view() // Get absolute latest view information before storing it
+		G.review_view.push(structuredClone(V))
 	}
 }
 
@@ -1320,7 +1324,7 @@ function review_step(step, who)
 
 function review_end() {
 	G.log_hide_after = [ -1, -1 ]  // Clear any log-hiding
-	G.temp_view = undefined        // Clear any temporary view
+	G.temp_view.delete()           // Clear any temporary view
 	G.review_view = []             // Clear any stored views
 }
 
@@ -1564,7 +1568,6 @@ P.deal_cards_discard = {
 		review_step(0, BRITAIN)
 	},
 	prompt() {
-		console.log ("Log Step: " + G.review_step[R] + "  Number of steps: " + G.review_index.length)
 		if (G.review_step[R] < G.review_index.length) {
 			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": Done.")
 			button ("done")
@@ -1626,12 +1629,12 @@ P.ministry_phase = function () {
 	if (!beginning_of_era()) {
 		goto ("replace_ministry_cards")
 	} else {
-		G.ministry           = [ [], [] ]
+		G.ministry           = [ [ -1, -1 ], [ -1, -1 ] ]
 
 		// For each player, a flag whether the ministry in the specific ministry slot has been revealed
 		// <br><b>
 		// G.ministry_revealed[FRANCE][0] </b> is true if the ministry in France's first slot has been revealed
-		G.ministry_revealed  = [ [], [] ]
+		G.ministry_revealed  = [ [ false, false], [ false, false] ]
 
 		// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 		// <br><b>
