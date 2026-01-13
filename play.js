@@ -224,7 +224,8 @@ function demand_tooltip(demand) {
 
 
 const demand_columns = [ "1180px", "1266px", "1352px"]
-const demand_rows = [ "223px", "243px", "264px", "284px", "305px", "325px"]
+//const demand_rows = [ "223px", "243px", "264px", "284px", "305px", "325px"]
+const demand_rows = [ "178px", "198px", "219px", "239px", "260px", "280px"]
 
 function demand_tooltip_image(d, onoff) {
 	if (onoff) {
@@ -377,6 +378,56 @@ function treaty_points_tooltip(who) {
 function initiative_tooltip(who) {
 	return bold("Initiative: ") + data.flags[who].name
 }
+
+
+function basic_war_tooltip(t, who) {
+	let msg = bold(data.flags[who].adj + " Basic War Tile: ")
+
+	if (t < 0) {
+		msg += "Hidden"
+		return msg
+	}
+
+	let val = data.basic_war_tiles[t].val
+	msg += ((val >= 0) ? "+" + val : val)
+	switch (data.basic_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+		case WAR_FLAG:
+			msg += " with Flag"
+			break
+	}
+	return msg
+}
+
+
+function bonus_war_tooltip(t, who) {
+	let msg = bold(data.flags[who].adj + " Bonus War Tile: ")
+
+	if (t < 0) {
+		msg += "Hidden"
+		return msg
+	}
+
+	let name = data.bonus_war_tiles[t].name
+	let val = data.bonus_war_tiles[t].val
+	msg += name + " (+" + val
+	switch (data.bonus_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+	}
+	msg += ")"
+	return msg
+}
+
 
 
 function pad(s, condition = true) {
@@ -628,13 +679,11 @@ function on_init() {
 		var rect = find_layout_node(a.name)
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
 		define_space("advantage", a.num, resize_rect(rect, 88, 88))
-			.tooltip((a) => {
-				return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc)
-			})
+			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
 		let marker = define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
-			.tooltip(bold(a.name) + ": " + italic(a.desc))
+			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
 	}
 
@@ -657,19 +706,19 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
-		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0))
-		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16))
+		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE))
+		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16)).tooltip(basic_war_tooltip(i, BRITAIN))
 	}
 
 	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
-		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0))
-		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12))
-		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24))
-		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36))
-		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48))
-		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60))
-		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72))
-		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84))
+		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72)).tooltip(bonus_war_tooltip(i, FRANCE))
+		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84)).tooltip(bonus_war_tooltip(i, BRITAIN))
 	}
 
 	define_board("#war_wss", 1100, 850)
@@ -965,6 +1014,7 @@ function on_update() {
 	action_button("paytrp", "Spend 1 Treaty Point")
 
 	action_button("confirm", "Confirm")
+	action_button("continue", "Continue")
 
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 
@@ -1056,6 +1106,18 @@ const war_reverse = [
 	]
 ]
 
+
+function set_fallback_tips(fallbacks, tip) {
+	for (const f of fallbacks) {
+		f.addEventListener("mouseenter", function () {
+			world.status.innerHTML = tip
+		})
+		f.addEventListener("mouseleave", function () {
+			world.status.innerHTML = ""
+		})
+	}
+}
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -1065,25 +1127,26 @@ function update_war_display() {
 	}
 
 	if (war < NUM_WARS) {
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr")
-		populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br")
-
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war])
-		populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war])
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr"), basic_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br"), basic_war_tooltip(-1, BRITAIN))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war]), bonus_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war]), bonus_war_tooltip(-1, BRITAIN))
 
 		offset = war * 12 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
-				populate_with_list(
+				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
 					"basic_war", V.theater_basic_war_tiles[player][theater],
 					(player === FRANCE) ? "marker hex war-basic fr" : "marker hex war-basic br"
-				)
-				populate_with_list(
+				), basic_war_tooltip(-1, player))
+
+				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
 					"bonus_war", V.theater_bonus_war_tiles[player][theater],
 					war_reverse[player][war]
-				)
+				), bonus_war_tooltip(-1, player))
+
 				++offset
 			}
 		}
@@ -1370,10 +1433,15 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 
 
 function _tip_focus_advantage(who, a, name) {
-	world.tip.setAttribute("class", name)
+	//world.tip.setAttribute("class", name)
 	position_tip_image()
 	world.tip.hidden = false
 	world.status.innerHTML = advantage_tooltip(a)
+
+	// Show BOTH sides of the marker
+	world.tip.innerHTML = `		
+		<div class="marker square advantage a${a} reverse advantage-back"></div>
+		<div class="marker square advantage a${a} advantage-front"></div>		`
 }
 
 function _tip_blur_advantage(action, id) {
@@ -1382,10 +1450,6 @@ function _tip_blur_advantage(action, id) {
 	world.status.innerHTML = ""
 }
 
-/*
-<div className="marker square advantage a${a} reverse advantage-back"></div>
-<div className="marker square advantage a${a} advantage-front"></div>
-*/
 
 function escape_advantage(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
@@ -1532,10 +1596,11 @@ function advantage_tooltip_image(a, onoff) {
 
 function on_focus_advantage_tip(a) {
 	world.tip.hidden = false
+
+	// Show BOTH sides of the marker
 	world.tip.innerHTML = `
 		<div class="marker square advantage a${a} reverse advantage-back"></div>
-		<div class="marker square advantage a${a} advantage-front"></div>
-	`
+		<div class="marker square advantage a${a} advantage-front"></div>	`
 }
 
 function on_blur_advantage_tip() {

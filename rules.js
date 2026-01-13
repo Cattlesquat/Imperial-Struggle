@@ -772,8 +772,24 @@ function on_setup(scenario, options) {
 
 /* VIEW & ACTIONS */
 
+
+// Items that we keep current even when we're in "review mode" looking at an old view
+function absolute_view() {
+	V.active         = G.active
+	V.log_hide_after = G.log_hide_after
+	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
+}
+
 function on_view() {
-	V.active = G.active
+	if (G.temp_view) {
+		if (G.temp_view[R]) {
+			V = G.temp_view[R]
+			absolute_view()
+			return
+		}
+	}
+
+	absolute_view()
 
 	V.turn = G.turn
 	V.vp = G.temp_vp ?? G.vp
@@ -878,9 +894,6 @@ function on_view() {
 
 	V.huguenots = G.huguenots
 	V.huguenots_spent = G.huguenots_spent
-
-	V.log_hide_after = G.log_hide_after
-	V.log_length     = G.log.length
 
 	V.action_points_major = G.action_points_major
 	V.action_points_minor = G.action_points_minor
@@ -1266,14 +1279,61 @@ P.main = script (`
 	}
 `)
 
-function log_turn() {
+
+// Start a beginning-of-turn log-review stack
+function review_begin()
+{
+	review_end()
+
+	G.review_index = []
+	G.review_phase = []
+	G.review_view  = []
+	G.review_step  = [ 0, 0 ]
+}
+
+// Push another phase name onto the beginning of turn log-review stack (but only if something happened in the log that phase)
+function review_push(phase)
+{
+	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
+		G.review_index.push(G.log.length - 1)
+		G.review_phase.push(phase)
+		if (V) {
+			on_view() // Get absolute latest view information before storing it
+		}
+		G.review_view.push(V)
+	}
+}
+
+function review_step(step, who)
+{
+	if (step < G.review_index.length) {
+		G.log_hide_after[who] = G.review_index[step]
+		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
+		G.temp_view[R] = G.review_view[step]
+	} else {
+		G.log_hide_after[who] = -1
+		if (G.temp_view !== undefined) {
+			G.temp_view[R] = undefined
+		}
+	}
+}
+
+function review_end() {
+	G.log_hide_after = [ -1, -1 ]  // Clear any log-hiding
+	G.temp_view = undefined        // Clear any temporary view
+	G.review_view = []             // Clear any stored views
+}
+
+function start_of_peace_turn() {
 	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
+	review_begin()
+	review_push("START OF TURN " + data.turns[G.turn].id)
 }
 
 /* 4.1 - PEACE TURNS */
 
 P.peace_turn = script (`
-	eval { log_turn()  }
+	eval { start_of_peace_turn()  }
 	
 	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
 		call deck_phase
@@ -1313,12 +1373,24 @@ P.deck_phase = function () {
 	if (beginning_of_era() && current_era() === REVOLUTION_ERA) {
 		log("=Deck Phase")
 
+		for (var who = FRANCE; who <= BRITAIN; who++) {
+			for (var index = G.hand[who].length - 1; index >= 0; index--) {
+				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
+					log ("Succession Era event discarded from " + data.flags[who].adj + " hand: " + say_event(G.hand[who][index], who) + " (see 4.1.1)")
+					G.hand[who][index].delete()
+				}
+			}
+		}
+
+		// Removed this as it technically is done a card at a time while drawing during Deal Cards Phase (4.1.6)
+		/*
 		log ("Succession Era events REMOVED from Event Deck")
 		for (var index = G.deck.length - 1; index >= 0; index--) {
 			if (data.cards[index].era === SUCCESSION_ERA) {
 				G.deck.delete(index);
 			}
 		}
+		*/
 
 		for (var card = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
 			G.deck.push(i);
@@ -1327,6 +1399,7 @@ P.deck_phase = function () {
 		shuffle(G.deck)
 	}
 
+	review_push("DECK PHASE")
 	end()
 }
 
@@ -1340,6 +1413,7 @@ P.debt_limit_increase_phase = function () {
 		G.debt_limit[FRANCE]  += 4
 		G.debt_limit[BRITAIN] += 4
 	}
+	review_push ("DEBT LIMIT INCREASE PHASE")
 	end()
 }
 
@@ -1363,6 +1437,7 @@ P.award_phase = function () {
 		log(say_award_tile(data.regions[i].name + " -> " + data.awards[chit].name, chit))
 	}
 
+	review_push ("AWARD PHASE")
 	end()
 }
 
@@ -1383,15 +1458,16 @@ P.global_demand_phase = function () {
 		//log(data.demands[chit].name)
 		G.global_demand.push(chit)
 	}
-
+	review_push ("GLOBAL DEMAND PHASE")
 	end()
 }
+
 
 /* 4.1.5 - RESET PHASE */
 
 P.reset_phase = function () {
 	if (G.turn !== PEACE_TURN_1) {
-		log("=Global Demand Phase")
+		log("=Reset Phase")
 		log ("All exhausted advantages refreshed")
 		log ("All exhausted ministries refreshed")
 		log ("Remaining investments from previous turn moved to Used Investments")
@@ -1413,8 +1489,18 @@ P.reset_phase = function () {
 
 	G.played_tiles = [ [], [] ]
 
+	review_push("RESET PHASE")
 	end()
 }
+
+
+function log_dealt(dealt) {
+	for (let whom = FRANCE; whom <= BRITAIN; whom++) {
+		if (dealt[whom] > 0) log (dealt[whom] + " cards dealt to " + data.flags[whom].name)
+	}
+}
+
+
 
 /* 4.1.6 - DEAL CARDS PHASE */
 
@@ -1431,45 +1517,41 @@ P.deal_cards_phase = function () {
 		G.available_investments.push(G.investment_tile_stack.pop())
 	}
 
-	if ((current_era() === REVOLUTION_ERA) && beginning_of_era()) {
-		var any = false
-		for (var who = FRANCE; who <= BRITAIN; who++) {
-			for (var index = G.hand[who].length - 1; index >= 0; index--) {
-				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
-					G.hand[who][index].delete()
-                    any = true
-				}
-			}
-		}
-		if (any) {
-			log ("Succession Era cards in players' hands removed from the game (see 4.1.6).")
-		}
-	}
-
 	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
-	for (who = FRANCE; who <= BRITAIN; who++) {
-		var dealt = 0;
-		for (var i = 0; i < 3; ++i) {
-			if (G.deck.length === 0) {
-				if (dealt > 0) {
-					log (dealt + " cards dealt to " + data.flags[who].name)
+	var dealt = [0, 0]
+	for (var i = 0; i < 3; ++i) {
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			let smelt_it_dealt_it = false
+			do {
+				if (G.deck.length === 0) {
+					log_dealt(dealt)
+					dealt = [0, 0]
+					log (bold("Discard Pile shuffled to form new Event Deck"))
+					G.deck = G.discard_pile
+					shuffle(G.deck)
 				}
-				log ("Discard Pile shuffled to form new Event Deck")
-				G.deck = G.discard_pile
-				shuffle(G.deck)
-			}
-			if (G.deck.length > 0) {
-				G.hand[who].push(G.deck.pop())
-				dealt++
-			} else {
-				log ("Event deck is EMPTY.")
-				break;
-			}
-		}
-		if (dealt > 0) {
-			log (dealt + " cards dealt to " + data.flags[who].name)
+
+				// I don't think this should actually ever happen, but this is how we'd move on from that situation if it did
+				if (G.deck.length === 0) {
+					log_dealt(dealt)
+					log (bold("Event deck is EMPTY."))
+					G.active = [ FRANCE, BRITAIN ]
+					goto ("deal_cards_discard")
+					return
+				}
+
+				let c = G.deck.pop()
+				if ((data.cards[c].era === SUCCESSION_ERA) && (current_era() === REVOLUTION_ERA)) {
+					log ("Succession Era event card removed from game: " + say_event(c, NONE))
+				} else {
+					smelt_it_dealt_it = true
+					G.hand[who].push(c)
+					dealt[who]++
+				}
+			} while (!smelt_it_dealt_it)
 		}
 	}
+	log_dealt(dealt)
 
 	G.active = [ FRANCE, BRITAIN ]
 	goto("deal_cards_discard")
@@ -1478,9 +1560,15 @@ P.deal_cards_phase = function () {
 P.deal_cards_discard = {
 	_begin() {
 		L.discarded = [ [], [] ]
+		review_step(0, FRANCE)
+		review_step(0, BRITAIN)
 	},
 	prompt() {
-		if (G.hand[R].length > 3) {
+		console.log ("Log Step: " + G.review_step[R] + "  Number of steps: " + G.review_index.length)
+		if (G.review_step[R] < G.review_index.length) {
+			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": Done.")
+			button ("done")
+		} else if (G.hand[R].length > 3) {
 			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
 			for (var c of G.hand[R])
 				action_event_card(c)
@@ -1500,21 +1588,31 @@ P.deal_cards_discard = {
 
 			button("confirm")
 		}
-		if (L.discarded[R].length > 0)
-			button("undo")
+		if (G.review_step[R] > 0) button ("undo")
 	},
 	event_card(c) {
 		array_delete_item(G.hand[R], c)
 		L.discarded[R].push(c)
 	},
+	done() {
+		review_step(++G.review_step[R], R)
+	},
 	undo() {
-		G.hand[R].push(L.discarded[R].pop())
+		if (L.discarded[R].length > 0) {
+			G.hand[R].push(L.discarded[R].pop())
+		} else if (G.review_step[R] > 0) {
+			review_step(--G.review_step[R], R)
+		}
 	},
 	confirm() {
 		set_delete(G.active, R)
 		if (G.active.length === 0) {
+			review_end()
 			// Only when both players are finished do we "reveal" the cards discarded (which are now public information). We also need to maintain a discard pile because it occasionally reshuffles late in the game
 			for (var who = FRANCE; who <= BRITAIN; who++) {
+				for (let c of L.discarded[who]) {
+					log(data.flags[who].name + " discards " + say_event(c, who))
+				}
 				G.discard_pile.push(L.discarded[who]);
 			}
 			end()
