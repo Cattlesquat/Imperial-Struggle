@@ -124,42 +124,111 @@ body.Britain #events_br { grid-row: 2 }
 #log .strike {
     text-decoration: line-through;
 }
-
 #log .small_br {
 	min-height: 5px;
 	height: 5px;
 }
 
-#log .group.fr { 
-    background-color: hsl(206, 85%, 90%); 
-}
-#log .group.br { 
-    background-color: hsl(355, 70%, 90%); 
-}
-#log .group.both { 
-    background-color: gainsboro; 
-}
-
 #log .group { 
-    margin: 0 6px; 
+    margin: 0 6px 0px 6px; 
 }
 
 #log .header {
     padding: 4px;
     margin-top:8px;
+    margin-bottom:0;
     font-weight: bold;
     text-align: center;
 }
 
-#log .header.group.fr { 
-    background-color: hsl(206, 85%, 85%); 
+
+/* HERE TO CHANGE COLORS BRIAN */
+#log {
+	--fr-ministry: hsl(206, 70%, 88%);
+	--fr-ministry-header: hsl(206, 70%, 78%);
+	--br-ministry: hsl(355, 60%, 88%);
+	--br-ministry-header: hsl(355, 60%, 78%);
+	--both-ministry: hsl(45, 40%, 88%);
+	--both-ministry-header: hsl(45, 40%, 78%);
+
+	--fr-event: hsl(230, 60%, 88%);
+	--fr-event-header: hsl(230, 60%, 78%);
+	--br-event: hsl(25, 70%, 88%);
+	--br-event-header: hsl(25, 70%, 78%);
+	--both-event: hsl(50, 50%, 88%);
+	--both-event-header: hsl(50, 50%, 78%);
+
+	--fr-advantage: hsl(175, 50%, 85%);
+	--fr-advantage-header: hsl(175, 50%, 72%);
+	--br-advantage: hsl(340, 50%, 88%);
+	--br-advantage-header: hsl(340, 50%, 78%);
+	--both-advantage: hsl(80, 40%, 85%);
+	--both-advantage-header: hsl(80, 40%, 75%);
+
+	--fr-misc: hsl(210, 25%, 88%);
+	--fr-misc-header: hsl(210, 25%, 80%);
+	--br-misc: hsl(0, 25%, 88%);
+	--br-misc-header: hsl(0, 25%, 80%);
+	--both-misc: hsl(0, 0%, 86%);
+	--both-misc-header: hsl(0, 0%, 78%);
 }
-#log .header.group.br { 
-    background-color: hsl(355, 70%, 85%); 
+
+/* Ministry boxes */
+#log .group.fr-ministry { background-color: var(--fr-ministry); }
+#log .group.br-ministry { background-color: var(--br-ministry); }
+#log .group.both-ministry { background-color: var(--both-ministry); }
+
+#log .header.group.fr-ministry { background-color: var(--fr-ministry-header); }
+#log .header.group.br-ministry { background-color: var(--br-ministry-header); }
+#log .header.group.both-ministry { background-color: var(--both-ministry-header); }
+
+/* Event boxes */
+#log .group.fr-event { background-color: var(--fr-event); }
+#log .group.br-event { background-color: var(--br-event); }
+#log .group.both-event { background-color: var(--both-event); }
+
+#log .header.group.fr-event { background-color: var(--fr-event-header); }
+#log .header.group.br-event { background-color: var(--br-event-header); }
+#log .header.group.both-event { background-color: var(--both-event-header); }
+
+/* Advantage boxes */
+#log .group.fr-advantage { background-color: var(--fr-advantage); }
+#log .group.br-advantage { background-color: var(--br-advantage); }
+#log .group.both-advantage { background-color: var(--both-advantage); }
+
+#log .header.group.fr-advantage { background-color: var(--fr-advantage-header); }
+#log .header.group.br-advantage { background-color: var(--br-advantage-header); }
+#log .header.group.both-advantage { background-color: var(--both-advantage-header); }
+
+/* Misc boxes */
+#log .group.fr-misc { background-color: var(--fr-misc); }
+#log .group.br-misc { background-color: var(--br-misc); }
+#log .group.both-misc { background-color: var(--both-misc); }
+
+#log .header.group.fr-misc { background-color: var(--fr-misc-header); }
+#log .header.group.br-misc { background-color: var(--br-misc-header); }
+#log .header.group.both-misc { background-color: var(--both-misc-header); }
+
+/* Nested boxes */
+
+#log .header.group.nested {
+    margin-top: 0;
 }
-#log .header.group.both { 
-    background-color: hsl(0, 0%, 80%); 
+
+#log .group.nested {
+	margin-left: 6px;
+	border-left: 6px solid var(--parent-color);
+	border-right: 6px solid var(--parent-color);
+	border-bottom: 0;
+    margin-bottom: 0;
 }
+
+#log .group.nested.parent-fr-ministry { --parent-color: var(--fr-ministry); }
+#log .group.nested.parent-fr-event { --parent-color: var(--fr-event); }
+#log .group.nested.parent-br-ministry { --parent-color: var(--br-ministry); }
+#log .group.nested.parent-br-event { --parent-color: var(--br-event); }
+#log .group.nested.parent-both-ministry { --parent-color: var(--both-ministry); }
+#log .group.nested.parent-both-event { --parent-color: var(--both-event); }
 
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr {
     font-style: italic;

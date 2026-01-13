@@ -1146,7 +1146,11 @@ function update_log_boxes(ix) {
 			box.close = -1
 	}
 	// remove boxes that are popped out of existence
-	world.log_boxes = world.log_boxes.filter(box => box.open >= 0 || box.close >= 0)
+	world.log_boxes = world.log_boxes.filter(box => {
+		if (box.open < 0 && box.close < 0) return false
+		if (box.close >= 0 && ix > box.close) return false
+		return true
+	})
 }
 
 function open_log_box(ix, keyword) {
@@ -1167,7 +1171,12 @@ function apply_log_boxes(ix, div, common) {
 	}
 	if (result.length > 0) {
 		div.classList.add(common)
-		div.classList.add(result.join("-"))
+		for (var keyword of result)
+			div.classList.add(keyword)
+		if (result.length > 1) {
+			div.classList.add("nested")
+			div.classList.add("parent-" + result[0])
+		}
 	}
 }
 

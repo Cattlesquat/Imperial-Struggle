@@ -1407,6 +1407,7 @@ function on_prompt(text) {
 
 
 const log_box_keywords = ["fr", "br", "both"]
+const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
 
 function on_log(text, ix) {
 	var p = document.createElement("div")
@@ -1426,8 +1427,9 @@ function on_log(text, ix) {
 	switch (text[0]) {
 		case "{":
 			p.classList.add("header")
-			open_log_box(ix, log_box_keywords[text[1]])
-			text = text.substring(2)
+			let keyword = log_box_keywords[text[1]] + "-" + log_box_types[text[2]]
+			open_log_box(ix, keyword)
+			text = text.substring(3)
 			break
 		case "}":
 			close_log_box(ix)

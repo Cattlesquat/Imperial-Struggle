@@ -6869,7 +6869,7 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	}
 	if (who > BRITAIN) who = 2 // Turns e.g. NONE into "both"
 	G.log_box.push({ "type": type, "who": who })
-	log("{" + who + header)
+	log("{" + who + type + header)
 }
 
 function log_box_end(type = 0) {
