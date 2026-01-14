@@ -1143,13 +1143,13 @@ function set_conflict_marker(s, n = 1) {
 		remove_conflict_marker(s)
 	} else {
 		map_set(G.conflicts, s, n)
-		log ("Conflict added at " + data.spaces[s].name)
+		log ("Conflict added at " + say_space(s))
 	}
 	update_flag_counts()
 }
 
 function remove_conflict_marker(s) {
-	if (has_conflict_marker(s)) log ("Conflict removed at " + data.spaces[s].name)
+	if (has_conflict_marker(s)) log ("Conflict removed at " + say_space(s))
 	map_delete(G.conflicts, s)
 	update_flag_counts()
 }
@@ -1173,7 +1173,7 @@ function set_damaged_fort(s, damage = true)
 		//TODO - distinguish repaired/seized
 	} else {
 		set_add(G.damaged_forts, s)
-		log ("Fort damaged at " + data.spaces[s].name)
+		log ("Fort damaged at " + say_space(s))
 	}
 }
 
@@ -1839,7 +1839,7 @@ P.ask_about_huguenots = {
 	huguenots(s) {
 		push_undo()
 		expend_huguenots(s)
-		log (italic("France flips Huguenots at " + data.spaces[s].name + " to reduce cost of " + data.spaces[G.active_space].name + " by 1."))
+		log (italic("France flips Huguenots at " + say_space(s) + " to reduce cost to flag " + say_space(G.active_space) + " by 1."))
 		end()
 	},
 	pass() {
@@ -3891,7 +3891,7 @@ P.event_calico_acts = {
 			reflag_space (s, NONE, true)
 			G.navy_box[BRITAIN]++
 
-			let msg = data.flags[G.active].adj + " player moves British squadron from " + data.spaces[s].name + " to Navy Box."
+			let msg = data.flags[G.active].adj + " player moves British squadron from " + say_space(s) + " to Navy Box."
 			log (msg)
 
 			log (say_navy_box())
@@ -4008,7 +4008,7 @@ P.do_military_spending_overruns = {
 			reflag_space (s, NONE, true)
 			G.navy_box[G.active]++
 
-			let msg = data.flags[G.active].adj + " player removes squadron from " + data.spaces[s].name + " to Navy Box."
+			let msg = data.flags[G.active].adj + " player removes squadron from " + say_space(s) + " to Navy Box."
 			log (msg)
 
 			log (say_navy_box())
@@ -6037,7 +6037,7 @@ function execute_naval_move()
 			msg += " with its squadron from " + say_space(G.navy_from) + "."
 		}
 	} else if (G.navy_from_navy_box) {
-		msg += " deploys a squadron from the Navy Box to " + data.spaces[G.navy_to].name + "."
+		msg += " deploys a squadron from the Navy Box to " + say_space(G.navy_to) + "."
 	} else {
 		msg += " moves its squadron from " + say_space(G.navy_from) + " to " + say_space(G.navy_to) + "."
 	}
@@ -6379,10 +6379,10 @@ function do_reflag_space(repair_if_damaged = true) {
 		if (is_damaged_fort(G.active_space)) {
 			set_damaged_fort(G.active_space, false)
 			if (G.flags[G.active_space] === G.active) {
-				log ("Fort repaired at " + data.spaces[G.active_space].name)
+				log ("Fort repaired at " + spaces(G.active_space))
 			}
 			else {
-				log ("Damaged fort seized at " + data.spaces[G.active_space].name)
+				log ("Damaged fort seized at " + say_space(G.active_space))
 				whom = G.active // We go all the way to our team, no stop at neutral
 			}
 		}

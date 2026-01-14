@@ -1304,7 +1304,6 @@ function escape_square_brackets(text) {
 				case "S":
 					className = "tip-space"
 					msg = data.spaces[value].name
-					console.log (msg)
 					tooltip_text = `<span 
 						class="${className}"
 						onmouseenter="_tip_focus_space(${who}, ${value})"
