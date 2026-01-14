@@ -454,7 +454,7 @@ function on_setup(scenario, options) {
 	// The current ministers chosen by each player.
 	// <br><b>
 	// G.ministry[FRANCE][0] contains an index into data.ministries[]
-	G.ministry = [[-1, -1], [-1, -1]]
+	G.ministry = [[], []]
 
 	// Global VP count (tug-of-war). Notionally 0 to 30 but values above and below that range are explicitly legal.
 	G.vp = 15
@@ -1267,14 +1267,12 @@ function set_isolated_market(s, isolated = true)
 	} else {
 		set_add(G.isolated_markets, s)
 	}
-
 }
 
 
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
-	eval { log ("MAIN LAUNCHED") }
 	for G.turn in 0 to 9 {
 		if (data.turns[G.turn].war) {
 			call war_turn
@@ -1302,7 +1300,7 @@ function review_push(phase)
 	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
 		G.review_index.push(G.log.length - 1)
 		G.review_phase.push(phase)
-		if (G.temp_view) G.temp_view.delete()
+		if (G.temp_view) delete G.temp_view
 		on_view() // Get absolute latest view information before storing it
 		G.review_view.push(structuredClone(V))
 	}
@@ -1323,9 +1321,9 @@ function review_step(step, who)
 }
 
 function review_end() {
-	G.log_hide_after = [ -1, -1 ]  // Clear any log-hiding
-	G.temp_view.delete()           // Clear any temporary view
-	G.review_view = []             // Clear any stored views
+	G.log_hide_after = [ -1, -1 ]        // Clear any log-hiding
+	if (G.temp_view) delete G.temp_view  // Clear any temporary view
+	G.review_view = []                   // Clear any stored views
 }
 
 function start_of_peace_turn() {
@@ -1381,7 +1379,7 @@ P.deck_phase = function () {
 			for (var index = G.hand[who].length - 1; index >= 0; index--) {
 				if (data.cards[G.hand[who][index]].era === SUCCESSION_ERA) {
 					log ("Succession Era event discarded from " + data.flags[who].adj + " hand: " + say_event(G.hand[who][index], who) + " (see 4.1.1)")
-					G.hand[who][index].delete()
+					array_delete(G.hand[who], index)
 				}
 			}
 		}
@@ -1629,7 +1627,7 @@ P.ministry_phase = function () {
 	if (!beginning_of_era()) {
 		goto ("replace_ministry_cards")
 	} else {
-		G.ministry           = [ [ -1, -1 ], [ -1, -1 ] ]
+		G.ministry           = [ [ ], [ ] ]
 
 		// For each player, a flag whether the ministry in the specific ministry slot has been revealed
 		// <br><b>
@@ -4352,20 +4350,36 @@ function say_demand(d, who = -1, all_caps = false) {
 	return say_stuff("D", d, who, all_caps)
 }
 
+
+function encode_value(v)
+{
+	let msg = ""
+	if (v < 100) msg += 0        // Because some tile names start with a digit, need to make sure we pad out to the maximum digits that the escape_square_brackets function checks
+	if (v < 10) msg += 0
+	msg += v
+	return msg
+}
+
+function encode_who(who) {
+	return ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X")
+}
+
+
 function say_spending(msg, who = -1) {
-	return "[S" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + msg + "]"
+	return "[$" + encode_who(who) + msg + "]"
 }
 
 function say_award_tile(msg, t, who = -1) {
-	return "[A" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X") + "0" + t + msg + "]"
+	return "[W" + encode_who(who) + encode_value(t) + msg + "]"
 }
 
 function say_investment_tile(msg, t, who = -1) {
-	let say = "[I" + ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X")
-	if (t < 10) say += "0" // Because advantage tile names start with a digit, need to make sure we pad out to the maximum 2 digits that the escape_square_brackets function checks
-	say += t
-	say += msg + "]"
-	return say
+	return "[I" + encode_who(who) + encode_value(t) + msg + "]"
+}
+
+function say_space(s, who = -1)
+{
+	return "[S" + encode_who(who) + encode_value(s) + "]"
 }
 
 
@@ -4855,7 +4869,7 @@ P.advantage_naval_bastion = {
 		G.navy_box[1 - R]++
 		reflag_space(s, NONE, true)
 
-		log (bold(data.flags[1-R].adj + " squadron returned to Navy Box."))
+		log (bold(data.flags[1-R].adj + " squadron returned from " + say_space(s) + " to Navy Box."))
 
 		log (say_navy_box())
 
@@ -6016,16 +6030,16 @@ function execute_naval_move()
 	// Log the result
 	let msg = data.flags[G.active].name + " "
 	if (G.navy_displace) {
-		msg += " DISPLACES " + data.flags[1 - G.active].adj + " squadron at " + data.spaces[G.navy_to].name
+		msg += " DISPLACES " + data.flags[1 - G.active].adj + " squadron at " + say_space(G.navy_to)
 		if (G.navy_from_navy_box) {
 			msg += " with a squadron from the Navy Box."
 		} else {
-			msg += " with its squadron from " + data.spaces[G.navy_from].name + "."
+			msg += " with its squadron from " + say_space(G.navy_from) + "."
 		}
 	} else if (G.navy_from_navy_box) {
 		msg += " deploys a squadron from the Navy Box to " + data.spaces[G.navy_to].name + "."
 	} else {
-		msg += " moves its squadron from " + data.spaces[G.navy_from].name + " to " + data.spaces[G.navy_to].name + "."
+		msg += " moves its squadron from " + say_space(G.navy_from) + " to " + say_space(G.navy_to) + "."
 	}
 	log (msg)
 
@@ -6041,7 +6055,7 @@ function reflag_space(s, who, silent = false) {
 		G.flags[s] = who
 		//if (!silent) log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 		if (!silent) {
-			let msg = data.spaces[s].name + " "
+			let msg = say_space(s) + " "
 			if (who === NONE) {
 				msg += "unflagged"
 			} else {

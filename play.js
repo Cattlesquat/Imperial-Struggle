@@ -1265,13 +1265,17 @@ function escape_square_brackets(text) {
 			let msg = inside[1].slice(2)            // Rest of string is the message
 			let value = 0
 
-			if (["I", "A"].includes(type)) {
+			if (["I", "W", "S"].includes(type)) {	// Some items encode a three digit number
 				if (is_digit(msg[0])) {
 					value = msg[0] - '0'
 					msg = msg.substring(1)
 					if (is_digit(msg[0])) {
 						value = value * 10 + (msg[0] - '0')
 						msg = msg.substring(1)
+						if (is_digit(msg[0])) {
+							value = value * 10 + (msg[0] - '0')
+							msg = msg.substring(1)
+						}
 					}
 				}
 			}
@@ -1289,7 +1293,7 @@ function escape_square_brackets(text) {
 						onmouseleave="_tip_blur_investment()"
 						>${escape_typography(msg)}</span>`
 					break
-				case "A":
+				case "W":
 					className = "tip-award"
 					tooltip_text = `<span 
 						class="${className}"
@@ -1298,6 +1302,16 @@ function escape_square_brackets(text) {
 						>${escape_typography(msg)}</span>`
 					break
 				case "S":
+					className = "tip-space"
+					msg = data.spaces[value].name
+					console.log (msg)
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_space(${who}, ${value})"
+						onmouseleave="_tip_blur_space()"
+						>${escape_typography(msg)}</span>`
+					break
+				case "$":
 				default:
 					className = "tip-spending"
 					tooltip_text = `<span 
@@ -1462,6 +1476,21 @@ function escape_advantage(text, re, log_className, tip_className, names, who) {
 		>${escape_typography(names[x])}</span>`
 	)
 }
+
+
+function _tip_focus_space(who, s, name) {
+	world.tip.hidden = false
+	space_tooltip_image(s, true)
+	position_tip_image()
+	world.status.innerHTML = space_tooltip(s)
+}
+
+function _tip_blur_space(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
 
 
 function on_prompt(text) {
