@@ -5539,7 +5539,6 @@ function do_construct_squadron(who) {
 function is_protected(s)
 {
 	var whose = G.flags[s]
-	console.log ("Whose: " + whose)
 	if (whose === NONE) return false
 	for (const adjacent of data.spaces[s].connects) {
 		if (G.flags[adjacent] === whose) {
@@ -5571,7 +5570,6 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	}
 	else {
 		//TODO apply discounts from event cards, advantages, etc
-		console.log ("Cost: "+ cost)
 		if (has_active_ministry(who, JONATHAN_SWIFT)) {
 			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
 				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
@@ -5583,19 +5581,13 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
 
 		if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
-		console.log ("  Cost2: "+ cost)
 
 		if (type === ECON) {
-			console.log ("  Cost3: "+ cost)
 			if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
-			console.log ("  Cost4: "+ cost)
 			if (is_protected(s)) cost++   // Protected markets cost +1 to shift
-			console.log ("  Cost5: "+ cost)
 			if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) cost++
 		}
 	}
-
-	console.log ("  Cost6: "+ cost)
 
 	return cost
 }
@@ -7251,8 +7243,8 @@ function conquer_from_navy_box()
 	L.picking_squadron = false
 	G.navy_from_navy_box = true
 	G.navy_from = -1
-	G.navy_to   = G.war_space
-	G.navy_displace = (G.flags[G.war_space] !== NONE)
+	G.navy_to   = L.war_space
+	G.navy_displace = (G.flags[L.war_space] !== NONE)
 	execute_naval_move()
 }
 
@@ -7264,8 +7256,8 @@ function conquer_from_space(s)
 	L.picking_squadron = false
 	G.navy_from_navy_box = false
 	G.navy_from = s
-	G.navy_to   = G.war_space
-	G.navy_displace = (G.flags[G.war_space] !== NONE)
+	G.navy_to   = L.war_space
+	G.navy_displace = (G.flags[L.war_space] !== NONE)
 	execute_naval_move()
 }
 
@@ -7285,13 +7277,13 @@ P.war_theater_resolve = {
 		let msg = say_action_header (data.wars[G.next_war].theater_names[G.theater].toUpperCase() + ": ")
 
 		if (L.checking_refusal) {
-			let vp_cost = war_refused[1 - L.war_winner] ? 5 : 3
+			let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3
 			msg = data.flags[L.war_winner].name + " proposes to conquer " + data.spaces[L.war_space].name + ". Refuse by paying " + vp_cost + " Victory Points? (Current VP: " + G.vp + ")"
 			button("refuse")
 			button("accept")
 		} else if (L.confirming_conquest) {
 			let cost = conquest_point_cost(L.war_space)
-			msg += "Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.flags[L.war_space].name + "? (CANNOT BE UNDONE)"
+			msg += "Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "? (CANNOT BE UNDONE)"
 			button("confirm")
 		} else if (L.picking_squadron) {
 			msg += say_action('Select squadron from region or Navy Box to perform conquest.')
@@ -7322,41 +7314,42 @@ P.war_theater_resolve = {
 					} else {
 						continue
 					}
-					if ((data.spaces[s].type === FORT) || (data.spaces[s].type === MARKET)) {
-						if (G.flags[s] === L.war_winner) continue
-
-						//TODO if using "tougher forts" optional rule, you have to use a conquest line
-
-						action_space(s)
-						any = true
-					}
-
-					if (data.spaces[s].type === NAVAL) {
-						if (G.flags[s] === L.war_winner) continue
-						if ((G.navy_box[L.war_winner] <= 0) && (L.free_squadrons.length < 1)) continue
-						action_space(s)
-						any = true
-					}
-
-					if (data.spaces[s].type === TERRITORY) {
-						if (G.flags[s] === L.war_winner) continue
-						if (G.war_refused_list.includes(s)) continue // If opponent has already paid VP to refuse this space, don't include it in the options
-						if (data.spaces[s].conquest) {               // If there are conquest lines to the territory, must control something at the other end of one in order to take this territory
-							let connected = false
-							for (const s2 of data.spaces[s].conquest) {
-								if (G.flags[s2] !== L.war_winner) continue
-								connected = true
-								break
-							}
-							if (!connected) continue
-						}
-
-						if (conquest_point_cost(s) > L.war_cp) continue // If too expensive because of Huguenots
-
-						action_space(s)
-						any = true
-					}
 				}
+				if ((data.spaces[s].type === FORT) || (data.spaces[s].type === MARKET)) {
+					if (G.flags[s] === L.war_winner) continue
+
+					//TODO if using "tougher forts" optional rule, you have to use a conquest line
+
+					action_space(s)
+					any = true
+				}
+
+				if (data.spaces[s].type === NAVAL) {
+					if (G.flags[s] === L.war_winner) continue
+					if ((G.navy_box[L.war_winner] <= 0) && (L.free_squadrons.length < 1)) continue
+					action_space(s)
+					any = true
+				}
+
+				if (data.spaces[s].type === TERRITORY) {
+					if (G.flags[s] === L.war_winner) continue
+					if (G.war_refused_list.includes(s)) continue // If opponent has already paid VP to refuse this space, don't include it in the options
+					if (data.spaces[s].conquest) {               // If there are conquest lines to the territory, must control something at the other end of one in order to take this territory
+						let connected = false
+						for (const s2 of data.spaces[s].conquest) {
+							if (G.flags[s2] !== L.war_winner) continue
+							connected = true
+							break
+						}
+						if (!connected) continue
+					}
+
+					if (conquest_point_cost(s) > L.war_cp) continue // If too expensive because of Huguenots
+
+					action_space(s)
+					any = true
+				}
+
 			}
 			if (!any) {
 				msg += " (None Possible)"
@@ -7445,13 +7438,7 @@ P.war_theater_resolve = {
 				}
 			} else if (data.spaces[s].type === TERRITORY) {
 				let cost = conquest_point_cost(s)
-				if (G.war_refused[1 - L.war_winner] >= 2) {
-					reflag_space(s, L.war_winner)
-					log(data.flags[L.war_winner].name + " spends " + cost + " Conquest Point" + s(cost) + ".")
-					L.war_cp -= cost
-				} else {
-					L.confirming_conquest = true
-				}
+				L.confirming_conquest = true
 			}
  		} else if (L.war_unflag > 0) {
 			L.war_unflag--
@@ -7495,8 +7482,13 @@ P.war_theater_resolve = {
 		let cost = conquest_point_cost(L.war_space)
 		log(data.flags[L.war_winner].name + " spends " + cost + " Conquest Point" + s(cost) + ".")
 		L.war_cp -= cost
-		L.checking_refusal = true
-		G.active = 1 - G.active
+
+		if (G.war_refused[1 - L.war_winner] >= 2) {
+			reflag_space(L.war_space, L.war_winner)
+		} else {
+			L.checking_refusal = true
+			G.active = 1 - G.active
+		}
 	},
 	refuse() {
 		let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3

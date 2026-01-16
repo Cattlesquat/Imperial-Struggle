@@ -1020,7 +1020,7 @@ function on_update() {
 	action_button("paytrp", "Spend 1 Treaty Point")
 
 	action_button("refuse", "Refuse")
-	action_button("refuse", "Accept")
+	action_button("accept", "Accept")
 
 	action_button("confirm", "Confirm")
 	action_button("continue", "Continue")
