@@ -374,6 +374,8 @@ const DRAW_PILE = 82
 const DISCARD_PILE = 83
 const PLAYED_EVENTS = 84
 
+const ATLANTIC_DOMINANCE = 96 // Index to end of bonus war tiles list
+
 // ACTION_SUBPHASES
 const BEFORE_PICKING_TILE           = 0
 const PICKED_TILE_OPTION_TO_PASS    = 1
@@ -452,6 +454,29 @@ data.wars = [
 	{ "num": 3, "id": "7YW", "theaters": 4, "name": "Seven Years War",                "theater_names": ["Newly Drawn", "Atlantic Dominance", "Third Carnatic War", "French & Indian War", "Prussia's Wars" ] },
 	{ "num": 4, "id": "AWI", "theaters": 3, "name": "American War of Independence",   "theater_names": ["Newly Drawn", "American Revolution", "Mysore War", "Antilles War"] }
 ]
+
+data.wars[WAR_WSS].theater = []
+data.wars[WAR_WSS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [2,2,3], "cp": [0,1,2], "trp": [1,2,3], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO, HUDSON_BAY, ACADIA ] }
+data.wars[WAR_WSS].theater[2] = { "region": REGION_EUROPE,        "keyword": GOVERNANCE, "conflicts": false, "margin": [1,2,4], "vp": [1,1,1], "cp": [0,1,2], "trp": [1,2,2], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO ] }
+data.wars[WAR_WSS].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3,4], "vp": [1,1,1], "cp": [0,1,1], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
+data.wars[WAR_WSS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": false, "margin": [1,3,5], "vp": [1,2,4], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,0,0], "additional": [] }
+
+data.wars[WAR_WAS].theater = []
+data.wars[WAR_WAS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3],   "vp": [1,1],   "cp": [0,1],   "trp": [0,1],   "unflag": [0,0],   "additional": [ HUDSON_BAY, SAN_AGUSTIN, ACADIA, ASIENTO ] }
+data.wars[WAR_WAS].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,1],   "trp": [0,1],   "unflag": [0,1],   "additional": [ SAN_AGUSTIN ] }
+data.wars[WAR_WAS].theater[3] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "margin": [1,3,4], "vp": [0,0,0], "cp": [1,2,2], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
+data.wars[WAR_WAS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": true,  "margin": [1,2,3], "vp": [1,2,3], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,1,1], "france_margin": [1,2,4], "france_vp": [2,3,5], "france_trp": [1,2,3], "additional": [] }
+
+data.wars[WAR_7YW].theater = []
+data.wars[WAR_7YW].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [2,3,5], "vp": [0,0,0], "cp": [0,0,0], "trp": [0,0,0], "unflag": [0,0,0], "additional": [ ] }
+data.wars[WAR_7YW].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [0,0,0], "cp": [1,1,2], "trp": [1,2,3], "unflag": [0,1,1], "additional": [ ] }
+data.wars[WAR_7YW].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3,5], "vp": [0,1,2], "cp": [1,2,3], "trp": [1,3,4], "unflag": [1,0,0], "additional": [ MINORCA, GIBRALTAR ] }
+data.wars[WAR_7YW].theater[4] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [2,3,4], "cp": [0,0,0], "trp": [0,0,1], "unflag": [0,0,0], "additional": [ ]	}
+
+data.wars[WAR_AWI].theater = []
+data.wars[WAR_AWI].theater[1] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,2,4], "vp": [2,3,4], "cp": [0,1,2], "trp": [0,1,2], "unflag": [0,0,0], "france_margin": [1,3,5], "france_vp": [2,3,4], "france_trp": [2,2,3], "additional": [ ] }
+data.wars[WAR_AWI].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,2],   "trp": [1,3],   "unflag": [0,0,0], "additional": [ ] }
+data.wars[WAR_AWI].theater[3] = { "region": REGION_CARIBBEAN,     "keyword": -1,         "conflicts": true,  "margin": [1,2,4], "vp": [0,0,0], "cp": [1,1,2], "trp": [0,1,2], "unflag": [0,1,1], "additional": [ HUDSON_BAY, ACADIA ] }
 
 data.keywords = [
 	{ "num": 0, "name": "Finance" },
@@ -718,7 +743,10 @@ data.bonus_war_tiles = [
     { "num" : 92, "side": 1, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Brant's Volunteers" },    // +1, Debt
     { "num" : 93, "side": 1, "val": 1, "type": 1, "war" : 3, "warid": "AWI", "name": "Stuart" },
     { "num" : 94, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "André" },                 // +1, Fort
-    { "num" : 95, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Arnold's Treason" }
+    { "num" : 95, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Arnold's Treason" },
+
+	{ "num" : 96, "side": 0, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Atlantic Dominance" },	// +2 Atlantic Dominance
+	{ "num" : 97, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Atlantic Dominance" }
 ]
 
 // ADVANTAGE TILES
@@ -789,7 +817,7 @@ data.spaces = [
     { "layout": "Balearic",                "num":  29, "name": "Balearic",                "era": 0, "region": 0, "type": 2, "prestige": true,  "cost": 0, "flag": 4, "alliance": [ [ 1, 2 ], [ 3, 1 ] ] },
 
     // NORTH AMERICA
-    { "layout": "Algonquin",               "num":  30, "name": "Algonquin",               "era": 0, "region": 1, "subreg": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                                                                                                                      "alliance": [ ], },
+    { "layout": "Algonquin",               "num":  30, "name": "Algonquin",               "era": 0, "region": 1, "subreg": 0, "type": 0, "prestige": false, "cost": 2, "flag": 0,                                                                                                                                                                                       "alliance": [ ], },
     { "layout": "Hudson Bay",              "num":  31, "name": "Hudson Bay",              "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 4,              "connects": [ YORK_FACTORY ], },
     { "layout": "York Factory",            "num":  32, "name": "York Factory",            "era": 0, "region": 1, "subreg": 0, "type": 1, "prestige": false, "cost": 2, "flag": 4, "market": 0, "connects": [ HUDSON_BAY ], },
     { "layout": "Quebec & Montreal",       "num":  33, "name": "Québec & Montréal",       "era": 0, "region": 1, "subreg": 0, "type": 3, "prestige": false, "cost": 1, "flag": 0,              "connects": [ GULF_OF_ST_LAWRENCE, CATARAQUI, ILE_AUX_NOIX ],                               "conquest": [ LOUISBOURG, CHAMPLAIN_VALLEY, OHIO_FORKS] },

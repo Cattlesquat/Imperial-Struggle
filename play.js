@@ -721,6 +721,9 @@ function on_init() {
 		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84)).tooltip(bonus_war_tooltip(i, BRITAIN))
 	}
 
+	define_marker("bonus_war", ATLANTIC_DOMINANCE + FRANCE, "hex-sm atlantic-dominance fr").tooltip(bonus_war_tooltip(96, FRANCE))
+	define_marker("bonus_war", ATLANTIC_DOMINANCE + BRITAIN, "hex-sm atlantic-dominance br").tooltip(bonus_war_tooltip(97, BRITAIN))
+
 	define_board("#war_wss", 1100, 850)
 	{
 		define_space("theater", 1, war_layout.war_wss_theater_1)
@@ -1016,10 +1019,14 @@ function on_update() {
 	action_button("paydebt", "Add 1 Debt")
 	action_button("paytrp", "Spend 1 Treaty Point")
 
+	action_button("refuse", "Refuse")
+	action_button("refuse", "Accept")
+
 	action_button("confirm", "Confirm")
 	action_button("continue", "Continue")
 
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
+	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
 
 	action_button("draw_event", "Draw Event")
 	action_button("construct_squadron", "Build Squadron")
