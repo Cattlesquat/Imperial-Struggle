@@ -7270,6 +7270,7 @@ P.war_theater_resolve = {
 			clear_dirty()
 			G.dirty_who = G.active
 		} else {
+			log_box_end()
 			end()
 		}
 	},
@@ -7283,7 +7284,10 @@ P.war_theater_resolve = {
 			button("accept")
 		} else if (L.confirming_conquest) {
 			let cost = conquest_point_cost(L.war_space)
-			msg += "Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "? (CANNOT BE UNDONE)"
+			msg += "Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "?"
+			if ((G.flags[L.war_space] === 1 - R) && (G.war_refused[1 - R] < 2)) {
+				msg += " (CANNOT BE UNDONE)"
+			}
 			button("confirm")
 		} else if (L.picking_squadron) {
 			msg += say_action('Select squadron from region or Navy Box to perform conquest.')
@@ -7349,8 +7353,26 @@ P.war_theater_resolve = {
 					action_space(s)
 					any = true
 				}
-
 			}
+
+			for (const s of data.wars[G.next_war].theater[G.theater].additional) {
+				if (G.flags[s] === L.war_winner) continue
+				if (G.war_refused_list.includes(s)) continue // If opponent has already paid VP to refuse this space, don't include it in the options
+				if (data.spaces[s].conquest) {               // If there are conquest lines to the territory, must control something at the other end of one in order to take this territory
+					let connected = false
+					for (const s2 of data.spaces[s].conquest) {
+						if (G.flags[s2] !== L.war_winner) continue
+						connected = true
+						break
+					}
+					if (!connected) continue
+				}
+				if (conquest_point_cost(s) > L.war_cp) continue // If too expensive because of Huguenots
+
+				action_space(s)
+				any = true
+			}
+
 			if (!any) {
 				msg += " (None Possible)"
 				button("done")
@@ -7414,6 +7436,9 @@ P.war_theater_resolve = {
 		} else if (L.war_atlantic) {
 			msg += say_action("Place Atlantic Dominance marker in the French & Indian War theater box")
 			action_theater(3)
+		} else {
+			msg += say_action("Done.")
+			action("done")
 		}
 
 		V.prompt = msg
@@ -7483,7 +7508,7 @@ P.war_theater_resolve = {
 		log(data.flags[L.war_winner].name + " spends " + cost + " Conquest Point" + s(cost) + ".")
 		L.war_cp -= cost
 
-		if (G.war_refused[1 - L.war_winner] >= 2) {
+		if ((G.flags[L.war_space] === NONE) || (G.war_refused[1 - L.war_winner] >= 2)) {
 			reflag_space(L.war_space, L.war_winner)
 		} else {
 			L.checking_refusal = true
@@ -7513,6 +7538,7 @@ P.war_theater_resolve = {
 		} else if (L.war_usa) {
 			L.war_usa = false
 		} else {
+			log_box_end()
 			end()
 		}
 	},
