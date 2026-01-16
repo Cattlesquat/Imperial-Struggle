@@ -574,9 +574,12 @@ function on_setup(scenario, options) {
 	add_next_war_bonus_tiles()
 
 	war_layout_basic_war_tiles()
-	draw_bonus_war_tile(FRANCE, 1) // France starts the game with one bonus war tile
 
-	G.war_winner = [ -1, -1, -1, -1 ]
+	// France starts the game with one bonus war tile
+	draw_bonus_war_tile(FRANCE, 1)
+
+	// Who won each theater in the next/current war? -1 = unresolved (don't display), 0 = France, 1 = Britain, 4/NONE = TIE
+	G.war_winner = [ -1, -1, -1, -1, -1 ]
 
 	/* */
 
@@ -4725,7 +4728,7 @@ P.jacobite_vp_flow = script (`
     eval { do_award_jacobite_vp() }    
 `)
 
-P.jacobite_space_flow = script (`
+P.jacobite_flow = script (`
     call decide_how_and_whether_to_spend_action_points	
 	eval { G.action_header = "" } 
     if (!G.paid_action_cost) {
@@ -4781,10 +4784,10 @@ P.ministry_jacobite_uprisings = {
 		set_transient(R, TRANSIENT_JACOBITES_USED_2)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
-		G.action_cost   = action_point_cost(R, s, DIPLO) //NB: we use the political space-shifting cost, but charge the player military points
+		G.action_cost   = action_point_cost(R, s, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
 		G.action_string = "to shift " + data.spaces[s].name + " space"
 		G.action_header = say_ministry_header()
-		goto ("jacobite_space_flow")
+		goto ("jacobite_flow")
 	},
 	pass() {
 		push_undo()
@@ -5536,19 +5539,20 @@ function do_construct_squadron(who) {
 function is_protected(s)
 {
 	var whose = G.flags[s]
+	console.log ("Whose: " + whose)
 	if (whose === NONE) return false
 	for (const adjacent of data.spaces[s].connects) {
 		if (G.flags[adjacent] === whose) {
-			if (data.spaces[s].type === NAVAL) return true
-			if (data.spaces[s].type === FORT) {
-				if (!is_damaged_fort(s)) return true
+			if (data.spaces[adjacent].type === NAVAL) return true
+			if (data.spaces[adjacent].type === FORT) {
+				if (!is_damaged_fort(adjacent)) return true
 			}
 		}
 	}
 	return false
 }
 
-function action_point_cost (who, s, type)
+function action_point_cost (who, s, type, ignore_region_switching = false)
 {
 	var cost = data.spaces[s].cost
 
@@ -5567,7 +5571,7 @@ function action_point_cost (who, s, type)
 	}
 	else {
 		//TODO apply discounts from event cards, advantages, etc
-
+		console.log ("Cost: "+ cost)
 		if (has_active_ministry(who, JONATHAN_SWIFT)) {
 			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
 				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
@@ -5579,11 +5583,19 @@ function action_point_cost (who, s, type)
 		if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
 
 		if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
+		console.log ("  Cost2: "+ cost)
+
 		if (type === ECON) {
+			console.log ("  Cost3: "+ cost)
 			if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
+			console.log ("  Cost4: "+ cost)
 			if (is_protected(s)) cost++   // Protected markets cost +1 to shift
+			console.log ("  Cost5: "+ cost)
+			if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) cost++
 		}
 	}
+
+	console.log ("  Cost6: "+ cost)
 
 	return cost
 }
@@ -6493,9 +6505,9 @@ P.confirm_spend_debt_or_trps = {
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
 				V.prompt += say_action("Confirm spending " + G.debt_spent + " debt")
 			} else if ((G.treaty_points_spent > 0) && (G.debt_spent === 0)) {
-				V.prompt += say_action("Confirm spending " + G.treaty_points_spent + " treaty_points")
+				V.prompt += say_action("Confirm spending " + G.treaty_points_spent + " treaty points")
 			} else {
-				V.prompt += say_action("Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty_points")
+				V.prompt += say_action("Confirm spending " + G.debt_spent + " debt and " + G.treaty_points_spent + " treaty points")
 			}
 			V.prompt += say_action(((G.action_string !== "") ? " " + G.action_string : "") + "?")
 			V.prompt += say_action_points()
@@ -6780,6 +6792,10 @@ P.before_end_of_action_round = script(`
 	if (has_inactive_ministry(R, JONATHAN_SWIFT) && (G.turn <= PEACE_TURN_3)) {
 		eval { require_ministry(R, JONATHAN_SWIFT, "Last chance to flip in time use Style keyword in upcoming war", true) }
 	}
+	
+	if (has_inactive_ministry(R, ROBERT_WALPOLE) && (G.turn === PEACE_TURN_1)) {
+		eval { require_ministry(R, ROBERT_WALPOLE, "Last chance to flip in time use Governance keyword in upcoming war", true) }
+	}
 
 	if (has_inactive_ministry(R, CHARLES_HANBURY_WILLIAMS) && (G.turn <= PEACE_TURN_3)) {
 		eval { require_ministry(R, CHARLES_HANBURY_WILLIAMS, "Last chance to flip in time use Style keyword in upcoming war", true) }
@@ -6945,7 +6961,7 @@ function say_war_choices(who)
 
 
 function do_wartile(who, type) {
-	switch (tile) {
+	switch (type) {
 		case WAR_DUDE:
 			break
 		case WAR_DEBT:
@@ -7017,13 +7033,13 @@ P.war_theater_reveal = {
 			}
 			if (G.flags[s] !== 1 - R) continue
 			let space_type = data.spaces[s].type
-			if (num_choices(who, WAR_FORT) > 0) {
+			if (num_choices(R, WAR_FORT) > 0) {
 				if (((space_type === FORT) || (space_type === NAVAL)) && !is_damaged_fort(s)) {
 					any = true
 					action_space(s)
 				}
 			}
-			if (num_choices(who, WAR_FLAG)) {
+			if (num_choices(R, WAR_FLAG)) {
 				if (space_type === MARKET) {
 					let okay = true
 					for (const s2 of data.spaces[s].connects) {
@@ -7067,7 +7083,7 @@ P.war_theater_reveal = {
 		let msg = say_action_header("WAR TURN: ")
 		msg += say_action("Choose tile actions for Theater " + G.theater + ", " + data.wars[G.next_war].theater_names[G.theater] + " " + say_war_choices(R))
 		if (!any) {
-			if (L.war_choices[R].length) {
+			if (L.wartile_choices[R].length) {
 				msg += " (None Possible)"
 			} else {
 				msg += ("(Done)")
@@ -7085,14 +7101,14 @@ P.war_theater_reveal = {
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
 			case NAVAL:
-				reflag(s, NONE)
+				reflag_space(s, NONE)
 				G.navy_box[1-R]++
 				log (data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box")
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
 			case MARKET:
 			case POLITICAL:
-				reflag(s, NONE)
+				reflag_space(s, NONE)
 				array_delete_item(L.wartile_choices[R], WAR_FLAG)
 				break
 		}
@@ -7126,7 +7142,7 @@ function start_war_theater_resolution()
 		header += "TIE!"
 		G.won_all_theaters_by_maximum_level = NONE
 	} else {
-		header += data.flags[L.war_winner] + " +" + L.war_delta
+		header += data.flags[L.war_winner].name + " +" + L.war_delta
 	}
 	log_box_begin(L.war_winner, header)
 
@@ -7176,7 +7192,7 @@ function start_war_theater_resolution()
 		if (L.war_trp > 0) add_treaty_points(1 - L.war_winner, L.war_trp)
 
 		if (L.war_cp || L.war_unflag) {
-			let msg = G.flags[L.war_winner]
+			let msg = data.flags[L.war_winner].name
 			if (L.war_cp) {
 				msg += " gains " + L.war_cp + " conquest point" + s(L.war_cp)
 			}
@@ -7194,7 +7210,7 @@ function start_war_theater_resolution()
 
 		if (L.war_canada) {
 			log("France may form USA, including in Canada!")
-		} else {
+		} else if (L.war_usa) {
 			log("France may form USA!")
 		}
 
