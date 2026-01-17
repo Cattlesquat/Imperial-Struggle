@@ -52,8 +52,72 @@ const war_layout = {
 	war_awi_theater_1: [36, 76, 507, 465],
 	war_awi_theater_2: [557, 76, 505, 297],
 	war_awi_theater_3: [557, 387, 505, 425],
-	war_awi_theater_4: [59, 568, 443, 219]
-}
+	war_awi_theater_4: [59, 568, 443, 219],
+
+	// WSS
+	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
+	war_wss_theater_1_strength_br: [480, 400, 50, 25],
+	war_wss_theater_1_winner: [275, 94, 60, 25],
+
+	war_wss_theater_2_strength_fr: [560, 400, 50, 25],
+	war_wss_theater_2_strength_br: [1015, 400, 50, 25],
+	war_wss_theater_2_winner: [675, 94, 60, 25],
+
+	war_wss_theater_3_strength_fr: [42, 770, 50, 25],
+	war_wss_theater_3_strength_br: [480, 770, 50, 25],
+	war_wss_theater_3_winner: [325, 464, 60, 25],
+
+	war_wss_theater_4_strength_fr: [560, 770, 50, 25],
+	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
+	war_wss_theater_4_winner: [835, 464, 60, 25],
+
+	// WAS
+	war_was_theater_1_strength_fr: [42, 360, 50, 25],
+	war_was_theater_1_strength_br: [490, 360, 50, 25],
+	war_was_theater_1_winner: [275, 94, 60, 25],
+
+	war_was_theater_2_strength_fr: [560, 360, 50, 25],
+	war_was_theater_2_strength_br: [1015, 360, 50, 25],
+	war_was_theater_2_winner: [675, 94, 60, 25],
+
+	war_was_theater_3_strength_fr: [42, 770, 50, 25],
+	war_was_theater_3_strength_br: [490, 770, 50, 25],
+	war_was_theater_3_winner: [325, 464, 60, 25],
+
+	war_was_theater_4_strength_fr: [560, 815, 50, 25],
+	war_was_theater_4_strength_br: [1030, 815, 50, 25],
+	war_was_theater_4_winner: [835, 464, 60, 25],
+
+	// 7YW
+	war_7yw_theater_1_strength_fr: [36, 405, 50, 25],
+	war_7yw_theater_1_strength_br: [350, 405, 50, 25],
+	war_7yw_theater_1_winner: [320, 78, 60, 25],
+
+	war_7yw_theater_2_strength_fr: [557, 405, 50, 25],
+	war_7yw_theater_2_strength_br: [870, 405, 50, 25],
+	war_7yw_theater_2_winner: [780, 78, 60, 25],
+
+	war_7yw_theater_3_strength_fr: [36, 775, 50, 25],
+	war_7yw_theater_3_strength_br: [350, 775, 50, 25],
+	war_7yw_theater_3_winner: [380, 448, 60, 25],
+
+	war_7yw_theater_4_strength_fr: [557, 775, 50, 25],
+	war_7yw_theater_4_strength_br: [870, 775, 50, 25],
+	war_7yw_theater_4_winner: [700, 448, 60, 25],
+
+	// AWI
+	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
+	war_awi_theater_1_strength_br: [350, 510, 50, 25],
+	war_awi_theater_1_winner: [330, 78, 60, 25],
+
+	war_awi_theater_2_strength_fr: [557, 345, 50, 25],
+	war_awi_theater_2_strength_br: [870, 345, 50, 25],
+	war_awi_theater_2_winner: [700, 78, 60, 25],
+
+	war_awi_theater_3_strength_fr: [557, 780, 50, 25],
+	war_awi_theater_3_strength_br: [870, 780, 50, 25],
+	war_awi_theater_3_winner: [700, 388, 60, 25],
+	}
 
 const layout_theater_drawn = [0, 0, 1800, 70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
 
@@ -739,6 +803,18 @@ function on_init() {
 		define_layout("lout-theater", 6, war_layout.war_wss_theater_3_britain)
 		define_layout("lout-theater", 7, war_layout.war_wss_theater_4_france)
 		define_layout("lout-theater", 8, war_layout.war_wss_theater_4_britain)
+		define_layout("lout-wss-strength-fr", 1, war_layout.war_wss_theater_1_strength_fr)
+		define_layout("lout-wss-strength-br", 1, war_layout.war_wss_theater_1_strength_br)
+		define_layout("lout-wss-winner", 1,  war_layout.war_wss_theater_1_winner)
+		define_layout("lout-wss-strength-fr", 2, war_layout.war_wss_theater_2_strength_fr)
+		define_layout("lout-wss-strength-br", 2, war_layout.war_wss_theater_2_strength_br)
+		define_layout("lout-wss-winner", 2,  war_layout.war_wss_theater_2_winner)
+		define_layout("lout-wss-strength-fr", 3, war_layout.war_wss_theater_3_strength_fr)
+		define_layout("lout-wss-strength-br", 3, war_layout.war_wss_theater_3_strength_br)
+		define_layout("lout-wss-winner", 3,  war_layout.war_wss_theater_3_winner)
+		define_layout("lout-wss-strength-fr", 4, war_layout.war_wss_theater_4_strength_fr)
+		define_layout("lout-wss-strength-br", 4, war_layout.war_wss_theater_4_strength_br)
+		define_layout("lout-wss-winner", 4,  war_layout.war_wss_theater_4_winner)
 	}
 
 	define_board("#war_was", 1100, 850)
@@ -756,6 +832,18 @@ function on_init() {
 		define_layout("lout-theater", 14, war_layout.war_was_theater_3_britain)
 		define_layout("lout-theater", 15, war_layout.war_was_theater_4_france)
 		define_layout("lout-theater", 16, war_layout.war_was_theater_4_britain)
+		define_layout("lout-was-strength-fr", 1, war_layout.war_was_theater_1_strength_fr)
+		define_layout("lout-was-strength-br", 1, war_layout.war_was_theater_1_strength_br)
+		define_layout("lout-was-winner", 1,  war_layout.war_was_theater_1_winner)
+		define_layout("lout-was-strength-fr", 2, war_layout.war_was_theater_2_strength_fr)
+		define_layout("lout-was-strength-br", 2, war_layout.war_was_theater_2_strength_br)
+		define_layout("lout-was-winner", 2,  war_layout.war_was_theater_2_winner)
+		define_layout("lout-was-strength-fr", 3, war_layout.war_was_theater_3_strength_fr)
+		define_layout("lout-was-strength-br", 3, war_layout.war_was_theater_3_strength_br)
+		define_layout("lout-was-winner", 3,  war_layout.war_was_theater_3_winner)
+		define_layout("lout-was-strength-fr", 4, war_layout.war_was_theater_4_strength_fr)
+		define_layout("lout-was-strength-br", 4, war_layout.war_was_theater_4_strength_br)
+		define_layout("lout-was-winner", 4,  war_layout.war_was_theater_4_winner)
 	}
 
 	define_board("#war_7yw", 1100, 850)
@@ -773,6 +861,18 @@ function on_init() {
 		define_layout("lout-theater", 22, war_layout.war_7yw_theater_3_britain)
 		define_layout("lout-theater", 23, war_layout.war_7yw_theater_4_france)
 		define_layout("lout-theater", 24, war_layout.war_7yw_theater_4_britain)
+		define_layout("lout-7yw-strength-fr", 1, war_layout.war_7yw_theater_1_strength_fr)
+		define_layout("lout-7yw-strength-br", 1, war_layout.war_7yw_theater_1_strength_br)
+		define_layout("lout-7yw-winner", 1,  war_layout.war_7yw_theater_1_winner)
+		define_layout("lout-7yw-strength-fr", 2, war_layout.war_7yw_theater_2_strength_fr)
+		define_layout("lout-7yw-strength-br", 2, war_layout.war_7yw_theater_2_strength_br)
+		define_layout("lout-7yw-winner", 2,  war_layout.war_7yw_theater_2_winner)
+		define_layout("lout-7yw-strength-fr", 3, war_layout.war_7yw_theater_3_strength_fr)
+		define_layout("lout-7yw-strength-br", 3, war_layout.war_7yw_theater_3_strength_br)
+		define_layout("lout-7yw-winner", 3,  war_layout.war_7yw_theater_3_winner)
+		define_layout("lout-7yw-strength-fr", 4, war_layout.war_7yw_theater_4_strength_fr)
+		define_layout("lout-7yw-strength-br", 4, war_layout.war_7yw_theater_4_strength_br)
+		define_layout("lout-7yw-winner", 4,  war_layout.war_7yw_theater_4_winner)
 	}
 
 	define_board("#war_awi", 1100, 850)
@@ -790,6 +890,15 @@ function on_init() {
 		define_layout("lout-theater", 30, war_layout.war_awi_theater_3_britain)
 		define_layout("lout-theater", 31, war_layout.war_awi_theater_4_france)
 		define_layout("lout-theater", 32, war_layout.war_awi_theater_4_britain)
+		define_layout("lout-awi-strength-fr", 1, war_layout.war_awi_theater_1_strength_fr)
+		define_layout("lout-awi-strength-br", 1, war_layout.war_awi_theater_1_strength_br)
+		define_layout("lout-awi-winner", 1,  war_layout.war_awi_theater_1_winner)
+		define_layout("lout-awi-strength-fr", 2, war_layout.war_awi_theater_2_strength_fr)
+		define_layout("lout-awi-strength-br", 2, war_layout.war_awi_theater_2_strength_br)
+		define_layout("lout-awi-winner", 2,  war_layout.war_awi_theater_2_winner)
+		define_layout("lout-awi-strength-fr", 3, war_layout.war_awi_theater_3_strength_fr)
+		define_layout("lout-awi-strength-br", 3, war_layout.war_awi_theater_3_strength_br)
+		define_layout("lout-awi-winner", 3,  war_layout.war_awi_theater_3_winner)
 	}
 
 	for (let s = 0; s < NUM_SPACES; s++) {
@@ -1158,6 +1267,37 @@ function update_war_display() {
 				), bonus_war_tooltip(-1, player))
 
 				++offset
+			}
+		}
+
+		const war_prefix = ["wss", "was", "7yw", "awi"][war]
+		const num_theaters = data.wars[G.next_war].theaters
+
+		for (theater = 1; theater <= num_theaters; ++theater) {
+			let fr_strength = V.theater_strength ? V.theater_strength[FRANCE][theater] : 0
+			let br_strength = V.theater_strength ? V.theater_strength[BRITAIN][theater] : 0
+
+			// Strength FR
+			update_keyword(`lout-${war_prefix}-strength-fr`, theater, "theater-strength fr")
+			update_text_html(`lout-${war_prefix}-strength-fr`, theater, `<span class="flag"></span><span>${fr_strength}</span>`)
+
+			// Strength BR
+			update_keyword(`lout-${war_prefix}-strength-br`, theater, "theater-strength br")
+			update_text_html(`lout-${war_prefix}-strength-br`, theater, `<span class="flag"></span><span>${br_strength}</span>`)
+
+			// Winner
+			if (V.theater_winner && V.theater_winner[theater] !== -1) {
+				let winner = V.theater_winner[theater]
+				let margin = V.theater_margin[theater]
+				let is_tie = margin === 0
+				let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
+				
+				update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
+				update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="flag"></span><span>${margin}</span>`)
+				update_show(`lout-${war_prefix}-winner`, theater, true)
+			} 
+			else {
+				update_show(`lout-${war_prefix}-winner`, theater, false)
 			}
 		}
 	}
