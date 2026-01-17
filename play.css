@@ -1270,6 +1270,30 @@ body[data-noanims="false"] .marker.war-basic0.action:before, body[data-noanims="
 .marker.treaty_points_br_reverse { background-image: url(tiles75/square-sm/treaty_points_br_reverse.png) }
 .marker.treaty_points_fr_reverse { background-image: url(tiles75/square-sm/treaty_points_fr_reverse.png) }
 
+.theater-strength, .theater-winner {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: bold;
+	color: black;
+}
+
+.theater-strength { 
+    font-size: 16px; 
+}
+.theater-winner { 
+    font-size: 14px; 
+}
+
+.theater-strength .flag, .theater-winner .flag {
+	width: 18px;
+	height: 18px;
+	background: no-repeat center / contain;
+}
+
+.fr .flag { background-image: url(tiles75/square-sm/flag_fr.png); }
+.br .flag { background-image: url(tiles75/square-sm/flag_br.png); }
+
 /*
 tiles75/square-sm/exhausted.png
 tiles75/square-sm/exhausted_reverse.png
