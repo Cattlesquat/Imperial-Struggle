@@ -627,6 +627,11 @@ function on_setup(scenario, options) {
 	// Which player made the most recent changes to spaces
 	G.dirty_who = FRANCE
 
+	// Has the navy in this space captured a space during this war
+	// <br><b>
+	// set_has(G.navy_this_war, s)
+	G.navy_this_war = []
+
 	// Set flags to their setup state (none, france, britain, or spain; no usa at start of course)
 	for (i = 0; i < data.spaces.length; i++) {
 		G.flags[i] = data.spaces[i].flag ?? NONE
@@ -1129,6 +1134,9 @@ function add_next_war_bonus_tiles() {
 	}
 	shuffle(G.bonus_war_tiles[FRANCE])
 	shuffle(G.bonus_war_tiles[BRITAIN])
+
+	// None in any theaters
+	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
 }
 
 
@@ -1352,6 +1360,7 @@ function start_of_peace_turn() {
 	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
 	review_begin()
 	review_push("START OF TURN " + data.turns[G.turn].id)
+	clear_dirty()
 }
 
 /* 4.1 - PEACE TURNS */
@@ -2261,6 +2270,7 @@ P.scoring_review = {
 			set_delete(G.active, R)
 			if (G.active.length === 0) {
 				G.log_hide_after = [-1, -1] // Stop hiding any part of the log
+				clear_dirty()
 				end()
 			}
 		}
@@ -2525,6 +2535,14 @@ function mark_dirty(s) {
 
 function clear_dirty() {
 	set_clear(G.dirty)
+}
+
+function mark_navy_this_war(s) {
+	set_add(G.navy_this_war, s)
+}
+
+function clear_navy_this_war() {
+	set_clear(G.navy_this_war)
 }
 
 
@@ -6117,6 +6135,7 @@ function reflag_space(s, who, silent = false) {
 	}
 
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
+	mark_navy_this_war(s)
 
 	if ((who === BRITAIN) && has_huguenots(s)) {
 		remove_huguenots(s)
@@ -7001,12 +7020,16 @@ P.war_theater_reveal = {
 
 		if (L.wartile_choices[G.first_war_player].length > 0) {
 			G.active = G.first_war_player
-			clear_dirty()
-			G.dirty_who = G.active
+			if (G.dirty_who !== G.active) {
+				clear_dirty()
+				G.dirty_who = G.active
+			}
 		} else if (L.wartile_choices[1 - G.first_war_player].length) {
 			G.active = 1 - G.first_war_player
-			clear_dirty()
-			G.dirty_who = G.active
+			if (G.dirty_who !== G.active) {
+				clear_dirty()
+				G.dirty_who = G.active
+			}
 		} else {
 			end()
 		}
@@ -7227,7 +7250,7 @@ function start_war_theater_resolution()
 
 					if (data.spaces[s].type !== NAVAL) continue
 					if (G.flags[s] !== L.war_winner) continue
-					if (set_has(G.dirty, space.num)) continue /* A given Squadron can only deploy once per action round */
+					if (set_has(G.navy_this_war, space.num)) continue /* A given Squadron can capture one space per war */
 					L.free_squadrons.push(s)
 				}
 			}
@@ -7267,8 +7290,10 @@ P.war_theater_resolve = {
 		start_war_theater_resolution()
 		if ((L.war_winner !== NONE) && (L.war_cp || L.war_unflag || L.war_usa || L.war_atlantic)) {
 			G.active = L.war_winner
-			clear_dirty()
-			G.dirty_who = G.active
+			if (G.dirty_who !== G.active) {
+				clear_dirty()
+				G.dirty_who = G.active
+			}
 		} else {
 			log_box_end()
 			end()
@@ -7552,6 +7577,8 @@ P.war_theater_resolve = {
 P.war_resolution_phase = script(`
 	eval {
 		log ("#" + data.wars[G.next_war].name + "\\n" + data.turns[G.turn].dates)
+		clear_dirty()
+		clear_navy_this_war()
 		G.won_all_theaters_by_maximum_level = -1
 		G.war_refused = [0, 0]
 		G.war_refused_list = []
@@ -7646,6 +7673,9 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 	// Turn them all back face down
 	G.bonus_war_tile_revealed = [ [], [] ]
 	G.basic_war_tile_revealed = [ [], [] ]
+
+	// None in any theaters
+	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
 }
 
 
@@ -7695,8 +7725,6 @@ P.war_layout_phase = function () {
 			}
 		}
 	}
-
-	//TODO On their respective first action rounds of Turn 4, players place their bonus war tiles into the theaters
 
 	end()
 }
