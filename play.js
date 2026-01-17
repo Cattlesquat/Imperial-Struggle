@@ -1062,8 +1062,8 @@ function on_update() {
 	populate_with_list("panel-used-investments", "investment", G.used_investments)
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		for (i = 0; i < NUM_MINISTRY_SLOTS; ++i) {
-			if (!V.ministry) continue
+		if (!V.ministry) continue
+		for (i = 0; i < V.ministry[who].length; ++i) {
 			let m = V.ministry[who][i]
 			if (m >= 0) {
 				populate("panel-ministry", who, "ministry_card", m)

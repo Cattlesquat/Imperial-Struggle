@@ -747,6 +747,15 @@ function on_setup(scenario, options) {
 	// Number of USA flags placed in the game
 	G.usa_flags = 0
 
+	// Number of Jacobite Victories (0-2)
+	G.jacobite_victory = 0
+
+	// Number of Jacobite Defeats (0-1)
+	G.jacobite_defeat = 0
+
+	// Has France qualified for "perma-Jacobite" status?
+	G.jacobites_always = false
+
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
 
@@ -925,6 +934,9 @@ function on_view() {
 
 	V.huguenots = G.huguenots
 	V.huguenots_spent = G.huguenots_spent
+
+	V.jacobite_victory = G.jacobite_victory
+	V.jacobite_defeat  = G.jacobite_defeat
 
 	V.action_points_major = G.action_points_major
 	V.action_points_minor = G.action_points_minor
@@ -1652,6 +1664,14 @@ P.deal_cards_discard = {
 	},
 }
 
+
+function num_ministry_slots(who)
+{
+	if ((who === FRANCE) && !G.jacobite_defeat && G.jacobites_always) return 3
+	return 2
+}
+
+
 /* 4.1.7 - MINISTRY PHASE */
 
 P.ministry_phase = function () {
@@ -1663,7 +1683,12 @@ P.ministry_phase = function () {
 		// For each player, a flag whether the ministry in the specific ministry slot has been revealed
 		// <br><b>
 		// G.ministry_revealed[FRANCE][0] </b> is true if the ministry in France's first slot has been revealed
-		G.ministry_revealed  = [ [ false, false], [ false, false] ]
+		G.ministry_revealed  = [ [ false, false, false ], [ false, false] ]
+
+		if (G.jacobites_always && !G.jacobite_defeat) {
+			G.ministry[FRANCE].push(JACOBITE_UPRISINGS)
+			G.ministry_revealed[FRANCE][0] = true
+		}
 
 		// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 		// <br><b>
@@ -1677,7 +1702,7 @@ P.ministry_phase = function () {
 
 P.choose_ministry_cards = {
 	prompt() {
-		if (G.ministry[R].length < 2) {
+		if (G.ministry[R].length < num_ministry_slots(R)) {
 			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Choose two ministry cards.")
 		} else {
 			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Confirm choice of ministers: ")
@@ -1696,14 +1721,14 @@ P.choose_ministry_cards = {
 			if (m.side === R && !G.ministry[R].includes(m.num)) {
 				if (m.era.includes(current_era())) {
 					V.all_ministries.push(m.num)
-					if (G.ministry[R].length < 2)
+					if (G.ministry[R].length < num_ministry_slots(R))
 						action_ministry_card(m.num)
 				}
 			}
 		}
 		if (G.ministry[R].length > 0)
 			button("undo")
-		if (G.ministry[R].length === 2)
+		if (G.ministry[R].length === num_ministry_slots(R))
 			button("confirm")
 	},
 	ministry_card(c) {
@@ -2542,7 +2567,7 @@ function mark_navy_this_war(s) {
 }
 
 function clear_navy_this_war() {
-	set_clear(G.navy_this_war)
+	G.navy_this_war = []
 }
 
 
@@ -4725,7 +4750,7 @@ function jacobite_vp_value()
 		if (G.flags[s] === FRANCE) vp++
 	}
 
-	//TODO: Add VP for Jacobite Victory markers
+	vp += G.jacobite_victory
 
 	vp = Math.min(4, vp)
 	return vp
@@ -6401,6 +6426,19 @@ function s(amount) {
 	return ""
 }
 
+// Returns "a " if the amount is exactly 1; returns "" if amount is any other value
+function a(amount) {
+	if (amount === 1) return "a "
+	return ""
+}
+
+// Returns "an " if the amount is exactly 1; returns "" if amount is any other value
+function an(amount) {
+	if (amount === 1) return "an "
+	return ""
+}
+
+
 function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
@@ -6956,14 +6994,14 @@ function say_war_choices(who)
 	let any = false
 	let msg = ""
 
-	if (flag > 0) {
-		msg = flag + " Unflag"
+	if (L.wartile_original_amounts[who][WAR_FLAG] > 0) {
+		msg = (L.wartile_original_amounts[who][WAR_FLAG] - flag) + "/" + L.wartile_original_amounts[who][WAR_FLAG] + " Unflag"
 		any = true
 	}
 
-	if (fort > 0) {
+	if (L.wartile_original_amounts[who][WAR_FORT] > 0) {
 		if (any) msg += ", "
-		msg += fort + " Fort/Naval"
+		msg += (L.wartile_original_amounts[who][WAR_FORT] - fort) + "/" + L.wartile_original_amounts[who][WAR_FORT] + " Fort or Naval"
 		any = true
 	}
 
@@ -6972,11 +7010,13 @@ function say_war_choices(who)
 
 
 function do_wartile(who, type) {
+	L.wartile_original_amounts[who][type]++
 	switch (type) {
 		case WAR_DUDE:
 			break
 		case WAR_DEBT:
 			L.wartile_debt[1-who]++
+			L.wartile_choices[who].push(type)
 			break
 		case WAR_FORT:
 		case WAR_FLAG:
@@ -6989,20 +7029,23 @@ function do_wartile(who, type) {
 P.war_theater_reveal = {
 	_begin() {
 		log ("=War Resolution Phase")
-		log ("=" + "Theater " + G.theater + ": " + data.wars[G.next_war].theater_names[G.theater - 1])
+		log ("=" + "Theater " + G.theater + ": " + data.wars[G.next_war].theater_names[G.theater])
 
 		L.wartile_choices = [ [], [] ]
 		L.wartile_debt = [ 0, 0 ]
+		L.wartile_original_amounts = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ]
 
 		// Reveal all the tiles in this theater only
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			for (let tile of G.theater_basic_war_tiles[who][G.theater]) {
 				set_has(G.basic_war_tile_revealed[who], tile)
 				do_wartile(who, data.basic_war_tiles[tile].type)
+				log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
 			}
 			for (let tile of G.theater_bonus_war_tiles[who][G.theater]) {
 				set_has(G.bonus_war_tile_revealed[who], tile)
-				do_wartile(who, data.basic_war_tiles[tile].type)
+				do_wartile(who, data.bonus_war_tiles[tile].type)
+				log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
 			}
 		}
 
@@ -7015,17 +7058,16 @@ P.war_theater_reveal = {
 			G.first_war_player = G.first_player
 		}
 
-		increase_debt(1 - G.first_war_player, L.wartile_debt[1 - G.first_war_player])
-		increase_debt(G.first_war_player, L.wartile_debt[G.first_war_player])
-
 		if (L.wartile_choices[G.first_war_player].length > 0) {
 			G.active = G.first_war_player
+			increase_debt(1 - G.first_war_player, L.wartile_debt[1 - G.first_war_player])
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
 		} else if (L.wartile_choices[1 - G.first_war_player].length) {
 			G.active = 1 - G.first_war_player
+			increase_debt(G.first_war_player, L.wartile_debt[G.first_war_player])
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
 				G.dirty_who = G.active
@@ -7038,72 +7080,79 @@ P.war_theater_reveal = {
 		let any = false
 		let any_okay    = false
 		let spare_markets = []
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].region !== data.wars[G.next_war].theater[G.theater].region) {
-				if ((G.next_war === WAR_7YW) && (theater === 3)) {
-					if (data.spaces[s].region !== REGION_CARIBBEAN) continue		// 7YW, theater 3 has two regions
-				} else {
-					continue
-				}
-			}
-			if (G.flags[s] !== 1 - R) continue
-			let space_type = data.spaces[s].type
-			if (num_choices(R, WAR_FORT) > 0) {
-				if (((space_type === FORT) || (space_type === NAVAL)) && !is_damaged_fort(s)) {
-					any = true
-					action_space(s)
-				}
-			}
-			if (num_choices(R, WAR_FLAG)) {
-				if (space_type === MARKET) {
-					let okay = true
-					for (const s2 of data.spaces[s].connects) {
-						if (data.spaces[s2].type !== MARKET) continue
-						if (G.flags[s2] !== 1 - R) continue
 
-						if (check_if_market_isolated(s2)) continue // If connected market is *already* isolated, then removing target flag by definition doesn't *cause* it to become isolated
+		let msg = say_action_header("WAR THEATER " + G.theater + ": ")
 
-						G.flags[s] = NONE // temporarily unflag our target space
-						let now_isolated = check_if_market_isolated(s2) // check if it isolates this adjacent space
-						G.flags[s] = 1 - R // set target space back
-
-						if (now_isolated) {
-							okay = false
-							break
-						}
-					}
-
-					if (okay) {
-						any = true
-						any_okay = true
-						action_space(s)
-					} else {
-						spare_markets.push(s)
-					}
-				} else if (space_type === POLITICAL) {
-					any = true
-					action_space(s)
-				}
-			}
-		}
-
-		// If there were NO markets we can unflag w/o isolating another market, then in that case we're allowed to unflag a market that isolates other markets - 7.1.2(i)
-		if (!any_okay) {
-			for (const s of spare_markets) {
-				any = true
-				action_space(s)
-			}
-		}
-
-		let msg = say_action_header("WAR TURN: ")
-		msg += say_action("Choose tile actions for Theater " + G.theater + ", " + data.wars[G.next_war].theater_names[G.theater] + " " + say_war_choices(R))
-		if (!any) {
-			if (L.wartile_choices[R].length) {
-				msg += " (None Possible)"
-			} else {
-				msg += ("(Done)")
-			}
+		if ((L.wartile_debt[1 - R] > 0) && L.wartile_choices[R].includes(WAR_DEBT)) {
+			msg += say_action("You have revealed " + L.wartile_debt[1 - R] + " tile" + s(L.wartile_debt[1 - R]) + " with " + a(L.wartile_debt[1 - R]) + "debt marker" + s(L.wartile_debt[1 - R]) +  ". " + data.flags[1 - R].adj + " debt increased by " + L.wartile_debt[1 - R] + ".")
 			button("done")
+		} else {
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== data.wars[G.next_war].theater[G.theater].region) {
+					if ((G.next_war === WAR_7YW) && (theater === 3)) {
+						if (data.spaces[s].region !== REGION_CARIBBEAN) continue		// 7YW, theater 3 has two regions
+					} else {
+						continue
+					}
+				}
+				if (G.flags[s] !== 1 - R) continue
+				let space_type = data.spaces[s].type
+				if (num_choices(R, WAR_FORT) > 0) {
+					if (((space_type === FORT) || (space_type === NAVAL)) && !is_damaged_fort(s)) {
+						any = true
+						action_space(s)
+					}
+				}
+				if (num_choices(R, WAR_FLAG)) {
+					if (space_type === MARKET) {
+						let okay = true
+						for (const s2 of data.spaces[s].connects) {
+							if (data.spaces[s2].type !== MARKET) continue
+							if (G.flags[s2] !== 1 - R) continue
+
+							if (check_if_market_isolated(s2)) continue // If connected market is *already* isolated, then removing target flag by definition doesn't *cause* it to become isolated
+
+							G.flags[s] = NONE // temporarily unflag our target space
+							let now_isolated = check_if_market_isolated(s2) // check if it isolates this adjacent space
+							G.flags[s] = 1 - R // set target space back
+
+							if (now_isolated) {
+								okay = false
+								break
+							}
+						}
+
+						if (okay) {
+							any = true
+							any_okay = true
+							action_space(s)
+						} else {
+							spare_markets.push(s)
+						}
+					} else if (space_type === POLITICAL) {
+						any = true
+						action_space(s)
+					}
+				}
+			}
+
+			// If there were NO markets we can unflag w/o isolating another market, then in that case we're allowed to unflag a market that isolates other markets - 7.1.2(i)
+			if (!any_okay) {
+				for (const s of spare_markets) {
+					any = true
+					action_space(s)
+				}
+			}
+
+			msg += say_action("Execute war tile actions for Theater " + G.theater + ", " + data.wars[G.next_war].theater_names[G.theater] + ". " + say_war_choices(R))
+			if (!any) {
+				if (L.wartile_choices[R].length) {
+					msg += say_action(" (None Possible)")
+				} else {
+					msg += say_action(" (Done)")
+				}
+				button("done")
+			}
 		}
 
 		V.prompt = msg
@@ -7130,13 +7179,25 @@ P.war_theater_reveal = {
 	},
 	done() {
 		push_undo()
-		L.wartile_choices[R] = []
-		if (L.wartile_choices[1 - R].length > 0) {
-			G.active = 1 - R
-			clear_dirty()
-			G.dirty_who = G.active
-		} else {
-			end()
+		let done = true
+
+		if ((L.wartile_debt[1 - R] > 0) && L.wartile_choices[R].includes(WAR_DEBT)) {
+			while (L.wartile_choices[R].includes(WAR_DEBT)) {
+				array_delete_item(L.wartile_choices[R], WAR_DEBT)
+			}
+			if (L.wartile_choices[R].length > 0) done = false
+		}
+
+		if (done) {
+			L.wartile_choices[R] = []
+			if (L.wartile_choices[1 - R].length > 0) {
+				G.active = 1 - R
+				increase_debt(R, L.wartile_debt[R])
+				clear_dirty()
+				G.dirty_who = G.active
+			} else {
+				end()
+			}
 		}
 	}
 }
@@ -7171,10 +7232,14 @@ function start_war_theater_resolution()
 		G.won_all_theaters_by_maximum_level = NONE
 	}
 
-	if (L.war_winner !== NONE) {
+	if (L.war_winner === NONE) {
+		L.result_string = "Theater is tied; no winner or spoils."
+	} else {
 		if (L.war_tier < 0) {
 			console.error("Winner declared but no margin of victory. War: " + G.next_war + " Theater: " + G.theater + " Winner: " + L.war_winner + " Delta: " + L.war_delta + " Tier: " + L.war_tier)
 		}
+
+		L.result_string = "+" + L.war_delta + " " + data.flags[L.war_winner].adj + " victory!"
 
 		L.war_vp = data.wars[G.next_war].theater[G.theater].vp[L.war_tier]
 		L.war_cp = data.wars[G.next_war].theater[G.theater].cp[L.war_tier]
@@ -7184,6 +7249,7 @@ function start_war_theater_resolution()
 		L.war_canada = false
 		L.war_atlantic = false
 		L.war_squadrons = 0
+		L.opponent_confirm = false
 
 		L.war_cp_start = L.war_cp
 
@@ -7200,6 +7266,17 @@ function start_war_theater_resolution()
 				L.war_cp = 0
 				L.war_usa = true
 				if (L.war_tier === 2) L.war_canada = true
+			}
+
+			if ((G.next_war === WAR_WSS) && (G.theater === 4) && (L.war_tier > 0)) {
+				log("Jacobite Victory marker added.")
+				G.jacobite_victory++
+			}
+
+			if ((G.next_war === WAR_WAS) && (G.theater === 4)) {
+				log("Jacobite Victory marker added. France may always select " + say_ministry(JACOBITE_UPRISINGS) + " as an extra ministry for rest of game.")
+				G.jacobite_victory++
+				G.jacobites_always = true
 			}
 		}
 
@@ -7296,22 +7373,30 @@ P.war_theater_resolve = {
 			}
 		} else {
 			log_box_end()
-			end()
+			G.active = [ FRANCE, BRITAIN ]
+			//end()
 		}
 	},
 	prompt() {
-		let msg = say_action_header (data.wars[G.next_war].theater_names[G.theater].toUpperCase() + ": ")
+		let msg = say_action_header(data.wars[G.next_war].theater_names[G.theater].toUpperCase() + ": ")
 
-		if (L.checking_refusal) {
+		if (Array.isArray(G.active) || L.opponent_confirm) {
+			msg += say_action(L.result_string)
+			if (L.opponent_confirm) {
+				msg += say_action(" Opponent has claimed all spoils.")
+			}
+			msg += say_action(" Done.")
+			button("done")
+		} else if (L.checking_refusal) {
 			let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3
-			msg = data.flags[L.war_winner].name + " proposes to conquer " + data.spaces[L.war_space].name + ". Refuse by paying " + vp_cost + " Victory Points? (Current VP: " + G.vp + ")"
+			msg = say_action(data.flags[L.war_winner].name + " proposes to conquer " + data.spaces[L.war_space].name + ". Refuse by paying " + vp_cost + " Victory Points? (Current VP: " + G.vp + ")")
 			button("refuse")
 			button("accept")
 		} else if (L.confirming_conquest) {
 			let cost = conquest_point_cost(L.war_space)
-			msg += "Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "?"
+			msg += say_action("Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "?")
 			if ((G.flags[L.war_space] === 1 - R) && (G.war_refused[1 - R] < 2)) {
-				msg += " (CANNOT BE UNDONE)"
+				msg += say_action(" (CANNOT BE UNDONE)")
 			}
 			button("confirm")
 		} else if (L.picking_squadron) {
@@ -7333,7 +7418,7 @@ P.war_theater_resolve = {
 				action_navy_box()
 			}
 		} else if (L.war_cp > 0) {
-			msg += say_action("Spend Conquest Point" + s(L.war_cp_start) + " " + parens( (L.war_cp_start - L.war_cp) +  " / " + L.war_cp_start) + ".")
+			msg += say_action(L.result_string) + say_action(" Spend Conquest Point" + s(L.war_cp_start) + " " + parens( (L.war_cp_start - L.war_cp) +  " / " + L.war_cp_start) + ".")
 
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -7463,7 +7548,7 @@ P.war_theater_resolve = {
 			action_theater(3)
 		} else {
 			msg += say_action("Done.")
-			action("done")
+			button("done")
 		}
 
 		V.prompt = msg
@@ -7555,16 +7640,27 @@ P.war_theater_resolve = {
 	},
 	done() {
 		push_undo()
-		if (L.war_cp > 0) {
-			log (L.war_cp + " conquest point" + s(L.war_cp) + " left unspent.")
-			L.war_cp = 0
-		} else if (L.war_unflag) {
-			L.war_unflag = 0
-		} else if (L.war_usa) {
-			L.war_usa = false
-		} else {
-			log_box_end()
+		if (L.opponent_confirm) {
+			L.opponent_confirm = false
 			end()
+		} else if (Array.isArray(G.active)) {
+			set_delete(G.active, R)
+			if (G.active.length === 0) {
+				end()
+			}
+		} else {
+			if (L.war_cp > 0) {
+				log(L.war_cp + " conquest point" + s(L.war_cp) + " left unspent.")
+				L.war_cp = 0
+			} else if (L.war_unflag) {
+				L.war_unflag = 0
+			} else if (L.war_usa) {
+				L.war_usa = false
+			} else {
+				log_box_end()
+				L.opponent_confirm = true
+				G.active = 1 - R
+			}
 		}
 	},
 	confirm_pass_usa() {
@@ -7703,10 +7799,7 @@ P.war_layout_phase = function () {
 
 	G.next_war++; // Here's where we officially move to the next war mat
 
-	G.war_winner = []
-	for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
-		G.war_winner[theater] = -1
-	}
+	G.war_winner = [ -1, -1, -1, -1, -1 ]
 
 	log ("=War Layout Phase")
 	war_layout_reshuffle_basic_war_tiles(false)
