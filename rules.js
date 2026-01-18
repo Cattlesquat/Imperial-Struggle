@@ -1213,8 +1213,6 @@ function set_damaged_fort(s, damage = true)
 {
 	if (!damage) {
 		set_delete(G.damaged_forts, s)
-		//log ("Fort repaired at " + data.spaces[s].name)
-		//TODO - distinguish repaired/seized
 	} else {
 		set_add(G.damaged_forts, s)
 		log ("Fort damaged at " + say_space(s))
@@ -2470,8 +2468,6 @@ P.scoring_phase = function () {
 		let award = G.awards[region]
 		let winner = region_flag_winner(region)
 		if (data.awards[award].by2 && region_flag_delta(region) < 2) winner = NONE
-
-		//TODO - probably go region by region with both players confirming the results from each region and demand
 
 		if (winner !== NONE) {
 			log_box_begin(winner, "Scoring: " + data.regions[region].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + region_flag_delta(region) + " flags")
@@ -5737,7 +5733,6 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 
 		//TODO handle naval spaces, probably elsewhere
 	} else {
-		//TODO apply discounts from event cards, advantages, etc
 		if (has_active_ministry(who, JONATHAN_SWIFT)) {
 			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
 				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
