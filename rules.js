@@ -557,12 +557,12 @@ function on_setup(scenario, options) {
 	// G.theater_bonus_war_tiles[player][theater][0-n]
 	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
 
-	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile index.
+	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile id.
 	// <br><b>
 	// set_has(G.basic_war_tile_revealed[who], tile)
 	G.basic_war_tile_revealed = [[], []]
 
-	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile index.
+	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile id.
 	// <br><b>
 	// set_has(G.bonus_war_tile_revealed[who], tile)
 	G.bonus_war_tile_revealed = [[], []]
@@ -1353,11 +1353,11 @@ function review_step(step, who)
 	if (step < G.review_index.length) {
 		G.log_hide_after[who] = G.review_index[step]
 		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
-		G.temp_view[R] = G.review_view[step]
+		G.temp_view[who] = G.review_view[step]
 	} else {
 		G.log_hide_after[who] = -1
 		if (G.temp_view !== undefined) {
-			G.temp_view[R] = undefined
+			G.temp_view[who] = undefined
 		}
 	}
 }
@@ -1366,6 +1366,7 @@ function review_end() {
 	G.log_hide_after = [ -1, -1 ]        // Clear any log-hiding
 	if (G.temp_view) delete G.temp_view  // Clear any temporary view
 	G.review_view = []                   // Clear any stored views
+	G.review_index = []					 // Clear the indices: since we often detect whether a review is in progress by the length of it.
 }
 
 function start_of_peace_turn() {
@@ -2374,7 +2375,7 @@ P.scoring_phase = function () {
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
 				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + COURT_OF_THE_SUN_KING + " increases VP value of Europe award by +1.")
+					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + " increases VP value of Europe award by +1.")
 					vp++
 				}
 			}
@@ -7028,8 +7029,11 @@ function do_wartile(who, type) {
 
 P.war_theater_reveal = {
 	_begin() {
-		log ("=War Resolution Phase")
 		log ("=" + "Theater " + G.theater + ": " + data.wars[G.next_war].theater_names[G.theater])
+		review_begin()
+		review_push("")
+		review_step(0, FRANCE)
+		review_step(0, BRITAIN)
 
 		L.wartile_choices = [ [], [] ]
 		L.wartile_debt = [ 0, 0 ]
@@ -7038,12 +7042,12 @@ P.war_theater_reveal = {
 		// Reveal all the tiles in this theater only
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			for (let tile of G.theater_basic_war_tiles[who][G.theater]) {
-				set_has(G.basic_war_tile_revealed[who], tile)
+				set_add(G.basic_war_tile_revealed[who], tile)
 				do_wartile(who, data.basic_war_tiles[tile].type)
 				log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
 			}
 			for (let tile of G.theater_bonus_war_tiles[who][G.theater]) {
-				set_has(G.bonus_war_tile_revealed[who], tile)
+				set_add(G.bonus_war_tile_revealed[who], tile)
 				do_wartile(who, data.bonus_war_tiles[tile].type)
 				log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
 			}
@@ -7083,7 +7087,10 @@ P.war_theater_reveal = {
 
 		let msg = say_action_header("WAR THEATER " + G.theater + ": ")
 
-		if ((L.wartile_debt[1 - R] > 0) && L.wartile_choices[R].includes(WAR_DEBT)) {
+		if (G.review_step[R] < G.review_index.length) {
+			msg += say_action_header("Click the " + data.wars[G.next_war].theater_names[G.theater] + " theater on the " + data.wars[G.next_war].name + " mat to reveal war tiles.")
+			action_theater(G.theater)
+		} else if ((L.wartile_debt[1 - R] > 0) && L.wartile_choices[R].includes(WAR_DEBT)) {
 			msg += say_action("You have revealed " + L.wartile_debt[1 - R] + " tile" + s(L.wartile_debt[1 - R]) + " with " + a(L.wartile_debt[1 - R]) + "debt marker" + s(L.wartile_debt[1 - R]) +  ". " + data.flags[1 - R].adj + " debt increased by " + L.wartile_debt[1 - R] + ".")
 			button("done")
 		} else {
@@ -7156,6 +7163,11 @@ P.war_theater_reveal = {
 		}
 
 		V.prompt = msg
+	},
+	theater(t) {
+		push_undo()
+		review_step(++G.review_step[R], R)
+		if ((G.review_step[FRANCE] >= 1) && (G.review_step[BRITAIN] >= 1)) review_end()
 	},
 	space(s) {
 		push_undo()
@@ -7673,6 +7685,7 @@ P.war_theater_resolve = {
 P.war_resolution_phase = script(`
 	eval {
 		log ("#" + data.wars[G.next_war].name + "\\n" + data.turns[G.turn].dates)
+		log ("=War Resolution Phase")
 		clear_dirty()
 		clear_navy_this_war()
 		G.won_all_theaters_by_maximum_level = -1
@@ -7756,7 +7769,7 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 	} else {
 		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
 		for (let who = FRANCE; who <= BRITAIN; who++) {
-			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters is intentional
+			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters inclusive is intentional
 				for (const t in G.theater_basic_war_tiles[who][theater]) {
 					G.basic_war_tiles[who].push(t)
 				}
@@ -7779,8 +7792,8 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 function war_layout_basic_war_tiles()
 {
 	for (var who = FRANCE; who <= BRITAIN; who++) {
-		for (var i = 1; i <= data.wars[G.next_war].theaters; i++) {
-			draw_basic_war_tile(who, rules_military_planning() ? 0 : i)
+		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
+			draw_basic_war_tile(who, rules_military_planning() ? 0 : theater)
 		}
 	}
 }
@@ -7811,7 +7824,7 @@ P.war_layout_phase = function () {
 		for (who = FRANCE; who <= BRITAIN; who++) {
 			let amount = Math.min(current_war_bonus_tiles[who], 3)
 			if (amount > 0) {
-				log(data.flags[who].name + " receives " + amount + " bonus war tiles for Seven Years War.")
+				log("Austrian Succession Special: " + data.flags[who].name + " receives " + amount + " bonus war tiles for Seven Years War.")
 				for (var i = 0; i < amount; i++) {
 					draw_bonus_war_tile(who, 0)
 				}
