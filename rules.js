@@ -1704,7 +1704,7 @@ P.ministry_phase = function () {
 		// set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
 		G.ministry_exhausted = [ ]
 
-		G.active             = [ FRANCE, BRITAIN ]
+		G.active = [ FRANCE, BRITAIN ]
 		goto("choose_ministry_cards")
 	}
 }
@@ -1755,26 +1755,121 @@ P.choose_ministry_cards = {
 	},
 }
 
+
+function announce_ministry_changes()
+{
+	let any = false
+	for (let who = FRANCE; who <= BRITAIN; who++)
+	{
+		let num_changed = 0
+		for (const m of L.original_ministry[who]) {
+			if (!G.ministry[who].includes(m)) num_changed++
+		}
+
+		if (num_changed) {
+			if (!any) log ("=Ministry Phase")
+			log (data.flags[who].name+ " replaces " + num_changed + " Minister" + s(num_changed))
+			any = true
+		}
+	}
+}
+
+
 P.replace_ministry_cards = {
 	_begin() {
 		G.active = [ FRANCE, BRITAIN ]
+		L.replacing = [ 0, 0 ]
+		L.original_ministry = G.ministry
+		L.original_revealed = G.ministry_revealed
+		L.any_changes = [ false, false ]
 	},
 	prompt() {
-		if (!G.ministry_revealed[R].includes(false)) {
+		let any_hidden = 0;
+		for (let i = 0; i < G.ministry[R].length; i++) {
+			if (!G.ministry_revealed[R][i]) any_hidden++
+		}
+		if (L.replacing[R]) {
+			V.prompt = say_action_header("MINISTRY PHASE: ")
+			V.all_ministries = []
+			for (var m of data.ministries) {
+				if (m.side === R && !G.ministry[R].includes(m.num)) {
+					if (m.era.includes(current_era())) {
+						V.all_ministries.push(m.num)
+						if (G.ministry[R].length < num_ministry_slots(R))
+							action_ministry_card(m.num)
+					}
+				}
+			}
+
+			let any = false
+			for (let i = 0; i < G.ministry[R].length; i++) {
+				if (G.ministry_revealed[R][i]) continue
+				action_ministry_card(G.ministry[R][i])
+				any = true
+			}
+
+			if (any) {
+				V.prompt += say_action("Select unrevealed ministry to replace OR a replacement ministry.")
+			} else {
+				V.prompt += say_action("Choose a replacement ministry.")
+			}
+
+			button ("undo")
+		}
+		else if (!any_hidden) {
 			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("No ministries eligible for mid-era replacement (see 4.1.7).")
 			button("confirm")
 		}
 		else {
-			//TODO: allow replacement of ministries mid-era
-			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Select any unrevealed ministries you wish to replace. (TODO! TODO! TODO! For now, just suck it)")
-			button("confirm")
+			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Select any unrevealed ministries you wish to replace, or ")
+			if (!L.any_changes[R]) {
+				V.prompt += say_action("pass to keep current ones.")
+				button("pass")
+			} else {
+				V.prompt += say_action(" confirm your choices.")
+				button("confirm")
+			}
+
+			for (let i = 0; i < G.ministry_revealed[R].length; i++) {
+				if (G.ministry_revealed[R][i]) continue
+				action_ministry_card(G.ministry[R][i])
+			}
+			if (L.any_changes[R]) button ("undo")
 		}
+	},
+	ministry_card(m) {
+		if (G.ministry[R].includes(m)) {
+			L.any_changes[R] = true
+			let index = G.ministry[R].indexOf(m)
+			array_delete(G.ministry[R], index)
+			array_delete(G.ministry_revealed[R], index)
+			L.replacing[R]++
+		} else {
+			L.replacing[R]--
+			G.ministry[R].push(m)
+			G.ministry_revealed[R].push(false)
+		}
+	},
+	undo() {
+		G.ministry[R] = L.original_ministry[R]
+		G.ministry_revealed[R] = L.original_revealed[R]
+		L.any_changes[R] = false
+		L.replacing[R] = 0
 	},
 	confirm() {
 		set_delete(G.active, R)
-		if (G.active.length === 0)
+		if (G.active.length === 0) {
+			announce_ministry_changes()
 			end()
+		}
 	},
+	pass() {
+		set_delete(G.active, R)
+		if (G.active.length === 0) {
+			announce_ministry_changes()
+			end()
+		}
+	}
 }
 
 // Ministry is active if it's one of the player's ministry cards AND it has been revealed

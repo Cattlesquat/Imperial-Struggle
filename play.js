@@ -1156,7 +1156,7 @@ function on_update() {
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
 
-	action_button("draw_event", "Draw Event")
+	action_button("draw_event", "Buy Event")
 	action_button("construct_squadron", "Build Squadron")
 	action_button("buy_bonus_war_tile", "Buy War Tile")
 
