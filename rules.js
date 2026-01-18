@@ -1970,6 +1970,7 @@ P.ministry_is_required = script (`
     	} else {    
     		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
     	}
+	    log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
     }
 `)
 
