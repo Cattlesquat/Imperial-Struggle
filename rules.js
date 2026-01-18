@@ -801,7 +801,7 @@ function absolute_view() {
 	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 }
 
-function on_view() {
+function on_view(RR) {
 	if (!V) {
 		V = { log: G.log }
 	}
@@ -813,6 +813,8 @@ function on_view() {
 			return
 		}
 	}
+
+	if (RR === undefined) RR = R // Pirate's favorite letter
 
 	absolute_view()
 
@@ -859,7 +861,7 @@ function on_view() {
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
 
-	if (R === FRANCE) {
+	if (RR === FRANCE) {
 		V.hand = [
 			G.hand[FRANCE],
 			G.hand[BRITAIN].map(x => -1),
@@ -869,7 +871,7 @@ function on_view() {
 			G.ministry[BRITAIN].map(x => -1),
 		]
 	}
-	if (R === BRITAIN) {
+	if (RR === BRITAIN) {
 		V.hand = [
 			G.hand[FRANCE].map(x => -1),
 			G.hand[BRITAIN],
@@ -879,7 +881,7 @@ function on_view() {
 			G.ministry[BRITAIN],
 		]
 	}
-	if (R < 0) {
+	if (RR < 0) {
 		V.hand = [
 			G.hand[FRANCE].map(x => -1),
 			G.hand[BRITAIN].map(x => -1),
@@ -901,10 +903,10 @@ function on_view() {
 		for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
 			// -1 means opponent hasn't seen the tile yet
 			V.theater_basic_war_tiles[who][theater] = G.theater_basic_war_tiles[who][theater].map(tile =>
-				((who === R) || set_has(G.basic_war_tile_revealed[who], tile)) ? tile : -1
+				((who === RR) || set_has(G.basic_war_tile_revealed[who], tile)) ? tile : -1
 			)
 			V.theater_bonus_war_tiles[who][theater] = G.theater_bonus_war_tiles[who][theater].map(tile =>
-				((who === R) || set_has(G.bonus_war_tile_revealed[who], tile)) ? tile : -1
+				((who === RR) || set_has(G.bonus_war_tile_revealed[who], tile)) ? tile : -1
 			)
 		}
 	}
@@ -1343,8 +1345,14 @@ function review_push(phase)
 		G.review_index.push(G.log.length - 1)
 		G.review_phase.push(phase)
 		if (G.temp_view) delete G.temp_view
-		on_view() // Get absolute latest view information before storing it
-		G.review_view.push(structuredClone(V))
+
+		// Get latest view for each player, and store it
+		let views = []
+		on_view(1-R)
+		views[1-R] = structuredClone(V)
+		on_view(R)
+		views[R] = structuredClone(V)
+		G.review_view.push(views)
 	}
 }
 
@@ -1353,7 +1361,7 @@ function review_step(step, who)
 	if (step < G.review_index.length) {
 		G.log_hide_after[who] = G.review_index[step]
 		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
-		G.temp_view[who] = G.review_view[step]
+		G.temp_view[who] = G.review_view[step][who]
 	} else {
 		G.log_hide_after[who] = -1
 		if (G.temp_view !== undefined) {
@@ -7069,7 +7077,6 @@ P.war_theater_reveal = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
-			on_view()
 		} else if (L.wartile_choices[1 - G.first_war_player].length) {
 			G.active = 1 - G.first_war_player
 			increase_debt(G.first_war_player, L.wartile_debt[G.first_war_player])
@@ -7077,7 +7084,6 @@ P.war_theater_reveal = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
-			on_view()
 		} else {
 			G.active = [ FRANCE, BRITAIN ]
 		}
@@ -7217,7 +7223,6 @@ P.war_theater_reveal = {
 				increase_debt(R, L.wartile_debt[R])
 				clear_dirty()
 				G.dirty_who = G.active
-				on_view()
 			} else {
 				end()
 			}
@@ -7394,10 +7399,8 @@ P.war_theater_resolve = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
-			on_view()
 		} else {
 			log_box_end()
-			on_view()
 			G.active = [ FRANCE, BRITAIN ]
 		}
 	},
