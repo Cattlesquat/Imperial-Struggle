@@ -5171,10 +5171,11 @@ P.advantage_unflag_discount = {
 	space(s) {
 		push_undo()
 		action_cost_setup(s, L.adv_market ? ECON : DIPLO)
+		G.action_cost = action_point_cost(G.active, s, G.action_type)
 		if (L.adv_for_one) {
-			G.action_cost = 1
+			action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
 		} else {
-			G.action_cost = G.action_cost - 1
+			action_point_cost_modify(-1, MODIFY_ADVANTAGE)
 		}
 		goto ("space_flow")
 	}
@@ -5242,8 +5243,8 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 	return action_points_major(type, rules) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
 }
 
-// True if we're legally allowed to shift the space (includes minor action rules). NOTE: also returns false if there's no conceivable way we could currently afford it
-function is_shift_allowed_and_affordable(s, who, allow_debt_and_trps, rules = [])
+// True if we're legally allowed to shift the space (includes minor action rules).
+function is_shift_allowed(s, who, allow_debt_and_trps, rules = [])
 {
 	var type = space_action_type(s)
 
@@ -5252,11 +5253,7 @@ function is_shift_allowed_and_affordable(s, who, allow_debt_and_trps, rules = []
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!action_points_eligible_major(type, rules) && !eligible_minor) return false
 
-	var cost = action_point_cost(who, s, type)
-    var avail = action_points_available(who, s, type, allow_debt_and_trps, rules)
-	//TODO forts and navies different behaviors
-
-	return (avail >= cost)
+	return true
 }
 
 
@@ -5271,7 +5268,7 @@ function action_eligible_spaces_econ(region)
 			if (!G.action_points_minor[ECON]) continue
 		}
 		if (!action_points_eligible(ECON, space_rules(space.num, ECON))) continue
-		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, ECON))) continue
+		if (!is_shift_allowed(space.num, R, true, space_rules(space.num, ECON))) continue
 
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
@@ -5288,7 +5285,7 @@ function action_eligible_spaces_diplo(region)
 		if (!action_points_eligible_major(DIPLO, space_rules(space.num, DIPLO))) { // We either need eligibility for major action *at this space*, or else we need to have non-zero minor action points remaining
 			if (!G.action_points_minor[DIPLO]) continue
 		}
-		if (!is_shift_allowed_and_affordable(space.num, R, true, space_rules(space.num, DIPLO))) continue
+		if (!is_shift_allowed(space.num, R, true, space_rules(space.num, DIPLO))) continue
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
 }
@@ -5604,9 +5601,29 @@ function is_protected(s)
 	return false
 }
 
+
+const MODIFY_ADVANTAGE = 0
+const MODIFY_MINISTRY  = 1
+const MODIFY_HUGUENOTS = 2
+const MODIFY_SET_TO_1  = 0
+
+// Modifier amounts. 0 = "set to 1", otherwise the -1/+1 value of advantage
+// Modifier types. 0 = Advantage, 1 = Ministry, 2 = Huguenots
+function action_point_cost_modify(amount, type)
+{
+	G.action_cost_modifiers.push(amount)
+	G.action_cost_modifier_types.push(type)
+	G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
+}
+
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
 	var cost = data.spaces[s].cost
+
+	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
+	G.action_cost_breakdown = "Space cost: " + cost + "."
+	G.action_cost_adjusted  = false
+	G.action_cost_adjustable = cost
 
 	// General Rule: Apply all reductions before any increases (5.4.2, 5.5.2)
 
@@ -5614,31 +5631,84 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		if ((data.spaces[s].type === FORT) && is_damaged_fort()) {
 			if (G.flags[s] === G.active) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player? For now I *think* the latter.
 				cost -= 1 // Repairing friendly fort costs one less than strength
+				G.action_cost_breakdown += " -1 friendly fort."
+				G.action_cost_adjusted = true
 			} else {
 				cost += 1 // Seizing enemy fort costs one more than strength
+				G.action_cost_breakdown += " +1 enemy fort."
+				G.action_cost_adjusted = true
 			}
 		}
 
 		//TODO handle naval spaces, probably elsewhere
-	}
-	else {
+	} else {
 		//TODO apply discounts from event cards, advantages, etc
 		if (has_active_ministry(who, JONATHAN_SWIFT)) {
 			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
 				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
 					cost -= 1
+					G.action_cost_breakdown += " -1 Jonathan Swift."
+					G.action_cost_adjusted = true
+					G.action_cost_adjustable--
 				}
 			}
 		}
 
-		if (cost < 1) cost = 1 // Can't be reduced below 1 (5.4.2)
-
-		if (has_conflict_marker(s)) cost = 1 // Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
+		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
+		if (has_conflict_marker(s)) {
+			cost = 1
+			G.action_cost_breakdown = "Conflict base cost: 1."
+			G.action_cost_adjusted = true
+			G.action_cost_adjustable = 1
+		}
 
 		if (type === ECON) {
-			if (is_isolated_market(s)) cost = 1 // Isolated markets cost 1 to shift
-			if (is_protected(s)) cost++   // Protected markets cost +1 to shift
-			if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) cost++
+			// Isolated markets cost 1 to shift
+			if (is_isolated_market(s)) {
+				cost = 1
+				G.action_cost_breakdown = "Isolated Market base cost: 1."
+				G.action_cost_adjusted = true
+				G.action_cost_adjustable = 1
+			}
+		}
+
+		for (let i = 0; i < G.action_cost_modifiers.length; i++) {
+			let modifier = action_cost_modifiers[i]
+			let reason   = action_cost_modifier_types[i]
+
+			if (modifier === MODIFY_SET_TO_1) {
+				cost = 1
+				G.action_cost_adjusted = true
+				G.action_cost_adjustable = 1
+				G.action_cost_breakdown = "Cost set to 1 by " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
+			} else {
+				cost += modifier
+				G.action_cost_adjusted = true
+				G.action_cost_adjustable += modifier
+				G.action_cost_breakdown += " " + modifier + " " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
+			}
+		}
+
+		if (type === ECON) {
+			// Protected markets cost +1 to shift
+			if (is_protected(s)) {
+				cost++
+				G.action_cost_breakdown += " +1 Protected Market."
+				G.action_cost_adjusted = true
+			}
+		}
+
+		// Region-switching penalty
+		if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) {
+			cost++
+			G.action_cost_breakdown += " +1 Region Switching."
+			G.action_cost_adjusted = true
+		}
+
+		if (cost < 1) {
+			cost = 1 // Can't be reduced below 1 (5.4.2)
+			G.action_cost_breakdown += " Final: 1 -- can't be reduced below 1."
+			G.action_cost_adjusted = true
 		}
 	}
 
@@ -6239,6 +6309,21 @@ function action_cost_setup(s, t) {
 
 	// Eligible to use Huguenots discount?
 	G.eligible_for_huguenots = false
+
+	// We sometimes generate a "cost breakdown" so that we don't get unending "bug" reports about complex cost formulas
+	G.action_cost_breakdown = ""
+
+	// This gets set true if ad-hoc adjustments to the cost make it seem worth displaying a cost breakdown
+	G.action_cost_adjusted = false
+
+	// Will be set to the base cost of the space, minus any downward adjustments (used to tell if there's any point in e.g. triggerig another advantage)
+	G.action_cost_adjustable = 1
+
+	// Array of modifier types. 0 = Advantage, 1 = Ministry
+	G.action_cost_modifier_types = []
+
+	// Array of modifier amounts. 0 = "set to 1", otherwise the -1/+1 value of advantage
+	G.action_cost_modifiers = []
 }
 
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
@@ -6294,6 +6379,7 @@ function handle_space_click(s, force_type = -1)
 	call("space_flow")
 }
 
+
 P.space_flow = script(`
 
 	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action. //TODO - maybe a different highlight?
@@ -6304,69 +6390,87 @@ P.space_flow = script(`
     	    G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
     	}	    	
     }
-    
+        
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
     	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
     	if (G.used_required_advantage) {
-    		eval { G.action_cost = 1 }
+    		eval {
+    			action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
+    		 }
     	}
     }
     
     // These advantages reduce the cost of unflagging a *market* in *north america* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
     	eval { require_advantage(R, WHEAT, "To reduce action cost by 1", true) }
     	if (G.used_required_advantage) {
-    		eval { G.action_cost = G.action_cost - 1 }
+    		eval {
+				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
+    		}
     	}
     }
     
     // These advantages reduce the cost of unflagging a *market* in *india* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
     	eval { require_advantage(R, TEXTILES, "To reduce action cost by 1", true) }
     	if (G.used_required_advantage) {
-    		eval { G.action_cost = G.action_cost - 1 }
+    		eval {
+				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
+    		}
     	}
-    	if ((G.action_cost > 1) && (G.advantages_used_this_turn < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_turn < 2)) {
 			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
 			if (G.used_required_advantage) {
-				eval { G.action_cost = G.action_cost - 1 }
+				eval {
+					action_point_cost_modify(-1, MODIFY_ADVANTAGE)
+				}
 			}
 		}
     }
     
     // These advantages reduce the cost of unflagging a *market* in *the caribbean* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
     	eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
     	if (G.used_required_advantage) {
-    		eval { G.action_cost = G.action_cost - 1 }
+    		eval {
+				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
+    		}
     	}
-    	if ((G.action_cost > 1) && (G.advantages_used_this_turn < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_turn < 2)) {
 			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
 			if (G.used_required_advantage) {
-				eval { G.action_cost = G.action_cost - 1 }
+				eval {
+					action_point_cost_modify(-1, MODIFY_ADVANTAGE)
+				}
 			}
 		}
     }
     
     // European reduce-cost-to-1 unflagging advantages
-    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost > 1)) {
+    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
     	if ((G.active_space === RUSSIA) || (G.active_space === SWEDEN) || (G.active_space === BAVARIA)) {
     	    eval { require_advantage(R, GERMAN_DIPLOMACY, "To reduce action cost to 1", true) }
     		if (G.used_required_advantage) {
-    			eval { G.action_cost = 1 }
+				eval {
+					action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
+				}
     		}
     	} else {
-			if (((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) {
+			if ((((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) && (G.action_cost_adjustable > 1)) {
 				eval { require_advantage(R, SILESIA_NEGOTIATIONS, "To reduce action cost to 1", true) }
 				if (G.used_required_advantage) {
-					eval { G.action_cost = 1 }
+					eval {
+						action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
+					}
 				}
 			} else {
-				if (((G.active_space >= SPAIN_1) && (G.active_space <= SPAIN_4)) || ((G.active_space >= AUSTRIA_1) && (G.active_space <= AUSTRIA_4))) {
+				if ((((G.active_space >= SPAIN_1) && (G.active_space <= SPAIN_4)) || ((G.active_space >= AUSTRIA_1) && (G.active_space <= AUSTRIA_4))) && (G.action_cost_adjustable > 1)) {
 					eval { require_advantage(R, ITALY_INFLUENCE, "To reduce action cost to 1", true) }
 					if (G.used_required_advantage) {
-						eval { G.action_cost = 1 }
+						eval {
+							action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
+						}
 					}    	
 				}
 			}
@@ -6374,13 +6478,15 @@ P.space_flow = script(`
     }
     
     eval {
-    	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.action_cost > 1)
+    	G.eligible_for_huguenots = (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.action_cost_adjustable > 1)
     }
     
     if (G.eligible_for_huguenots) {
     	call ask_about_huguenots
     	if (G.eligible_for_huguenots) {
-    		eval { G.action_cost -= 1 }
+    		eval {
+    			action_point_cost_modify(-1, MODIFY_HUGUENOTS) 
+    		}
     	}
     }
 
@@ -6462,6 +6568,8 @@ function pay_action_cost() {
 			msg += " (Major action)"
 		}
 	}
+	if (G.action_cost_adjusted) msg += " Cost Breakdown: " + G.action_cost_breakdown
+	G.action_cost_breakdown = "" // Get unneeded string back out of our game state blob
 	log(italic(msg))
 
 	G.action_cost -= G.action_points_committed_bonus[G.action_type] // Spend any committed bonus points first
@@ -6550,7 +6658,11 @@ P.confirm_spend_debt_or_trps = {
 			}
 		} else if (G.action_points_available_now < G.action_cost) {
 			V.prompt = say_action_header()
-			V.prompt += say_action(("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")" + ((G.action_string !== "") ? " " + G.action_string : ""))) + ". (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
+			V.prompt += say_action(("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " " + data.action_points[G.action_type].short + ")" + ((G.action_string !== "") ? " " + G.action_string : ""))) + "."
+			if (G.action_cost_adjusted) {
+				V.prompt += " " + say_action(parens("Cost Breakdown: " + G.action_cost_breakdown))
+			}
+			V.prompt += " (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += say_action_points()
 			if (available_debt(R) > 0) {
 				action("paydebt")
@@ -6558,8 +6670,7 @@ P.confirm_spend_debt_or_trps = {
 			if (G.treaty_points[R] > 0) {
 				action("paytrp")
 			}
-		}
-		else {
+		} else {
 			V.prompt = say_action_header()
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
 				V.prompt += say_action("Confirm spending " + G.debt_spent + " debt")
