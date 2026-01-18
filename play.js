@@ -572,6 +572,11 @@ function on_init() {
 
 	define_board("#map", 2550, 1650, [24, 24, 24, 24])
 
+	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], -5, -5)
+	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip("Jacobite Victory")
+	define_marker("jacobite-victory", 1, "square-sm jacobite-victory").tooltip("Jacobite Victory")
+	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+
 	for (s of data.spaces) {
 		let rect = find_layout_node(s.layout ?? s.name)
 		if (!rect) {
@@ -998,6 +1003,20 @@ function on_update() {
 	populate("lout-initiative", "initiative", V.initiative)
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
+
+	let jacobite_count = V.jacobite_victory + (V.jacobite_defeat > 0 ? 1 : 0)
+
+	if (jacobite_count > 0) {
+		let offset = (jacobite_count - 1) * 2.5
+		update_position("lout-jacobite", undefined, 1750 + offset, 240 + offset)
+		
+		for (let i = 0; i < V.jacobite_victory; i++) {
+			populate("lout-jacobite", "jacobite-victory", i)
+		}
+		if (V.jacobite_defeat > 0) {
+			populate("lout-jacobite", "jacobite-defeat", 0)
+		}
+	}
 
 	for (i = 0; i < V.navy_box[FRANCE]; i++) {
 		populate("lout-navy", "squadron-fr-navy", i)

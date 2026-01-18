@@ -1294,6 +1294,13 @@ body[data-noanims="false"] .marker.war-basic0.action:before, body[data-noanims="
 .fr .flag { background-image: url(tiles75/square-sm/flag_fr.png); }
 .br .flag { background-image: url(tiles75/square-sm/flag_br.png); }
 
+.jacobite-victory {
+    background-image: url(tiles75/square-sm/jacobite_victory.png);
+}
+
+.jacobite-defeat {
+    background-image: url(tiles75/square-sm/jacobite_defeat.png);
+}
 /*
 tiles75/square-sm/exhausted.png
 tiles75/square-sm/exhausted_reverse.png
