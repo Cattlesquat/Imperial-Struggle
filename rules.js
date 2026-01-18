@@ -7069,6 +7069,7 @@ P.war_theater_reveal = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
+			on_view()
 		} else if (L.wartile_choices[1 - G.first_war_player].length) {
 			G.active = 1 - G.first_war_player
 			increase_debt(G.first_war_player, L.wartile_debt[G.first_war_player])
@@ -7076,8 +7077,9 @@ P.war_theater_reveal = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
+			on_view()
 		} else {
-			end()
+			G.active = [ FRANCE, BRITAIN ]
 		}
 	},
 	prompt() {
@@ -7167,7 +7169,15 @@ P.war_theater_reveal = {
 	theater(t) {
 		push_undo()
 		review_step(++G.review_step[R], R)
-		if ((G.review_step[FRANCE] >= 1) && (G.review_step[BRITAIN] >= 1)) review_end()
+		if (Array.isArray(G.active)) {
+			set_delete(G.active, R)
+			if (G.active.length === 0) {
+				review_end()
+				end()
+			}
+		} else {
+			if ((G.review_step[FRANCE] >= 1) && (G.review_step[BRITAIN] >= 1)) review_end()
+		}
 	},
 	space(s) {
 		push_undo()
@@ -7207,6 +7217,7 @@ P.war_theater_reveal = {
 				increase_debt(R, L.wartile_debt[R])
 				clear_dirty()
 				G.dirty_who = G.active
+				on_view()
 			} else {
 				end()
 			}
@@ -7383,10 +7394,11 @@ P.war_theater_resolve = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
+			on_view()
 		} else {
 			log_box_end()
+			on_view()
 			G.active = [ FRANCE, BRITAIN ]
-			//end()
 		}
 	},
 	prompt() {
