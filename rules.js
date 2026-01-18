@@ -918,7 +918,7 @@ function on_view(RR) {
 	V.theater_strength = [ [], [] ]
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
-			V.theater_strength[who][theater] = theater_strength(who, theater, true)
+			V.theater_strength[who][theater] = theater_strength(who, theater)
 		}
 	}
 
@@ -6940,7 +6940,7 @@ function theater_tier(theater)
 
 
 /* 7.1.4 - Total Theater Strength */
-function theater_strength(who, theater, ignore_war_tiles = false)
+function theater_strength(who, theater)
 {
 	let score = 0
 	for (let s = 0; s < NUM_SPACES; s++) {
@@ -6973,14 +6973,12 @@ function theater_strength(who, theater, ignore_war_tiles = false)
 		if (has_active_keyword(who, data.wars[G.next_war].theater[theater].keyword)) score++
 	}
 
-	if (!ignore_war_tiles) {
-		for (const t of G.theater_basic_war_tiles[who][theater]) {
-			score += data.basic_war_tiles[t].val
-		}
+	for (const t of G.theater_basic_war_tiles[who][theater]) {
+		if (set_has(G.basic_war_tile_revealed[who], t)) score += data.basic_war_tiles[t].val
+	}
 
-		for (const t of G.theater_bonus_war_tiles[who][theater]) {
-			score += data.bonus_war_tiles[t].val
-		}
+	for (const t of G.theater_bonus_war_tiles[who][theater]) {
+		if (set_has(G.bonus_war_tile_revealed[who], t)) score += data.bonus_war_tiles[t].val
 	}
 
 	return score
