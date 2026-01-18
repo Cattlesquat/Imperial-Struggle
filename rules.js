@@ -7785,7 +7785,7 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters inclusive is intentional
-				for (const t in G.theater_basic_war_tiles[who][theater]) {
+				for (const t of G.theater_basic_war_tiles[who][theater]) {
 					G.basic_war_tiles[who].push(t)
 				}
 			}
@@ -7808,7 +7808,7 @@ function war_layout_basic_war_tiles()
 {
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
-			draw_basic_war_tile(who, rules_military_planning() ? 0 : theater)
+			let tile = draw_basic_war_tile(who, rules_military_planning() ? 0 : theater)
 		}
 	}
 }

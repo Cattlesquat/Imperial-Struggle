@@ -1251,7 +1251,7 @@ function update_war_display() {
 		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war]), bonus_war_tooltip(-1, FRANCE))
 		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war]), bonus_war_tooltip(-1, BRITAIN))
 
-		offset = war * 12 + 1
+		offset = war * 8 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
 				set_fallback_tips(populate_with_list(
