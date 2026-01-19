@@ -980,7 +980,6 @@ function available_debt_plus_trps(who)
 
 function pay_debt(who, amount) {
 	G.debt[who] += amount
-	//TODO handle going over the debt limit
 }
 
 function pay_treaty_points(who, amount) {
@@ -1711,6 +1710,24 @@ P.ministry_phase = function () {
 	}
 }
 
+
+// When player has an option to pick a new minister, this shows the ministry window and actions all the eligible cards
+function show_all_ministry_cards()
+{
+	V.all_ministries = []
+	for (var m of data.ministries) {
+		if (m.side === R && !G.ministry[R].includes(m.num)) {
+			if ((m.num === JACOBITE_UPRISINGS) && G.jacobites_never) continue
+			if (m.era.includes(current_era())) {
+				V.all_ministries.push(m.num)
+				if (G.ministry[R].length < num_ministry_slots(R))
+					action_ministry_card(m.num)
+			}
+		}
+	}
+}
+
+
 P.choose_ministry_cards = {
 	prompt() {
 		if (G.ministry[R].length < num_ministry_slots(R)) {
@@ -1727,16 +1744,7 @@ P.choose_ministry_cards = {
 			if (any) list += "."
 			V.prompt += say_action(list)
 		}
-		V.all_ministries = []
-		for (var m of data.ministries) {
-			if (m.side === R && !G.ministry[R].includes(m.num)) {
-				if (m.era.includes(current_era())) {
-					V.all_ministries.push(m.num)
-					if (G.ministry[R].length < num_ministry_slots(R))
-						action_ministry_card(m.num)
-				}
-			}
-		}
+		show_all_ministry_cards()
 		if (G.ministry[R].length > 0)
 			button("undo")
 		if (G.ministry[R].length === num_ministry_slots(R))
@@ -1792,17 +1800,8 @@ P.replace_ministry_cards = {
 		}
 		if (L.replacing[R]) {
 			V.prompt = say_action_header("MINISTRY PHASE: ")
-			V.all_ministries = []
-			for (var m of data.ministries) {
-				if (m.side === R && !G.ministry[R].includes(m.num)) {
-					if (m.era.includes(current_era())) {
-						V.all_ministries.push(m.num)
-						if (G.ministry[R].length < num_ministry_slots(R))
-							action_ministry_card(m.num)
-					}
-				}
-			}
-
+			show_all_ministry_cards()
+s
 			let any = false
 			for (let i = 0; i < G.ministry[R].length; i++) {
 				if (G.ministry_revealed[R][i]) continue
@@ -7132,7 +7131,7 @@ P.action_round_core = {
 			}
 		}
 
-		// TODO: *possibly* let you click debt/TRP counters to directly spend some in advance of an action
+		// *Possibly* let you click debt/TRP counters to directly spend some in advance of an action
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
 
