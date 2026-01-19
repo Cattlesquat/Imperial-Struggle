@@ -158,12 +158,12 @@ body.Britain #events_br { grid-row: 2 }
 	--both-event: hsl(0, 0%, 88%);
 	--both-event-header: hsl(0, 0%, 80%);
 
-	--fr-advantage: hsl(206, 85%, 90%);
-	--fr-advantage-header: hsl(206, 85%, 85%);
-	--br-advantage: hsl(355, 70%, 90%);
-	--br-advantage-header: hsl(355, 70%, 85%);
-	--both-advantage: hsl(0, 0%, 88%);
-	--both-advantage-header: hsl(0, 0%, 80%);
+	--fr-advantage: hsl(206, 85%, 80%);
+	--fr-advantage-header: hsl(206, 85%, 70%);
+	--br-advantage: hsl(355, 70%, 80%);
+	--br-advantage-header: hsl(355, 70%, 70%);
+	--both-advantage: hsl(0, 0%, 75%);
+	--both-advantage-header: hsl(0, 0%, 65%);
 
 	--fr-misc: hsl(206, 85%, 90%);
 	--fr-misc-header: hsl(206, 85%, 85%);
@@ -225,10 +225,13 @@ body.Britain #events_br { grid-row: 2 }
 
 #log .group.nested.parent-fr-ministry { --parent-color: var(--fr-ministry); }
 #log .group.nested.parent-fr-event { --parent-color: var(--fr-event); }
+#log .group.nested.parent-fr-misc { --parent-color: var(--fr-misc); }
 #log .group.nested.parent-br-ministry { --parent-color: var(--br-ministry); }
 #log .group.nested.parent-br-event { --parent-color: var(--br-event); }
+#log .group.nested.parent-br-misc { --parent-color: var(--br-misc); }
 #log .group.nested.parent-both-ministry { --parent-color: var(--both-ministry); }
 #log .group.nested.parent-both-event { --parent-color: var(--both-event); }
+#log .group.nested.parent-both-misc { --parent-color: var(--both-misc); }
 
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr, .tip-bonus-war-fr, .tip-basic-war-fr {
     font-style: italic;
