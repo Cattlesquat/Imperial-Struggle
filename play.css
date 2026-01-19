@@ -144,33 +144,33 @@ body.Britain #events_br { grid-row: 2 }
 
 /* HERE TO CHANGE COLORS BRIAN */
 #log {
-	--fr-ministry: hsl(206, 70%, 88%);
-	--fr-ministry-header: hsl(206, 70%, 78%);
-	--br-ministry: hsl(355, 60%, 88%);
-	--br-ministry-header: hsl(355, 60%, 78%);
-	--both-ministry: hsl(45, 40%, 88%);
-	--both-ministry-header: hsl(45, 40%, 78%);
+	--fr-ministry: hsl(206, 85%, 90%);
+	--fr-ministry-header: hsl(206, 85%, 85%);
+	--br-ministry: hsl(355, 70%, 90%);
+	--br-ministry-header: hsl(355, 70%, 85%);
+	--both-ministry: hsl(0, 0%, 88%);
+	--both-ministry-header: hsl(0, 0%, 80%);
 
-	--fr-event: hsl(230, 60%, 88%);
-	--fr-event-header: hsl(230, 60%, 78%);
-	--br-event: hsl(25, 70%, 88%);
-	--br-event-header: hsl(25, 70%, 78%);
-	--both-event: hsl(50, 50%, 88%);
-	--both-event-header: hsl(50, 50%, 78%);
+	--fr-event: hsl(206, 85%, 90%);
+	--fr-event-header: hsl(206, 85%, 85%);
+	--br-event: hsl(355, 70%, 90%);
+	--br-event-header: hsl(355, 70%, 85%);
+	--both-event: hsl(0, 0%, 88%);
+	--both-event-header: hsl(0, 0%, 80%);
 
-	--fr-advantage: hsl(175, 50%, 85%);
-	--fr-advantage-header: hsl(175, 50%, 72%);
-	--br-advantage: hsl(340, 50%, 88%);
-	--br-advantage-header: hsl(340, 50%, 78%);
-	--both-advantage: hsl(80, 40%, 85%);
-	--both-advantage-header: hsl(80, 40%, 75%);
+	--fr-advantage: hsl(206, 85%, 90%);
+	--fr-advantage-header: hsl(206, 85%, 85%);
+	--br-advantage: hsl(355, 70%, 90%);
+	--br-advantage-header: hsl(355, 70%, 85%);
+	--both-advantage: hsl(0, 0%, 88%);
+	--both-advantage-header: hsl(0, 0%, 80%);
 
-	--fr-misc: hsl(210, 25%, 88%);
-	--fr-misc-header: hsl(210, 25%, 80%);
-	--br-misc: hsl(0, 25%, 88%);
-	--br-misc-header: hsl(0, 25%, 80%);
-	--both-misc: hsl(0, 0%, 86%);
-	--both-misc-header: hsl(0, 0%, 78%);
+	--fr-misc: hsl(206, 85%, 90%);
+	--fr-misc-header: hsl(206, 85%, 85%);
+	--br-misc: hsl(355, 70%, 90%);
+	--br-misc-header: hsl(355, 70%, 85%);
+	--both-misc: hsl(0, 0%, 88%);
+	--both-misc-header: hsl(0, 0%, 80%);
 }
 
 /* Ministry boxes */
