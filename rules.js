@@ -385,9 +385,10 @@ const NOT_ACTION_PHASE				= 6
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
 const NUM_TRANSIENT_BITFLAGS = 32
 const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
-const TRANSIENT_JACOBITES_USED_1 = 1
-const TRANSIENT_JACOBITES_USED_2 = 2
-const TRANSIENT_CHARLES_HANBURY_WILLIAMS  = 3
+const TRANSIENT_JACOBITES_USED_1            = 1
+const TRANSIENT_JACOBITES_USED_2            = 2
+const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
+const TRANSIENT_PACTE_DE_FAMILLE            = 4
 
 
 /* TILES & CARDS */
@@ -420,6 +421,8 @@ function setup_procs()
 	data.cards[ALBERONIS_AMBITION].proc = "event_alberonis_ambition"
 	data.cards[FAMINE_IN_IRELAND].proc = "event_famine_in_ireland"
 	data.cards[INTEREST_PAYMENTS].proc = "event_interest_payments"
+	data.cards[CARIBBEAN_SLAVE_UNREST].proc = "event_caribbean_slave_unrest"
+	data.cards[PACTE_DE_FAMILLE].proc = "event_pacte_de_famille"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -1090,6 +1093,12 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 function refresh_advantage(a)
 {
 	G.advantages_exhausted &= ~(1 << a)
+
+	let msg = "ADVANTAGE Refreshed"
+	msg += "\n" + say_advantage(a, G.advantages[a])
+
+	log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+	log_box_end(LOG_BOX_ADVANTAGE)
 }
 
 
@@ -2915,6 +2924,7 @@ const RULE_UNFLAG_MARKETS       = "Unflagging markets only"
 const RULE_MARKET_MARKET        = "Flag markets next to a BR-flagged market"
 const RULE_SHIFT_NON_PRESTIGE   = "Shifting non-Prestige political spaces"
 const RULE_WAR_TILE_OR_DEPLOY   = "Bonus War Tiles or Deploying Squadrons"
+const RULE_SPAIN_AUSTRIA        = "Spain and/or Austria"
 
 const SHORT_UNFLAG_EUROPE       = "Unflag Europe"
 const SHORT_NORTH_AMERICA       = "N. Amer"
@@ -2925,6 +2935,7 @@ const SHORT_UNFLAG_MARKETS      = "Unflag Mkts"
 const SHORT_MARKET_MARKET       = "Flg Mkt near BR-Mkt"
 const SHORT_SHIFT_NON_PRESTIGE  = "Shift non-Prestige"
 const SHORT_WAR_TILE_OR_DEPLOY  = "Buy Tile or Dply Sqdrn"
+const SHORT_SPAIN_AUSTRIA       = "Spn/Aus"
 
 // Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
 function space_rules(s, type)
@@ -2981,6 +2992,11 @@ function space_rules(s, type)
 					break
 				case RULE_WAR_TILE_OR_DEPLOY:
 					if (data.spaces[s].type === NAVAL) {
+						qualified_rules.push(rule)
+					}
+					break
+				case RULE_SPAIN_AUSTRIA:
+					if (is_spain(s) || is_austria(s)) {
 						qualified_rules.push(rule)
 					}
 					break
@@ -4621,6 +4637,100 @@ P.event_interest_payments = {
 }
 
 
+// Place 1 Conflict marker in a market in the Caribbean. Bonus: place an additional Conflict marker as above
+P.event_caribbean_slave_unrest = {
+	_begin() {
+		L.conflicts_done  = 0
+		L.conflicts_to_do = 1 + (G.qualifies_for_bonus ? 1 : 0)
+	},
+	prompt() {
+		let any = false
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+			if (data.spaces[s].type !== MARKET) continue
+			if (has_conflict_marker(s)) continue
+			any = true
+			action_space(s)
+		}
+		let gauge = ((any || (L.conflicts_done >= L.conflicts_to_do)) ? L.conflicts_done + "/" + L.conflicts_to_do : "DONE")
+		V.prompt = event_prompt(R, G.played_event, "Place " + L.conflicts_to_do + " Conflict marker" + s(L.conflicts_to_do) + " in " + ((L.conflicts_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge))
+
+		if (!any || (L.conflicts_done >= L.conflicts_to_do)) {
+			button ("done")
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		L.conflicts_done++
+		if (L.conflicts_done >= L.conflicts_to_do) {
+			end()
+		}
+	},
+	done() {
+		push_undo()
+		end()
+	}
+}
+
+
+// BR: This AR, FR-flagged spaces in Spain or Austria cost 1 less for you to unflag. Bonus: 1 Diplo.
+// FR: Refresh up to two Advantages in Europe. Bonus: 2 Diplo in Spain and/or Austria
+P.event_pacte_de_famille = {
+	_begin() {
+		if (R === FRANCE) {
+			L.num_refreshed  = 0
+		}
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "This action round, FR-flagged spaces in Spain or Austria cost 1 less for you to unflag", "+1 Diplomatic action points")
+			button("done")
+		} else {
+			let any = false
+			let msg = "Refresh up to two Advantages in Europe "
+			if (L.num_refreshed < 2) {
+				for (let a = 0; a < NUM_ADVANTAGES; a++) {
+					if (!has_advantage(who, a)) continue
+					if (!is_advantage_exhausted(a)) continue
+					action_advantage(a)
+					any = true
+				}
+				let gauge = ((any || (L.num_refreshed >= 2)) ? L.num_refreshed+ "/" + 2 : "DONE")
+				V.prompt = event_prompt(R, G.played_event, msg + parens(gauge), "+2 Diplomatic action points in Spain and/or Austria")
+				if (!any) button("done")
+			} else {
+				V.prompt = event_prompt(R, G.played_event, "+2 Diplomatic action points in Spain and/or Austria")
+				button("done")
+			}
+		}
+	},
+	advantage(a) {
+		push_undo()
+		refresh_advantage(a)
+		if ((L.num_refreshed >= 2) && !G.qualifies_for_bonus) end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			log ("This action round, French-flagged spaces in Spain or Austria cost Britain one fewer action point to unflag.")
+			set_transient(R, TRANSIENT_PACTE_DE_FAMILLE)
+			if (G.qualifies_for_bonus) {
+				add_action_points(DIPLO, 1)
+			}
+		} else {
+			if (G.qualifies_for_bonus) {
+				add_contingent(DIPLO, 2, RULE_SPAIN_AUSTRIA, SHORT_SPAIN_AUSTRIA)
+			}
+		}
+		end()
+	}
+}
+
+
+
+
+
 function handle_ministry_card_click(m)
 {
 	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministr" id)
@@ -6119,6 +6229,24 @@ function action_point_cost_modify(amount, type)
 	G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
 }
 
+
+function is_spain(s)
+{
+	return (s >= SPAIN_1) && (s <= SPAIN_4)
+}
+
+function is_austria(s)
+{
+	return (s >= AUSTRIA_1) && (s <= AUSTRIA_4)
+}
+
+function is_prussia(s)
+{
+	return (s >= PRUSSIA_1) && (s <= PRUSSIA_4)
+}
+
+
+
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
 	var cost = data.spaces[s].cost
@@ -6207,6 +6335,16 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 					G.action_cost_breakdown += " -1 Charles Hanbury Williams."
 					G.action_cost_adjusted = true
 					G.action_cost_adjustable--
+				}
+			}
+			if (has_transient(who, TRANSIENT_PACTE_DE_FAMILLE)) {
+				if (G.flags[s] === FRANCE) {
+					if (is_spain(s) || is_austria(s)) {
+						cost--
+						G.action_cost_breakdown += " -1 Pacte de Famille."
+						G.action_cost_adjusted = true
+						G.action_cost_adjustable--
+					}
 				}
 			}
 		}
