@@ -4554,7 +4554,7 @@ function encode_value(v)
 }
 
 function encode_who(who) {
-	return ((who >= 0) ? ((who === FRANCE) ? "F" : "B") : "X")
+	return (((who >= 0) && (who !== NONE)) ? ((who === FRANCE) ? "F" : "B") : "X")
 }
 
 
@@ -7487,6 +7487,8 @@ function start_war_theater_resolution()
 		L.war_canada = false
 		L.war_atlantic = false
 		L.war_squadrons = 0
+		L.war_squadrons_original = 0
+		L.doing_squadrons = false
 		L.opponent_confirm = false
 
 		L.war_cp_start = L.war_cp
@@ -7553,6 +7555,8 @@ function start_war_theater_resolution()
 			L.war_squadrons = Math.min(2, L.war_delta / 2)
 		}
 
+		L.war_squadrons_original = L.war_squadrons
+
 		if (L.war_cp) {
 			L.free_squadrons = []
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -7603,7 +7607,14 @@ function conquer_from_space(s)
 P.war_theater_resolve = {
 	_begin() {
 		start_war_theater_resolution()
-		if ((L.war_winner !== NONE) && (L.war_cp || L.war_unflag || L.war_usa || L.war_atlantic)) {
+		if (L.war_squadrons > 0) {
+			L.doing_squadrons = true
+			G.active = 1 - L.war_winner
+			if (G.dirty_who !== G.active) {
+				clear_dirty()
+				G.dirty_who = G.active
+			}
+		} else if ((L.war_winner !== NONE) && (L.war_cp || L.war_unflag || L.war_usa || L.war_atlantic)) {
 			G.active = L.war_winner
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
@@ -7617,7 +7628,33 @@ P.war_theater_resolve = {
 	prompt() {
 		let msg = say_action_header(data.wars[G.next_war].theater_names[G.theater].toUpperCase() + ": ")
 
-		if (Array.isArray(G.active) || L.opponent_confirm) {
+		if (L.doing_squadrons) {
+			msg += say_action("You must remove " + L.war_squadrons_original + " squadron" + s(L.war_squadrons_original))
+			msg += say_action((current_era() === REVOLUTION_ERA) ? " from the game. " : " from map or Navy Box to unbuilt. ")
+
+			let any_left = false
+			if (L.war_squadrons) {
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].type !== NAVAL) continue
+					if (G.flags[s] !== G.active) continue
+					action_space(s)
+					any_left = true
+				}
+				if (G.navy_box[G.active] > 0) {
+					any_left = true
+					action_navy_box()
+				}
+			}
+
+			if (any_left || !L.war_squadrons) {
+				msg += say_action(parens((L.war_squadrons_original - L.war_squadrons) + "/" + L.war_squadrons_original))
+			} else {
+				msg += "(Done)"
+			}
+
+			if (L.war_squadrons || !any_left) button ("done")
+
+		} else if (Array.isArray(G.active) || L.opponent_confirm) {
 			msg += say_action(L.result_string)
 			if (L.opponent_confirm) {
 				msg += say_action(" Opponent has claimed all spoils.")
@@ -7792,7 +7829,16 @@ P.war_theater_resolve = {
 	},
 	space(s) {
 		push_undo()
-		if (L.picking_squadron) {
+		if (L.doing_squadrons) {
+			L.war_squadrons--
+			reflag_space(s, NONE)
+			if (current_era() === REVOLUTION_ERA) {
+				log (data.flags[G.active].name + " removes a squadron from " + data.spaces[s].name + " to Unbuilt.")
+			} else {
+				G.unbuilt_squadrons[G.active]++
+				log (data.flags[G.active].name + " removes the squadron at " + data.spaces[s].name + " from the game.")
+			}
+		} else if (L.picking_squadron) {
 			conquer_from_space(s)
 		} else if (L.war_cp > 0) {
 			L.war_space = s
@@ -7841,7 +7887,18 @@ P.war_theater_resolve = {
 	},
 	navy_box() {
 		push_undo()
-		conquer_from_navy_box()
+		if (L.doing_squadrons) {
+			L.war_squadrons--
+			G.navy_box[G.active]--
+			if (current_era() === REVOLUTION_ERA) {
+				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
+			} else {
+				G.unbuilt_squadrons[G.active]++
+				log (data.flags[G.active].name + " removes a squadron in the Navy Box from the game.")
+			}
+		} else {
+			conquer_from_navy_box()
+		}
 	},
 	theater(t) {
 		push_undo()
@@ -7877,7 +7934,15 @@ P.war_theater_resolve = {
 	},
 	done() {
 		push_undo()
-		if (L.opponent_confirm) {
+		if (L.doing_squadrons) {
+			L.doing_squadrons = false
+			L.war_squadrons = 0
+			G.active = L.war_winner
+			if (G.dirty_who !== G.active) {
+				clear_dirty()
+				G.dirty_who = G.active
+			}
+		} else if (L.opponent_confirm) {
 			L.opponent_confirm = false
 			end()
 		} else if (Array.isArray(G.active)) {
