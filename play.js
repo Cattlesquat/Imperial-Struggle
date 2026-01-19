@@ -1173,6 +1173,8 @@ function on_update() {
 	action_button("exhaust_ministry", "Exhaust")
 	action_button("dont_exhaust_ministry", "Don't Exhaust")
 
+	action_button("diplomatic_point", "Gain Diplomatic Point")
+	action_button("military_point", "Gain Military Point")
 	action_button("build_squadron", "Build Squadron w/ Discount")
 	action_button("discard_event_for_trp", "Discard Event for TRP")
 	action_button("increase_debt_limit", "Increase Debt Limit")
