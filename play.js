@@ -1158,6 +1158,9 @@ function on_update() {
 
 	action_button("end_action_round", "End Action Round")
 
+	action_button("buy_diplomatic", "Buy Diplomatic")
+	action_button("buy_economic", "Buy Economic")
+
 	action_button("construct_squadron", "Build Squadron")
 	action_button("buy_bonus_war_tile", "Buy War Tile")
 	action_button("draw_event", "Buy Event")

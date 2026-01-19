@@ -1408,7 +1408,8 @@ P.peace_turn = script (`
 	call scoring_phase
 	call victory_check_phase
 	if (G.turn === PEACE_TURN_6) {
-		call final_scoring
+		call final_scoring_phase
+		call game_over
 	}
 `)
 
@@ -2264,6 +2265,22 @@ P.resolve_remaining_powers = function () {
 }
 
 
+function debt_winner() {
+	if (available_debt(FRANCE) > available_debt(BRITAIN) + 1) return FRANCE
+	if (available_debt(BRITAIN) > available_debt(FRANCE) + 1) return BRITAIN
+	return NONE
+}
+
+
+function debt_delta() {
+	return Math.abs(available_debt(FRANCE) - available_debt(BRITAIN))
+}
+
+function debt_award() {
+	return Math.min(4,debt_delta() / 2)
+}
+
+
 function get_winner(france, britain)
 {
 	if (france > britain) return FRANCE
@@ -2582,11 +2599,108 @@ P.victory_check_phase = function () {
 
 /* 4.1.14 - FINAL SCORING PHASE */
 
-P.final_scoring_phase = function () {
-	log("=Final Scoring Phase")
-	// TODO
-	// TODO - USA flags count as FR flags during final scoring
+P.final_scoring_phase = {
+	_begin() {
+		log("=Final Scoring Phase")
 
+		clear_dirty()
+		review_begin()
+		review_push("Start of Final Scoring")
+
+		let winner = prestige_winner()
+		if (winner !== NONE) {
+			log_box_begin(winner, "Final Scoring: PRESTIGE" + "\n" + data.flags[winner].name + " +" + prestige_flag_delta() + " flags")
+			award_vp(winner, 2)
+		} else {
+			log_box_begin(NONE, "Final Scoring: PRESTIGE " + "\n" + "TIE! No score.")
+			G.won_all_scorings = NONE
+		}
+		log_box_end()
+		review_push ("Review Final Prestige Scoring")
+
+		winner = debt_winner()
+		if (winner !== NONE) {
+			log_box_begin(winner, "Final Scoring: DEBT" + "\n" + data.flags[winner].name + " " + debt_delta() + " more available debt.")
+			award_vp(winner, debt_award())
+		} else {
+			log_box_begin(NONE, "Final Scoring: DEBT " + "\n" + "No score.")
+		}
+		log_box_end()
+		review_push ("Review Final Debt Scoring")
+
+		for (let d = 0; d < NUM_DEMANDS; d++) {
+			winner = demand_flag_winner()
+			if (winner !== NONE) {
+				log_box_begin(winner, "Final Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d) + " flags")
+				award_vp(winner, 1)
+			} else {
+				log_box_begin(winner, "Final Scoring: " + data.demands[d].name.toUpperCase() + "\n" + "TIE! No score.")
+			}
+			log_box_end()
+			review_push ("Review Final " + data.demands[d].name + " Scoring")
+		}
+
+		let any = false
+		for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+			if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
+				if (!any) {
+					any = true
+					log_box_begin (FRANCE, "Final Scoring: TERRITORIES")
+					award_vp(FRANCE, 2, false, "control of " + data.spaces[s].name)
+				}
+			}
+		}
+		if (any) log_box_end()
+
+		any = false
+		for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+			if (G.flags[s] === BRITAIN) {
+				if (!any) {
+					any = true
+					log_box_begin (BRITAIN, "Final Scoring: TERRITORIES")
+					award_vp(BRITAIN, 2, false, "control of " + data.spaces[s].name)
+				}
+			}
+		}
+		if (any) log_box_end()
+
+		// We start them seeing the first step, but they can rewind one further to the very beginning if they want to
+		review_step(1, FRANCE)
+		review_step(1, BRITAIN)
+
+		G.active = [ FRANCE, BRITAIN ]
+	},
+	prompt() {
+		if (G.review_step[R] < G.review_index.length) {
+			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": Done.")
+			button("done")
+		} else {
+			V.prompt = say_action_header ("FINAL SCORING: Done.")
+			button("done")
+		}
+		if (G.review_step[R] > 0) button ("undo")
+	},
+	done() {
+		if (G.review_step[R] < G.review_index.length) {
+			review_step(++G.review_step[R], R)
+		} else {
+			set_delete(G.active, R)
+			if (G.active.length === 0) {
+				review_end()
+				end()
+			}
+		}
+	},
+	undo() {
+		if (G.review_step[R] > 0) {
+			review_step(--G.review_step[R], R)
+		}
+	},
+}
+
+
+/* 2.4 - VICTORY */
+P.game_over = function () {
 	log ("=Game Over")
 	if (G.vp >= 16) {
 		let msg = bold("France wins! VP marker at " + G.vp + "!")
@@ -2949,6 +3063,9 @@ function selected_a_tile(tile)
 
 	// Contingent action points (e.g. restricted to an area)
 	G.action_points_contingent = []
+
+	// Type of action points we've bought on turn 6, if any
+	G.bought_action_points = -1
 
 	//TODO: ministries might increase our amounts right away
 
@@ -5570,6 +5687,71 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 	return cost
 }
 
+
+function handle_buy_diplomatic() {
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+	action_cost_setup(-1, MIL)
+	G.action_string = "to buy 1 Diplomatic Action Point"
+	G.action_header = "BUY DIPLOMATIC ACTION: "
+	G.prepicked_ministry = -1
+	G.prepicked_advantage = -1
+	G.action_cost = 2
+	call ("buy_diplomatic_flow")
+}
+
+
+P.buy_diplomatic_flow = script(`	        
+  	call decide_how_and_whether_to_spend_action_points	
+    if (!G.paid_action_cost) {
+    	return
+    }
+       
+    eval { do_buy_diplomatic(G.active) }
+`)
+
+
+function do_buy_diplomatic(who)
+{
+	G.action_points_major[DIPLO]++
+	G.action_points_eligible_major[DIPLO] = true
+	G.bought_action_points = DIPLO
+	log (bold(data.flags[who].name + " buys 1 Diplomatic Action Point (for 2 Military Action Points)."))
+}
+
+
+
+function handle_buy_economic() {
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+	action_cost_setup(-1, MIL)
+	G.action_string = "to buy 1 Economic Action Point"
+	G.action_header = "BUY ECONOMIC ACTION: "
+	G.prepicked_ministry = -1
+	G.prepicked_advantage = -1
+	G.action_cost = 2
+	call ("buy_economic_flow")
+}
+
+
+P.buy_economic_flow = script(`	        
+  	call decide_how_and_whether_to_spend_action_points	
+    if (!G.paid_action_cost) {
+    	return
+    }
+       
+    eval { do_buy_economic(G.active) }
+`)
+
+
+function do_buy_economic(who)
+{
+	G.action_points_major[ECON]++
+	G.action_points_eligible_major[ECON] = true
+	G.bought_action_points = ECON
+	log (bold(data.flags[who].name + " buys 1 Economic Action Point (for 2 Military Action Points)."))
+}
+
+
+
 function handle_buy_event() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 	action_cost_setup(-1, DIPLO)
@@ -6927,10 +7109,17 @@ P.action_round_core = {
 		if (G.action_points_eligible[DIPLO]) {
 			button ("draw_event", (G.deck.length || G.discard_pile.length))
 		}
+
 		if (G.action_points_eligible[MIL]) {
 			if (G.navy_box[G.active] > 0) action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
-			button ("buy_bonus_war_tile")
+
+			if (G.turn === PEACE_TURN_6) {
+				if (G.bought_action_points !== ECON)  button("buy_diplomatic")
+				if (G.bought_action_points !== DIPLO) button("buy_economic")
+			} else {
+				button ("buy_bonus_war_tile")
+			}
 		}
 
 		//Maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
@@ -6977,11 +7166,13 @@ P.action_round_core = {
 		push_undo()
 		handle_buy_bonus_war_tile()
 	},
-	buy_political_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
-
+	buy_diplomatic() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
+		push_undo()
+		handle_buy_diplomatic()
 	},
-	buy_economic_points() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
-
+	buy_economic() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
+		push_undo()
+		handle_buy_economic()
 	},
 	confirm_pass_to_reduce_debt() {
 		push_undo()
