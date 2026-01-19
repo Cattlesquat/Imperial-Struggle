@@ -5570,6 +5570,58 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 	return cost
 }
 
+function handle_buy_event() {
+	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+	action_cost_setup(-1, DIPLO)
+	G.action_string = "to buy an Event card"
+	G.action_header = "BUY EVENT CARD: "
+	G.prepicked_ministry = -1
+	G.prepicked_advantage = -1
+	G.action_cost = 3
+	call ("buy_event_flow")
+}
+
+
+P.buy_event_flow = script(`	        
+  	call decide_how_and_whether_to_spend_action_points	
+    if (!G.paid_action_cost) {
+    	return
+    }
+       
+    goto buy_event_decisions
+`)
+
+
+P.buy_event_decisions = {
+	prompt() {
+		V.prompt = say_action_header() + say_action("Confirm buying an event card for 3 diplomatic action points? (CANNOT BE UNDONE!)" + say_action_points())
+		button("confirm")
+	},
+	confirm() {
+		clear_undo()
+		do_buy_event(R)
+		end()
+	}
+}
+
+
+
+function do_buy_event(who) {
+	if (G.deck.length === 0) {
+		log ("Discard Pile shuffled to form new Event Deck")
+		G.deck = G.discard_pile
+		shuffle(G.deck)
+	}
+
+	if (G.deck.length > 0) {
+		G.hand[who].push(G.deck.pop())
+		L.drawn_extra = true
+		log (data.flags[who].name + " buys an extra event card")
+	} else {
+		log ("Event deck is EMPTY. Cannot draw an event card.")
+	}
+}
+
 
 function handle_construct_squadron_button() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
@@ -6873,7 +6925,7 @@ P.action_round_core = {
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
 		if (G.action_points_eligible[DIPLO]) {
-			button ("draw_event")
+			button ("draw_event", (G.deck.length || G.discard_pile.length))
 		}
 		if (G.action_points_eligible[MIL]) {
 			if (G.navy_box[G.active] > 0) action_navy_box()
@@ -6907,8 +6959,7 @@ P.action_round_core = {
 	},
 	draw_event() {
 		push_undo()
-		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
-		log ("draw event!")
+		handle_buy_event()
 	},
 	construct_squadron() {
 		push_undo()
