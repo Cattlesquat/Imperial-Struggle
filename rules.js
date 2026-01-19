@@ -2987,7 +2987,7 @@ P.select_investment_tile = {
 	prompt() {
 		if (G.theater_bonus_war_tiles[R][0].length) {
 			if (L.tile_to_move >= 0) {
-				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + say_action("Select theater in which to place " + say_bonus_war_tile(L.tile_to_move))
+				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + say_action("Select theater in which to place " + say_bonus_war_tile(L.tile_to_move, false))
 				for (const theater of free_theaters(R)) {
 					action_theater(theater)
 				}
@@ -4342,7 +4342,7 @@ P.event_famine_in_ireland = {
 					for (let theater of free_theaters(R)) {
 						action_theater(theater)
 					}
-					V.prompt = event_prompt(R, G.played_event, "Select a new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile")
+					V.prompt = event_prompt(R, G.played_event, "Select a new theater for " + say_bonus_war_tile(L.displaced_tile, false) + " tile")
 				}
 			}
 		}
@@ -5824,9 +5824,14 @@ function update_flag_counts()
 }
 
 
-function say_basic_war_tile(t) {
+function who_from_basic(t) {
+	if (t < 16) return FRANCE
+	return BRITAIN
+}
+
+function say_basic_war_tile(t, color = true) {
 	let val = data.basic_war_tiles[t].val
-	let msg = "\"" + ((val >= 0) ? "+" + val : val)
+	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + ((val >= 0) ? "+" + val : val)
 	switch (data.basic_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -5838,15 +5843,20 @@ function say_basic_war_tile(t) {
 			msg += " with Flag"
 			break
 	}
-	msg += "\""
+	msg += "\"" + "]"
 	return msg
 }
 
 
-function say_bonus_war_tile(t) {
+function who_from_bonus(t) {
+	if ((t/12) & 1) return BRITAIN
+	return FRANCE
+}
+
+function say_bonus_war_tile(t, color = true) {
 	let name = data.bonus_war_tiles[t].name
 	let val = data.bonus_war_tiles[t].val
-	let msg = "\"" + name + " (+" + val
+	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + name + " (+" + val
 	switch (data.bonus_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -5855,7 +5865,7 @@ function say_bonus_war_tile(t) {
 			msg += " with Fort/Fleet"
 			break
 	}
-	msg += ")\""
+	msg += ")\"" + "]"
 	return msg
 }
 
@@ -5901,7 +5911,7 @@ P.military_upgrade_decisions = {
 				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
 				button ("done")
 			} else {
-				msg += say_action("Confirm upgrade draw for " + say_basic_war_tile(G.upgrading_basic_tile) + " tile in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "? (CANNOT BE UNDONE!)")
+				msg += say_action("Confirm upgrade draw for " + say_basic_war_tile(G.upgrading_basic_tile, false) + " tile in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "? (CANNOT BE UNDONE!)")
 				button("confirm")
 			}
 		} else if (!L.picked_one_to_keep) {
@@ -5909,7 +5919,7 @@ P.military_upgrade_decisions = {
 			action_basic_war_tile(L.new_tile)
 			action_basic_war_tile(G.upgrading_basic_tile)
 		} else {
-			msg += say_action("Return " + say_basic_war_tile(L.get_rid_of_tile) + " tile to the pool or remove it from the game?")
+			msg += say_action("Return " + say_basic_war_tile(L.get_rid_of_tile, false) + " tile to the pool or remove it from the game?")
 			button("return_to_pool")
 			button("remove_from_game")
 		}
@@ -6042,7 +6052,7 @@ P.bonus_war_tile_decisions = {
 			}
 		} else if (L.theater <= 0) {
 			msg = say_action_header()
-			msg += "Select theater for " + say_bonus_war_tile(L.new_tile) + " tile."
+			msg += "Select theater for " + say_bonus_war_tile(L.new_tile, false) + " tile."
 			action_all_theaters()
 		} else if (L.displaced_tile < 0) {
 			msg += "Theater had two bonus tiles already. Select a bonus tile to displace."
@@ -6051,7 +6061,7 @@ P.bonus_war_tile_decisions = {
 				action_bonus_war_tile(t)
 			}
 		} else {
-			msg += "Select new theater for " + say_bonus_war_tile(L.displaced_tile) + " tile."
+			msg += "Select new theater for " + say_bonus_war_tile(L.displaced_tile, false) + " tile."
 			for (const t of free_theaters(G.active)) {
 				action_theater(t)
 			}

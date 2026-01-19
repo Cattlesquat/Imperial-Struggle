@@ -1445,6 +1445,37 @@ function _tip_blur_investment() {
 	world.tip.hidden = true
 }
 
+
+function _tip_focus_basic_war_tile(t, who)
+{
+	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war-basic" + t)
+	position_tip_image()
+	world.tip.hidden = false
+
+	world.status.innerHTML = basic_war_tooltip(t, who)
+}
+
+function _tip_blur_basic_war_tile() {
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+
+function _tip_focus_bonus_war_tile(t, who)
+{
+	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war" + t)
+	position_tip_image()
+	world.tip.hidden = false
+
+	world.status.innerHTML = bonus_war_tooltip(t, who)
+}
+
+function _tip_blur_bonus_war_tile() {
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+
 function is_digit(c) {
 	return (c >= '0') && (c <= '9')
 }
@@ -1470,7 +1501,7 @@ function escape_square_brackets(text) {
 			let msg = inside[1].slice(2)            // Rest of string is the message
 			let value = 0
 
-			if (["I", "W", "S"].includes(type)) {	// Some items encode a three digit number
+			if (["I", "W", "S", "B", "b"].includes(type)) {	// Some items encode a three-digit number
 				if (is_digit(msg[0])) {
 					value = msg[0] - '0'
 					msg = msg.substring(1)
@@ -1490,8 +1521,27 @@ function escape_square_brackets(text) {
 			let tooltip_text = ""
 			let className = ""
 			switch (type) {
+				case "b":
+					className = "tip-basic-war"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_basic_war_tile(${value}, ${who})"
+						onmouseleave="_tip_blur_basic_war_tile()"
+						>${escape_typography(msg)}</span>`
+					break
+				case "B":
+					className = "tip-bonus-war"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_bonus_war_tile(${value}, ${who})"
+						onmouseleave="_tip_blur_bonus_war_tile()"
+						>${escape_typography(msg)}</span>`
+					break
 				case "I":
 					className = "tip-investment"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span 
 						class="${className}"
 						onmouseenter="_tip_focus_investment(${value}, ${who})"
@@ -1500,6 +1550,7 @@ function escape_square_brackets(text) {
 					break
 				case "W":
 					className = "tip-award"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span 
 						class="${className}"
 						onmouseenter="_tip_focus_award(${value}, ${who})"
@@ -1508,6 +1559,7 @@ function escape_square_brackets(text) {
 					break
 				case "S":
 					className = "tip-space"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					msg = data.spaces[value].name
 					tooltip_text = `<span 
 						class="${className}"
@@ -1518,6 +1570,7 @@ function escape_square_brackets(text) {
 				case "$":
 				default:
 					className = "tip-spending"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span 
 						class="${className}"
 						onmouseenter="_tip_focus_spending(${who})"
@@ -1525,8 +1578,6 @@ function escape_square_brackets(text) {
 						>${escape_typography(msg)}</span>`
 					break
 			}
-
-			className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 			text = text.replace(/\[.*?]/, tooltip_text)
 		}
 

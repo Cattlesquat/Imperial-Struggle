@@ -230,7 +230,7 @@ body.Britain #events_br { grid-row: 2 }
 #log .group.nested.parent-both-ministry { --parent-color: var(--both-ministry); }
 #log .group.nested.parent-both-event { --parent-color: var(--both-event); }
 
-.tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr {
+.tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr, .tip-bonus-war-fr, .tip-basic-war-fr {
     font-style: italic;
     text-decoration: underline;
     color: royalblue;
@@ -242,7 +242,7 @@ body.Britain #events_br { grid-row: 2 }
     color: royalblue;
 }
 
-.tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br, .tip-spending-br, .tip.award-br, .tip-investment-br, .tip-space-br {
+.tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br, .tip-spending-br, .tip.award-br, .tip-investment-br, .tip-space-br, .tip-bonus-war-br, .tip-basic-war-br {
     font-style: italic;
     text-decoration: underline;
     color: crimson;
@@ -254,7 +254,7 @@ body.Britain #events_br { grid-row: 2 }
     color: crimson;
 }
 
-.tip-event, .tip-ministry, .tip-advantage, .tip-demand, .tip-spending, .tip-award, .tip-investment, .tip-space {
+.tip-event, .tip-ministry, .tip-advantage, .tip-demand, .tip-spending, .tip-award, .tip-investment, .tip-space, .tip-bonus-war, .tip-basic-war {
     font-style: italic;
     text-decoration: underline;
     /* color: grey; */
