@@ -1256,6 +1256,29 @@ function set_fallback_tips(fallbacks, tip) {
 	}
 }
 
+/* Basic/Bonus war tiles placement */
+/* Here to change the value depending on how many tiles are present */
+const TILE_POSITIONS = {
+	1: [[40, 45]],
+	2: [[10, 9], [65, 64]],
+	3: [[40, 0], [0, 68], [75, 68]],
+	4: [[0, 0], [75, 0], [0, 68], [75, 68]]
+}
+
+function agencement_theater_tiles(element) {
+	let children = element.children
+	let count = children.length 
+	if (count === 0 || count > 4)
+		return
+	
+	let positions = TILE_POSITIONS[count]
+	for (let i = 0; i < count; i++) {
+		children[i].style.position = "absolute"
+		children[i].style.left = positions[i][0] + "px"
+		children[i].style.top = positions[i][1] + "px"
+	}
+}
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -1285,6 +1308,7 @@ function update_war_display() {
 					war_reverse[player][war]
 				), bonus_war_tooltip(-1, player))
 
+				agencement_theater_tiles(lookup_thing("lout-theater", offset).element)
 				++offset
 			}
 		}
@@ -1317,6 +1341,16 @@ function update_war_display() {
 			} 
 			else {
 				update_show(`lout-${war_prefix}-winner`, theater, false)
+			}
+		}
+	}
+
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) {
+			for (let tile of V.theater_bonus_war_tiles[who][theater]) {
+				if (tile >= 0) {
+					update_keyword("bonus_war", tile, set_has(V.bonus_war_tile_revealed[who], tile) ? "revealed" : "hidden")
+				}
 			}
 		}
 	}
