@@ -1352,6 +1352,11 @@ function update_war_display() {
 					update_keyword("bonus_war", tile, set_has(V.bonus_war_tile_revealed[who], tile) ? "revealed" : "hidden")
 				}
 			}
+			for (let tile of V.theater_basic_war_tiles[who][theater]) {
+				if (tile >= 0) {
+					update_keyword("basic_war", tile, set_has(V.basic_war_tile_revealed[who], tile) ? "revealed" : "hidden")
+				}
+			}
 		}
 	}
 }

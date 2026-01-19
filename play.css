@@ -715,11 +715,11 @@ body[data-noanims="false"] .card.action {
 	right: 0;
 }
 
-.bonus_war.hidden {
+.bonus_war.hidden, .basic_war.hidden {
 	filter: brightness(0.9) saturate(0.8);
 }
 
-.bonus_war.hidden::after {
+.bonus_war.hidden::after, .basic_war.hidden::after {
 	content: "Hidden";
 	position: absolute;
 	left: 25%;
