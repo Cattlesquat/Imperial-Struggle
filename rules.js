@@ -756,6 +756,9 @@ function on_setup(scenario, options) {
 	// Has France qualified for "perma-Jacobite" status?
 	G.jacobites_always = false
 
+	// Has Jacobite Uprisings ministry been removed from the game
+	G.jacobites_never = false
+
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
 
@@ -4621,6 +4624,10 @@ function reveal_ministry(who, index) {
 	log ("Ministry Revealed: \n" + say_ministry(m, who, false))
 
 	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
+
+	if (m === PAPACY_HANOVER_NEGOTIATIONS) {
+		remove_jacobites()
+	}
 }
 
 
@@ -4882,8 +4889,7 @@ P.jacobite_flow = script (`
     eval { do_reflag_space() }    
 `)
 
-// TODO remove card from game when Papacy/Hanover
-// TODO remove card from the game when Jacobite Defeat
+
 P.ministry_jacobite_uprisings = {
 	prompt() {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with military action points", "score " + jacobite_vp_value() + " VP for 3 military action points" ) + say_action_points()
@@ -7441,6 +7447,19 @@ P.war_theater_reveal = {
 }
 
 
+function remove_jacobites()
+{
+	G.jacobites_always = false
+	G.jacobites_never  = true
+	let index = G.ministry[FRANCE].indexOf(JACOBITE_UPRISINGS)
+	if (index >= 0) {
+		array_delete(G.ministry[FRANCE], index)
+		array_delete(G.ministry_revealed[FRANCE], index)
+	}
+	log (bold(say_ministry(JACOBITE_UPRISINGS) + " ministry removed from the game."))
+}
+
+
 function start_war_theater_resolution()
 {
 	L.war_winner          = theater_winner(G.theater)
@@ -7509,14 +7528,20 @@ function start_war_theater_resolution()
 			}
 
 			if ((G.next_war === WAR_WSS) && (G.theater === 4) && (L.war_tier > 0)) {
-				log("Jacobite Victory marker added.")
+				log(bold("Jacobite Victory marker added."))
 				G.jacobite_victory++
 			}
 
 			if ((G.next_war === WAR_WAS) && (G.theater === 4)) {
-				log("Jacobite Victory marker added. France may always select " + say_ministry(JACOBITE_UPRISINGS) + " as an extra ministry for rest of game.")
+				log(bold("Jacobite Victory marker added. France may always select " + say_ministry(JACOBITE_UPRISINGS) + " as an extra ministry for rest of game."))
 				G.jacobite_victory++
 				G.jacobites_always = true
+			}
+		} else if (L.war_winner === BRITAIN) {
+			if ((G.next_war === WAR_WAS) && (G.theater === 4) && (L.war_tier > 0)) {
+				log(bold("Jacobite Defeat marker added."))
+				G.jacobite_defeat = true
+				remove_jacobites()
 			}
 		}
 
