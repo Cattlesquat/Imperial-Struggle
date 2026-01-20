@@ -432,6 +432,8 @@ function setup_procs()
 	data.cards[CORSICAN_CRISIS].proc = "event_corsican_crisis"
 	data.cards[EUROPEAN_PANIC].proc = "event_european_panic"
 	data.cards[WEST_AFRICAN_GOLD_MINING].proc = "event_west_african_gold_mining"
+	data.cards[WAR_OF_THE_QUADRUPLE_ALLIANCE].proc = "event_war_of_the_quadruple_alliance"
+	data.cards[SALON_D_HERCULE].proc = "event_salon_d_hercule"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -5156,7 +5158,141 @@ P.event_west_african_gold_mining = {
 	}
 }
 
-////
+
+function quadruple_alliance_british_bonus()
+{
+	if (!G.qualifies_for_bonus) return true
+	if (!G.unbuilt_squadrons[BRITAIN]) {
+		log("No unbuilt British squadrons remain -- cannot construct one.")
+		return true
+	}
+	G.navy_box[BRITAIN]++
+	log ("British squadron constructed to Navy Box.")
+}
+
+
+// BR: Remove a BR Squadron from the map or Navy Box to score 2 VP. It returns on the next peace turn. Bonus: Build a Squadron then take 1 Debt, or, if you have any, lose 1 TRP.
+// FR: Shift a Spain space. Bonus: 1 Diplo
+P.event_war_of_the_quadruple_alliance = {
+	_begin() {
+		L.picked_squadron = false
+		L.shifted_spain = false
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Remove a British squadron from the map or Navy Box to score 2 VP"
+			let msg2 = "build a squadron then take 1 debt or lose a TRP"
+			if (!picked_squadron) {
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].type !== NAVAL) continue
+					if (G.flags[R] !== BRITAIN) continue
+					action_space(s)
+					any = true
+				}
+				if (G.navy_box[BRITAIN] > 0) {
+					action_navy_box()
+					any = true
+				}
+				if (!any) {
+					msg += " (None possible)"
+					button("done")
+				}
+			} else {
+				msg = "New Squadron added to Navy Box. Choose Debt or TRP for payment."
+				msg2 = null
+				button ("paydebt", (G.treaty_points[BRITAIN] === 0) || (available_debt(BRITAIN) > 0))
+				button ("paytrp", G.treaty_points[BRITAIN] > 0)
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, msg2)
+		} else {
+			let msg = "Shift a Spain space"
+			let any = false
+			for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+				if (G.flags[s] === R) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "+1 Diplomatic action points")
+		}
+	},
+	space(s) {
+		push_undo()
+		if (R === BRITAIN) {
+			reflag_space(s, NONE, true)
+			L.picked_squadron = true
+			G.the_brig++
+			log("British squadron at " + say_space(s, BRITAIN) + " removed (will return next peace turn).")
+			award_vp(BRITAIN, 2)
+			if (quadruple_alliance_british_bonus()) end()
+		} else {
+			reflag_space(s, (G.flags[s] === NONE) ? FRANCE : NONE)
+			if (G.qualifies_for_bonus) add_action_points(DIPLO, 1)
+			end()
+		}
+	},
+	navy_box() {
+		push_undo()
+		L.picked_squadron = true
+		G.navy_box[BRITAIN]--
+		G.the_brig++
+		log("British squadron removed from Navy Box (will return next peace turn).")
+		log(say_navy_box())
+		award_vp(BRITAIN, 2)
+		if (quadruple_alliance_british_bonus()) end()
+	},
+	paydebt() {
+		push_undo()
+		increase_debt(BRITAIN, 1)
+		end()
+	},
+	paytrp() {
+		push_undo()
+		pay_treaty_points(BRITAIN, 1)
+		end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			if (!L.picked_squadron) {
+				L.picked_squadron = true
+				if (quadruple_alliance_british_bonus()) end()
+			}
+		} else {
+			if (G.qualifies_for_bonus) add_action_points(DIPLO, 1)
+			end()
+		}
+	}
+}
+
+
+// BR: Increase FR Debt by 1. Bonus: Increase FR Debt by another 2.
+// FR: 2 Diplo in Europe. Bonus: 2 additional Diplo in Europe.
+P.salon_d_hercule = {
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "Increase French Debt by 1", "increase French Debt by another 2")
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "+2 Diplomatic action points in Europe", "+2 additional Diplomatic action points in Europe")
+		}
+		button("done")
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			increase_debt(FRANCE, G.qualifies_for_bonus ? 3 : 1)
+		} else {
+			add_contingent(DIPLO, G.qualifies_for_bonus ? 4 : 2, RULE_EUROPE, SHORT_EUROPE)
+		}
+		end()
+	}
+}
+
+
 
 function handle_ministry_card_click(m)
 {
