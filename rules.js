@@ -434,6 +434,10 @@ function setup_procs()
 	data.cards[WEST_AFRICAN_GOLD_MINING].proc = "event_west_african_gold_mining"
 	data.cards[WAR_OF_THE_QUADRUPLE_ALLIANCE].proc = "event_war_of_the_quadruple_alliance"
 	data.cards[SALON_D_HERCULE].proc = "event_salon_d_hercule"
+	data.cards[BENGAL_FAMINE].proc = "event_bengal_famine"
+	data.cards[FATHER_LE_LOUTRE].proc = "event_father_le_loutre"
+	data.cards[WAR_OF_THE_POLISH_SUCCESSION].proc = "event_war_of_the_polish_succession"
+	data.cards[JONATHANS_COFFEE_HOUSE].proc = "event_jonathans_coffee_house"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -4904,7 +4908,7 @@ P.event_hyder_ali = {
 		} else if (L.taking_control) {
 			msg = "Take control of one Local Alliance space in India"
 			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== INDIA) continue
+				if (data.spaces[s].region !== REGION_INDIA) continue
 				if (data.spaces[s].type === POLITICAL) {
 					if (G.flags[s] === R) continue
 					action_space(s)
@@ -4915,7 +4919,7 @@ P.event_hyder_ali = {
 			msg = "Place two Conflict markers in unprotected spaces in India"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== INDIA) continue
+				if (data.spaces[s].region !== REGION_INDIA) continue
 				if (has_conflict_marker(s)) continue
 				if (data.spaces[s].type === POLITICAL) {
 					action_space(s)
@@ -5063,7 +5067,7 @@ P.event_corsican_crisis = {
 			let msg = "Unflag a political space in Europe"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== EUROPE) continue
+				if (data.spaces[s].region !== REGION_EUROPE) continue
 				if (data.spaces[s].type !== POLITICAL) continue
 				if (G.flags[s] !== 1-R) continue
 				action_space(s)
@@ -5118,7 +5122,7 @@ P.event_european_panic = {
 		let any = false
 		if (G.qualifies_for_bonus) {
 			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== EUROPE) continue
+				if (data.spaces[s].region !== REGION_EUROPE) continue
 				if (data.spaces[s].type !== POLITICAL) continue
 				if (G.flags[s] !== 1 - R) continue
 				action_space(s)
@@ -5290,6 +5294,105 @@ P.salon_d_hercule = {
 		}
 		end()
 	}
+}
+
+
+// Place up to 2 Conflict markers in Markets in Political spaces in India
+P.event_bengal_famine = {
+	_begin() {
+		L.conflicts_done = 0
+	},
+	prompt() {
+		let msg = "Place up to 2 Conflict markers in markets or political spaces in India "
+		let gauge = parens(L.conflicts_done + "/2")
+		msg += gauge
+
+		let any = false
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].region !== REGION_INDIA) continue
+			if ((data.spaces[s].type !== POLITICAL) && (data.spaces[s].type !== MARKET)) continue
+			if (has_conflict_marker(s)) continue
+			action_space(s)
+			any = true
+		}
+
+		if (!any) {
+			msg += " (None possible)"
+		}
+
+		V.prompt = event_prompt(R, G.played_event, msg)
+
+		button("pass")
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		L.conflicts_done++
+		if (L.conflicts_done >= 2) end()
+	}
+}
+
+
+
+// BR: Place a Conflict marker in a Fish market. Bonus: 2 Mil in North America
+// FR: Place a Conflict marker in a BR-flagged market. Bonus: 2 Econ in North America
+P.event_father_le_loutre = {
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Place a Conflict marker in a Fish market"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== MARKET) continue
+				if (data.spaces[s].market !== FISH) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "+2 Military action points in North America")
+		} else {
+			let msg = "Place a Conflict marker in a British-flagged market"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== MARKET) continue
+				if (G.flags[s] !== BRITAIN) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "+2 Economic action points in North America")
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		if (G.qualifies_for_bonus) {
+			if (R === BRITAIN) {
+				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+			} else {
+				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+			}
+		}
+	}
+}
+
+
+
+P.event_war_of_the_polish_succession = {
+
+}
+
+
+P.event_jonathans_coffee_house = {
+
+
 }
 
 
