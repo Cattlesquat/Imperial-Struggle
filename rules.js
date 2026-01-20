@@ -391,6 +391,7 @@ const TRANSIENT_JACOBITES_USED_1            = 1
 const TRANSIENT_JACOBITES_USED_2            = 2
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
+const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE          = 5
 
 
 /* TILES & CARDS */
@@ -407,6 +408,7 @@ function setup_procs()
 	data.ministries[PITT_THE_ELDER].proc = "ministry_pitt_the_elder"
 	data.ministries[CHARLES_HANBURY_WILLIAMS].proc = "ministry_charles_hanbury_williams"
 	data.ministries[CHOISEUL].proc = "ministry_choiseul"
+	data.ministries[PAPACY_HANOVER_NEGOTIATIONS].proc = "ministry_papacy_hanover_negotiations"
 
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
@@ -2955,11 +2957,13 @@ const RULE_INDIA                = "India only"
 const RULE_CARIBBEAN            = "Caribbean only"
 const RULE_GERMAN_PRUSSIA_DUTCH = "German States, Prussia, or the Dutch Republic"
 const RULE_EUROPE               = "Europe only"
+const RULE_EUROPE_BURKE         = "Whole action entirely in Europe"
 const RULE_UNFLAG_MARKETS       = "Unflagging markets only"
 const RULE_MARKET_MARKET        = "Flag markets next to a BR-flagged market"
 const RULE_SHIFT_NON_PRESTIGE   = "Shifting non-Prestige political spaces"
 const RULE_WAR_TILE_OR_DEPLOY   = "Bonus War Tiles or Deploying Squadrons"
 const RULE_SPAIN_AUSTRIA        = "Spain and/or Austria"
+const RULE_SCOTLAND_IRELAND     = "Scotland and Ireland"
 
 const SHORT_UNFLAG_EUROPE       = "Unflag Europe"
 const SHORT_NORTH_AMERICA       = "N. Amer"
@@ -2967,11 +2971,14 @@ const SHORT_INDIA               = "India"
 const SHORT_CARIBBEAN           = "Caribbean"
 const SHORT_GERMAN_PRUSSIA_DUTCH= "Ge/Pr/Du"
 const SHORT_EUROPE              = "Europe"
+const SHORT_EUROPE_BURKE        = "All in Europe"
 const SHORT_UNFLAG_MARKETS      = "Unflag Mkts"
 const SHORT_MARKET_MARKET       = "Flg Mkt near BR-Mkt"
 const SHORT_SHIFT_NON_PRESTIGE  = "Shift non-Prestige"
 const SHORT_WAR_TILE_OR_DEPLOY  = "Buy Tile or Dply Sqdrn"
 const SHORT_SPAIN_AUSTRIA       = "Spn/Aus"
+const SHORT_SCOTLAND_IRELAND    = "Scot/Ire"
+
 
 // Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
 function space_rules(s, type)
@@ -3013,6 +3020,13 @@ function space_rules(s, type)
 						qualified_rules.push(rule)
 					}
 					break
+				case RULE_EUROPE_BURKE:
+					if (data.spaces[s].region === REGION_EUROPE) {
+						if (is_entirely_in_europe(type)) {
+							qualified_rules.push(rule)
+						}
+					}
+					break
 				case RULE_UNFLAG_MARKETS:
 					if (G.flags[s] !== NONE) {
 						qualified_rules.push(rule)
@@ -3041,6 +3055,11 @@ function space_rules(s, type)
 						qualified_rules.push(rule)
 					}
 					break
+				case RULE_SCOTLAND_IRELAND:
+					if ([ SCOTLAND_1, SCOTLAND_2, IRELAND_1, IRELAND_2 ].includes(s)) {
+						qualified_rules.push(rule)
+					}
+					break
 			}
 		}
 	}
@@ -3061,7 +3080,7 @@ function active_rules() {
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 // If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
-function add_contingent(type, amount, rule, short, not_independent) {
+function add_contingent(type, amount, rule, short, not_independent = false) {
 	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
 	G.action_points_contingent.push(contingent)
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")")
@@ -3162,6 +3181,23 @@ function add_action_points(type, amount)
 }
 
 
+
+function potential_burke_points(who)
+{
+	let points = 0
+	if (G.flags[IRELAND_1] === BRITAIN) points++
+	if (G.flags[IRELAND_2] === BRITAIN) points++
+	return points
+}
+
+function burke_points(who)
+{
+	if (who !== BRITAIN) return 0
+	if (!has_active_ministry(who, EDMUND_BURKE)) return 0
+	return potential_burke_points(who)
+}
+
+
 // Active player has picked an investment tile.
 function selected_a_tile(tile)
 {
@@ -3239,6 +3275,15 @@ function selected_a_tile(tile)
 	// <br><b>
 	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
 	G.action_point_regions = [ [], [], [] ]
+
+	if (has_active_ministry(G.active, EDMUND_BURKE)) {
+		if (action_points_eligible_major[DIPLO]) {
+			let points = burke_points(G.active)
+			if (points > 0) {
+				add_contingent(DIPLO, points, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+			}
+		}
+	}
 }
 
 // Player is picking an investment tile
@@ -5661,6 +5706,12 @@ function reveal_ministry(who, index) {
 	if (m === PAPACY_HANOVER_NEGOTIATIONS) {
 		remove_jacobites()
 	}
+
+	if (m === EDMUND_BURKE) {
+		if (is_entirely_in_europe(DIPLO)) {
+			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+		}
+	}
 }
 
 
@@ -5988,7 +6039,7 @@ P.ministry_jacobite_uprisings = {
 P.ministry_pitt_the_elder = {
 	prompt() {
 		V.prompt = ministry_prompt(R, PITT_THE_ELDER, "Gain 1 diplomatic action usable for shifting non-prestige spaces", "build discounted squadron") + say_action_points()
-		if (ministry_useful_this_phase(PITT_THE_ELDER, G.action_round_subphase)) {
+		if (ministry_useful_this_phase(PITT_THE_ELDER, G.action_round_subphase) && !is_ministry_fully_exhausted(R, PITT_THE_ELDER)) {
 
 			if (!is_ministry_exhausted(R, PITT_THE_ELDER, 0)) {
 				button ("diplomatic_point", !is_ministry_exhausted(R, PITT_THE_ELDER, 0) && G.action_points_eligible[DIPLO])
@@ -6009,7 +6060,7 @@ P.ministry_pitt_the_elder = {
 	},
 	diplomatic_point() {
 		push_undo()
-		add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE)
+		add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
 		end()
 	},
 	pass() {
@@ -6070,6 +6121,29 @@ P.ministry_choiseul = {
 		push_undo()
 		end()
 	},
+}
+
+
+P.ministry_papacy_hanover_negotiations = {
+	prompt() {
+		let msg = ""
+		if (!action_points_eligible(R, active_rules())) {
+			msg = "You don't have any diplomatic actions this round."
+			button("pass")
+		} else {
+			msg = "+2 Diplomatic action points usable only to shift spaces in Scotland and Ireland."
+			button("done")
+		}
+		V.prompt = ministry_prompt(R, PAPACY_HANOVER_NEGOTIATIONS, msg)
+	},
+	done() {
+		push_undo()
+		add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
+		end()
+	},
+	pass() {
+		end()
+	}
 }
 
 
@@ -6465,6 +6539,11 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!action_points_eligible_major(type, rules) && !eligible_minor) return 0
 
+	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (data.spaces[s].region !== REGION_EUROPE)) {
+		if (!eligible_minor) return 0
+		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0)
+	}
+
 	return action_points_major(type, rules) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
 }
 
@@ -6511,6 +6590,9 @@ function action_eligible_spaces_diplo(region)
 			if (!G.action_points_minor[DIPLO]) continue
 		}
 		if (!is_shift_allowed(space.num, R, true, space_rules(space.num, DIPLO))) continue
+		if (has_transient(R, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (space.region !== REGION_EUROPE)) {
+			if (!G.action_points_minor[DIPLO]) continue
+		}
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
 }
@@ -6624,6 +6706,14 @@ function space_action_type(s) {
 	if (data.spaces[s].type === POLITICAL) return DIPLO
 	if (data.spaces[s].type === MARKET) return ECON
 	return MIL
+}
+
+
+function is_entirely_in_europe(type) {
+	for (const r of [ REGION_NORTH_AMERICA, REGION_CARIBBEAN, REGION_INDIA ]) {
+		if (set_has(G.action_point_regions[type], r)) return false
+	}
+	return true
 }
 
 
@@ -7002,17 +7092,6 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 
 		//TODO handle naval spaces, probably elsewhere
 	} else {
-		if (has_active_ministry(who, JONATHAN_SWIFT)) {
-			if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
-				if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
-					cost -= 1
-					G.action_cost_breakdown += " -1 Jonathan Swift."
-					G.action_cost_adjusted = true
-					G.action_cost_adjustable--
-				}
-			}
-		}
-
 		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
 		if (has_conflict_marker(s)) {
 			cost = 1
@@ -7058,6 +7137,26 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		}
 
 		if (type === DIPLO) {
+			if (has_active_ministry(who, JONATHAN_SWIFT)) {
+				if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s)) { // Ireland & Scotland
+					if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
+						cost -= 1
+						G.action_cost_breakdown += " -1 Jonathan Swift."
+						G.action_cost_adjusted = true
+						G.action_cost_adjustable--
+					}
+				}
+			}
+
+			if (has_active_ministry(who, EDMUND_BURKE)) {
+				if ([ SONS_OF_LIBERTY, USA_1, USA_2 ].includes(s)) {
+					cost -= 1
+					G.action_cost_breakdown += " -1 Edmund Burke."
+					G.action_cost_adjusted = true
+					G.action_cost_adjustable--
+				}
+			}
+
 			if (has_transient(who, TRANSIENT_CHARLES_HANBURY_WILLIAMS)) {
 				if (G.flags[s] === FRANCE) {
 					cost--
@@ -7066,6 +7165,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 					G.action_cost_adjustable--
 				}
 			}
+
 			if (has_transient(who, TRANSIENT_PACTE_DE_FAMILLE)) {
 				if (G.flags[s] === FRANCE) {
 					if (is_spain(s) || is_austria(s)) {
@@ -7649,6 +7749,12 @@ function reflag_space(s, who, silent = false) {
 
 	update_advantages() // This could change the ownership of an advantage
 	//update_flag_counts()  //BR// NB:Updating flag counts is implicit in removing conflict marker above
+
+	if (has_active_ministry(who, EDMUND_BURKE) && [ IRELAND_1, IRELAND_2 ].includes(s)) {
+		if (is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, active_rules())) {
+			add_contingent(DIPLO, 1, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+		}
+	}
 }
 
 
@@ -7884,8 +7990,25 @@ P.space_flow = script(`
     if ((G.action_type === DIPLO) && !data.spaces[G.active_space].prestige) {
     	eval { require_ministry_unexhausted(R, PITT_THE_ELDER, "To gain a diplomatic point usable for shifting non-Prestige political spaces", 0, true, true) }
     	if (G.has_required_ministry) {
-    		eval { exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0) } 
+    		eval { 
+    			exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0)
+    			add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
+    		} 
     	}
+    }
+    
+    if ((G.action_type === DIPLO) && [ SCOTLAND_1, SCOTLAND_2, IRELAND_1, IRELAND_2 ].includes(G.active_space)) {
+    	eval { require_ministry_unexhausted(R, PAPACY_HANOVER_NEGOTIATIONS, "To gain 2 diplomatic points usable for shifting spaces in Scotland and Ireland", 0, true, true) }
+    	if (G.has_required_ministry) {
+    		eval { 
+    			exhaust_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS, 0)
+    			add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
+    		}
+    	}
+    }
+    
+    if ((G.action_type === DIPLO) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0)) {
+    	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true) }
     }
     
     if ((G.action_type === ECON) && (G.action_points_available_now < G.action_cost)) {
@@ -7924,6 +8047,9 @@ P.decide_how_and_whether_to_spend_action_points = script(`
         }
         if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type))) { 
 			eval { G.action_minor = true }  // If we're not eligible for a major action in this category, we don't need to make a choice    
+        }
+        if (has_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (G.action_type === DIPLO) && (data.spaces[G.active_space].region !== REGION_EUROPE)) {
+        	eval { G.action_minor = true }  // If we've spent Edmund Burke's special points in Europe already, only a minor action can be used outside of Europe
         }
     }
     
@@ -7997,11 +8123,31 @@ function pay_action_cost() {
 
 	// Spent contingent points, if available
 	for (let rule of space_rules(G.active_space, G.action_type)) {
+		if (rule === RULE_EUROPE_BURKE) continue
+
 		G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
 
-		// Drain contingent points from Pitt the Elder if we're only allowed minor actions in this type
+		// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
 		if (G.action_minor && !G.action_points_eligible_major[G.action_type]) {
 			drain_non_independent(G.action_type, rule)
+		}
+	}
+
+	// Edmund Burke points spent last
+	if (!G.action_minor) {
+		let old_cost = G.action_cost
+		for (let rule of space_rules(G.active_space, G.action_type)) {
+			if (rule !== RULE_EUROPE_BURKE) continue
+
+			G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
+
+			// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
+			if (G.action_minor && !G.action_points_eligible_major[G.action_type]) {
+				drain_non_independent(G.action_type, rule)
+			}
+		}
+		if (G.action_cost !== old_cost) {
+			set_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) // Once we've spent one of the Burke points, we can't region-switch any more
 		}
 	}
 
