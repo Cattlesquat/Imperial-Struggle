@@ -792,6 +792,7 @@ function on_init() {
 
 	define_marker("bonus_war", ATLANTIC_DOMINANCE + FRANCE, "hex-sm atlantic-dominance fr").tooltip(bonus_war_tooltip(96, FRANCE))
 	define_marker("bonus_war", ATLANTIC_DOMINANCE + BRITAIN, "hex-sm atlantic-dominance br").tooltip(bonus_war_tooltip(97, BRITAIN))
+	define_marker("bonus_war", BYNG, "hex-sm byng").tooltip(bonus_war_tooltip(BYNG, BRITAIN))
 
 	define_board("#war_wss", 1100, 850)
 	{

@@ -372,6 +372,8 @@ const DISCARD_PILE = 83
 const PLAYED_EVENTS = 84
 
 const ATLANTIC_DOMINANCE = 96 // Index to end of bonus war tiles list
+const BYNG = 98
+
 
 // ACTION_SUBPHASES
 const BEFORE_PICKING_TILE           = 0
@@ -423,6 +425,7 @@ function setup_procs()
 	data.cards[INTEREST_PAYMENTS].proc = "event_interest_payments"
 	data.cards[CARIBBEAN_SLAVE_UNREST].proc = "event_caribbean_slave_unrest"
 	data.cards[PACTE_DE_FAMILLE].proc = "event_pacte_de_famille"
+	data.cards[BYNGS_TRIAL].proc = "event_byngs_trial"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -726,6 +729,9 @@ function on_setup(scenario, options) {
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
 
+	// British navies can get sent away to come back on the next peace turn
+	G.the_brig = 0
+
 	// How many squadrons a player has left unbuilt (total supply per player is 8). For squadrons *in the Navy Box* see G.navy_box[who] instead.
 	// <br><br>
 	// G.unbuilt_squadrons[who]
@@ -798,6 +804,9 @@ function on_setup(scenario, options) {
 	// an index means hide anything after that index
 	G.log_hide_after = [-1, -1]
 
+	// Pour encourager les autres
+	G.byng = 0
+
 	call("main")
 }
 
@@ -867,6 +876,7 @@ function on_view(RR) {
 
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
+	V.the_brig = G.the_brig
 
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
@@ -923,6 +933,10 @@ function on_view(RR) {
 
 	V.basic_war_tile_revealed = G.basic_war_tile_revealed
 	V.bonus_war_tile_revealed = G.bonus_war_tile_revealed
+
+	V.byng = G.byng ?? 0
+
+	if (V.byng > 0) V.theater_basic_war_tiles[BRITAIN][V.byng].push(BYNG)
 
 	// War viewing totals exist in their own right; they are mostly not analogs to G members
 	V.theater_strength = [ [], [] ]
@@ -1564,6 +1578,14 @@ P.reset_phase = function () {
 	G.played_investments = []
 
 	G.played_tiles = [ [], [] ]
+
+	// British navies return from jail
+	if ((G.the_brig !== undefined) && (G.the_brig > 0)) {
+		G.navy_box[BRITAIN] += G.the_brig
+		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " return to the Navy Box."))
+		log (say_navy_box())
+	}
+	G.the_brig = 0
 
 	review_push("RESET PHASE")
 	end()
@@ -3019,14 +3041,15 @@ function active_rules() {
 
 
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
-function add_contingent(type, amount, rule, short) {
-	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short }
+// If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
+function add_contingent(type, amount, rule, short, not_independent) {
+	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
 	G.action_points_contingent.push(contingent)
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")")
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
-function get_contingent(type, rules)
+function get_contingent(type, rules, require_independent)
 {
 	let amount = 0
 	if ((rules !== undefined) && (rules !== null)) {
@@ -3035,6 +3058,9 @@ function get_contingent(type, rules)
 				for (let i = 0; i < G.action_points_contingent.length; i++) {
 					if (G.action_points_contingent[i].type !== type) continue
 					if (G.action_points_contingent[i].rule !== rule) continue
+					if (require_independent) {
+						if (G.action_points_contingent[i].not_independent) continue
+					}
 					amount += G.action_points_contingent[i].amount
 				}
 			}
@@ -3042,6 +3068,9 @@ function get_contingent(type, rules)
 			for (let i = 0; i < G.action_points_contingent.length; i++) {
 				if (G.action_points_contingent[i].type !== type) continue
 				if (G.action_points_contingent[i].rule !== rules) continue
+				if (require_independent) {
+					if (G.action_points_contingent[i].not_independent) continue
+				}
 				amount += G.action_points_contingent[i].amount
 			}
 		}
@@ -3050,13 +3079,16 @@ function get_contingent(type, rules)
 }
 
 // True if ANY contingent action points of the specified type (ECON, DIPLO, MIL) theoretically available based on array of rules we're eligible for (or a single rule). Even if we've spent it all we can still use debt/TRPs in that category.
-function any_contingent(type, rules) {
+function any_contingent(type, rules, require_independent) {
 	if ((rules !== undefined) && (rules !== null)) {
 		if (rules.constructor === Array) {
 			for (let rule of rules) {
 				for (let i = 0; i < G.action_points_contingent.length; i++) {
 					if (G.action_points_contingent[i].type !== type) continue
 					if (G.action_points_contingent[i].rule !== rule) continue
+					if (require_independent) {
+						if (G.action_points_contingent[i].not_independent) continue
+					}
 					return true
 				}
 			}
@@ -3064,6 +3096,9 @@ function any_contingent(type, rules) {
 			for (let i = 0; i < G.action_points_contingent.length; i++) {
 				if (G.action_points_contingent[i].type !== type) continue
 				if (G.action_points_contingent[i].rule !== rules) continue
+				if (require_independent) {
+					if (G.action_points_contingent[i].not_independent) continue
+				}
 				return true
 			}
 		}
@@ -3085,6 +3120,17 @@ function use_contingent(amount, type, rule)
 	}
 
 	return amount
+}
+
+
+// When we've done a minor action of a type and aren't eligible for any major actions of the type, we drain any "non-independent" contingent points that would otherwise look like we could perform a second action of that type
+function drain_non_independent(type, rule) {
+	for (let i = 0; i < G.action_points_contingent.length; i++) {
+		if (G.action_points_contingent[i].type !== type) continue
+		if (G.action_points_contingent[i].rule !== rule) continue
+		if (!G.action_points_contingent[i].not_independent) continue
+		G.action_points_contingent[i].amount = 0
+	}
 }
 
 // Adds unrestricted major action points of the specified type
@@ -4728,6 +4774,60 @@ P.event_pacte_de_famille = {
 }
 
 
+// BR: Place the Byng marker in any theater that counts Naval strength in the next war
+// FR: Remove one BR squadron from the map or navy box to the turn track (on the next peace turn). On that turn's reset phase, return it to the navy box
+P.event_byngs_trial = {
+	prompt() {
+		if (R === BRITAIN) {
+			for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
+				if (!data.wars[G.next_war].theater[theater].naval) continue
+				action_theater(theater)
+			}
+			V.prompt = event_prompt(R, G.played_event, "Place the +2 Byng marker in any theater that counts Naval Strength in the next War.")
+		} else {
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== NAVAL) continue
+				if (G.flags[s] !== BRITAIN) continue
+				action_space(s)
+				any = true
+			}
+			if (G.navy_box[BRITAIN]) {
+				action_navy_box()
+				any = true
+			}
+			let msg = "Remove one British Squadron from the map or Navy Box to the turn track. It will return to the navy box on the next Peace Turn's reset phase."
+			if (!any) {
+				msg += " (None Possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg)
+		}
+	},
+	theater(theater) {
+		push_undo()
+		G.byng = theater
+		log (bold("Byng +2 tile placed in theater " + theater + ": " + data.wars[G.next_war].theater_names[theater]))
+		end()
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE, true)
+		log (bold("British squadron removed from " + data.spaces[s].name + ". It will return to the Navy Box on the next peace turn."))
+		if (G.the_brig === undefined) G.the_brig = 0
+		G.the_brig++
+		end()
+	},
+	navy_box() {
+		push_undo()
+		G.navy_box[BRITAIN]--
+		if (G.the_brig === undefined) G.the_brig = 0
+		G.the_brig++
+		log (bold("British squadron removed from Navy Box. It will return to the Navy Box on the next peace turn."))
+		log (say_navy_box())
+		end()
+	}
+}
 
 
 
@@ -5713,19 +5813,19 @@ function eligible_for_minor_action(s, who)
 
 // Returns true if eligible for an action of this type (minor or major), checking the optional list of rules for potential contingent points
 function action_points_eligible(type, rules = []) {
-	return G.action_points_eligible[type] || any_contingent(type, rules)
+	return G.action_points_eligible[type] || any_contingent(type, rules, true)
 }
 
 
 // Returns true if eligible for a major action of this type, checking the optional list of rules for potential contingent points
 function action_points_eligible_major(type, rules = []) {
-	return G.action_points_eligible_major[type] || any_contingent(type, rules)
+	return G.action_points_eligible_major[type] || any_contingent(type, rules, true)
 }
 
 
 // Returns the number of major action points available of the type, checking the optional list of rules for potential contingent points
 function action_points_major(type, rules = []) {
-	return G.action_points_major[type] + get_contingent(type, rules)
+	return G.action_points_major[type] + get_contingent(type, rules, !action_points_eligible_major(type, rules))
 }
 
 
@@ -7269,6 +7369,11 @@ function pay_action_cost() {
 	// Spent contingent points, if available
 	for (let rule of space_rules(G.active_space, G.action_type)) {
 		G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
+
+		// Drain contingent points from Pitt the Elder if we're only allowed minor actions in this type
+		if (G.action_minor && !G.action_points_eligible_major[G.action_type]) {
+			drain_non_independent(G.action_type, rule)
+		}
 	}
 
 	if ((G.action_type === MIL) && G.buying_war_tile && get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY)) {
@@ -7812,6 +7917,8 @@ function theater_strength(who, theater)
 	for (const t of G.theater_bonus_war_tiles[who][theater]) {
 		if (set_has(G.bonus_war_tile_revealed[who], t)) score += data.bonus_war_tiles[t].val
 	}
+
+	if ((who === BRITAIN) && (G.byng === theater)) score += 2
 
 	return score
 }
@@ -8657,6 +8764,8 @@ P.war_victory_check_phase = function() {
 P.war_reset_phase = function () {
 	log ("=War Reset Phase")
 	log ("Bonus war tiles from concluded war removed.") // I actually do it in the next step, for efficiency
+
+	G.byng = 0
 
 	// Remove any conflicts that granted strength in this war
 	let conflicts_removed = []

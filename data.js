@@ -375,6 +375,7 @@ const DISCARD_PILE = 83
 const PLAYED_EVENTS = 84
 
 const ATLANTIC_DOMINANCE = 96 // Index to end of bonus war tiles list
+const BYNG = 98
 
 // ACTION_SUBPHASES
 const BEFORE_PICKING_TILE           = 0
@@ -456,27 +457,27 @@ data.wars = [
 ]
 
 data.wars[WAR_WSS].theater = []
-data.wars[WAR_WSS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [2,2,3], "cp": [0,1,2], "trp": [1,2,3], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO, HUDSON_BAY, ACADIA ] }
-data.wars[WAR_WSS].theater[2] = { "region": REGION_EUROPE,        "keyword": GOVERNANCE, "conflicts": false, "margin": [1,2,4], "vp": [1,1,1], "cp": [0,1,2], "trp": [1,2,2], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO ] }
-data.wars[WAR_WSS].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3,4], "vp": [1,1,1], "cp": [0,1,1], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
-data.wars[WAR_WSS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": false, "margin": [1,3,5], "vp": [1,2,4], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,0,0], "additional": [] }
+data.wars[WAR_WSS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [2,2,3], "cp": [0,1,2], "trp": [1,2,3], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO, HUDSON_BAY, ACADIA ] }
+data.wars[WAR_WSS].theater[2] = { "region": REGION_EUROPE,        "keyword": GOVERNANCE, "conflicts": false, "naval": true,  "margin": [1,2,4], "vp": [1,1,1], "cp": [0,1,2], "trp": [1,2,2], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO ] }
+data.wars[WAR_WSS].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,4], "vp": [1,1,1], "cp": [0,1,1], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
+data.wars[WAR_WSS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [1,2,4], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,0,0], "additional": [] }
 
 data.wars[WAR_WAS].theater = []
-data.wars[WAR_WAS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3],   "vp": [1,1],   "cp": [0,1],   "trp": [0,1],   "unflag": [0,0],   "additional": [ HUDSON_BAY, SAN_AGUSTIN, ACADIA, ASIENTO ] }
-data.wars[WAR_WAS].theater[2] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,1],   "trp": [0,1],   "unflag": [0,1],   "additional": [ SAN_AGUSTIN ] }
-data.wars[WAR_WAS].theater[3] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "margin": [1,3,4], "vp": [0,0,0], "cp": [1,2,2], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
-data.wars[WAR_WAS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": true,  "margin": [1,2,3], "vp": [1,2,3], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,1,1], "france_margin": [1,2,4], "france_vp": [2,3,5], "france_trp": [1,2,3], "additional": [] }
+data.wars[WAR_WAS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3],   "vp": [1,1],   "cp": [0,1],   "trp": [0,1],   "unflag": [0,0],   "additional": [ HUDSON_BAY, SAN_AGUSTIN, ACADIA, ASIENTO ] }
+data.wars[WAR_WAS].theater[2] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,1],   "trp": [0,1],   "unflag": [0,1],   "additional": [ SAN_AGUSTIN ] }
+data.wars[WAR_WAS].theater[3] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,4], "vp": [0,0,0], "cp": [1,2,2], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
+data.wars[WAR_WAS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": true,  "naval": false, "margin": [1,2,3], "vp": [1,2,3], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,1,1], "france_margin": [1,2,4], "france_vp": [2,3,5], "france_trp": [1,2,3], "additional": [] }
 
 data.wars[WAR_7YW].theater = []
-data.wars[WAR_7YW].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [2,3,5], "vp": [0,0,0], "cp": [0,0,0], "trp": [0,0,0], "unflag": [0,0,0], "additional": [ ] }
-data.wars[WAR_7YW].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [0,0,0], "cp": [1,1,2], "trp": [1,2,3], "unflag": [0,1,1], "additional": [ ] }
-data.wars[WAR_7YW].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,3,5], "vp": [0,1,2], "cp": [1,2,3], "trp": [1,3,4], "unflag": [1,0,0], "additional": [ MINORCA, GIBRALTAR ] }
-data.wars[WAR_7YW].theater[4] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "margin": [1,3,5], "vp": [2,3,4], "cp": [0,0,0], "trp": [0,0,1], "unflag": [0,0,0], "additional": [ ]	}
+data.wars[WAR_7YW].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": true,  "margin": [2,3,5], "vp": [0,0,0], "cp": [0,0,0], "trp": [0,0,0], "unflag": [0,0,0], "additional": [ ] }
+data.wars[WAR_7YW].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": false, "naval": true,  "margin": [1,3,5], "vp": [0,0,0], "cp": [1,1,2], "trp": [1,2,3], "unflag": [0,1,1], "additional": [ ] }
+data.wars[WAR_7YW].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,5], "vp": [0,1,2], "cp": [1,2,3], "trp": [1,3,4], "unflag": [1,0,0], "additional": [ MINORCA, GIBRALTAR ] }
+data.wars[WAR_7YW].theater[4] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [2,3,4], "cp": [0,0,0], "trp": [0,0,1], "unflag": [0,0,0], "additional": [ ]	}
 
 data.wars[WAR_AWI].theater = []
-data.wars[WAR_AWI].theater[1] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "margin": [1,2,4], "vp": [2,3,4], "cp": [0,1,2], "trp": [0,1,2], "unflag": [0,0,0], "france_margin": [1,3,5], "france_vp": [2,3,4], "france_trp": [2,2,3], "additional": [ ] }
-data.wars[WAR_AWI].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,2],   "trp": [1,3],   "unflag": [0,0,0], "additional": [ ] }
-data.wars[WAR_AWI].theater[3] = { "region": REGION_CARIBBEAN,     "keyword": -1,         "conflicts": true,  "margin": [1,2,4], "vp": [0,0,0], "cp": [1,1,2], "trp": [0,1,2], "unflag": [0,1,1], "additional": [ HUDSON_BAY, ACADIA ] }
+data.wars[WAR_AWI].theater[1] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,2,4], "vp": [2,3,4], "cp": [0,1,2], "trp": [0,1,2], "unflag": [0,0,0], "france_margin": [1,3,5], "france_vp": [2,3,4], "france_trp": [2,2,3], "additional": [ ] }
+data.wars[WAR_AWI].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,2],   "trp": [1,3],   "unflag": [0,0,0], "additional": [ ] }
+data.wars[WAR_AWI].theater[3] = { "region": REGION_CARIBBEAN,     "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,2,4], "vp": [0,0,0], "cp": [1,1,2], "trp": [0,1,2], "unflag": [0,1,1], "additional": [ HUDSON_BAY, ACADIA ] }
 
 data.keywords = [
 	{ "num": 0, "name": "Finance" },
@@ -746,7 +747,8 @@ data.bonus_war_tiles = [
     { "num" : 95, "side": 1, "val": 1, "type": 2, "war" : 3, "warid": "AWI", "name": "Arnold's Treason" },
 
 	{ "num" : 96, "side": 0, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Atlantic Dominance" },	// +2 Atlantic Dominance
-	{ "num" : 97, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Atlantic Dominance" }
+	{ "num" : 97, "side": 1, "val": 2, "type": 0, "war" : 2, "warid": "7YW", "name": "Atlantic Dominance" },
+	{ "num" : 98, "side": 1, "val": 2, "type": 0, "war" : 1, "warid": "WAS", "name": "Byng" },
 ]
 
 // ADVANTAGE TILES
