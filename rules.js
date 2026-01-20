@@ -3082,9 +3082,8 @@ function active_rules() {
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 // If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
 function add_contingent(type, amount, rule, short, not_independent = false) {
-
 	let nat = false
-	if (!not_independent && (type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
+	if (!not_independent && (type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
 		amount++
 		nat = true
 	}
@@ -3183,7 +3182,7 @@ function drain_non_independent(type, rule) {
 function add_action_points(type, amount)
 {
 	let nat = false
-	if ((type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
+	if ((type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
 		amount++
 		nat = true
 	}
