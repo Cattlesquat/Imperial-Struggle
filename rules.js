@@ -393,6 +393,7 @@ const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
 const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
+const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 
 
 /* TILES & CARDS */
@@ -8298,8 +8299,13 @@ P.confirm_spend_debt_or_trps = {
 			}
 		} else {
 			pay_debt(R, 1)
+			if (!has_transient(R, TRANSIENT_FIRST_DEBT_TAKEN) && has_active_ministry(R, TURGOT) && !is_ministry_exhausted(R, TURGOT) && (available_debt(FRANCE) > available_debt(BRITAIN))) {
+				add_action_point()
+				log (say_ministry(TURGOT, FRANCE) + " adds an extra action point.")
+			}
 		}
 		G.debt_spent++
+		set_transient(who, TRANSIENT_FIRST_DEBT_TAKEN)
 		add_action_point()
 	},
 	paytrp() {
