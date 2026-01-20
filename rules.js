@@ -430,6 +430,8 @@ function setup_procs()
 	data.cards[HYDER_ALI].proc = "event_hyder_ali"
 	data.cards[CO_HONG_SYSTEM].proc = "event_co_hong_system"
 	data.cards[CORSICAN_CRISIS].proc = "event_corsican_crisis"
+	data.cards[EUROPEAN_PANIC].proc = "event_european_panic"
+	data.cards[WEST_AFRICAN_GOLD_MINING].proc = "event_west_african_gold_mining"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -2944,6 +2946,7 @@ function is_action_phase()
 const RULE_UNFLAG_EUROPE        = "Unflagging in Europe only"
 const RULE_NORTH_AMERICA        = "North America only"
 const RULE_INDIA                = "India only"
+const RULE_CARIBBEAN            = "Caribbean only"
 const RULE_GERMAN_PRUSSIA_DUTCH = "German States, Prussia, or the Dutch Republic"
 const RULE_EUROPE               = "Europe only"
 const RULE_UNFLAG_MARKETS       = "Unflagging markets only"
@@ -2955,6 +2958,7 @@ const RULE_SPAIN_AUSTRIA        = "Spain and/or Austria"
 const SHORT_UNFLAG_EUROPE       = "Unflag Europe"
 const SHORT_NORTH_AMERICA       = "N. Amer"
 const SHORT_INDIA               = "India"
+const SHORT_CARIBBEAN           = "Caribbean"
 const SHORT_GERMAN_PRUSSIA_DUTCH= "Ge/Pr/Du"
 const SHORT_EUROPE              = "Europe"
 const SHORT_UNFLAG_MARKETS      = "Unflag Mkts"
@@ -2985,6 +2989,11 @@ function space_rules(s, type)
 					break
 				case RULE_INDIA:
 					if (data.spaces[s].region === REGION_INDIA) {
+						qualified_rules.push(rule)
+					}
+					break
+				case RULE_CARIBBEAN:
+					if (data.spaces[s].region === REGION_CARIBBEAN) {
 						qualified_rules.push(rule)
 					}
 					break
@@ -5085,6 +5094,69 @@ P.event_corsican_crisis = {
 }
 
 
+
+function score_european_panic(who)
+{
+	award_vp(who, L.vp_award, false, (L.vp_award > 0) ? "Fewer absolute debt than opponent" : "Has at least as much absolute debt as opponent")
+}
+
+
+// For each Debt your opponent has in excess of yours (up to 4), score 1 VP. Bonus: Unflag an opposing Political space in Europe.
+P.event_european_panic = {
+	_begin() {
+		if (G.debt[1-R] > G.debt[R]) {
+			L.vp_award = Math.min(4, G.debt[1-R] - G.debt[R])
+		} else {
+			L.vp_award = 0
+		}
+	},
+	prompt() {
+		let msg = "Score " + L.vp_award + " VP for having " + Math.max(0, (G.debt[1-R] - G.debt[R])) + " fewer absolute debt than your opponent"
+		let msg2 = "unflag an opposing Political space in Europe"
+		let any = false
+		if (G.qualifies_for_bonus) {
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== EUROPE) continue
+				if (data.spaces[s].type !== POLITICAL) continue
+				if (G.flags[s] !== 1 - R) continue
+				action_space(s)
+				any = true
+			}
+		}
+		if (!any) {
+			msg2 += " (None possible)"
+			button("done")
+		}
+		V.prompt = event_prompt(R, G.played_event, msg, msg2)
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+		score_european_panic(R)
+		end()
+	},
+	done() {
+		push_undo()
+		score_european_panic(R)
+		end()
+	}
+}
+
+
+// World's simplest event! +1 Econ. Bonus: +2 Econ in the Caribbean.
+P.event_west_african_gold_mining = {
+	prompt() {
+		V.prompt = event_prompt(R, G.played_event, "+1 Economic action points", "+2 Economic action points in the Caribbean")
+		button("done")
+	},
+	done() {
+		push_undo()
+		add_action_points(ECON, 1)
+		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_CARIBBEAN, SHORT_CARIBBEAN)
+	}
+}
+
+////
 
 function handle_ministry_card_click(m)
 {
