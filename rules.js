@@ -426,6 +426,8 @@ function setup_procs()
 	data.cards[CARIBBEAN_SLAVE_UNREST].proc = "event_caribbean_slave_unrest"
 	data.cards[PACTE_DE_FAMILLE].proc = "event_pacte_de_famille"
 	data.cards[BYNGS_TRIAL].proc = "event_byngs_trial"
+	data.cards[LE_BEAU_MONDE].proc = "event_le_beau_monde"
+	data.cards[HYDER_ALI].proc = "event_hyder_ali"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -4825,6 +4827,127 @@ P.event_byngs_trial = {
 		G.the_brig++
 		log (bold("British squadron removed from Navy Box. It will return to the Navy Box on the next peace turn."))
 		log (say_navy_box())
+		end()
+	}
+}
+
+
+
+// BR: You may put Fur or Cotton into Global Demand. Bonus: 1 Econ
+// FR: 1 Diplo in Europe. Bonus: 2 more Diplo in Europe.
+P.event_le_beau_monde = {
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "You may put Fur or Cotton into Global Demand", "+1 Economic action points")
+			button("fur", !G.global_demand.includes(FUR))
+			button("cotton", !G.global_demand.includes(COTTON))
+			button("pass")
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "+1 Diplomatic action points in Europe", "+2 more Diplomatic action points in Europe")
+			button("done")
+		}
+	},
+	fur() {
+		push_undo()
+		G.global_demand.push(FUR)
+		log(bold("Britain places Fur into Global Demand."))
+		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
+		end()
+	},
+	cotton() {
+		push_undo()
+		G.global_demand.push(COTTON)
+		log(bold("Britain places Cotton into Global Demand."))
+		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
+		end()
+	},
+	pass() {
+		push_undo()
+		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
+		end()
+	},
+	done() {
+		push_undo()
+		add_contingent(DIPLO, G.qualifies_for_bonus ? 3 : 1, RULE_EUROPE, SHORT_EUROPE)
+		end()
+	}
+}
+
+
+
+P.event_hyder_ali = {
+	_begin() {
+		L.taking_control = false
+		L.placing_conflicts = false
+		L.conflicts_done = 0
+	},
+	prompt() {
+		let msg = ""
+		if (!L.taking_control && !L.placing_conflicts) {
+			msg = "Take control of one Local Alliance space in India, or place two Conflict markers in unprotected spaces in India"
+			button("take_control")
+			button("place_conflicts")
+		} else if (L.taking_control) {
+			msg = "Take control of one Local Alliance space in India"
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== INDIA) continue
+				if (data.spaces[s].type === POLITICAL) {
+					if (G.flags[s] === R) continue
+					action_space(s)
+				}
+			}
+			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path
+		} else {
+			msg = "Place two Conflict markers in unprotected spaces in India"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== INDIA) continue
+				if (has_conflict_marker(s)) continue
+				if (data.spaces[s].type === POLITICAL) {
+					action_space(s)
+					any = true
+				} else if (data.spaces[s].type === ECON) {
+					if ((G.flags[s] === NONE) || !is_protected(s)) {
+						action_space(s)
+						any = true
+					}
+				}
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			} else {
+				let gauge = L.conflicts_done + "/2"
+				msg += " " + parens(gauge)
+			}
+		}
+
+		V.prompt = event_prompt(R, G.played_event, msg, "+2 Economic action points in India")
+	},
+	take_control() {
+		push_undo()
+		L.taking_control = true
+	},
+	place_conflicts() {
+		push_undo()
+		L.placing_conflicts = true
+	},
+	space(s) {
+		push_undo()
+		if (L.taking_control) {
+			reflag_space(s, R)
+			if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
+		} else {
+			set_conflict_marker(s)
+			L.conflicts_done++
+			if (L.conflicts_done >= 2) {
+				if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
+				end()
+			}
+		}
+	},
+	done() {
+		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
 		end()
 	}
 }

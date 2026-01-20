@@ -1188,6 +1188,10 @@ function on_update() {
 	action_button("scorecotton", "Score Cotton")
 	action_button("construct_squadron_now", "Build Squadron Now")
 	action_button("defer", "Defer")
+	action_button("fur", "Fur")
+	action_button("cotton", "Cotton")
+	action_button("take_control", "Take Control")
+	action_button("place_conflicts", "Place Conflict Markers")
 
 	action_button("use_advantage", "Use")
 	action_button("dont_use_advantage", "Don't Use")
