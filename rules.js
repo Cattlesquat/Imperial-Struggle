@@ -391,7 +391,8 @@ const TRANSIENT_JACOBITES_USED_1            = 1
 const TRANSIENT_JACOBITES_USED_2            = 2
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
-const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE          = 5
+const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
+const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
 
 
 /* TILES & CARDS */
@@ -3081,9 +3082,16 @@ function active_rules() {
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 // If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
 function add_contingent(type, amount, rule, short, not_independent = false) {
+
+	let nat = false
+	if (!not_independent && (type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
+		amount++
+		nat = true
+	}
+
 	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
 	G.action_points_contingent.push(contingent)
-	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")")
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
@@ -3174,10 +3182,16 @@ function drain_non_independent(type, rule) {
 // Adds unrestricted major action points of the specified type
 function add_action_points(type, amount)
 {
+	let nat = false
+	if ((type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
+		amount++
+		nat = true
+	}
+
 	G.action_points_major[type] += amount
 	G.action_points_eligible[type] = true
 	G.action_points_eligible_major[type] = true
-	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount))
+	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + (nat ? " (North American Trade increased award)" : ""))
 }
 
 
@@ -3250,8 +3264,6 @@ function selected_a_tile(tile)
 	// Type of action points we've bought on turn 6, if any
 	G.bought_action_points = -1
 
-	//TODO: ministries might increase our amounts right away
-
 	/* Action point eligibility */
 
 	// We're eligible for a class of action if we had at least 1 point of it.
@@ -3276,11 +3288,24 @@ function selected_a_tile(tile)
 	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
 	G.action_point_regions = [ [], [], [] ]
 
+	//TODO: ministries might increase our amounts right away
+
 	if (has_active_ministry(G.active, EDMUND_BURKE)) {
 		if (action_points_eligible_major[DIPLO]) {
 			let points = burke_points(G.active)
 			if (points > 0) {
 				add_contingent(DIPLO, points, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+			}
+		}
+	}
+
+	if (has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
+		if (G.demand_flag_count[FRANCE][FURS] + G.demand_flag_count[FRANCE][FISH] > G.demand_flag_count[BRITAIN][FURS] + G.demand_flag_count[BRITAIN][FISH]) {
+			set_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)
+			if (G.action_points_major[ECON]) G.action_points_major[ECON]++
+			if (G.action_points_minor[ECON]) G.action_points_minor[ECON]++
+			if (G.action_points_major[ECON] || G.action_points_minor[ECON]) {
+				log("North American Trade adds 1 Economic action point (France controls more combined Fur and Fish markets).")
 			}
 		}
 	}
@@ -5701,7 +5726,7 @@ function reveal_ministry(who, index) {
 	G.ministry_revealed[who][index] = true
 	log ("Ministry Revealed: \n" + say_ministry(m, who, false))
 
-	//TODO: effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
+	// Effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 
 	if (m === PAPACY_HANOVER_NEGOTIATIONS) {
 		remove_jacobites()
@@ -5711,6 +5736,10 @@ function reveal_ministry(who, index) {
 		if (is_entirely_in_europe(DIPLO)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 		}
+	}
+
+	if (m === NORTH_AMERICAN_TRADE) {
+		refresh_huguenots()
 	}
 }
 
