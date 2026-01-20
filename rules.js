@@ -428,6 +428,8 @@ function setup_procs()
 	data.cards[BYNGS_TRIAL].proc = "event_byngs_trial"
 	data.cards[LE_BEAU_MONDE].proc = "event_le_beau_monde"
 	data.cards[HYDER_ALI].proc = "event_hyder_ali"
+	data.cards[CO_HONG_SYSTEM].proc = "event_co_hong_system"
+	data.cards[CORSICAN_CRISIS].proc = "event_corsican_crisis"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -4874,9 +4876,10 @@ P.event_le_beau_monde = {
 }
 
 
-
+// Take control of one Local Alliance space in India OR place 2 Conflict markers in unprotected spaces in India. Bonus: 2 Econ in India
 P.event_hyder_ali = {
 	_begin() {
+		// Player needs to first decide which route he's going, because local alliance spaces are potentially subject to both halves of the choice
 		L.taking_control = false
 		L.placing_conflicts = false
 		L.conflicts_done = 0
@@ -4906,7 +4909,7 @@ P.event_hyder_ali = {
 				if (data.spaces[s].type === POLITICAL) {
 					action_space(s)
 					any = true
-				} else if (data.spaces[s].type === ECON) {
+				} else if (data.spaces[s].type === MARKET) {
 					if ((G.flags[s] === NONE) || !is_protected(s)) {
 						action_space(s)
 						any = true
@@ -4936,18 +4939,147 @@ P.event_hyder_ali = {
 		push_undo()
 		if (L.taking_control) {
 			reflag_space(s, R)
-			if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
+			if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
 		} else {
 			set_conflict_marker(s)
 			L.conflicts_done++
 			if (L.conflicts_done >= 2) {
-				if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
+				if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
 				end()
 			}
 		}
 	},
 	done() {
-		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA)
+		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+		end()
+	}
+}
+
+
+// Draw a new Global Demand tile, then replace one of this turn's Global Demand tiles with the new one. Bonus: 2 Econ in India
+P.event_co_hong_system = {
+	_begin() {
+		L.drawn_demand = -1
+	},
+	prompt() {
+		let msg = ""
+		if (L.drawn_demand < 0) {
+			msg += "Confirm drawing new Global Demand tile to replace one from this turn? (CANNOT BE UNDONE)"
+			if (G.qualifies_for_bonus) {
+				msg += " (You will also receive +2 Economic points in India)"
+			}
+			button("confirm")
+		} else {
+			msg += "Select a Global Demand tile to replace with " + data.demands[L.drawn_demand].name + "."
+			for (const d in G.global_demand) {
+				if (d === L.drawn_demand) continue
+				action_demand(d)
+			}
+		}
+		V.prompt = event_prompt(R, G.played_event)
+	},
+	confirm() {
+		clear_undo()
+		var global_demand_chits = []
+		for (var i = 0; i < NUM_DEMANDS; i++) {
+			if (G.global_demand.includes(i)) continue
+			global_demand_chits.push(i)
+		}
+		shuffle(global_demand_chits)
+		L.drawn_demand = global_demand_chits.pop()
+		G.global_demand.push(L.drawn_demand)
+		log (bold(data.flags[R].name + " places " + data.demands[L.drawn_demand].name + " into Global Demand."))
+	},
+	demand(d) {
+		push_undo()
+		array_delete_item(G.global_demand, d)
+		log (bold(data.flags[R].name + " removes " + data.demands[d].name + " from Global Demand."))
+
+		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+		end()
+	}
+}
+
+
+
+function score_corsican_crisis(who)
+{
+	if (!G.qualifies_for_bonus) return
+	if (who === BRITAIN) {
+		let any = false
+		for (const s of [ BALEARIC, BISCAY ]) {
+			if (G.flags[s] === FRANCE) {
+				any = true
+				break
+			}
+		}
+		if (!any) {
+			award_vp(BRITAIN, 1, false, "France has no squadrons in Europe")
+		}
+	} else {
+		let any = false
+		for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+			if (G.flags[s] === BRITAIN) {
+				any = true
+				break
+			}
+		}
+		if (!any) {
+			award_vp(FRANCE, 1, false, "Britain has no flags in Spain")
+		}
+	}
+}
+
+
+// BR: Shift Sardinia or Savoy. Bonus: Score 1 VP if France has no Squadrons in Europe
+// FR: Unflag a political space in Europe. Bonus: Score 1 VP if Britain has no flags in Spain.
+P.event_corsican_crisis = {
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Shift Sardinia or Savoy"
+			let any = false
+			for (const s of [ SARDINIA, SAVOY ]) {
+				if (G.flags[s] === R) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "score 1 VP if France has no squadrons in Europe")
+		} else {
+			let msg = "Unflag a political space in Europe"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== EUROPE) continue
+				if (data.spaces[s].type !== POLITICAL) continue
+				if (G.flags[s] !== 1-R) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "score 1 VP if Britain has no flags in Spain")
+		}
+	},
+	space(s) {
+		push_undo()
+		if (R === BRITAIN) {
+			reflag_space(s, (G.flags[s] === NONE) ? BRITAIN : NONE)
+			score_corsican_crisis(R)
+			end()
+		} else {
+			reflag_space(s, NONE)
+			score_corsican_crisis(R)
+			end()
+		}
+	},
+	done() {
+		push_undo()
+		score_corsican_crisis(R)
 		end()
 	}
 }
@@ -9059,6 +9191,11 @@ function action_basic_war_tile(t) {
 
 function action_bonus_war_tile(t) {
 	action("bonus_war", t)
+}
+
+
+function action_demand(d) {
+	action("demand", d)
 }
 
 
