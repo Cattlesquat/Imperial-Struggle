@@ -5257,6 +5257,7 @@ P.event_war_of_the_quadruple_alliance = {
 	paytrp() {
 		push_undo()
 		pay_treaty_points(BRITAIN, 1)
+		log ("Britain spends " + say_spending("1 treaty point", BRITAIN) + ".")
 		end()
 	},
 	done() {
@@ -5385,14 +5386,76 @@ P.event_father_le_loutre = {
 
 
 
-P.event_war_of_the_polish_succession = {
+function do_polish_succession(who)
+{
+	if (who === BRITAIN) {
+		add_treaty_points(who, 2)
+	} else {
+		award_vp(who, 2)
+	}
+}
 
+
+
+// BR: Gain 2 TRP. Bonus: Shift Russia.
+// FR: Score 2 VP. Bonus: Shift Russia or Sweden
+P.event_war_of_the_polish_succession = {
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = (G.flags[RUSSIA] === BRITAIN) ? "Russia already British-flagged" : "shift Russia"
+			V.prompt = event_prompt(R, G.played_event, "Gain 2 treaty points", msg)
+			if (G.flags[RUSSIA] === BRITAIN) {
+				button("done")
+			} else {
+				action_space(RUSSIA)
+				button("done")
+			}
+		} else {
+			let msg = "shift Russia or Sweden"
+			let any = false
+			for (const s of [ RUSSIA, SWEDEN ]) {
+				if (G.flags[s] === R) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, "Score 2 VP", msg)
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
+		do_polish_succession(R)
+		end()
+	},
+	done() {
+		push_undo()
+		if ((R === BRITAIN) && (G.flags[RUSSIA] !== BRITAIN)) reflag(RUSSIA, (G.flags[RUSSIA] === NONE) ? R : NONE)
+		do_polish_succession(R)
+		end()
+	}
 }
 
 
 P.event_jonathans_coffee_house = {
-
-
+	prompt() {
+		V.prompt = event_prompt(R, G.played_event, "+2 Economic action points", "+1 additional Economic action point and reduce your debt by 1")
+		button("done")
+	},
+	done() {
+		add_action_points(ECON, G.qualifies_for_bonus ? 3 : 2)
+		if (G.qualifies_for_bonus) {
+			if (G.debt[R] > 0) {
+				reduce_debt(R, 1)
+			} else {
+				log(say_spending(data.flags[R].adj + " debt", R) + " was already 0.")
+			}
+		}
+		end()
+	}
 }
 
 
