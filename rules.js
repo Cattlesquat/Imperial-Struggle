@@ -3563,6 +3563,12 @@ P.event_flow = script (`
     	check_event_bonus_requirements(R)
     }
     
+    if ((G.played_event === LA_GABELLE) && G.qualifies_for_bonus && has_inactive_keyword(R, GOVERNANCE) && !has_active_keyword(R, GOVERNANCE)) {
+    	eval {
+    		require_ministry(R, get_minister_for_keyword(R, GOVERNANCE), "To unlock Governance keyword for an extra victory point from La Gabelle event", true)
+    	}
+    }
+    
     if (G.needs_to_flip_ministry >= 0) {
     	eval {
     		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.played_event].keyword].name, true)    		
