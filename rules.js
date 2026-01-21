@@ -5914,6 +5914,7 @@ P.event_wealth_of_nations = {
 }
 
 
+// If you have more available debt than opponent, receive +3 Economic action points (must be used to unflag markets). Bonus: Score 2 VP.
 P.event_debt_crisis = {
 	prompt() {
 		V.prompt = event_prompt(R, G.played_event, "If you have more available debt than opponent, receive +3 Economic action points (must be used to unflag markets)", "bonus: score 2 VP")
@@ -5931,6 +5932,7 @@ P.event_debt_crisis = {
 }
 
 
+// If you have more combined squadrons, forts, and local alliances in India than your opponent does, score 3 VP.
 P.event_east_asia_piracy = {
 	prompt() {
 		V.prompt = event_prompt(R, G.played_event, "If you have more combined squadrons, forts, and local alliances in India than your opponent does, score 3 VP.")
@@ -5957,6 +5959,157 @@ P.event_east_asia_piracy = {
 		} else {
 			log ("No VP award (you have " + me + " combined squadrons, forts, and alliances; your opponent has " + you + ").")
 		}
+	}
+}
+
+
+// BR: Reduce your debt by 2. Bonus: 2 Econ
+// FR: Place 1 conflict marker in the Northern Colonies sub-region. Bonus: Place 3 instead.
+P.event_stamp_act = {
+	_begin() {
+		L.conflicts_done = 0
+		L.conflicts_to_do = G.qualifies_for_bonus ? 3 : 1
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "+2 Economic action points")
+			button("done")
+		} else {
+			let msg = "Place " + L.conflicts_to_do + " conflict marker" + s(L.conflicts_to_do) + " in the Northern Colonies sub-region"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
+				if (data.spaces[s].subreg !== SUBREGION_NORTHERN_COL) continue
+				if ((data.spaces[s] !== MARKET) && (data.spaces[s] !== POLITICAL)) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				if (L.conflicts_done > 0) {
+					msg += " (DONE - no more eligible spaces)"
+				} else {
+					msg += " (None possible)"
+				}
+				button("done")
+			} else if (L.conflicts_to_do > 1) {
+				msg += " " + parens(L.conflicts_done + "/" + L.conflicts_to_do)
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		L.conflicts_done++
+		if (L.conflicts_done >= L.conflicts_to_do) end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			reduce_debt(R, 2)
+			if (G.qualifies_for_bonus) add_action_points(ECON, 2)
+		}
+		end()
+	}
+}
+
+
+// BR: If there is a BR-flagged space in Spain, score 1 VP. Bonus: Unflag a space in Spain.
+// FR: Receive 1 Mil for each FR flag in Spain. Bonus: Remove a BR Squadron from the game
+P.event_falklands_crisis = {
+	_begin() {
+		L.done_starting = false
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			if (!L.done_starting) {
+				V.prompt = event_prompt(R, G.played_event, "If there is a British-flagged space in Spain, score 1 VP", "bonus: unflag a space in Spain")
+				button("done")
+			} else {
+				let msg = "Unflag a space in Spain"
+				let any = false
+				for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+					if (G.flags[s] !== FRANCE) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None possible)"
+					button("done")
+				}
+			}
+		} else {
+			if (!done_starting) {
+				V.prompt = event_prompt(R, G.played_event, "+1 Military action points for each French flag in Spain", "remove a British squadron from the game")
+				button("done")
+			} else {
+				let msg = "Remove a British squadron from the game"
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].type !== NAVAL) continue
+					if (G.flags[s] !== BRITAIN) continue
+					action_space(s)
+					any = true
+				}
+				if (G.navy_box[BRITAIN] > 0) {
+					action_navy_box()
+					any = true
+				}
+				if (!any) {
+					msg += " (None possible)"
+					button("done")
+				}
+			}
+		}
+	},
+	space(s) {
+		push_undo()
+		if (R === BRITAIN) {
+			reflag_space(s, NONE)
+			end()
+		} else {
+			reflag_space(s, NONE, silent)
+			log("British squadron at " + say_space(s) + " removed from the game.")
+			end()
+		}
+	},
+	navy_box() {
+		push_undo()
+		G.navy_box[BRITAIN]--
+		log ("British squadron from Navy Box removed from the game.")
+		log (say_navy_box())
+		end()
+	},
+	done() {
+		push_undo()
+		L.done_starting = true
+
+		if (R === BRITAIN) {
+			let any = false
+			for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+				if (G.flags[s] !== BRITAIN) continue
+				any = true
+				break
+			}
+			if (any) {
+				award_vp(BRITAIN, 1)
+			} else {
+				log ("No VP award - no British-flagged spaces in Spain.")
+			}
+		} else {
+			let spain = 0
+			for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+				if (G.flags[s] !== FRANCE) continue
+				spain++
+			}
+			if (spain > 0) {
+				add_action_points(MIL, spain)
+			} else {
+				log ("No action point award - no French-flagged spaces in Spain.")
+			}
+		}
+
+		if (!G.qualifies_for_bonus) end()
 	}
 }
 
