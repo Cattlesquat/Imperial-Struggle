@@ -5849,6 +5849,74 @@ P.event_la_gabelle = {
 
 
 
+function jesuit_bonus()
+{
+	if (!G.qualifies_for_bonus) return
+	add_contingent(ECON, 3, RULE_CARIBBEAN, SHORT_CARIBBEAN)
+}
+
+
+// BR: Unflag a Sugar market. Bonus: +3 Econ (Caribbean only)
+// FR: Reduce your debt by 2. Bonus: Score 2 VP
+P.event_jesuit_abolition = {
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Unflag a Sugar market"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== MARKET) continue
+				if (data.spaces[s].market !== SUGAR) continue
+				if (G.flags[s] !== 1 - R) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "+3 Economic action points (Caribbean only)")
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "score 2 VP")
+			button("done")
+		}
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+		jesuit_bonus()
+		end()
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			jesuit_bonus()
+			end()
+		} else {
+			reduce_debt(FRANCE, 2)
+			if (G.qualifies_for_bonus) award_vp(FRANCE, 2)
+		}
+	},
+}
+
+
+// Reduce your debt by 2. Bonus: +3 ECON
+// NEW RECORD HOLDER, SIMPLEST EVENT EVER!!!
+P.wealth_of_nations = {
+	prompt() {
+		V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "+3 Economic action points")
+		button("done")
+	},
+	done() {
+		push_undo()
+		reduce_debt(R, 2)
+		if (G.qualifies_for_bonus) add_action_points(ECON, 3)
+	}
+}
+
+
+
+
+
 function handle_ministry_card_click(m)
 {
 	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministr" id)
