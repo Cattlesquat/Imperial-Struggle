@@ -394,6 +394,7 @@ const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
 const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
+const TRANSIENT_COOK                        = 8
 
 
 /* TILES & CARDS */
@@ -6114,6 +6115,62 @@ P.event_falklands_crisis = {
 }
 
 
+P.event_cook_and_bougainville = {
+	_begin() {
+		L.squadrons	= 0
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== NAVAL) continue
+			if (G.flags[s] !== BRITAIN) continue
+			L.squadrons++
+		}
+		L.squadrons += G.navy_box[BRITAIN]
+		L.econ_award = L.squadrons / 2
+		L.done_award = false
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			if (!L.done_award) {
+				V.prompt = event_prompt(R, G.played_event, "+" + L.econ_award + " Economic Points (1 for every 2 squadrons you have on the map or in the Navy Box)", "draw a Bonus War Tile")
+				button("done")
+			} else {
+				V.prompt = event_prompt(R, G.played_event, "Confirm drawing Bonus War Tile (CANNOT BE UNDONE)")
+				button("confirm")
+			}
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "Add a squadron to the Navy Box", "reduce your debt by 2")
+			button("done")
+		}
+	},
+	confirm() {
+		push_undo()
+		set_transient(R, TRANSIENT_COOK)
+		goto ("bonus_war_tile_decisions")
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			if (!L.done_award) {
+				add_action_points(ECON, L.econ_award)
+				if (!G.qualifies_for_bonus) end()
+				if (free_theaters(R) <= 0) {
+					log ("No bonus war tile can be drawn: all theaters full!")
+					end()
+				}
+			}
+		} else {
+			if (G.unbuilt_squadrons[FRANCE] > 0) {
+				G.navy_box[FRANCE]++
+				log("French squadron added to Navy Box.")
+				log(say_navy_box())
+			} else {
+				log("No squadron added: all French squadrons are already in play!")
+			}
+			if (G.qualifies_for_bonus) reduce_debt(FRANCE, 2)
+		}
+	}
+}
+
+
 function handle_ministry_card_click(m)
 {
 	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministr" id)
@@ -8105,9 +8162,10 @@ P.buy_bonus_war_tile_flow = script(`
 
 P.bonus_war_tile_decisions = {
 	_begin() {
-		L.confirmed      = false
+		L.confirmed      = has_transient(R, TRANSIENT_COOK)
 		L.theater        = 0
 		L.displaced_tile = -1
+		set_transient(R, TRANSIENT_COOK, false)
 	},
 	prompt() {
 		let msg = say_action_header()
