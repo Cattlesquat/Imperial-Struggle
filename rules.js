@@ -3432,6 +3432,16 @@ function end_event_play(c)
 	advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS)
 	G.action_header = ""
 	log_box_end(LOG_BOX_EVENT)
+
+	if (G.qualifies_for_bonus && has_active_ministry(G.active, LAVOISIER)) {
+		G.action_points_major[data.investments[G.played_tile].majortype]++
+		G.action_points_minor[data.investments[G.played_tile].minortype]++
+
+		log_box_begin(G.active, say_ministry(LAVOISIER + "\n" + "Event Bonus Received", G.active), LOG_BOX_MINISTRY)
+		log ("+1 " + data.action_points[data.investments[G.played_tile].majortype].name + " Major action points")
+		log ("+1 " + data.action_points[data.investments[G.played_tile].minortype].name + " Minor action points")
+		log_box_end(LOG_BOX_MINISTRY)
+	}
 }
 
 
@@ -3498,6 +3508,7 @@ function check_event_bonus_requirements(who) {
 	G.qualifies_for_bonus = true // Uncomment for testing //TODO comment back out!!!
 }
 
+
 P.event_flow = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
@@ -3517,7 +3528,7 @@ P.event_flow = script (`
         	eval { pop_undo() }
         	return
 		}
-    }
+    }       
     
     eval {
     	check_event_bonus_requirements(R)
@@ -3530,6 +3541,12 @@ P.event_flow = script (`
     	
     	eval {
 	    	check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus	    	
+    	}
+    }
+    
+    if (G.qualifies_for_bonus) {
+    	eval {
+    		require_ministry(R, LAVOISIER, "To receive extra action points from your investment tile when gaining an event's bonus", true, false) 
     	}
     }
     
@@ -7118,8 +7135,6 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				G.action_cost_adjusted = true
 			}
 		}
-
-		//TODO handle naval spaces, probably elsewhere
 	} else {
 		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
 		if (has_conflict_marker(s)) {
@@ -7915,13 +7930,19 @@ function handle_space_click(s, force_type = -1)
 		}
 	}
 
+	if ((G.action_type === DIPLO) && [ SONS_OF_LIBERTY, USA_1, USA_2 ].includes(s)) {
+		if (has_inactive_ministry(G.active, EDMUND_BURKE)) {
+			G.needs_to_flip_ministry = EDMUND_BURKE
+		}
+	}
+
 	call("space_flow")
 }
 
 
 P.space_flow = script(`
 
-	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action. //TODO - maybe a different highlight?
+	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action. 
 
     if (G.needs_to_flip_ministry >= 0) {
     	eval { 
