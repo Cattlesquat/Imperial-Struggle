@@ -8907,9 +8907,6 @@ function pay_action_cost() {
 function do_reflag_space(repair_if_damaged = true) {
 	let whom = (G.flags[G.active_space] === NONE) ? G.active : NONE
 
-	debug_log ("whom = " + whom)
-	debug_log (G.active)
-
 	if ((data.spaces[G.active_space].type === FORT) && repair_if_damaged) {
 		if (is_damaged_fort(G.active_space)) {
 			set_damaged_fort(G.active_space, false)
@@ -8927,8 +8924,6 @@ function do_reflag_space(repair_if_damaged = true) {
 		remove_conflict_marker(G.active_space)
 		return
 	}
-
-	debug_log ("whom = " + whom)
 
 	reflag_space(G.active_space, whom)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
