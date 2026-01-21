@@ -411,6 +411,7 @@ function setup_procs()
 	data.ministries[CHARLES_HANBURY_WILLIAMS].proc = "ministry_charles_hanbury_williams"
 	data.ministries[CHOISEUL].proc = "ministry_choiseul"
 	data.ministries[PAPACY_HANOVER_NEGOTIATIONS].proc = "ministry_papacy_hanover_negotiations"
+	data.ministries[TOWNSHEND_ACTS].proc = "ministry_townshend_acts"
 
 	data.cards[CARNATIC_WAR].proc = "event_carnatic_war"
 	data.cards[ACTS_OF_UNION].proc = "event_acts_of_union"
@@ -444,6 +445,15 @@ function setup_procs()
 	data.cards[JONATHANS_COFFEE_HOUSE].proc = "event_jonathans_coffee_house"
 	data.cards[NOOTKA_INCIDENT].proc = "event_nootka_incident"
 	data.cards[HAITIAN_REVOLUTION].proc = "event_haitian_revolution"
+	data.cards[LOGE_DES_NEUF_SOEURS].proc = "event_loge_des_neuf_soeurs"
+	data.cards[LA_GABELLE].proc = "event_la_gabelle"
+	data.cards[JESUIT_ABOLITION].proc = "event_jesuit_abolition"
+	data.cards[WEALTH_OF_NATIONS].proc = "event_wealth_of_nations"
+	data.cards[DEBT_CRISIS].proc = "event_debt_crisis"
+	data.cards[EAST_ASIA_PIRACY].proc = "event_east_asia_piracy"
+	data.cards[STAMP_ACT].proc = "event_stamp_act"
+	data.cards[FALKLANDS_CRISIS].proc = "event_falklands_crisis"
+	data.cards[COOK_AND_BOUGAINVILLE].proc = "event_cook_and_bougainville"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -825,6 +835,9 @@ function on_setup(scenario, options) {
 	// Pour encourager les autres
 	G.byng = 0
 
+	// Which demand do Townshend Acts currently apply to (if any)
+	G.townshend_acts = -1
+
 	call("main")
 }
 
@@ -989,6 +1002,8 @@ function on_view(RR) {
 	V.action_points_committed_bonus = G.action_points_committed_bonus
 	V.action_points_contingent = G.action_points_contingent
 	V.action_round_subphase = G.action_round_subphase
+
+	V.townshend_acts = G.townshend_acts
 }
 
 
@@ -1050,8 +1065,11 @@ function increase_debt(who, amount) {
 		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
-		award_vp(who, -penalty, false, "Debt Limit overrun")
-		//log (bold(data.flags[who].name + " loses " + penalty + " VP for Debt Limit overrun. VP Marker: " + G.VP))
+		if (has_active_ministry(who, JAMES_WATT)) {
+			log (say_ministry(JAMES_WATT, who) + " prevents VP penalty from Debt Limit overrun.")
+		} else {
+			award_vp(who, -penalty, false, "Debt Limit overrun")
+		}
 	}
 }
 
@@ -1104,17 +1122,24 @@ function is_advantage_exhausted(a)
 function exhaust_advantage(a, close_box, reason = "", silent = false)
 {
 	G.advantages_exhausted |= (1 << a)
+
+	if (data.spaces[data.advantages[a].req[0]].region === EUROPE) {
+		if (has_advantage(FRANCE, a) && has_active_ministry(who, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
+			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
+			G.treaty_points[FRANCE]++
+			log ("France gains one treaty point from " + say_ministry(POMPADOUR_AND_DU_BARRY, FRANCE))
+		}
+	}
+
+	if (has_advantage(FRANCE, a) && has_active_ministry(BRITAIN, JAMES_WATT) && !is_ministry_exhausted(BRITAIN, JAMES_WATT)) {
+		exhaust_ministry(BRITAIN, JAMES_WATT, 0, true)
+		G.treaty_points[BRITAIN]++
+		log ("Britain gaines one treaty point from " + say_ministry(JAMES_WATT))
+	}
+
 	if (!silent) {
 		let msg = "ADVANTAGE Used"
 		msg += "\n" + say_advantage(a, G.advantages[a])
-
-		if (data.spaces[data.advantages[a].req[0]].region === EUROPE) {
-			if (has_advantage(FRANCE, a) && has_active_ministry(who, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
-				exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
-				G.treaty_points[FRANCE]++
-				log ("France gains one treaty point from " + say_ministry(POMPADOUR_AND_DU_BARRY, FRANCE))
-			}
-		}
 
 		log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
 		if (reason !== "") log(reason)
@@ -2038,6 +2063,7 @@ P.confirm_use_advantage = {
 	},
 	use_advantage() {
 		push_undo()
+		G.advantages_used_this_round++
 		exhaust_advantage(G.advantage, true, G.advantage_required_because)
 		end()
 	},
@@ -6300,21 +6326,43 @@ P.ministry_choiseul = {
 P.ministry_papacy_hanover_negotiations = {
 	prompt() {
 		let msg = ""
-		if (!action_points_eligible(R, active_rules())) {
-			msg = "You don't have any diplomatic actions this round."
-			button("pass")
-		} else {
-			msg = "+2 Diplomatic action points usable only to shift spaces in Scotland and Ireland."
-			button("done")
+		if (ministry_useful_this_phase(PAPACY_HANOVER_NEGOTIATIONS, G.action_round_subphase) && !is_ministry_exhausted(R, PAPACY_HANOVER_NEGOTIATIONS)) {
+			if (!action_points_eligible(R, active_rules())) {
+				msg = "You don't have any diplomatic actions this round."
+				button("pass")
+			} else {
+				msg = "+2 Diplomatic action points usable only to shift spaces in Scotland and Ireland."
+				button("done")
+			}
 		}
 		V.prompt = ministry_prompt(R, PAPACY_HANOVER_NEGOTIATIONS, msg)
 	},
 	done() {
 		push_undo()
+		log_box_begin(R, say_ministry(PAPACY_HANOVER_NEGOTIATIONS), LOG_BOX_MINISTRY)
+		exhaust_ministry(R, PAPACY_HANOVER_NEGOTIATIONS)
 		add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
+		end()
+	}
+}
+
+
+P.ministry_townshend_acts = {
+	prompt() {
+		V.prompt = ministry_prompt(R, TOWNSHEND_ACTS, "Select a Global Demand to which to apply the Townshend Acts")
+		if (ministry_useful_this_phase(TOWNSHEND_ACTS, G.action_round_subphase) && !is_ministry_exhausted(R, TOWNSHEND_ACTS)) {
+			for (const d of G.global_demand) {
+				action_demand(d)
+			}
+		}
+	},
+	demand(d) {
+		push_undo()
+		apply_townshend_acts(d)
 		end()
 	}
 }
@@ -6338,6 +6386,22 @@ function advantage_prompt(who, a, string1 = "") {
 	return say_action_header(header) + say_action(prompt)
 }
 
+
+
+function apply_townshend_acts(d)
+{
+	log_box_begin(BRITAIN, say_ministry(TOWNSHEND_ACTS, BRITAIN), LOG_BOX_MINISTRY)
+	exhaust_ministry(BRITAIN, TOWNSHEND_ACTS)
+	G.townshend_acts = d
+	log ("Britain applies " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
+	log_box_end(LOG_BOX_MINISTRY)
+}
+
+
+function handle_townshend_acts_click(d)
+{
+	apply_townshend_acts(d)
+}
 
 
 function handle_advantage_click(a)
@@ -6670,18 +6734,26 @@ function allowed_to_shift_market(s, who)
 	return false
 }
 
-/* 5.3.2 "Minor Actions may not be used to remove opposing flags or Squadrons, unless the space has a Conflict Marker." Returns true if eligible for a minor action in the space (enemy spaces can only be unflagged if a conflict marker is present, or the Jonathan Swift ministry exception) */
+/* 5.3.2 "Minor Actions may not be used to remove opposing flags or Squadrons, unless the space has a Conflict Marker." Returns true if eligible for a minor action in the space (enemy spaces can only be unflagged if a conflict marker is present, or the Jonathan Swift / Townshend Acts ministry exceptions) */
 function eligible_for_minor_action(s, who)
 {
 	if ((s >= 0) && (G.flags[s] !== NONE) && (G.flags[s] !== who)) {
+		if ([ FORT, NAVAL ].includes(data.spaces[s].type)) return false // Can't pop enemy forts or squadrons
 		if (!has_conflict_marker(s)) {
 			// Other nations flags can only be removed w/ presence of a conflict marker
+
 			// ... except European diplomatic spaces with Jonathan Swift ministry active and at least one space in Ireland
-			if (!((data.spaces[s].region === REGION_EUROPE) && has_active_ministry(who, JONATHAN_SWIFT) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
-				return false
+			if (((data.spaces[s].region === REGION_EUROPE) && (data.spaces[s].type === POLITICAL) && has_active_ministry(who, JONATHAN_SWIFT) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
+				return true
 			}
+
+			// ... and except markets for Townshend Act goods
+			if ((who === BRITAIN) && has_active_ministry(who, TOWNSHEND_ACTS) && (data.spaces[s].type === MARKET) && (data.spaces[s].market === G.townshend_acts)) {
+				return true
+			}
+
+			return false
 		}
-		if ([ FORT, NAVAL ].includes(data.spaces[s].type)) return false // Can't pop enemy forts or squadrons
 	}
 	return true
 }
@@ -8545,6 +8617,16 @@ P.action_round_core = {
 					}
 				}
 			}
+
+			if (has_active_ministry(R, TOWNSHEND_ACTS) && !is_ministry_exhausted(who, TOWNSHEND_ACTS)) {
+				if (any) prompt += ", "
+				prompt += "Use Townshend Acts"
+				any = true
+
+				for (var d of G.global_demand) {
+					action_demand(d)
+				}
+			}
 		}
 
 		if (any) prompt += ", "
@@ -8673,6 +8755,10 @@ P.action_round_core = {
 		push_undo()
 		handle_event_card_click(c)
 	},
+	demand(d) {
+		push_undo()
+		handle_townshend_acts_click(d)
+	},
 	frenchify() {
 		push_undo()
 		flagify(FRANCE)
@@ -8786,6 +8872,10 @@ P.before_end_of_action_round = script(`
 	
 	if (has_inactive_ministry(R, VOLTAIRE)) {
 		eval { require_ministry(R, VOLTAIRE, "Last chance to flip in time for scoring phase", true) }
+	}
+	
+	if (has_inactive_ministry(R, JAMES_WATT)) {
+		eval { require_ministry(R, JAMES_WATT, "Last chance to flip to protect from debt overruns during scoring or war", true) }
 	}
 `)
 
