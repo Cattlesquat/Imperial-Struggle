@@ -442,6 +442,8 @@ function setup_procs()
 	data.cards[FATHER_LE_LOUTRE].proc = "event_father_le_loutre"
 	data.cards[WAR_OF_THE_POLISH_SUCCESSION].proc = "event_war_of_the_polish_succession"
 	data.cards[JONATHANS_COFFEE_HOUSE].proc = "event_jonathans_coffee_house"
+	data.cards[NOOTKA_INCIDENT].proc = "event_nootka_incident"
+	data.cards[HAITIAN_REVOLUTION].proc = "event_haitian_revolution"
 
 	data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
 	data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
@@ -1240,7 +1242,7 @@ function set_conflict_marker(s, n = 1) {
 		remove_conflict_marker(s)
 	} else {
 		map_set(G.conflicts, s, n)
-		log ("Conflict added at " + say_space(s))
+		log ("Conflict added at " + say_space(s) + ((n > 1) ? " (+1 to remove)" : ""))
 	}
 	update_flag_counts()
 }
@@ -5527,6 +5529,7 @@ P.event_war_of_the_polish_succession = {
 }
 
 
+// +2 Econ. Bonus: +1 Econ and reduce your debt by 1.
 P.event_jonathans_coffee_house = {
 	prompt() {
 		V.prompt = event_prompt(R, G.played_event, "+2 Economic action points", "+1 additional Economic action point and reduce your debt by 1")
@@ -5545,6 +5548,130 @@ P.event_jonathans_coffee_house = {
 	}
 }
 
+
+
+function nootka_bonus()
+{
+	if (!G.qualifies_for_bonus) return
+	if (G.active === BRITAIN) {
+		let score = 0
+		for (const s of [ SPAIN_1, SPAIN_3 ]) {
+			if (G.flags[s] !== BRITAIN) continue
+			score += 2
+			reflag_space(s, NONE)
+		}
+		award_vp(BRITAIN, score, false, (score/2) + " flag" + s(score/2) + " removed from alliance spaces in Spain")
+	} else {
+		if (G.unbuilt_squadrons[FRANCE] > 0) {
+			G.navy_box[FRANCE]++
+			G.unbuilt_squadrons[FRANCE]--
+			log ("French squadron added to Navy Box.")
+			log (say_navy_box())
+		}
+	}
+}
+
+
+// BR: +2 Diplo or +2 Econ. Bonus: Score 2 VP per BR-flagged alliance space in Spain, then remove those flags.
+// FR: Displace a BR Squadron to Navy Box. Bonus: Construct a squadron.
+P.event_nootka_incident = {
+	prompt() {
+		if (R === BRITAIN) {
+			V.prompt = event_prompt(R, G.played_event, "+2 Diplomatic or +2 Economic action points", "score 2 VP per British-flagged alliance space in Spain, then remove those flags")
+			button("diplomatic2")
+			button("economic2")
+		} else if (R === FRANCE) {
+			let msg = "Displace a British squadron to the Navy Box"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== NAVAL) continue
+				if (G.flags[s] !== BRITAIN) continue
+				action_space()
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "construct a squadron")
+		}
+	},
+	diplomatic2() {
+		push_undo()
+		add_action_points(DIPLO, 2)
+		nootka_bonus()
+		end()
+	},
+	economic2() {
+		push_undo()
+		add_action_points(ECON, 2)
+		nootka_bonus()
+		end()
+	},
+	space(s) {
+		push_undo()
+		reflag_space(s, NONE)
+		G.navy_box[BRITAIN]++
+		log ("British squadron from " + say_space(s) + " displaced to Navy Box.")
+		log (say_navy_box())
+		nootka_bonus()
+		end()
+	},
+	done() {
+		push_undo()
+		log ("Nootka Incident: no British squadrons available to displace.")
+		nootka_bonus()
+		end()
+	}
+}
+
+
+// Place a conflict in a Caribbean Sugar market
+// BONUS: Place Conflict markers in two additional such markets
+// -- Conflict markers placed by this event cost 1 extra Mil to resolve --
+P.haitian_revolution = {
+	_begin() {
+		L.conflicts_to_do = G.qualifies_for_bonus ? 3 : 1
+		L.conflicts_done  = 0
+	},
+	prompt() {
+		let msg = G.qualifies_for_bonus ? "Place a Conflict marker in a Sugar market in the Caribbean." : "Place 3 Conflict markers in Sugar markets in the Caribbean."
+		let gauge = (G.conflicts_to_do > 1) ? (L.conflicts_done + "/" + L.conflicts_to_do) : ""
+		let any = false
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+			if (data.spaces[s].type !== MARKET) continue
+			if (data.spaces[s].market !== SUGAR) continue
+			if (has_conflict_marker(s)) continue
+			action_space(s)
+			any = true
+		}
+		if (!any) {
+			if (L.conflicts_done > 0) {
+				gauge = "DONE - no more eligible spaces"
+			} else {
+				gauge = "None possible"
+			}
+			button("done")
+		}
+
+		if (gauge !== "") {
+			msg += " " + parens(gauge)
+		}
+		msg += " Conflict markers placed by this end cost 1 extra Military action point to remove"
+		V.prompt = event_prompt (R, G.played_event, msg)
+	},
+	space(s) {
+		push_undo()
+		L.conflicts_done++
+		set_conflict_marker(s, 2)
+	},
+	done() {
+		push_undo()
+		end()
+	},
+
+}
 
 
 function handle_ministry_card_click(m)
@@ -7135,6 +7262,20 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				G.action_cost_adjusted = true
 			}
 		}
+
+		if (has_conflict_marker(s)) {
+			cost = get_conflict_marker() + 1 // Either 2 for basic conflict or 3 for Haitians
+			G.action_cost_breakdown = "Remove Conflict: 2."
+			if (cost > 2) {
+				G.action_cost_breakdown += " +1 Haitian Revolution."
+				G.action_cost_adjusted   = true
+			}
+			if (is_protected(s)) {
+				cost--
+				G.action_cost_breakdown += " -1 protected market."
+				G.action_cost_adjusted   = true
+			}
+		}
 	} else {
 		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
 		if (has_conflict_marker(s)) {
@@ -8231,6 +8372,11 @@ function do_reflag_space(repair_if_damaged = true) {
 				whom = G.active // We go all the way to our team, no stop at neutral
 			}
 		}
+	}
+
+	if ((G.action_type === MIL) && has_conflict_marker(G.active_space)) {
+		remove_conflict_marker(G.active_space)
+		return
 	}
 
 	reflag_space(G.active_space, whom)
