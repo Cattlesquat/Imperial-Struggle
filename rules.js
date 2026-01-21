@@ -4834,7 +4834,7 @@ P.event_caribbean_slave_unrest = {
 			action_space(s)
 		}
 		let gauge = ((any || (L.conflicts_done >= L.conflicts_to_do)) ? L.conflicts_done + "/" + L.conflicts_to_do : "DONE")
-		V.prompt = event_prompt(R, G.played_event, "Place " + L.conflicts_to_do + " Conflict marker" + s(L.conflicts_to_do) + " in " + ((L.conflicts_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge))
+		V.prompt = event_prompt(R, G.played_event, "Place " + L.conflicts_to_do + " conflict marker" + s(L.conflicts_to_do) + " in " + ((L.conflicts_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge))
 
 		if (!any || (L.conflicts_done >= L.conflicts_to_do)) {
 			button ("done")
@@ -5018,7 +5018,7 @@ P.event_hyder_ali = {
 	prompt() {
 		let msg = ""
 		if (!L.taking_control && !L.placing_conflicts) {
-			msg = "Take control of one Local Alliance space in India, or place two Conflict markers in unprotected spaces in India"
+			msg = "Take control of one Local Alliance space in India, or place two conflict markers in unprotected spaces in India"
 			button("take_control")
 			button("place_conflicts")
 		} else if (L.taking_control) {
@@ -5032,7 +5032,7 @@ P.event_hyder_ali = {
 			}
 			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path
 		} else {
-			msg = "Place two Conflict markers in unprotected spaces in India"
+			msg = "Place two conflict markers in unprotected spaces in India"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== REGION_INDIA) continue
@@ -5420,7 +5420,7 @@ P.event_bengal_famine = {
 		L.conflicts_done = 0
 	},
 	prompt() {
-		let msg = "Place up to 2 Conflict markers in markets or political spaces in India "
+		let msg = "Place up to 2 conflict markers in markets or political spaces in India "
 		let gauge = parens(L.conflicts_done + "/2")
 		msg += gauge
 
@@ -5456,7 +5456,7 @@ P.event_bengal_famine = {
 P.event_father_le_loutre = {
 	prompt() {
 		if (R === BRITAIN) {
-			let msg = "Place a Conflict marker in a Fish market"
+			let msg = "Place a conflict marker in a Fish market"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].type !== MARKET) continue
@@ -5471,7 +5471,7 @@ P.event_father_le_loutre = {
 			}
 			V.prompt = event_prompt(R, G.played_event, msg, "+2 Military action points in North America")
 		} else {
-			let msg = "Place a Conflict marker in a British-flagged market"
+			let msg = "Place a conflict marker in a British-flagged market"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].type !== MARKET) continue
@@ -5662,7 +5662,7 @@ P.haitian_revolution = {
 		L.conflicts_done  = 0
 	},
 	prompt() {
-		let msg = G.qualifies_for_bonus ? "Place a Conflict marker in a Sugar market in the Caribbean." : "Place 3 Conflict markers in Sugar markets in the Caribbean."
+		let msg = G.qualifies_for_bonus ? "Place a conflict marker in a Sugar market in the Caribbean." : "Place 3 conflict markers in Sugar markets in the Caribbean."
 		let gauge = (G.conflicts_to_do > 1) ? (L.conflicts_done + "/" + L.conflicts_to_do) : ""
 		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
@@ -5697,8 +5697,150 @@ P.haitian_revolution = {
 		push_undo()
 		end()
 	},
-
 }
+
+
+
+function neuf_soeurs_bonus()
+{
+	if (!G.qualifies_for_bonus) return
+	if (R === BRITAIN) {
+		if (G.flag_count[BRITAIN][demand] > G.flag_count[FRANCE][demand]) {
+			award_vp(BRITAIN, 3)
+		}
+	} else {
+
+	}
+}
+
+// BR: Place one conflict marker in the Northern Colonies sub-region. Bonus: If there are more BR than FR flags in North America, Score 3 VP.
+// FR: Activate an advantage you control outside Europe (ignore Exhaustion). Bonus: 2 Diplo
+P.event_loge_des_neuf_soeurs = {
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Place a conflict marker in the Northern Colonies sub-region"
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
+				if (data.spaces[s].subreg !== SUBREGION_NORTHERN_COL) continue
+				if ((data.spaces[s].type !== MARKET) && (data.spaces[s].type !== POLITICAL)) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "if there are more British than French flags in North America, score 3 VP")
+		} else {
+			let msg = "Activate an advantage you control outside Europe, ignoring exhaustion"
+			let any = false
+			for (let a = 0; a < NUM_ADVANTAGES; a++) {
+				let s = data.advantages[a].req[0]
+				if (data.spaces[s].region === REGION_EUROPE) continue
+				if (!has_advantage_eligible(R, a, true)) continue
+				action_advantage(a)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+				button("done")
+			}
+			V.prompt = event_prompt(R, G.played_event, msg, "+2 Diplomatic action points")
+		}
+	},
+	space(s) {
+		push_undo()
+		set_conflict_marker(s)
+		neuf_soeurs_bonus()
+		end()
+	},
+	advantage(a) {
+		push_undo()
+
+		if (G.qualifies_for_bonus) {
+			add_action_points(DIPLO, 2)
+		}
+
+		G.active_advantage = a
+		G.advantages_used_this_round++
+		G.advantage_already_exhausted = false
+		goto ("advantage_flow")
+	},
+	done() {
+		push_undo()
+		if (R === BRITAIN) {
+			neuf_soeurs_bonus()
+		} else {
+			if (G.qualifies_for_bonus) {
+				add_action_points(DIPLO, 2)
+			}
+		}
+		end()
+	},
+}
+
+
+
+function gabelle_bonus()
+{
+	if (!G.qualifies_for_bonus) return
+	add_action_points(ECON, 2)
+}
+
+
+// BR: Exhaust up to 2 advantages (BR player's choice). They do not take effect. Bonus: 2 Econ
+// FR: 2 Econ. Bonus: Score 2 VP (or 3 VP, if you have the Governance keyword)
+P.event_la_gabelle = {
+	_begin() {
+		L.advantages_done = 0
+	},
+	prompt() {
+		if (R === BRITAIN) {
+			let msg = "Exhaust up to 2 advantages. They do not take effect"
+			let any = false
+			for (let a = 0; a < NUM_ADVANTAGES; a++) {
+				if (is_advantage_exhausted(a)) continue
+				action_advantage(a)
+				any = true
+			}
+			if (!any) {
+				msg += " (None possible)"
+			} else {
+				msg += " " + parens(L.advantages_done + "/2")
+			}
+			button("pass")
+			V.prompt = event_prompt(R, G.played_event, msg, "+2 Economic action points")
+		} else {
+			V.prompt = event_prompt(R, G.played_event, "+2 Economic action points", "score 2 VP, or 3 VP if you have the Governance keyword")
+			button("done")
+		}
+	},
+	advantage(a) {
+		push_undo()
+		exhaust_advantage(a)
+		L.advantages_done++
+		if (L.advantages_done >= 2) {
+			gabelle_bonus()
+			end()
+		}
+	},
+	pass() {
+		push_undo()
+		gabelle_bonus()
+		end()
+	},
+	done() {
+		push_undo()
+		add_action_points(ECON, 2)
+		if (G.qualifies_for_bonus) {
+			award_vp(FRANCE, has_active_keyword(R, GOVERNANCE) ? 3 : 2)
+		}
+		end()
+	}
+}
+
 
 
 function handle_ministry_card_click(m)
