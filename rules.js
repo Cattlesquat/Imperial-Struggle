@@ -5662,7 +5662,7 @@ P.event_nootka_incident = {
 // Place a conflict in a Caribbean Sugar market
 // BONUS: Place Conflict markers in two additional such markets
 // -- Conflict markers placed by this event cost 1 extra Mil to resolve --
-P.haitian_revolution = {
+P.event_haitian_revolution = {
 	_begin() {
 		L.conflicts_to_do = G.qualifies_for_bonus ? 3 : 1
 		L.conflicts_done  = 0
@@ -5901,7 +5901,7 @@ P.event_jesuit_abolition = {
 
 // Reduce your debt by 2. Bonus: +3 ECON
 // NEW RECORD HOLDER, SIMPLEST EVENT EVER!!!
-P.wealth_of_nations = {
+P.event_wealth_of_nations = {
 	prompt() {
 		V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "+3 Economic action points")
 		button("done")
@@ -5914,7 +5914,51 @@ P.wealth_of_nations = {
 }
 
 
+P.event_debt_crisis = {
+	prompt() {
+		V.prompt = event_prompt(R, G.played_event, "If you have more available debt than opponent, receive +3 Economic action points (must be used to unflag markets)", "bonus: score 2 VP")
+		button("done")
+	},
+	done() {
+		push_undo()
+		if (available_debt(R) > available_debt(1-R)) {
+			add_contingent(ECON, 3, RULE_UNFLAG_MARKETS, SHORT_UNFLAG_MARKETS)
+		}
+		if (G.qualifies_for_bonus) {
+			award_vp(R, 2)
+		}
+	}
+}
 
+
+P.event_east_asia_piracy = {
+	prompt() {
+		V.prompt = event_prompt(R, G.played_event, "If you have more combined squadrons, forts, and local alliances in India than your opponent does, score 3 VP.")
+		button("done")
+	},
+	done() {
+		push_undo()
+		let me = 0
+		let you = 0
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].region !== REGION_INDIA) continue
+			if ((data.spaces[s].type !== NAVAL) && (data.spaces[s].type !== FORT)) {
+				if ((data.spaces[s].type !== POLITICAL) || has_conflict_marker(s)) continue
+			}
+			if (G.flags[s] === NONE) continue
+			if (G.flags[s] === R) {
+				me++
+			} else if (G.flags[s] === 1 - R) {
+				you++
+			}
+		}
+		if (me > you) {
+			award_vp(R, 3)
+		} else {
+			log ("No VP award (you have " + me + " combined squadrons, forts, and alliances; your opponent has " + you + ").")
+		}
+	}
+}
 
 
 function handle_ministry_card_click(m)
