@@ -9018,7 +9018,7 @@ P.confirm_spend_debt_or_trps = {
 			}
 		}
 		G.debt_spent++
-		set_transient(who, TRANSIENT_FIRST_DEBT_TAKEN)
+		set_transient(R, TRANSIENT_FIRST_DEBT_TAKEN)
 		add_action_point()
 	},
 	paytrp() {
