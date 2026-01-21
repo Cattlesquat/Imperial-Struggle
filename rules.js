@@ -1629,6 +1629,7 @@ P.reset_phase = function () {
 		log (say_navy_box())
 	}
 	G.the_brig = 0
+	G.townshend_acts = -1
 
 	review_push("RESET PHASE")
 	end()
