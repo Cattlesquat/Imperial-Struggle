@@ -5443,7 +5443,7 @@ P.event_bengal_famine = {
 		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
 			if (data.spaces[s].region !== REGION_INDIA) continue
-			if ((data.spaces[s].type !== POLITICAL) && (data.spaces[s].type !== MARKET)) continue
+			if (!can_have_conflict_marker(s)) continue
 			if (has_conflict_marker(s)) continue
 			action_space(s)
 			any = true
@@ -5739,7 +5739,7 @@ P.event_loge_des_neuf_soeurs = {
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
 				if (data.spaces[s].subreg !== SUBREGION_NORTHERN_COL) continue
-				if ((data.spaces[s].type !== MARKET) && (data.spaces[s].type !== POLITICAL)) continue
+				if (!can_have_conflict_marker(s)) continue
 				if (has_conflict_marker(s)) continue
 				action_space(s)
 				any = true
@@ -5990,7 +5990,7 @@ P.event_stamp_act = {
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
 				if (data.spaces[s].subreg !== SUBREGION_NORTHERN_COL) continue
-				if ((data.spaces[s] !== MARKET) && (data.spaces[s] !== POLITICAL)) continue
+				if (!can_have_conflict_marker(s)) continue
 				if (has_conflict_marker(s)) continue
 				action_space(s)
 				any = true
