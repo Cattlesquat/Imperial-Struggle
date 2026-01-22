@@ -3392,7 +3392,6 @@ P.select_investment_tile = {
 	ministry_card(m) {
 		push_undo()
 		handle_ministry_card_click(m)
-		require
 	},
 }
 
@@ -6424,6 +6423,8 @@ P.confirm_reveal_ministry = {
 	exhaust_ministry() {
 		push_undo()
 		exhaust_ministry(R, G.ministry_id, G.ministry_ability)
+		G.has_required_ministry = true
+		end()
 	},
 	dont_exhaust_ministry() {
 		push_undo()
