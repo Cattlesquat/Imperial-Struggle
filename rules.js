@@ -9394,7 +9394,7 @@ function theater_winner(theater)
 
 function theater_delta(theater)
 {
-	return Math.abs(theater_strength(FRANCE, theater), theater_strength(BRITAIN, theater))
+	return Math.abs(theater_strength(FRANCE, theater) - theater_strength(BRITAIN, theater))
 }
 
 function theater_tier(theater)
