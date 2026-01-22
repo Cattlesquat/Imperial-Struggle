@@ -15,19 +15,19 @@ const war_layout = {
 	war_wss_theater_1_britain: [225, 132, 152, 152],
 	war_wss_theater_2_france: [579, 132, 152, 152],
 	war_wss_theater_2_britain: [747, 132, 152, 152],
-	war_wss_theater_3_france: [57, 501, 152, 152],
+	war_wss_theater_3_france: [57, 504, 152, 152],
 	war_wss_theater_3_britain: [225, 504, 152, 152],
 	war_wss_theater_4_france: [579, 503, 152, 152],
 	war_wss_theater_4_britain: [747, 503, 152, 152],
 	war_was_theater_drawn: [233, 0, 667, 93],
 	war_was_theater_1_france: [57, 116, 152, 152],
 	war_was_theater_1_britain: [225, 116, 152, 152],
-	war_was_theater_2_france: [579, 111, 152, 152],
-	war_was_theater_2_britain: [747, 116, 152, 152],
+	war_was_theater_2_france: [578, 116, 152, 152],
+	war_was_theater_2_britain: [746, 116, 152, 152],
 	war_was_theater_3_france: [57, 445, 152, 152],
 	war_was_theater_3_britain: [225, 445, 152, 152],
-	war_was_theater_4_france: [579, 445, 152, 152],
-	war_was_theater_4_britain: [747, 445, 152, 152],
+	war_was_theater_4_france: [578, 439, 152, 152],
+	war_was_theater_4_britain: [746, 439, 152, 152],
 	war_awi_theater_drawn: [227, 0, 667, 93],
 	war_awi_theater_1_france: [57, 132, 152, 152],
 	war_awi_theater_1_britain: [225, 132, 152, 152],
@@ -38,9 +38,9 @@ const war_layout = {
 	war_awi_theater_4_france: [577, 132, 152, 152],
 	war_awi_theater_4_britain: [747, 132, 152, 152],
 	war_7yw_theater_1: [36, 76, 507, 360],
-	war_7yw_theater_2: [557, 76, 505, 360],
+	war_7yw_theater_2: [550, 76, 505, 360],
 	war_7yw_theater_3: [36, 447, 507, 360],
-	war_7yw_theater_4: [557, 447, 505, 360],
+	war_7yw_theater_4: [550, 447, 505, 360],
 	war_wss_theater_1: [36, 76, 507, 360],
 	war_wss_theater_2: [557, 76, 505, 360],
 	war_wss_theater_3: [36, 447, 507, 360],
@@ -54,73 +54,93 @@ const war_layout = {
 	war_awi_theater_3: [557, 387, 505, 425],
 	war_awi_theater_4: [59, 568, 443, 219],
 
-	// WSS
+	// WSS - Strength
 	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
 	war_wss_theater_1_strength_br: [480, 400, 50, 25],
-	war_wss_theater_1_winner: [275, 94, 60, 25],
-
 	war_wss_theater_2_strength_fr: [560, 400, 50, 25],
 	war_wss_theater_2_strength_br: [1015, 400, 50, 25],
-	war_wss_theater_2_winner: [675, 94, 60, 25],
-
 	war_wss_theater_3_strength_fr: [42, 770, 50, 25],
 	war_wss_theater_3_strength_br: [480, 770, 50, 25],
-	war_wss_theater_3_winner: [325, 464, 60, 25],
-
 	war_wss_theater_4_strength_fr: [560, 770, 50, 25],
 	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
+
+	// WSS - Winner
+	war_wss_theater_1_winner: [275, 94, 60, 25],
+	war_wss_theater_2_winner: [675, 94, 60, 25],
+	war_wss_theater_3_winner: [325, 464, 60, 25],
 	war_wss_theater_4_winner: [835, 464, 60, 25],
 
-	// WAS
+	// WSS - Alliances
+	war_wss_theater_1_alliances: [500, 144, 50, 152],
+	war_wss_theater_2_alliances: [1022, 160, 50, 152],
+	war_wss_theater_3_alliances: [500, 538, 50, 152],
+	war_wss_theater_4_alliances: [1022, 510, 50, 152],
+
+	// WAS - Strength
 	war_was_theater_1_strength_fr: [42, 360, 50, 25],
 	war_was_theater_1_strength_br: [490, 360, 50, 25],
-	war_was_theater_1_winner: [275, 94, 60, 25],
-
 	war_was_theater_2_strength_fr: [560, 360, 50, 25],
 	war_was_theater_2_strength_br: [1015, 360, 50, 25],
-	war_was_theater_2_winner: [675, 94, 60, 25],
-
 	war_was_theater_3_strength_fr: [42, 770, 50, 25],
 	war_was_theater_3_strength_br: [490, 770, 50, 25],
-	war_was_theater_3_winner: [325, 464, 60, 25],
-
 	war_was_theater_4_strength_fr: [560, 815, 50, 25],
 	war_was_theater_4_strength_br: [1030, 815, 50, 25],
+
+	// WAS - Winner
+	war_was_theater_1_winner: [275, 94, 60, 25],
+	war_was_theater_2_winner: [675, 94, 60, 25],
+	war_was_theater_3_winner: [325, 464, 60, 25],
 	war_was_theater_4_winner: [835, 464, 60, 25],
 
-	// 7YW
-	war_7yw_theater_1_strength_fr: [36, 405, 50, 25],
-	war_7yw_theater_1_strength_br: [350, 405, 50, 25],
+	// WAS - Alliances
+	war_was_theater_1_alliances: [500, 122, 50, 152],
+	war_was_theater_2_alliances: [1022, 142, 50, 152],
+	war_was_theater_3_alliances: [500, 478, 50, 152],
+	war_was_theater_4_alliances: [1022, 454, 50, 152],
+
+	// 7YW - Strength
+	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
+	war_7yw_theater_1_strength_br: [480, 405, 50, 25],
+	war_7yw_theater_2_strength_fr: [560, 405, 50, 25],
+	war_7yw_theater_2_strength_br: [1015, 405, 50, 25],
+	war_7yw_theater_3_strength_fr: [42, 775, 50, 25],
+	war_7yw_theater_3_strength_br: [480, 775, 50, 25],
+	war_7yw_theater_4_strength_fr: [560, 775, 50, 25],
+	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
+
+	// 7YW - Winner
 	war_7yw_theater_1_winner: [320, 78, 60, 25],
-
-	war_7yw_theater_2_strength_fr: [557, 405, 50, 25],
-	war_7yw_theater_2_strength_br: [870, 405, 50, 25],
 	war_7yw_theater_2_winner: [780, 78, 60, 25],
-
-	war_7yw_theater_3_strength_fr: [36, 775, 50, 25],
-	war_7yw_theater_3_strength_br: [350, 775, 50, 25],
 	war_7yw_theater_3_winner: [380, 448, 60, 25],
-
-	war_7yw_theater_4_strength_fr: [557, 775, 50, 25],
-	war_7yw_theater_4_strength_br: [870, 775, 50, 25],
 	war_7yw_theater_4_winner: [700, 448, 60, 25],
 
-	// AWI
+	// 7YW - Alliances
+	war_7yw_theater_1_alliances: [500, 144, 50, 152],
+	war_7yw_theater_2_alliances: [1022, 160, 50, 152],
+	war_7yw_theater_3_alliances: [500, 538, 50, 152],
+	war_7yw_theater_4_alliances: [1022, 510, 50, 152],
+
+	// AWI - Strength
 	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
 	war_awi_theater_1_strength_br: [350, 510, 50, 25],
-	war_awi_theater_1_winner: [330, 78, 60, 25],
-
 	war_awi_theater_2_strength_fr: [557, 345, 50, 25],
 	war_awi_theater_2_strength_br: [870, 345, 50, 25],
-	war_awi_theater_2_winner: [700, 78, 60, 25],
-
 	war_awi_theater_3_strength_fr: [557, 780, 50, 25],
 	war_awi_theater_3_strength_br: [870, 780, 50, 25],
+
+	// AWI - Winner
+	war_awi_theater_1_winner: [330, 78, 60, 25],
+	war_awi_theater_2_winner: [700, 78, 60, 25],
 	war_awi_theater_3_winner: [700, 388, 60, 25],
-	}
+
+	// AWI - Alliances
+	war_awi_theater_1_alliances: [500, 144, 50, 152],
+	war_awi_theater_2_alliances: [1022, 160, 50, 152],
+	war_awi_theater_3_alliances: [500, 538, 50, 152],
+	war_awi_theater_4_alliances: [1022, 510, 50, 152],
+}
 
 const layout_theater_drawn = [0, 0, 1800, 70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
-
 const space_type_class = [
 	"political",
 	"market",
@@ -821,6 +841,10 @@ function on_init() {
 		define_layout("lout-wss-strength-fr", 4, war_layout.war_wss_theater_4_strength_fr)
 		define_layout("lout-wss-strength-br", 4, war_layout.war_wss_theater_4_strength_br)
 		define_layout("lout-wss-winner", 4,  war_layout.war_wss_theater_4_winner)
+		define_layout("lout-wss-alliance", 1, war_layout.war_wss_theater_1_alliances)
+		define_layout("lout-wss-alliance", 2, war_layout.war_wss_theater_2_alliances)
+		define_layout("lout-wss-alliance", 3, war_layout.war_wss_theater_3_alliances)
+		define_layout("lout-wss-alliance", 4, war_layout.war_wss_theater_4_alliances)
 	}
 
 	define_board("#war_was", 1100, 850)
@@ -850,6 +874,10 @@ function on_init() {
 		define_layout("lout-was-strength-fr", 4, war_layout.war_was_theater_4_strength_fr)
 		define_layout("lout-was-strength-br", 4, war_layout.war_was_theater_4_strength_br)
 		define_layout("lout-was-winner", 4,  war_layout.war_was_theater_4_winner)
+		define_layout("lout-was-alliance", 1, war_layout.war_was_theater_1_alliances)
+		define_layout("lout-was-alliance", 2, war_layout.war_was_theater_2_alliances)
+		define_layout("lout-was-alliance", 3, war_layout.war_was_theater_3_alliances)
+		define_layout("lout-was-alliance", 4, war_layout.war_was_theater_4_alliances)
 	}
 
 	define_board("#war_7yw", 1100, 850)
@@ -879,6 +907,10 @@ function on_init() {
 		define_layout("lout-7yw-strength-fr", 4, war_layout.war_7yw_theater_4_strength_fr)
 		define_layout("lout-7yw-strength-br", 4, war_layout.war_7yw_theater_4_strength_br)
 		define_layout("lout-7yw-winner", 4,  war_layout.war_7yw_theater_4_winner)
+		define_layout("lout-7yw-alliance", 1, war_layout.war_7yw_theater_1_alliances)
+		define_layout("lout-7yw-alliance", 2, war_layout.war_7yw_theater_2_alliances)
+		define_layout("lout-7yw-alliance", 3, war_layout.war_7yw_theater_3_alliances)
+		define_layout("lout-7yw-alliance", 4, war_layout.war_7yw_theater_4_alliances)
 	}
 
 	define_board("#war_awi", 1100, 850)
@@ -905,6 +937,9 @@ function on_init() {
 		define_layout("lout-awi-strength-fr", 3, war_layout.war_awi_theater_3_strength_fr)
 		define_layout("lout-awi-strength-br", 3, war_layout.war_awi_theater_3_strength_br)
 		define_layout("lout-awi-winner", 3,  war_layout.war_awi_theater_3_winner)
+		define_layout("lout-awi-alliance", 1, war_layout.war_awi_theater_1_alliances)
+		define_layout("lout-awi-alliance", 2, war_layout.war_awi_theater_2_alliances)
+		define_layout("lout-awi-alliance", 3, war_layout.war_awi_theater_3_alliances)
 	}
 
 	for (let s = 0; s < NUM_SPACES; s++) {
@@ -1369,6 +1404,125 @@ function update_war_display() {
 				}
 			}
 		}
+	}
+	// Alliance flags for all wars
+	const war_prefixes = ["wss", "was", "7yw", "awi"]
+	const war_number = war + 1
+	const war_prefix = war_prefixes[war]
+	const num_war_theaters = data.wars[war_number].theaters
+
+	// Sort order: political (0) first, then forts (4), then naval (2)
+	const TYPE_SORT_ORDER = { [POLITICAL]: 0, [FORT]: 1, [NAVAL]: 2 }
+
+	function build_flag_row(c, name) {
+		let row = `<div class="alliance-row" title="${name}">`
+		
+		for (let s of c.fr) {
+			let space_name = data.spaces[s].name
+			row += `<span class="alliance-flag fr" title="${space_name}"
+				onmouseenter="_tip_focus_light('space',${s})"
+				onmouseleave="_tip_blur_light('space',${s})"
+				onmousedown="_tip_click_light('space',${s})"></span>`
+		}
+		for (let s of c.br) {
+			let space_name = data.spaces[s].name
+			row += `<span class="alliance-flag br" title="${space_name}"
+				onmouseenter="_tip_focus_light('space',${s})"
+				onmouseleave="_tip_blur_light('space',${s})"
+				onmousedown="_tip_click_light('space',${s})"></span>`
+		}
+		
+		row += `</div>`
+		return row
+	}
+
+	for (let theater = 1; theater <= num_war_theaters; theater++) {
+		let theater_data = data.wars[war_number].theater[theater]
+		let ministry_keyword = theater_data.keyword
+		
+		let minister = { fr: false, br: false }
+		let alliances = {}
+		let conflicts = {}
+		
+		// Ministry keyword
+		if (ministry_keyword > 0) {
+			if (V.active_keywords && V.active_keywords[FRANCE].includes(ministry_keyword)) minister.fr = true
+			if (V.active_keywords && V.active_keywords[BRITAIN].includes(ministry_keyword)) minister.br = true
+		}
+		
+		// Scan all spaces for alliances and conflicts
+		for (let s = 0; s < NUM_SPACES; s++) {
+			let space = data.spaces[s]
+			let flag = V.flags[s]
+			
+			// Alliances
+			if (space.alliance) {
+				for (const a of space.alliance) {
+					if (a[0] !== war_number || a[1] !== theater) continue
+					
+					// Group forts and naval spaces together
+					let name = (space.type === FORT) ? "_Forts" 
+					         : (space.type === NAVAL) ? "_Squadrons" 
+					         : space.name
+					
+					if (!alliances[name]) {
+						alliances[name] = { fr: [], br: [], type: space.type }
+					}
+					
+					// flag no count if conflict or damaged
+					if (flag !== FRANCE && flag !== BRITAIN) continue
+					if (set_has(V.conflicts, s) || is_damaged_fort(s)) continue
+					
+					// Add space to array (avoid duplicates)
+					if (flag === FRANCE && !alliances[name].fr.includes(s)) alliances[name].fr.push(s)
+					if (flag === BRITAIN && !alliances[name].br.includes(s)) alliances[name].br.push(s)
+				}
+			}
+				
+			// Conflict markers
+			if (theater_data.conflicts && space.region === theater_data.region) {
+				if (set_has(V.conflicts, s) && (flag === FRANCE || flag === BRITAIN)) {
+					let opponent = 1 - flag
+					let name = space.name
+					if (!conflicts[name]) {
+						conflicts[name] = { fr: [], br: [], space: s }
+					}
+					if (opponent === FRANCE) conflicts[name].fr.push(s)
+					if (opponent === BRITAIN) conflicts[name].br.push(s)
+				}
+			}
+		}
+		
+		// Build HTML
+		let flag_html = ""
+
+		// 1. Ministry keyword bonus
+		if (ministry_keyword > 0) {
+			let keyword_name = data.keywords[ministry_keyword].name
+			flag_html += `<div class="alliance-row" title="${keyword_name}">`
+			if (minister.fr) flag_html += `<span class="alliance-flag fr"></span>`
+			if (minister.br) flag_html += `<span class="alliance-flag br"></span>`
+			flag_html += `</div>`
+		}
+		
+		// 2. Alliances TODO : CHECK SORTING TYPE, ALPHABET) 
+		let alliance_names = Object.keys(alliances).sort((a, b) => {
+			let orderA = TYPE_SORT_ORDER[alliances[a].type] ?? 3
+			let orderB = TYPE_SORT_ORDER[alliances[b].type] ?? 3
+			return orderA !== orderB ? orderA - orderB : a.localeCompare(b)
+		})
+		
+		for (let name of alliance_names) {
+			flag_html += build_flag_row(alliances[name], name)
+		}
+
+		// 3. Conflicts TODO : LIKELY SMALL BUGS
+		for (let name of Object.keys(conflicts).sort()) {
+			flag_html += build_flag_row(conflicts[name], name + " (conflict)")
+		}
+		// TODO : war 4 with diff conflict markers
+		
+		update_text_html(`lout-${war_prefix}-alliance`, theater, flag_html)
 	}
 }
 

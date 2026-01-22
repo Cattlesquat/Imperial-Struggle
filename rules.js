@@ -912,6 +912,16 @@ function on_view(RR) {
 
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
+	
+	V.active_keywords = [[], []]
+	
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let keyword = 0; keyword < data.keywords.length; keyword++) {
+			if (has_active_keyword(who, keyword)) {
+				V.active_keywords[who].push(keyword)
+			}
+		}
+	}
 
 	if (RR === FRANCE) {
 		V.hand = [

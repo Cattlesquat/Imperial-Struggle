@@ -745,6 +745,46 @@ body[data-noanims="false"] .card.action {
 	background-color: rgba(0, 0, 0, 0.5 );
 }
 
+/* flags in theater */
+
+.layout[class*="-alliance"] {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    align-items: flex-start;
+}
+
+.alliance-row {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    min-height: 14px;
+}
+
+.alliance-row:has(.alliance-flag) {
+    cursor: pointer;
+}
+
+.alliance-row:has(.alliance-flag):hover {
+    background-color: rgba(255, 255, 0, 0.3);
+}
+
+.alliance-flag {
+    width: 15px;
+    height: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.alliance-flag.fr {
+    background-image: url(tiles75/square-sm/flag_fr.png);
+}
+
+.alliance-flag.br {
+    background-image: url(tiles75/square-sm/flag_br.png);
+}
+
 /* BORDERS */
 
 .square.advantage { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
