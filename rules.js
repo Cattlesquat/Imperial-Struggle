@@ -2785,7 +2785,7 @@ P.final_scoring_phase = {
 				if (!any) {
 					any = true
 					log_box_begin (FRANCE, "Final Scoring: TERRITORIES")
-					award_vp(FRANCE, 2, false, "Control of " + data.spaces[s].name)
+					award_vp(FRANCE, 2, false, "Control of " + say_space(s, FRANCE))
 				}
 			}
 		}
@@ -2797,7 +2797,7 @@ P.final_scoring_phase = {
 				if (!any) {
 					any = true
 					log_box_begin (BRITAIN, "Final Scoring: TERRITORIES")
-					award_vp(BRITAIN, 2, false, "Control of " + data.spaces[s].name)
+					award_vp(BRITAIN, 2, false, "Control of " + say_space(s, BRITAIN))
 				}
 			}
 		}
@@ -4964,7 +4964,7 @@ P.event_byngs_trial = {
 	space(s) {
 		push_undo()
 		reflag_space(s, NONE, true)
-		log (bold("British squadron removed from " + data.spaces[s].name + ". It will return to the Navy Box on the next peace turn."))
+		log (bold("British squadron removed from " + say_space(s) + ". It will return to the Navy Box on the next peace turn."))
 		if (G.the_brig === undefined) G.the_brig = 0
 		G.the_brig++
 		end()
@@ -6706,7 +6706,7 @@ P.ministry_jacobite_uprisings = {
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
 		G.action_cost   = action_point_cost(R, s, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
-		G.action_string = "to shift " + data.spaces[s].name + " space"
+		G.action_string = "to shift " + say_space(s) + " space"
 		G.action_header = say_ministry_header()
 		goto ("jacobite_flow")
 	},
@@ -10130,10 +10130,10 @@ P.war_theater_resolve = {
 			L.war_squadrons--
 			reflag_space(s, NONE)
 			if (current_era() === REVOLUTION_ERA) {
-				log (data.flags[G.active].name + " removes a squadron from " + data.spaces[s].name + " to Unbuilt.")
+				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
 			} else {
 				G.unbuilt_squadrons[G.active]++
-				log (data.flags[G.active].name + " removes the squadron at " + data.spaces[s].name + " from the game.")
+				log (data.flags[G.active].name + " removes the squadron at " + say_space(s) + " from the game.")
 			}
 		} else if (L.picking_squadron) {
 			conquer_from_space(s)
@@ -10337,7 +10337,7 @@ P.war_reset_phase = function () {
 		let any = false
 		for (const s of conflicts_removed) {
 			if (any) msg += ", "
-			msg += data.spaces[s].name
+			msg += say_space(s)
 			any = true
 		}
 		msg += "."
