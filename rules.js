@@ -1018,6 +1018,7 @@ function on_view(RR) {
 }
 
 
+// Hooks for optional rules
 function rules_spanish_empire()
 {
 	return false
@@ -1043,19 +1044,11 @@ function available_debt_plus_trps(who)
 	return available_debt(who) + G.treaty_points[who]
 }
 
+// This is for paying debt for action points - debt has already been verified to be within bounds.
+// For increasing debt that accounts for debt overrun penalties, use increase_debt() instead.
 function pay_debt(who, amount) {
 	G.debt[who] += amount
 }
-
-function pay_treaty_points(who, amount) {
-	if (amount > G.treaty_points[who]) {
-		console.error("Paid more treaty points than had available. Who: " + who + "  Avail: " + G.treaty_points[who] + "  Paid " + amount)
-		amount = G.treaty_points[who]
-	}
-	G.treaty_points[who] -= amount
-}
-
-
 function reduce_debt(who, amount)
 {
 	amount = Math.min(amount, G.debt[who])
@@ -1084,6 +1077,15 @@ function increase_debt(who, amount) {
 	}
 }
 
+
+function pay_treaty_points(who, amount) {
+	if (amount > G.treaty_points[who]) {
+		console.error("Paid more treaty points than had available. Who: " + who + "  Avail: " + G.treaty_points[who] + "  Paid " + amount)
+		amount = G.treaty_points[who]
+	}
+	G.treaty_points[who] -= amount
+}
+
 function add_treaty_points(who, amount)
 {
 	G.treaty_points[who] += amount
@@ -1107,6 +1109,11 @@ function award_vp(who, amount, silent = false, reason = null)
 		msg = "VP: " + G.vp
 		log (bold(msg))
 	}
+}
+
+
+function get_advantage_region(a) {
+	return data.spaces[data.advantages[a].req[0]].region
 }
 
 function has_advantage(who, a) {
@@ -1134,7 +1141,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 {
 	G.advantages_exhausted |= (1 << a)
 
-	if (data.spaces[data.advantages[a].req[0]].region === REGION_EUROPE) {
+	if (get_advantage_region(a) === REGION_EUROPE) {
 		if (has_advantage(FRANCE, a) && has_active_ministry(who, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
@@ -1270,15 +1277,15 @@ function has_conflict_marker(s) {
 }
 
 function get_conflict_marker(s) {
-	return map_get(G.conflicts, s, 0)
+	return map_get(G.conflicts, s, CONFLICT_NONE)
 }
 
-function set_conflict_marker(s, n = 1) {
-	if (n === 0) {
+function add_conflict_marker(s, n = CONFLICT_NORMAL) {
+	if (n === CONFLICT_NONE) {
 		remove_conflict_marker(s)
 	} else {
 		map_set(G.conflicts, s, n)
-		log ("Conflict added at " + say_space(s) + ((n > 1) ? " (+1 to remove)" : ""))
+		log ("Conflict added at " + say_space(s) + ((n > CONFLICT_NORMAL) ? " (+1 to remove)" : ""))
 	}
 	update_flag_counts()
 }
@@ -1290,6 +1297,7 @@ function remove_conflict_marker(s, silent = false) {
 }
 
 
+// Only Markets and Political spaces can have Conflict markers
 function can_have_conflict_marker(s) {
 	return (data.spaces[s].type === MARKET) || (data.spaces[s].type === POLITICAL)
 }
@@ -1416,7 +1424,8 @@ P.main = script (`
 `)
 
 
-// Start a beginning-of-turn log-review stack
+// Start a beginning-of-turn log-review stack. Each push point saves a copy of the view & an index into the log, so that players can review changes in game state step-by-step (and in parallel with each other), but without having to stop and wait for each other
+// at every single step along the way.
 function review_begin()
 {
 	review_end()
@@ -1526,7 +1535,7 @@ P.deck_phase = function () {
 			}
 		}
 
-		// Removed this as it technically is done a card at a time while drawing during Deal Cards Phase (4.1.6)
+		//BR// NB - intentionally removed this as it technically is done a card at a time while drawing during Deal Cards Phase (4.1.6)
 		/*
 		log ("Succession Era events REMOVED from Event Deck")
 		for (var index = G.deck.length - 1; index >= 0; index--) {
@@ -1566,7 +1575,7 @@ P.debt_limit_increase_phase = function () {
 P.award_phase = function () {
 	log("=Award Phase")
 
-	// Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS*2
+	// Really it should either be 0 or it should be NUM_REGIONS or NUM_REGIONS * 2
 	if (G.award_chits.length < NUM_REGIONS) {
 		for (var i = 0; i < NUM_AWARD_TILES; i++) {
 			G.award_chits.push(i)
@@ -1622,7 +1631,7 @@ P.reset_phase = function () {
 
 	// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 	// <br><b>
-	// set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
+	// if (set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))) ... do something if ministry is exhausted
 	G.ministry_exhausted   = [ ]
 
 	// move investments to used
@@ -1636,7 +1645,7 @@ P.reset_phase = function () {
 	// British navies return from jail
 	if ((G.the_brig !== undefined) && (G.the_brig > 0)) {
 		G.navy_box[BRITAIN] += G.the_brig
-		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " return to the Navy Box."))
+		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " return" + s(1 - G.the_brig) + " to the Navy Box."))
 		log (say_navy_box())
 	}
 	G.the_brig = 0
@@ -1899,7 +1908,7 @@ P.replace_ministry_cards = {
 		if (L.replacing[R]) {
 			V.prompt = say_action_header("MINISTRY PHASE: ")
 			show_all_ministry_cards()
-s
+
 			let any = false
 			for (let i = 0; i < G.ministry[R].length; i++) {
 				if (G.ministry_revealed[R][i]) continue
@@ -3717,7 +3726,7 @@ P.event_carnatic_war = {
 			G.qualifies_for_bonus && !L.done_bonus && !L.cant_do_bonus && (data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
 			L.deciding = true
 		} else if ((can_have_conflict_marker(s) && !has_conflict_marker(s)) && (L.conflicts_placed < carnatic_conflicts(R))) {
-			set_conflict_marker(s)
+			add_conflict_marker(s)
 			L.conflicts_placed++
 		} else if ((data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
 			reflag_space(s, (G.flags[s] === NONE) ? G.active : NONE)
@@ -3729,7 +3738,7 @@ P.event_carnatic_war = {
 	},
 	place_conflict_marker() {
 		push_undo()
-		set_conflict_marker(L.space)
+		add_conflict_marker(L.space)
 		L.conflicts_placed++
 		L.deciding = false
 	},
@@ -3987,7 +3996,7 @@ P.event_war_of_jenkins_ear = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		L.conflicts_placed++
 	},
 	done() {
@@ -4182,7 +4191,7 @@ P.event_austro_spanish_rivalry = {
 	space(s) {
 		push_undo()
 		if (R === BRITAIN) {
-			set_conflict_marker(s)
+			add_conflict_marker(s)
 			L.conflicts_placed++
 			if (!G.qualifies_for_bonus) end()
 		} else {
@@ -4858,7 +4867,7 @@ P.event_caribbean_slave_unrest = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		L.conflicts_done++
 		if (L.conflicts_done >= L.conflicts_to_do) {
 			end()
@@ -5088,7 +5097,7 @@ P.event_hyder_ali = {
 			reflag_space(s, R)
 			if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
 		} else {
-			set_conflict_marker(s)
+			add_conflict_marker(s)
 			L.conflicts_done++
 			if (L.conflicts_done >= 2) {
 				if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
@@ -5459,7 +5468,7 @@ P.event_bengal_famine = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		L.conflicts_done++
 		if (L.conflicts_done >= 2) end()
 	}
@@ -5505,7 +5514,7 @@ P.event_father_le_loutre = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		if (G.qualifies_for_bonus) {
 			if (R === BRITAIN) {
 				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
@@ -5707,7 +5716,7 @@ P.event_haitian_revolution = {
 	space(s) {
 		push_undo()
 		L.conflicts_done++
-		set_conflict_marker(s, 2)
+		add_conflict_marker(s, CONFLICT_PLUS_ONE)
 	},
 	done() {
 		push_undo()
@@ -5753,8 +5762,7 @@ P.event_loge_des_neuf_soeurs = {
 			let msg = "Activate an advantage you control outside Europe, ignoring exhaustion"
 			let any = false
 			for (let a = 0; a < NUM_ADVANTAGES; a++) {
-				let s = data.advantages[a].req[0]
-				if (data.spaces[s].region === REGION_EUROPE) continue
+				if (get_advantage_region(a) === REGION_EUROPE) continue
 				if (!has_advantage_eligible(R, a, true)) continue
 				action_advantage(a)
 				any = true
@@ -5768,7 +5776,7 @@ P.event_loge_des_neuf_soeurs = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		neuf_soeurs_bonus()
 		end()
 	},
@@ -6009,7 +6017,7 @@ P.event_stamp_act = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		L.conflicts_done++
 		if (L.conflicts_done >= L.conflicts_to_do) end()
 	},
@@ -7087,7 +7095,7 @@ P.advantage_place_conflict = {
 	},
 	space(s) {
 		push_undo()
-		set_conflict_marker(s)
+		add_conflict_marker(s)
 		end()
 	}
 }
@@ -9272,7 +9280,7 @@ P.action_round_core = {
 		for (let s = 0; s < NUM_SPACES; s++) {
 			if (!can_have_conflict_marker(s)) continue
 			if (cheat_conflict_flag) {
-				set_conflict_marker(s)
+				add_conflict_marker(s)
 			} else {
 				remove_conflict_marker(s)
 			}
