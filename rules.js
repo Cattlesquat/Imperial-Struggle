@@ -1496,7 +1496,7 @@ P.peace_turn = script (`
 P.deck_phase = function () {
 
 	if (beginning_of_era() && current_era() === EMPIRE_ERA) {
-		for (var card = SUCCESSION_ERA_CARDS + 1; i <= EMPIRE_ERA_CARDS; i++)
+		for (var i = SUCCESSION_ERA_CARDS + 1; i <= EMPIRE_ERA_CARDS; i++)
 			G.deck.push(i);
 		log("=Deck Phase")
 		log ("Empire Era events added to Event Deck")
