@@ -1411,6 +1411,143 @@ function set_isolated_market(s, isolated = true)
 }
 
 
+
+function say_navy_box() {
+	return italic("Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")")
+}
+
+
+function say_stuff(key, id, who, all_caps)
+{
+	let msg = key
+	if (all_caps) msg += key
+	if (who >= 0) msg += (who === FRANCE) ? "F" : "B"
+	msg += id
+	return msg
+}
+
+function say_advantage(a, who = -1, all_caps = false)
+{
+	return say_stuff("A", a, who, all_caps)
+}
+
+function say_event(e, who = -1, all_caps = false)
+{
+	return say_stuff("E", e, who, all_caps)
+}
+
+function say_ministry(m, who = -1, all_caps = false)
+{
+	return say_stuff("M", m, who, all_caps)
+}
+
+function say_demand(d, who = -1, all_caps = false) {
+	return say_stuff("D", d, who, all_caps)
+}
+
+
+function encode_value(v)
+{
+	let msg = ""
+	if (v < 100) msg += 0        // Because some tile names start with a digit, need to make sure we pad out to the maximum digits that the escape_square_brackets function checks
+	if (v < 10) msg += 0
+	msg += v
+	return msg
+}
+
+function encode_who(who) {
+	return (((who >= 0) && (who !== NONE)) ? ((who === FRANCE) ? "F" : "B") : "X")
+}
+
+
+function say_spending(msg, who = -1) {
+	return "[$" + encode_who(who) + msg + "]"
+}
+
+function say_award_tile(msg, t, who = -1) {
+	return "[W" + encode_who(who) + encode_value(t) + msg + "]"
+}
+
+function say_investment_tile(msg, t, who = -1) {
+	return "[I" + encode_who(who) + encode_value(t) + msg + "]"
+}
+
+function say_space(s, who = -1)
+{
+	return "[S" + encode_who(who) + encode_value(s) + "]"
+}
+
+
+function say_ministry_header()
+{
+	return say_action_header(say_ministry(G.ministry_id, -1, true) + ": ")
+}
+
+
+
+function who_from_basic(t) {
+	if (t < 16) return FRANCE
+	return BRITAIN
+}
+
+function say_basic_war_tile(t, color = true) {
+	let val = data.basic_war_tiles[t].val
+	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + ((val >= 0) ? "+" + val : val)
+	switch (data.basic_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+		case WAR_FLAG:
+			msg += " with Flag"
+			break
+	}
+	msg += "\"" + "]"
+	return msg
+}
+
+
+function who_from_bonus(t) {
+	if ((t/12) & 1) return BRITAIN
+	return FRANCE
+}
+
+function say_bonus_war_tile(t, color = true) {
+	let name = data.bonus_war_tiles[t].name
+	let val = data.bonus_war_tiles[t].val
+	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + name + " (+" + val
+	switch (data.bonus_war_tiles[t].type) {
+		case WAR_DEBT:
+			msg += " with Debt"
+			break
+		case WAR_FORT:
+			msg += " with Fort/Fleet"
+			break
+	}
+	msg += ")\"" + "]"
+	return msg
+}
+
+
+function say_action_header(msg = null)
+{
+	if (msg !== null) return bold(msg)
+	return bold(G.action_header?.toUpperCase() ?? "")
+}
+
+function say_action(msg)
+{
+	return bold (msg)
+}
+
+function say_action_points() {
+	return "[P]" // Action points are parsed on the client side to allow user preferences
+}
+
+
+
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
@@ -2285,11 +2422,6 @@ P.choose_first_player = {
 		V.prompt = say_action_header("INITIATIVE PHASE: ") + say_action("Choose the player to go first in each action round this turn.")
 		button("france")
 		button("britain")
-
-		//BR// An idea... maybe too distracting when thinking about the decision though
-		//for (let s = 0; s < NUM_SPACES; s++) {
-		//	if ((G.flags[s] === FRANCE) || (G.flags[s] === BRITAIN)) action_space(s)
-		//}
 	},
 	france() {
 		push_undo()
@@ -2368,8 +2500,6 @@ P.resolve_remaining_powers = function () {
 			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces " + say_spending("French debt", FRANCE) + " by " + debt_reduction + "."))
 		}
 	}
-
-	// TODO - any other "remaining powers"
 
 	end()
 }
@@ -2712,7 +2842,6 @@ P.scoring_phase = function () {
 		}
 		vp = Math.min(vp, 3)
 		log_box_begin((vp > 0) ? BRITAIN : NONE, bold("Bonus Scoring") + "\n" + say_ministry(EAST_INDIA_COMPANY, BRITAIN))
-		//log ( + " adds +" + vp + " VP for Britain")
 		award_vp(BRITAIN, vp)
 		log_box_end()
 	}
@@ -2912,6 +3041,7 @@ function start_action_round() {
 	G.advantages_used_this_round = 0
 
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
+	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
 
 	G.bonus_war_tiles_bought_this_round = 0
 
@@ -6274,77 +6404,6 @@ function ministry_useful_this_phase(m, subphase)
 }
 
 
-function say_navy_box() {
-	return italic("Navy Box (France: " + G.navy_box[FRANCE] + ", Britain: " + G.navy_box[BRITAIN] + ")")
-}
-
-
-function say_stuff(key, id, who, all_caps)
-{
-	let msg = key
-	if (all_caps) msg += key
-	if (who >= 0) msg += (who === FRANCE) ? "F" : "B"
-	msg += id
-	return msg
-}
-
-function say_advantage(a, who = -1, all_caps = false)
-{
-	return say_stuff("A", a, who, all_caps)
-}
-
-function say_event(e, who = -1, all_caps = false)
-{
-	return say_stuff("E", e, who, all_caps)
-}
-
-function say_ministry(m, who = -1, all_caps = false)
-{
-	return say_stuff("M", m, who, all_caps)
-}
-
-function say_demand(d, who = -1, all_caps = false) {
-	return say_stuff("D", d, who, all_caps)
-}
-
-
-function encode_value(v)
-{
-	let msg = ""
-	if (v < 100) msg += 0        // Because some tile names start with a digit, need to make sure we pad out to the maximum digits that the escape_square_brackets function checks
-	if (v < 10) msg += 0
-	msg += v
-	return msg
-}
-
-function encode_who(who) {
-	return (((who >= 0) && (who !== NONE)) ? ((who === FRANCE) ? "F" : "B") : "X")
-}
-
-
-function say_spending(msg, who = -1) {
-	return "[$" + encode_who(who) + msg + "]"
-}
-
-function say_award_tile(msg, t, who = -1) {
-	return "[W" + encode_who(who) + encode_value(t) + msg + "]"
-}
-
-function say_investment_tile(msg, t, who = -1) {
-	return "[I" + encode_who(who) + encode_value(t) + msg + "]"
-}
-
-function say_space(s, who = -1)
-{
-	return "[S" + encode_who(who) + encode_value(s) + "]"
-}
-
-
-function say_ministry_header()
-{
-	return say_action_header(say_ministry(G.ministry_id, -1, true) + ": ")
-}
-
 function ministry_prompt(who, m, string1, string2 = "") {
 	var header = data.ministries[m].name.toUpperCase() + ": "
 
@@ -7970,52 +8029,6 @@ function update_flag_counts()
 }
 
 
-function who_from_basic(t) {
-	if (t < 16) return FRANCE
-	return BRITAIN
-}
-
-function say_basic_war_tile(t, color = true) {
-	let val = data.basic_war_tiles[t].val
-	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + ((val >= 0) ? "+" + val : val)
-	switch (data.basic_war_tiles[t].type) {
-		case WAR_DEBT:
-			msg += " with Debt"
-			break
-		case WAR_FORT:
-			msg += " with Fort/Fleet"
-			break
-		case WAR_FLAG:
-			msg += " with Flag"
-			break
-	}
-	msg += "\"" + "]"
-	return msg
-}
-
-
-function who_from_bonus(t) {
-	if ((t/12) & 1) return BRITAIN
-	return FRANCE
-}
-
-function say_bonus_war_tile(t, color = true) {
-	let name = data.bonus_war_tiles[t].name
-	let val = data.bonus_war_tiles[t].val
-	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + name + " (+" + val
-	switch (data.bonus_war_tiles[t].type) {
-		case WAR_DEBT:
-			msg += " with Debt"
-			break
-		case WAR_FORT:
-			msg += " with Fort/Fleet"
-			break
-	}
-	msg += ")\"" + "]"
-	return msg
-}
-
-
 function handle_military_upgrade(t)
 {
 	G.upgrading_basic_tile = t
@@ -9057,22 +9070,6 @@ P.confirm_spend_debt_or_trps = {
 		end()
 	}
 }
-
-function say_action_header(msg = null)
-{
-	if (msg !== null) return bold(msg)
-	return bold(G.action_header?.toUpperCase() ?? "")
-}
-
-function say_action(msg)
-{
-	return bold (msg)
-}
-
-function say_action_points() {
-	return "[P]"
-}
-
 
 
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
