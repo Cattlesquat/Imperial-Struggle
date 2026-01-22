@@ -6917,6 +6917,21 @@ P.ministry_townshend_acts = {
 }
 
 
+function apply_townshend_acts(d)
+{
+	log_box_begin(BRITAIN, say_ministry(TOWNSHEND_ACTS, BRITAIN), LOG_BOX_MINISTRY)
+	exhaust_ministry(BRITAIN, TOWNSHEND_ACTS)
+	G.townshend_acts = d
+	log ("Britain applies " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
+	log_box_end(LOG_BOX_MINISTRY)
+}
+
+
+function handle_townshend_acts_click(d)
+{
+	apply_townshend_acts(d)
+}
+
 
 
 function advantage_prompt(who, a, string1 = "") {
@@ -6933,23 +6948,6 @@ function advantage_prompt(who, a, string1 = "") {
 		prompt += string1
 	}
 	return say_action_header(header) + say_action(prompt)
-}
-
-
-
-function apply_townshend_acts(d)
-{
-	log_box_begin(BRITAIN, say_ministry(TOWNSHEND_ACTS, BRITAIN), LOG_BOX_MINISTRY)
-	exhaust_ministry(BRITAIN, TOWNSHEND_ACTS)
-	G.townshend_acts = d
-	log ("Britain applies " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
-	log_box_end(LOG_BOX_MINISTRY)
-}
-
-
-function handle_townshend_acts_click(d)
-{
-	apply_townshend_acts(d)
 }
 
 
@@ -7276,7 +7274,7 @@ function allowed_to_shift_market(s, who)
 		if (data.spaces[link].type === MARKET) {
 			if (has_conflict_marker(link)) continue						// Not if conflict
 			if (is_isolated_market(link)) continue						// Not if isolated
-			if (!set_has(G.controlled_start_of_round, link)) continue       // Can't "daisy chain" from market we shifted THIS round
+			if (!set_has(G.controlled_start_of_round, link)) continue   // Can't "daisy chain" from market we shifted THIS round
 			return true
 		}
 	}
@@ -7348,10 +7346,7 @@ function is_shift_allowed(s, who, allow_debt_and_trps, rules = [])
 
 	if (!action_points_eligible(type, rules)) return false
 
-	var eligible_minor = eligible_for_minor_action(s, who)
-	if (!action_points_eligible_major(type, rules) && !eligible_minor) return false
-
-	return true
+	return action_points_eligible_major(type, rules) || eligible_for_minor_action(s, who)
 }
 
 
@@ -7477,13 +7472,10 @@ function action_all_eligible_spaces() {
 
 function action_eligible_ministries() {
 	for (var index = 0; index < G.ministry[R].length; index++) {
-
 		if (G.ministry_revealed[R][index]) {
 			if (is_ministry_fully_exhausted(R, index)) continue
-
-			//BR// Removing this for now - for flexibility, allow players to flip ministries at any notionally legal time, even if ministry isn't technically "useful" right at that second.
-			//if (!ministry_useful_this_phase(G.ministry[R][index], G.action_round_subphase)) continue
 		}
+
 		action_ministry_card(G.ministry[R][index])
 	}
 }
@@ -7537,12 +7529,10 @@ function squadrons_in_region(who, region) {
 
 
 function has_transient(who, t) {
-	//return G.transient_bitflags[who][t]
 	return !!bit_get(G.transient_bitflags[who], t)
 }
 
 function set_transient(who, t, on = true) {
-	//G.transient_bitflags[who][t] = on
 	bit_set(G.transient_bitflags[who], t, on)
 }
 
@@ -8010,6 +8000,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	return cost
 }
 
+// When flags/navies have changed, re-compute all the flag counts. Spaces with conflict markers don't count toward flags counts (3.8)
 function update_flag_counts()
 {
 	G.prestige_flags    = [ 0, 0 ]                                       // G.flag_count[who]
@@ -8486,7 +8477,6 @@ function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
-		//if (!silent) log(data.spaces[s].name + ": " + data.flags[former].name + " -> " + data.flags[G.flags[s]].name)
 		if (!silent) {
 			let msg = say_space(s) + " "
 			if (who === NONE) {
@@ -9074,9 +9064,6 @@ P.confirm_spend_debt_or_trps = {
 
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
-	//_begin() {
-	//	push_undo() // Possibly keep it from backing straight out of e.g. "Confirm reveal ministry?" all the way back to the select-investment-tile step? If I undo from "confirm reveal ministry" I want to be back where I was when I clicked the ministry
-	//},
 	_begin() {
 		G.buying_war_tile = false
 	},
