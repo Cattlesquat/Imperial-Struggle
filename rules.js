@@ -1124,7 +1124,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 {
 	G.advantages_exhausted |= (1 << a)
 
-	if (data.spaces[data.advantages[a].req[0]].region === EUROPE) {
+	if (data.spaces[data.advantages[a].req[0]].region === REGION_EUROPE) {
 		if (has_advantage(FRANCE, a) && has_active_ministry(who, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
