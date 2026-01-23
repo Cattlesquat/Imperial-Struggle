@@ -1639,6 +1639,10 @@ menu li.separator {
     left: 20px;
     z-index: 1000;
     background-color: oldlace;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     width: max-content;
     opacity: 0; /* Should I just be using display:none ? */
     -webkit-transition: opacity 0.05s ease-in-out;
