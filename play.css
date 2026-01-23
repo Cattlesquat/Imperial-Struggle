@@ -729,7 +729,7 @@ body[data-noanims="false"] .card.action {
 }
 
 .bonus_war.hidden, .basic_war.hidden {
-	filter: brightness(0.9) saturate(0.8);
+	filter: brightness(0.95) saturate(0.8);
 }
 
 .bonus_war.hidden::after, .basic_war.hidden::after {

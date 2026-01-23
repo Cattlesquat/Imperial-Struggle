@@ -1864,7 +1864,8 @@ P.deal_cards_discard = {
 	},
 	prompt() {
 		if (G.review_step[R] < G.review_index.length) {
-			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": Done.")
+			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": ")
+			V.prompt += "Click \"Done\" to proceed to next phase."
 			button ("done")
 		} else if (G.hand[R].length > 3) {
 			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
