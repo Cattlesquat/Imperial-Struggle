@@ -956,7 +956,7 @@ function on_view(RR) {
 
 	V.ministry_exhausted = G.ministry_exhausted
 
-	if (!Array.isArray(G.ministry_exhausted[0])) {  //TODO - eventually remove (this just upgraded ancient saves)
+	if ((G.ministry_exhausted === undefined) || !Array.isArray(G.ministry_exhausted[0])) {  //TODO - eventually remove (this just upgraded ancient saves)
 		V.ministry_exhausted = [ [], [] ]
 	}
 
