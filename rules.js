@@ -909,6 +909,7 @@ function on_view(RR) {
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
 	V.the_brig = G.the_brig
+	
 
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
