@@ -967,7 +967,7 @@ function on_init() {
 function is_ministry_exhausted(who, m, ability = 0) {
 	if (!V.ministry[who].includes(m)) return false
 	var idx = V.ministry[who].indexOf(m)
-	return set_has(V.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
+	return set_has(V.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
 }
 
 function is_advantage_exhausted(a) {
@@ -1128,6 +1128,7 @@ function on_update() {
 				update_keyword("ministry_card", m, "hidden", !V.ministry_revealed[who][i])
 
 				for (let ability = 0; ability < 2; ability++) {
+					console.log ("Updating keyword - " + data.ministries[m].name + " Who:" + who + "  exhausted-"+ (ability + 1) + "  is_exhausted? " + is_ministry_exhausted(who, m, ability))
 					update_keyword("ministry_card", m, "exhausted-" + (ability + 1), is_ministry_exhausted(who, m, ability))
 				}
 				//for (let ability = 0; ability < data.ministries[m].abilities; ability++) {

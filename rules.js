@@ -955,6 +955,11 @@ function on_view(RR) {
 	}
 
 	V.ministry_exhausted = G.ministry_exhausted
+
+	if (!Array.isArray(G.ministry_exhausted[0])) {  //TODO - eventually remove (this just upgraded ancient saves)
+		V.ministry_exhausted = [ [], [] ]
+	}
+
 	V.ministry_revealed = G.ministry_revealed
 
 	V.next_war = G.next_war
@@ -1947,8 +1952,8 @@ P.ministry_phase = function () {
 
 		// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 		// <br><b>
-		// set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
-		G.ministry_exhausted = [ ]
+		// set_has(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+		G.ministry_exhausted = [ [], [] ]
 
 		G.active = [ FRANCE, BRITAIN ]
 		goto("choose_ministry_cards")
@@ -2322,7 +2327,11 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	return set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
+	if (Array.isArray(G.ministry_exhausted[0])) {
+		return set_has(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+	} else {
+		G.ministry_exhausted = [ [], [] ] // TODO: this whole if statement can eventually just be replaced by the return set_has...
+	}
 }
 
 function is_ministry_fully_exhausted(who, m)
@@ -2348,7 +2357,12 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	if (!G.ministry[who].includes(m)) return
 	if (is_ministry_exhausted(who, m, ability)) return
 	var idx = G.ministry[who].indexOf(m)
-    set_add(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
+	if (!Array.isArray(G.ministry_exhausted[0])) {
+		debug_log ("WIPE IT!")
+		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed (just upgrades ancient pre-launch saves)
+	}
+
+	set_add(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
 
 	if (!silent) {
 		log_br()
@@ -2367,7 +2381,12 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-	set_delete(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))
+
+	if (!Array.isArray(G.ministry_exhausted[0])) {
+		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed
+	}
+
+	set_delete(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
 }
 
 

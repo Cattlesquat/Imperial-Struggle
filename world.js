@@ -620,8 +620,13 @@ function update_rotation(action, id, angle) {
 function update_keyword(action, id, keyword, on = true) {
 	var thing = lookup_thing(action, id)
 	thing.ensure_keyword()
-	if (on)
-		thing.my_dynamic_keywords.push(keyword)
+	if (on) {
+		if (thing.my_dynamic_keywords.indexOf(keyword) < 0) {
+			thing.my_dynamic_keywords.push(keyword)
+		}
+	} else {
+		array_delete_item(thing.my_dynamic_keywords, keyword)
+	}
 }
 
 function update_text(action, id, text) {
@@ -1293,4 +1298,12 @@ function map_get(map, key, missing) {
 function map_for_each(map, f) {
 	for (var i = 0; i < map.length; i += 2)
 		f(map[i], map[i+1])
+}
+
+
+function array_delete_item(array, item) {
+	var i, n = array.length
+	for (i = 0; i < n; ++i)
+		if (array[i] === item)
+			return array_delete(array, i)
 }
