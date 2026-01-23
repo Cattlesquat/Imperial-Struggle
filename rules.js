@@ -2358,7 +2358,6 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	if (is_ministry_exhausted(who, m, ability)) return
 	var idx = G.ministry[who].indexOf(m)
 	if (!Array.isArray(G.ministry_exhausted[0])) {
-		debug_log ("WIPE IT!")
 		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed (just upgrades ancient pre-launch saves)
 	}
 
