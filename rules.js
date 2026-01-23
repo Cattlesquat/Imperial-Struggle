@@ -3684,7 +3684,7 @@ function check_event_bonus_requirements(who) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
 
-	G.qualifies_for_bonus = true // Uncomment for testing //TODO comment back out!!!
+	//G.qualifies_for_bonus = true //Uncomment for testing //TODO comment back out!!!
 }
 
 
