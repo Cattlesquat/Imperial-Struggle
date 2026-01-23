@@ -540,6 +540,26 @@ function strike(s, condition = true) {
 }
 
 
+// Returns an "s" if the amount is anything but 1; returns "" if amount is one
+function s(amount) {
+	if (amount !== 1) return "s"
+	return ""
+}
+
+// Returns "a " if the amount is exactly 1; returns "" if amount is any other value
+function a(amount) {
+	if (amount === 1) return "a "
+	return ""
+}
+
+// Returns "an " if the amount is exactly 1; returns "" if amount is any other value
+function an(amount) {
+	if (amount === 1) return "an "
+	return ""
+}
+
+
+
 function set_available_debt_tooltips() {
 	var id = roles[FRANCE].stat.my_id
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
@@ -1000,8 +1020,9 @@ function available_debt_plus_trps(who) {
 
 function update_debt_display() {
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		let avail = available_debt_plus_trps(who)
-		roles[who].stat.innerHTML = avail + " Debt + TRPs"
+		//let avail = available_debt_plus_trps(who)
+		let avail = available_debt(who)
+		roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 	}
 }
 
