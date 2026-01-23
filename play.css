@@ -808,7 +808,7 @@ body[data-noanims="false"] .card.action {
 .marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
 
-/* BR-- this could probably be less brutal with a different piece of art */
+/* BR-- this could probably be less brutally scaled with a different piece of art, but it looks pretty good */
 body[data-noanims="false"] .marker.conflict.action:before,
 body[data-noanims="false"] .marker.conflict.plus-one.action:before,
 body[data-noanims="false"] .marker.damaged.action:before {

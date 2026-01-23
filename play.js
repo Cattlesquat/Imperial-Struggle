@@ -1405,6 +1405,7 @@ function update_war_display() {
 			}
 		}
 	}
+
 	// Alliance flags for all wars
 	const war_prefixes = ["wss", "was", "7yw", "awi"]
 	const war_number = war + 1
