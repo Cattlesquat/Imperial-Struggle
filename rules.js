@@ -7,6 +7,8 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
+const GAME_STATE_VERSION   = 1
+
 // TURNS
 const PEACE_TURN_1 = 0
 const WAR_TURN_WSS = 1
@@ -842,8 +844,24 @@ function on_setup(scenario, options) {
 	call("main")
 }
 
-/* VIEW & ACTIONS */
 
+function on_load()
+{
+	if (G.game_state_version === undefined) G.game_state_version = 0
+
+	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
+
+	G.game_state_version = GAME_STATE_VERSION
+}
+
+
+function on_save()
+{
+	G.game_state_version = GAME_STATE_VERSION
+}
+
+
+/* VIEW & ACTIONS */
 
 // Items that we keep current even when we're in "review mode" looking at an old view
 function absolute_view() {
@@ -1619,6 +1637,10 @@ function review_end() {
 
 function start_of_peace_turn() {
 	log ("#TURN " + data.turns[G.turn].id + "\n" + data.turns[G.turn].dates)
+
+	G.awards = []        // Clear any award markers left over from last turn
+	G.global_demand = [] // Clear any demand markers left over from last turn
+
 	review_begin()
 	review_push("START OF TURN " + data.turns[G.turn].id)
 	clear_dirty()
@@ -10766,6 +10788,8 @@ function _load() {
 		G.active = G.active.map(r => ROLES.indexOf(r))
 	else
 		G.active = ROLES.indexOf(G.active)
+
+	on_load()
 }
 
 function _save() {
@@ -10773,6 +10797,8 @@ function _save() {
 		G.active = G.active.map(r => ROLES[r])
 	else
 		G.active = ROLES[G.active] ?? "None"
+
+	on_save()
 }
 
 function _run() {
