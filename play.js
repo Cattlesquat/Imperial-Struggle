@@ -1439,18 +1439,18 @@ function update_war_display() {
 	const TYPE_SORT_ORDER = { [POLITICAL]: 0, [FORT]: 1, [NAVAL]: 2 }
 
 	function build_flag_row(c, name) {
-		let row = `<div class="alliance-row" title="${name}">`
+		let row = `<div class="alliance-row">`
 		
 		for (let s of c.fr) {
 			let space_name = data.spaces[s].name
-			row += `<span class="alliance-flag fr" title="${space_name}"
+			row += `<span class="alliance-flag fr" data-tooltip="${space_name}"
 				onmouseenter="_tip_focus_light('space',${s})"
 				onmouseleave="_tip_blur_light('space',${s})"
 				onmousedown="_tip_click_light('space',${s})"></span>`
 		}
 		for (let s of c.br) {
 			let space_name = data.spaces[s].name
-			row += `<span class="alliance-flag br" title="${space_name}"
+			row += `<span class="alliance-flag br" data-tooltip="${space_name}"
 				onmouseenter="_tip_focus_light('space',${s})"
 				onmouseleave="_tip_blur_light('space',${s})"
 				onmousedown="_tip_click_light('space',${s})"></span>`
@@ -1523,9 +1523,9 @@ function update_war_display() {
 		// 1. Ministry keyword bonus
 		if (ministry_keyword > 0) {
 			let keyword_name = data.keywords[ministry_keyword].name
-			flag_html += `<div class="alliance-row" title="${keyword_name}">`
-			if (minister.fr) flag_html += `<span class="alliance-flag fr"></span>`
-			if (minister.br) flag_html += `<span class="alliance-flag br"></span>`
+			flag_html += `<div class="alliance-row">`
+			if (minister.fr) flag_html += `<span class="alliance-flag fr" data-tooltip="${keyword_name}"></span>`
+			if (minister.br) flag_html += `<span class="alliance-flag br" data-tooltip="${keyword_name}"></span>`
 			flag_html += `</div>`
 		}
 		
