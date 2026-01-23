@@ -2292,7 +2292,7 @@ function require_ministry(who, m, why, optional = false, prompt_to_exhaust = fal
 	G.ministry_optional = optional
 
 	// True if, finding the ministry already revealed, we should prompt the player whether he wants to exhaust the ministry now
-	G.prompt_to_exhaust = prompt_to_exhaust
+	G.ministry_prompt_to_exhaust = prompt_to_exhaust
 
 	call ("ministry_is_required")
 }
@@ -2312,7 +2312,7 @@ function require_ministry_unexhausted(who, m, why, ability = 0, optional = false
 P.ministry_is_required = script (`
     call confirm_reveal_ministry
     eval {
-    	if (G.prompt_to_exhaust && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
+    	if (G.ministry_prompt_to_exhaust && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
     		G.has_required_ministry = false
     	} else {    
     		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
@@ -2516,7 +2516,9 @@ P.resolve_remaining_powers = function () {
 				announced = true
 				log("=Resolve Remaining Powers Phase")
 			}
-			log (bold(say_ministry(JOHN_LAW, FRANCE) + " ministry reduces " + say_spending("French debt", FRANCE) + " by " + debt_reduction + "."))
+			log_box_begin(FRANCE, say_ministry(JOHN_LAW, FRANCE), LOG_BOX_MINISTRY)
+			log(bold(say_spending("French debt", FRANCE) + " reduced by " + debt_reduction + "."))
+			log_box_end(LOG_BOX_MINISTRY)
 		}
 	}
 
@@ -2706,6 +2708,7 @@ P.scoring_review = {
 /* 4.1.12 - SCORING PHASE */
 
 P.scoring_phase = function () {
+	log_box_end()
 	log("=Scoring Phase")
 
 	G.won_all_scorings = -1
@@ -2897,6 +2900,7 @@ P.victory_check_phase = function () {
 
 P.final_scoring_phase = {
 	_begin() {
+		log_box_end()
 		log("=Final Scoring Phase")
 
 		clear_dirty()
@@ -6483,7 +6487,7 @@ function reveal_ministry(who, index) {
 P.confirm_reveal_ministry = {
 	_begin() {
 		if (G.has_required_ministry === false) end()
-		if (G.ministry_revealed[R][G.ministry_index] && !G.prompt_to_exhaust) end()
+		if (G.ministry_revealed[R][G.ministry_index] && !G.ministry_prompt_to_exhaust) end()
 	},
 	prompt() {
 		if (!G.ministry_revealed[R][G.ministry_index]) {
@@ -6509,7 +6513,7 @@ P.confirm_reveal_ministry = {
 			log_box_begin(R, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
 		}
 		reveal_ministry(R, G.ministry_index)
-		if (G.prompt_to_exhaust) exhaust_ministry(R, G.ministry_id, G.ministry_ability)
+		if (G.ministry_prompt_to_exhaust) exhaust_ministry(R, G.ministry_id, G.ministry_ability)
 		end()
 	},
 	dont_reveal_ministry() {
@@ -6530,7 +6534,7 @@ P.confirm_reveal_ministry = {
 
 P.ministry_not_activatable = {
 	prompt() {
-		let msg = "This ministry does not require manual activation. It takes effect automatically at the appropriate time."
+		let msg = "This ministry does not require manual activation. It takes effect automatically at the appropriate time"
 		V.prompt = ministry_prompt(R, G.ministry_id, msg)
 		button ("pass")
 	},
@@ -6542,7 +6546,7 @@ P.ministry_not_activatable = {
 
 P.ministry_not_implemented = {
 	prompt() {
-		let msg = "Ministry not yet implemented."
+		let msg = "Ministry not yet implemented"
 		V.prompt = ministry_prompt(R, G.ministry_id, msg)
 		button ("pass")
 	},
