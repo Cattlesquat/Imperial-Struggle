@@ -1148,6 +1148,8 @@ function on_update() {
 				update_keyword("ministry_card", m, "revealed", V.ministry_revealed[who][i] && !is_ministry_partially_exhausted(who, m))
 				update_keyword("ministry_card", m, "hidden", !V.ministry_revealed[who][i])
 
+				//console.log ("Ministry: " + data.ministries[m].name + "  Ability 1 exhausted: " + is_ministry_exhausted(who, m, 0) + "  Ability 2 exhausted: " + is_ministry_exhausted(who, m, 1))
+
 				for (let ability = 0; ability < 2; ability++) {
 					update_keyword("ministry_card", m, "exhausted-" + (ability + 1), is_ministry_exhausted(who, m, ability))
 				}

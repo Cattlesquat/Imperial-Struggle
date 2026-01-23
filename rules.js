@@ -7518,7 +7518,8 @@ function action_all_eligible_spaces() {
 function action_eligible_ministries() {
 	for (var index = 0; index < G.ministry[R].length; index++) {
 		if (G.ministry_revealed[R][index]) {
-			if (is_ministry_fully_exhausted(R, index)) continue
+			let m = G.ministry[R][index]
+			if (is_ministry_fully_exhausted(R, m)) continue
 		}
 
 		action_ministry_card(G.ministry[R][index])
