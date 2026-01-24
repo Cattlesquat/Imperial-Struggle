@@ -3576,6 +3576,7 @@ P.select_investment_tile = {
 		L.moved_any_tiles = true
 		G.theater_bonus_war_tiles[R][theater].push(L.tile_to_move)
 		array_delete_item(G.theater_bonus_war_tiles[R][0], L.tile_to_move)
+		L.tile_to_move = -1
 		log ("Austrian Succession: " + data.flags[R].name + " places a free bonus war tile in theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + ".")
 	},
 	bonus_war(tile) {
