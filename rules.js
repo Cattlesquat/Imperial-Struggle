@@ -5312,7 +5312,7 @@ P.event_co_hong_system = {
 				action_demand(d)
 			}
 		}
-		V.prompt = event_prompt(R, G.played_event)
+		V.prompt = event_prompt(R, G.played_event, msg)
 	},
 	confirm() {
 		clear_undo()
