@@ -52,6 +52,11 @@ body.Britain header.your_turn { background-color: salmon }
 	max-width: 2550px;
 }
 
+#all_ministries .panel-body {
+    display: flex;
+    justify-content: center;
+}
+
 #advantage_fr .panel-body, #advantage_br .panel-body { width: 252px }
 #ministry_fr .panel-body, #ministry_br .panel-body { width: 516px }
 #events_fr .panel-body, #events_br .panel-body { width: 780px }
