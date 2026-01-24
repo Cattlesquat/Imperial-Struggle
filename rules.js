@@ -5307,7 +5307,7 @@ P.event_co_hong_system = {
 			button("confirm")
 		} else {
 			msg += "Select a Global Demand tile to replace with " + data.demands[L.drawn_demand].name + "."
-			for (const d in G.global_demand) {
+			for (const d of G.global_demand) {
 				if (d === L.drawn_demand) continue
 				action_demand(d)
 			}
