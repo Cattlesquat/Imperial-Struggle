@@ -1168,14 +1168,18 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 		if (has_advantage(FRANCE, a) && has_active_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
-			log ("France gains one treaty point from " + say_ministry(POMPADOUR_AND_DU_BARRY, FRANCE))
+			log_box_begin(FRANCE, say_ministry(POMPADOUR_AND_DU_BARRY, FRANCE), LOG_BOX_MINISTRY)
+			log ("France gains " + say_spending("one treaty point", FRANCE) + ".")
+			log_box_end(LOG_BOX_MINISTRY)
 		}
 	}
 
 	if (has_advantage(FRANCE, a) && has_active_ministry(BRITAIN, JAMES_WATT) && !is_ministry_exhausted(BRITAIN, JAMES_WATT)) {
 		exhaust_ministry(BRITAIN, JAMES_WATT, 0, true)
 		G.treaty_points[BRITAIN]++
-		log ("Britain gaines one treaty point from " + say_ministry(JAMES_WATT))
+		log_box_begin(BRITAIN, say_ministry(JAMES_WATT, BRITAIN), LOG_BOX_MINISTRY)
+		log ("Britain gaines " + say_spending("one treaty point", BRITAIN) + ".")
+		log_box_end(LOG_BOX_MINISTRY)
 	}
 
 	if (!silent) {
@@ -9028,7 +9032,7 @@ function add_action_point()
 
 function can_merchant_bank()
 {
-	return (G.action_type === ECON) && has_active_ministry(R, MERCHANT_BANKS) && (!is_ministry_exhausted(who, MERCHANT_BANKS, 0) || !is_ministry_exhausted(who, MERCHANT_BANKS, 1))
+	return (G.action_type === ECON) && has_active_ministry(R, MERCHANT_BANKS) && (!is_ministry_exhausted(who, MERCHANT_BANKS, 0) || !is_ministry_exhausted(R, MERCHANT_BANKS, 1))
 }
 
 // Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
