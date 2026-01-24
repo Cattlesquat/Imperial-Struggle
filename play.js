@@ -2227,7 +2227,7 @@ function say_action_points(space = true, brackets = true) {
 						}
 						tell += G.action_points_committed_bonus[i] + " Bonus"
 						need_comma = true;
-					}
+		s			}
 
 					for (let rule of active_rules_list()) {
 						let amount = get_contingent(i, rule.rule)

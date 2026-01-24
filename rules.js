@@ -8929,6 +8929,7 @@ function pay_action_cost() {
 	log(italic(msg))
 
 	G.action_cost -= G.action_points_committed_bonus[G.action_type] // Spend any committed bonus points first
+	G.action_points_committed_bonus[G.action_type] = 0
 
 	if (G.action_minor) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
