@@ -1515,7 +1515,7 @@ function who_from_basic(t) {
 
 function say_basic_war_tile(t, color = true) {
 	let val = data.basic_war_tiles[t].val
-	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + ((val >= 0) ? "+" + val : val)
+	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + ((val >= 0) ? "+" + val : val)
 	switch (data.basic_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -1527,7 +1527,7 @@ function say_basic_war_tile(t, color = true) {
 			msg += " with Flag"
 			break
 	}
-	msg += "\"" + "]"
+	msg += "]"
 	return msg
 }
 
@@ -1540,7 +1540,7 @@ function who_from_bonus(t) {
 function say_bonus_war_tile(t, color = true) {
 	let name = data.bonus_war_tiles[t].name
 	let val = data.bonus_war_tiles[t].val
-	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + "\"" + name + " (+" + val
+	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + name + " (+" + val
 	switch (data.bonus_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
@@ -1549,7 +1549,7 @@ function say_bonus_war_tile(t, color = true) {
 			msg += " with Fort/Fleet"
 			break
 	}
-	msg += ")\"" + "]"
+	msg += "]"
 	return msg
 }
 
