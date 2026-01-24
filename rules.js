@@ -5593,7 +5593,7 @@ P.event_war_of_the_quadruple_alliance = {
 
 // BR: Increase FR Debt by 1. Bonus: Increase FR Debt by another 2.
 // FR: 2 Diplo in Europe. Bonus: 2 additional Diplo in Europe.
-P.salon_d_hercule = {
+P.event_salon_d_hercule = {
 	prompt() {
 		if (R === BRITAIN) {
 			V.prompt = event_prompt(R, G.played_event, "Increase French Debt by 1", "increase French Debt by another 2")
