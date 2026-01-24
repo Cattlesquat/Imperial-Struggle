@@ -9076,8 +9076,8 @@ P.confirm_spend_debt_or_trps = {
 	paydebt() {
 		push_undo()
 		if (can_merchant_bank()) {
-			log(say_ministry(MERCHANT_BANKS, who) + " allows Britain to ignore a point of debt.")
-			if (!is_ministry_exhausted(who, MERCHANT_BANKS, 0)) {
+			log(say_ministry(MERCHANT_BANKS, R) + " allows Britain to ignore a point of debt.")
+			if (!is_ministry_exhausted(R, MERCHANT_BANKS, 0)) {
 				exhaust_ministry(R, MERCHANT_BANKS, 0, true)
 			} else {
 				exhaust_ministry(R, MERCHANT_BANKS, 1, true)
