@@ -3545,6 +3545,7 @@ P.select_investment_tile = {
 		//	push_undo() // It was backing out from later points all the way to back to initiative?!
 		L.tile_to_move = -1
 		L.moved_any_tiles = false
+		L.theaters = []
 	},
 	_resume() {
 		log_box_end()
@@ -3574,10 +3575,20 @@ P.select_investment_tile = {
 	theater(theater) {
 		push_undo()
 		L.moved_any_tiles = true
+		L.theaters.push(theater)
 		G.theater_bonus_war_tiles[R][theater].push(L.tile_to_move)
 		array_delete_item(G.theater_bonus_war_tiles[R][0], L.tile_to_move)
 		L.tile_to_move = -1
-		log ("Austrian Succession: " + data.flags[R].name + " places a free bonus war tile in theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + ".")
+		if (!G.theater_bonus_war_tiles[R][0].length) {
+			let msg = "Austrian Succession: " + data.flags[R].name + " places free bonus war tiles in theaters: "
+			let any = false
+			for (const th of L.theaters) {
+				if (any) msg += ", "
+				msg += th
+				any = true
+			}
+			log(msg)
+		}
 	},
 	bonus_war(tile) {
 		push_undo()
@@ -5188,14 +5199,14 @@ P.event_le_beau_monde = {
 	fur() {
 		push_undo()
 		G.global_demand.push(FUR)
-		log(bold("Britain places Fur into Global Demand."))
+		log(bold("Britain places " + say_demand(FURS) + " into Global Demand."))
 		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
 		end()
 	},
 	cotton() {
 		push_undo()
 		G.global_demand.push(COTTON)
-		log(bold("Britain places Cotton into Global Demand."))
+		log(bold("Britain places " + say_demand(COTTON) + " into Global Demand."))
 		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
 		end()
 	},
@@ -5324,12 +5335,12 @@ P.event_co_hong_system = {
 		shuffle(global_demand_chits)
 		L.drawn_demand = global_demand_chits.pop()
 		G.global_demand.push(L.drawn_demand)
-		log (bold(data.flags[R].name + " places " + data.demands[L.drawn_demand].name + " into Global Demand."))
+		log (bold(data.flags[R].name + " places " + say_demand(L.drawn_demand) + " into Global Demand."))
 	},
 	demand(d) {
 		push_undo()
 		array_delete_item(G.global_demand, d)
-		log (bold(data.flags[R].name + " removes " + data.demands[d].name + " from Global Demand."))
+		log (bold(data.flags[R].name + " removes " + say_demand(d) + " from Global Demand."))
 
 		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
 		end()
