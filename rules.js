@@ -7802,8 +7802,11 @@ P.construct_squadron_flow = script(`
         if (G.has_required_ministry) {
         	eval { 
         		G.action_cost = (L.info.ability !== undefined) ? 0 : 2
-        		L.flipped_something  = true        		
+        		L.flipped_something  = true
+        		log_box_begin(R, say_ministry(L.info.ministry, R), LOG_BOX_MINISTRY)        		
         		exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
+       			log(say_ministry(L.info.ministry, R) + " reduces squadron construction cost by 2.")
+       			log_box_end(LOG_BOX_MINISTRY)
         	} 	
 		} 
 		if (!G.has_required_ministry && (G.action_points_available_debt < L.min_cost)) {
@@ -7879,7 +7882,7 @@ function action_point_cost_modify(amount, type)
 {
 	G.action_cost_modifiers.push(amount)
 	G.action_cost_modifier_types.push(type)
-	G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
+	G.action_cost = action_point_cost(G.active, G.active_space, G.action_type)
 }
 
 
@@ -7958,8 +7961,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 
 		// First any modifiers that set it to 1
 		for (let i = 0; i < G.action_cost_modifiers.length; i++) {
-			let modifier = action_cost_modifiers[i]
-			let reason   = action_cost_modifier_types[i]
+			let modifier = G.action_cost_modifiers[i]
+			let reason   = G.action_cost_modifier_types[i]
 
 			if (modifier === MODIFY_SET_TO_1) {
 				cost = 1
@@ -7971,8 +7974,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 
 		// And then any modifiers which reduce it (these could negate a potential +1 from another modifier)
 		for (let i = 0; i < G.action_cost_modifiers.length; i++) {
-			let modifier = action_cost_modifiers[i]
-			let reason   = action_cost_modifier_types[i]
+			let modifier = G.action_cost_modifiers[i]
+			let reason   = G.action_cost_modifier_types[i]
 
 			if (modifier !== MODIFY_SET_TO_1) {
 				cost += modifier
@@ -8211,7 +8214,9 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 function use_choiseul()
 {
 	G.action_points_committed_bonus[MIL]++
-	log ("Choiseul provides 1 extra military action point")
+	log_box_begin(FRANCE, say_ministry(CHOISEUL, FRANCE), LOG_BOX_MINISTRY)
+	log ("France receives 1 extra Military action point (usable for deploying squadrons or buying bonus war tiles.")
+	log_box_end(LOG_BOX_MINISTRY)
 }
 
 
@@ -9076,7 +9081,9 @@ P.confirm_spend_debt_or_trps = {
 	paydebt() {
 		push_undo()
 		if (can_merchant_bank()) {
-			log(say_ministry(MERCHANT_BANKS, R) + " allows Britain to ignore a point of debt.")
+			log_box_begin(R, say_ministry(MERCHANT_BANKS, R), LOG_BOX_MINISTRY)
+			log("Britain ignores a point of debt spent for an Economic action point.")
+			log_box_end(LOG_BOX_MINISTRY)
 			if (!is_ministry_exhausted(R, MERCHANT_BANKS, 0)) {
 				exhaust_ministry(R, MERCHANT_BANKS, 0, true)
 			} else {
