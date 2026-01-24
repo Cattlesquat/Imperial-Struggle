@@ -6898,7 +6898,7 @@ P.ministry_choiseul = {
 			button ("military_point", G.action_points_eligible[MIL] && !is_ministry_exhausted(R, CHOISEUL, 0))
 			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
 		}
-		button (pass)
+		button ("pass")
 	},
 	build_squadron() {
 		push_undo()
