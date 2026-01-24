@@ -9032,7 +9032,7 @@ function add_action_point()
 
 function can_merchant_bank()
 {
-	return (G.action_type === ECON) && has_active_ministry(R, MERCHANT_BANKS) && (!is_ministry_exhausted(who, MERCHANT_BANKS, 0) || !is_ministry_exhausted(R, MERCHANT_BANKS, 1))
+	return (G.action_type === ECON) && has_active_ministry(R, MERCHANT_BANKS) && (!is_ministry_exhausted(R, MERCHANT_BANKS, 0) || !is_ministry_exhausted(R, MERCHANT_BANKS, 1))
 }
 
 // Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
