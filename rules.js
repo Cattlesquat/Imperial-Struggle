@@ -5309,6 +5309,7 @@ P.event_co_hong_system = {
 			msg += "Select a Global Demand tile to replace with " + data.demands[L.drawn_demand].name + "."
 			for (const d in G.global_demand) {
 				if (d === L.drawn_demand) continue
+				console.log ("Action Demand " + d)
 				action_demand(d)
 			}
 		}

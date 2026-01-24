@@ -437,11 +437,11 @@ body[data-noanims="true"] .huguenots.action {
 }
 
 
-body[data-noanims="false"] .demand.action {
+body[data-noanims="false"] .marker.demand.action {
     animation: action-pulse 4s ease-in-out infinite;
 }
 
-body[data-noanims="true"] .demand.action {
+body[data-noanims="true"] .marker.demand.action {
     border: 4px solid yellow;
 }
 
