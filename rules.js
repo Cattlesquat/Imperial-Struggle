@@ -3576,13 +3576,13 @@ P.select_investment_tile = {
 		push_undo()
 		L.moved_any_tiles = true
 		if (L.theaters === undefined) L.theaters = []
-		
+
 		L.theaters.push(theater)
 		G.theater_bonus_war_tiles[R][theater].push(L.tile_to_move)
 		array_delete_item(G.theater_bonus_war_tiles[R][0], L.tile_to_move)
 		L.tile_to_move = -1
 		if (!G.theater_bonus_war_tiles[R][0].length) {
-			let msg = "Austrian Succession: " + data.flags[R].name + " places free bonus war tiles in theaters: "
+			let msg = bold("Austrian Succession: ") + data.flags[R].name + " places free bonus war tiles in theaters: "
 			let any = false
 			for (const th of L.theaters) {
 				if (any) msg += ", "
