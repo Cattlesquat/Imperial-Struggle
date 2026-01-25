@@ -3575,6 +3575,8 @@ P.select_investment_tile = {
 	theater(theater) {
 		push_undo()
 		L.moved_any_tiles = true
+		if (L.theaters === undefined) L.theaters = []
+		
 		L.theaters.push(theater)
 		G.theater_bonus_war_tiles[R][theater].push(L.tile_to_move)
 		array_delete_item(G.theater_bonus_war_tiles[R][0], L.tile_to_move)
