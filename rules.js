@@ -1544,7 +1544,7 @@ function who_from_bonus(t) {
 function say_bonus_war_tile(t, color = true) {
 	let name = data.bonus_war_tiles[t].name
 	let val = data.bonus_war_tiles[t].val
-	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + name + " (+" + val
+	let msg = "[B" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + name + " (+" + val + ")"
 	switch (data.bonus_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
