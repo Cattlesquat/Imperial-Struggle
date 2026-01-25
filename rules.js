@@ -7919,6 +7919,10 @@ function is_prussia(s)
 
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
+	if (s < 0 || (s > NUM_SPACES)) {
+		debug_log ("Wrong space somehow: " + s)
+		return 0
+	}
 	var cost = data.spaces[s].cost
 
 	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
@@ -8704,7 +8708,6 @@ function handle_space_click(s, force_type = -1)
 	G.needs_to_flip_ministry = -1
 	if ((G.action_type === DIPLO) && [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ].includes(s) && (G.flags[s] === NONE)) {
 		if (has_inactive_ministry(G.active, JONATHAN_SWIFT)) {
-			debug_log(G.active_space)
 			G.needs_to_flip_ministry = JONATHAN_SWIFT
 		}
 	}
