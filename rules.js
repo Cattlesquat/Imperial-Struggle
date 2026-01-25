@@ -6858,7 +6858,7 @@ P.ministry_pitt_the_elder = {
 
 			button("build_squadron", !is_ministry_exhausted(R, PITT_THE_ELDER, 1) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
 		}
-		button (pass)
+		button ("pass")
 	},
 	build_squadron() {
 		push_undo()
@@ -6889,7 +6889,7 @@ P.ministry_charles_hanbury_williams = {
 				button ("unflag_discount", G.action_points_eligible_major[DIPLO])
 			}
 		}
-		button (pass)
+		button ("pass")
 	},
 	unflag_discount() {
 		push_undo()
