@@ -1857,7 +1857,6 @@ P.deal_cards_phase = function () {
 				if (G.deck.length === 0) {
 					log_dealt(dealt)
 					dealt = [0, 0]
-					console.log ("DISCARD PILE SHUFFLED")
 					log (bold("Discard Pile shuffled to form new Event Deck"))
 					G.deck = G.discard_pile.slice()
 					G.discard = []
@@ -1874,7 +1873,6 @@ P.deal_cards_phase = function () {
 				}
 
 				let c = G.deck.pop()
-				console.log("c: " + c)
 				if ((data.cards[c].era === SUCCESSION_ERA) && (current_era() === REVOLUTION_ERA)) {
 					log ("Succession Era event card removed from game: " + say_event(c, NONE))
 				} else {
@@ -2442,7 +2440,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
-	console.log ("START ACTION PHASE: " + data.turns[G.turn].name)
+	//console.log ("START ACTION PHASE: " + data.turns[G.turn].name)
 }
 
 /* 4.1.9 - ACTION PHASE */
@@ -4551,7 +4549,7 @@ P.event_great_northern_war = {
 			if (!L.shifted_space) {
 				L.shifted_space = true
 				score_northern_war()
-				if (!G.qualifies_for_bonus()) end()
+				if (!G.qualifies_for_bonus) end()
 			} else {
 				add_action_points(DIPLO, 1)
 				end()
@@ -5194,7 +5192,7 @@ P.event_le_beau_monde = {
 	prompt() {
 		if (R === BRITAIN) {
 			V.prompt = event_prompt(R, G.played_event, "You may put Fur or Cotton into Global Demand", "+1 Economic action points")
-			button("fur", !G.global_demand.includes(FUR))
+			button("fur", !G.global_demand.includes(FURS))
 			button("cotton", !G.global_demand.includes(COTTON))
 			button("pass")
 		} else {
@@ -5525,7 +5523,7 @@ P.event_war_of_the_quadruple_alliance = {
 		if (R === BRITAIN) {
 			let msg = "Remove a British squadron from the map or Navy Box to score 2 VP"
 			let msg2 = "build a squadron then take 1 debt or lose a TRP"
-			if (!picked_squadron) {
+			if (!L.picked_squadron) {
 				let any = false
 				for (let s = 0; s < NUM_SPACES; s++) {
 					if (data.spaces[s].type !== NAVAL) continue
@@ -7424,7 +7422,7 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!action_points_eligible_major(type, rules) && !eligible_minor) return 0
 
-	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (data.spaces[s].region !== REGION_EUROPE)) {
+	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || s(data.spaces[s].region !== REGION_EUROPE))) {
 		if (!eligible_minor) return 0
 		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0)
 	}
@@ -7800,7 +7798,7 @@ P.buy_event_decisions = {
 
 function do_buy_event(who) {
 	if (G.deck.length === 0) {
-		console.log ("Discard Pile reshuffled")
+		//console.log ("Discard Pile reshuffled")
 		log ("Discard Pile shuffled to form new Event Deck")
 		G.deck = G.discard_pile.slice()
 		G.discard_pile = []
@@ -9056,7 +9054,7 @@ function pay_action_cost() {
 			}
 		}
 		if (G.action_cost !== old_cost) {
-			set_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) // Once we've spent one of the Burke points, we can't region-switch any more
+			set_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) // Once we've spent one of the Burke points, we can't region-switch any more
 		}
 	}
 
