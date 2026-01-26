@@ -7422,7 +7422,7 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!action_points_eligible_major(type, rules) && !eligible_minor) return 0
 
-	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || s(data.spaces[s].region !== REGION_EUROPE))) {
+	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
 		if (!eligible_minor) return 0
 		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0)
 	}
