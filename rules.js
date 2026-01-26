@@ -867,7 +867,6 @@ function on_save()
 function absolute_view() {
 	V.active         = G.active
 	V.log_hide_after = G.log_hide_after
-	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 }
 
 function on_view(RR) {
@@ -2440,7 +2439,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
-	//console.log ("START ACTION PHASE")
+	console.log ("START ACTION PHASE: " + data.turns[G.turn].name)
 }
 
 /* 4.1.9 - ACTION PHASE */
@@ -3074,6 +3073,8 @@ P.action_round = script (`
 
 function start_action_round() {
 	G.action_round_subphase = BEFORE_PICKING_TILE
+
+	console.log ("Start Action Round for " + data.flags[G.active].name + ", turn " + data.turns[G.turn].name)
 
 	// Certain effects care if we controlled particular spaces from beginning of action round
 	// <br><b>
@@ -4827,7 +4828,7 @@ P.do_military_spending_overruns = {
 		let theater = get_theater_from_bonus_war_tile(G.active, t)
 		array_delete_item(G.theater_bonus_war_tiles[G.active][theater], t)
 		G.bonus_war_tiles[G.active].push(t)
-		shuffle(G.bonus_war_tiles[G.active])
+		//shuffle(G.bonus_war_tiles[G.active])
 		log(data.flags[G.active].name + " returns a bonus war tile from theater " + theater + ": " + data.wars[G.next_war].theater_names[theater])
 	},
 	confirm() {
@@ -7436,6 +7437,14 @@ function is_shift_allowed(s, who, allow_debt_and_trps, rules = [])
 
 	if (!action_points_eligible(type, rules)) return false
 
+	// Don't let fuzzer see spaces we know we can't afford
+	if (globalThis.RTT_FUZZER) {
+		action_cost_setup(s, type)
+		var cost = action_point_cost(R, s, type)
+		var avail = action_points_available(who, s, type, allow_debt_and_trps)
+		if (avail < cost) return false
+	}
+
 	return action_points_eligible_major(type, rules) || eligible_for_minor_action(s, who)
 }
 
@@ -7555,12 +7564,19 @@ function action_eligible_spaces(type, region)
 
 function action_all_eligible_spaces() {
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		if (globalThis.RTT_FUZZER && G.fail !== undefined && (G.fail[i] > 2)) continue
 		if (!action_points_eligible(i, active_rules())) continue
 		action_eligible_spaces(i, REGION_ALL)
 	}
 }
 
 function action_eligible_ministries() {
+	if (globalThis.RTT_FUZZER && G.fail !== undefined) {
+		for (const fail of G.fail) {
+			if (fail > 3) return
+		}
+	}
+
 	for (var index = 0; index < G.ministry[R].length; index++) {
 		if (G.ministry_revealed[R][index]) {
 			let m = G.ministry[R][index]
@@ -7572,6 +7588,12 @@ function action_eligible_ministries() {
 }
 
 function action_eligible_advantages() {
+	if (globalThis.RTT_FUZZER && (G.fail !== undefined)) {
+		for (const fail of G.fail) {
+			if (fail > 3) return
+		}
+	}
+
 	if (G.advantages_used_this_round >= 2) return
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
 		if (has_advantage_eligible(R, a)) action_advantage(a)
@@ -7736,6 +7758,16 @@ function handle_buy_event() {
 	G.prepicked_ministry = -1
 	G.prepicked_advantage = -1
 	G.action_cost = 3
+
+	if (globalThis.RTT_FUZZER) {
+		action_cost_setup(-1, DIPLO)
+		var avail = action_points_available(R, -1, DIPLO, true)
+		if (avail < G.action_cost) {
+			end()
+			return
+		}
+	}
+
 	call ("buy_event_flow")
 }
 
@@ -7900,6 +7932,7 @@ function is_protected(s)
 {
 	var whose = G.flags[s]
 	if (whose === NONE) return false
+	if (data.spaces[s].connects === undefined) return false
 	for (const adjacent of data.spaces[s].connects) {
 		if (G.flags[adjacent] === whose) {
 			if (data.spaces[adjacent].type === NAVAL) return true
@@ -8229,6 +8262,15 @@ function handle_buy_bonus_war_tile()
 	G.action_header = "BUY BONUS WAR TILE: "
 	G.action_cost   = 2
 
+	if (globalThis.RTT_FUZZER) {
+		action_cost_setup(-1, MIL)
+		var avail = action_points_available(R, -1, MIL, true)
+		if (avail < G.action_cost) {
+			end()
+			return
+		}
+	}
+
 	if (free_theaters(G.active).length < 1) {
 		call ("no_room_at_the_inn")
 	} else if (G.bonus_war_tiles_bought_this_round >= 2) {
@@ -8241,13 +8283,21 @@ function handle_buy_bonus_war_tile()
 P.no_room_at_the_inn = { // Player required to click "undo"
 	prompt() {
 		V.prompt = say_action_header() + say_action("All theaters have 2 bonus war tiles. No room to buy any more.")
+		if (globalThis.RTT_FUZZER) button("pass")
 	},
+	pass() {
+		end()
+	}
 }
 
 P.no_time_for_love_dr_jones = { // Player required to click "undo"
 	prompt() {
 		V.prompt = say_action_header() + say_action("You have already purchased the maximum allowed number of bonus war tiles this action round (2).")
+		if (globalThis.RTT_FUZZER) button("pass")
 	},
+	pass() {
+		end()
+	}
 }
 
 
@@ -8502,7 +8552,7 @@ P.naval_flow = script(`
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
 	}
-
+	
     call decide_how_and_whether_to_spend_action_points
 	if (!G.paid_action_cost) {
 		eval { G.action_header = "" }         
@@ -9087,8 +9137,10 @@ P.confirm_spend_debt_or_trps = {
 			V.prompt = say_action_header()
 			if (G.action_type === G.action_minor_type) {
 				V.prompt += say_action("You cannot conduct another action using " + data.action_points[G.action_type].name + " points, as you have already conducted a minor action. ")
+				if (globalThis.RTT_FUZZER) button("fail")
 			} else { // Probably/Hopefully can't get here, but if you do you have to hit Undo
 				V.prompt += say_action("You aren't eligible to conduct an action using " + data.action_points[G.action_type].name + " points.")
+				if (globalThis.RTT_FUZZER) button("fail")
 			}
 		} else if (G.action_points_available_now < G.action_cost) {
 			V.prompt = say_action_header()
@@ -9098,12 +9150,16 @@ P.confirm_spend_debt_or_trps = {
 			}
 			V.prompt += " (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += say_action_points()
+			let any = false
 			if ((available_debt(R) > 0) || can_merchant_bank()) {
 				button("paydebt")
+				any = true
 			}
 			if (G.treaty_points[R] > 0) {
 				button("paytrp")
+				any = true
 			}
+			if (!any && globalThis.RTT_FUZZER) button("fail")
 		} else {
 			V.prompt = say_action_header()
 			if ((G.debt_spent > 0) && (G.treaty_points_spent === 0)) {
@@ -9155,6 +9211,14 @@ P.confirm_spend_debt_or_trps = {
 			log (data.flags[R].name + " spends " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
 		}
 		end()
+	},
+	fail() {
+		if (G.fail === undefined) {
+			G.fail = [0, 0, 0, 0]
+		}
+		G.fail[G.action_type]++
+		add_action_point()
+		end()
 	}
 }
 
@@ -9164,6 +9228,7 @@ P.action_round_core = {
 	_begin() {
 		G.buying_war_tile = false
 		L.clicked_upgrade = false
+		if (globalThis.RTT_FUZZER) G.fail = [ 0, 0, 0, 0 ]
 	},
 	_resume() {
 		log_box_end()
@@ -9223,10 +9288,10 @@ P.action_round_core = {
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
 		if (G.action_points_eligible[DIPLO]) {
-			button ("draw_event", (G.deck.length || G.discard_pile.length))
+			button ("draw_event", (G.deck.length || G.discard_pile.length) && !(globalThis.RTT_FUZZER && G.fail !== undefined && G.fail[DIPLO]))
 		}
 
-		if (G.action_points_eligible[MIL]) {
+		if (G.action_points_eligible[MIL] && !(globalThis.RTT_FUZZER && G.fail !== undefined  && G.fail[MIL])) {
 			if (G.navy_box[G.active] > 0) action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 
@@ -9522,7 +9587,7 @@ function theater_tier(theater)
 		margin = data.wars[G.next_war].theater[theater].margin
 	}
 
-	for (let i = margin.length - 1; i > 0; i--) {
+	for (let i = margin.length - 1; i >= 0; i--) {
 		if (delta >= margin[i]) return i
 	}
 
@@ -11586,12 +11651,6 @@ function logi(msg) {
 }
 function logii(msg) {
 	log(">>" + msg)
-}
-
-function log_h1(msg) {
-	log_br()
-	log(".h1 " + msg)
-	log_br()
 }
 
 function log_h1(msg) {

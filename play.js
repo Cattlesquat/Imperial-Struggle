@@ -1204,6 +1204,8 @@ function on_update() {
 
 	update_war_display()
 
+	action_button ("fail", "Fuzzer Only Fail Button")
+
 	action_button("france", "France")
 	action_button("britain", "Britain")
 
