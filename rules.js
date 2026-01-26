@@ -5173,6 +5173,10 @@ P.event_byngs_trial = {
 		G.the_brig++
 		end()
 	},
+	done() {
+		log (bold("No more British squadrons in play - no more can be removed."))
+		end()
+	},
 	navy_box() {
 		push_undo()
 		G.navy_box[BRITAIN]--
@@ -5250,7 +5254,10 @@ P.event_hyder_ali = {
 					action_space(s)
 				}
 			}
-			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path
+			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path (exception for Fuzzer)
+			if (globalThis.RTT_FUZZER) {
+				action("done")
+			}
 		} else {
 			msg = "Place two conflict markers in unprotected spaces in India"
 			let any = false
@@ -5782,7 +5789,7 @@ P.event_war_of_the_polish_succession = {
 	},
 	done() {
 		push_undo()
-		if ((R === BRITAIN) && (G.flags[RUSSIA] !== BRITAIN)) reflag(RUSSIA, (G.flags[RUSSIA] === NONE) ? R : NONE)
+		if ((R === BRITAIN) && (G.flags[RUSSIA] !== BRITAIN)) reflag_space(RUSSIA, (G.flags[RUSSIA] === NONE) ? R : NONE)
 		do_polish_succession(R)
 		end()
 	}
