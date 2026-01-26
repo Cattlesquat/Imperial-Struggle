@@ -5202,7 +5202,7 @@ P.event_le_beau_monde = {
 	},
 	fur() {
 		push_undo()
-		G.global_demand.push(FUR)
+		G.global_demand.push(FURS)
 		log(bold("Britain places " + say_demand(FURS) + " into Global Demand."))
 		if (G.qualifies_for_bonus) add_action_points(ECON, 1)
 		end()
