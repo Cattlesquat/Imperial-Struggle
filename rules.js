@@ -3074,7 +3074,7 @@ P.action_round = script (`
 function start_action_round() {
 	G.action_round_subphase = BEFORE_PICKING_TILE
 
-	console.log ("Start Action Round for " + data.flags[G.active].name + ", turn " + data.turns[G.turn].name)
+	//console.log ("Start Action Round for " + data.flags[G.active].name + ", turn " + data.turns[G.turn].name)
 
 	// Certain effects care if we controlled particular spaces from beginning of action round
 	// <br><b>
@@ -9078,7 +9078,7 @@ function do_reflag_space(repair_if_damaged = true) {
 		if (is_damaged_fort(G.active_space)) {
 			set_damaged_fort(G.active_space, false)
 			if (G.flags[G.active_space] === G.active) {
-				log ("Fort repaired at " + spaces(G.active_space))
+				log ("Fort repaired at " + say_space(G.active_space))
 			}
 			else {
 				log ("Damaged fort seized at " + say_space(G.active_space))
@@ -9760,7 +9760,7 @@ P.war_theater_reveal = {
 		} else {
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== data.wars[G.next_war].theater[G.theater].region) {
-					if ((G.next_war === WAR_7YW) && (theater === 3)) {
+					if ((G.next_war === WAR_7YW) && (G.theater === 3)) {
 						if (data.spaces[s].region !== REGION_CARIBBEAN) continue		// 7YW, theater 3 has two regions
 					} else {
 						continue
@@ -10034,7 +10034,7 @@ function start_war_theater_resolution()
 
 					if (data.spaces[s].type !== NAVAL) continue
 					if (G.flags[s] !== L.war_winner) continue
-					if (set_has(G.navy_this_war, space.num)) continue /* A given Squadron can capture one space per war */
+					if (set_has(G.navy_this_war, s)) continue /* A given Squadron can capture one space per war */
 					L.free_squadrons.push(s)
 				}
 			}
