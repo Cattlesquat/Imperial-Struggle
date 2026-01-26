@@ -5674,6 +5674,10 @@ P.event_bengal_famine = {
 		add_conflict_marker(s)
 		L.conflicts_done++
 		if (L.conflicts_done >= 2) end()
+	},
+	pass() {
+		push_undo()
+		end()
 	}
 }
 
