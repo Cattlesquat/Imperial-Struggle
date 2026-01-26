@@ -7919,8 +7919,9 @@ function is_prussia(s)
 
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
-	if (s < 0 || (s > NUM_SPACES)) {
+	if (s < 0 || (s >= NUM_SPACES)) {
 		debug_log ("Wrong space somehow: " + s)
+		on_view(R)
 		return 0
 	}
 	var cost = data.spaces[s].cost
