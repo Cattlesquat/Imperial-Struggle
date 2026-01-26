@@ -8971,8 +8971,8 @@ function pay_action_cost() {
 
 	if (G.action_minor) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
+		G.action_cost = Math.max(0, G.action_cost - G.action_points_minor[G.action_type])
 		G.action_points_minor[G.action_type] = 0
-		G.action_cost = Math.max(0, G.action_cost - 2)
 	}
 
 	// Spent contingent points, if available
@@ -9014,13 +9014,9 @@ function pay_action_cost() {
 		G.action_cost = 0
 	}
 	else {
-		console.log("Action type: " + G.action_type)
-		console.log("Major: " + G.action_points_major)
-
-
-		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!")
-		G.action_points_major[G.action_type] = 0
-		G.action_cost = 0
+		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (G.action_minor ? " (Was minor action)" : ""))
+		//G.action_points_major[G.action_type] = 0
+		//G.action_cost = 0
 	}
 }
 
