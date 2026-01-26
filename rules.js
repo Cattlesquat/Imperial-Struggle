@@ -3310,6 +3310,16 @@ function active_rules() {
 }
 
 
+function active_rules_list() {
+	let rules = []
+	for (const contingency of G.action_points_contingent) {
+		rules.push( { "rule": contingency.rule, "short": contingency.short } )
+	}
+	return rules
+}
+
+
+
 // For one type of action points (ECON, DIPLO, MIL), add an amount of contingent points subject to a specific rule
 // If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
 function add_contingent(type, amount, rule, short, not_independent = false) {
@@ -3319,8 +3329,14 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 		nat = true
 	}
 
-	let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
-	G.action_points_contingent.push(contingent)
+	let contingent = {}
+	contingent.type = type
+	contingent.amount = amount
+	contingent.rule = rule
+	contingent.short = short
+	contingent.not_independent = not_independent
+	//let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
+	G.action_points_contingent.push(structuredClone(contingent))
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
 
@@ -3385,6 +3401,10 @@ function any_contingent(type, rules, require_independent) {
 // Use up contingent action points matching a specific rule, to the extent available. Returns amount that wasn't satisfied from contingent points (still to be paid)
 function use_contingent(amount, type, rule)
 {
+	//for (let i = 0; i < G.action_points_contingent.length; i++) {
+	//	console.log ("Rule: " + G.action_points_contingent[i].rule + "  Amount: " + G.action_points_contingent[i].amount)
+	//}
+
 	for (let i = 0; i < G.action_points_contingent.length; i++) {
 		if (G.action_points_contingent[i].type !== type) continue
 		if (G.action_points_contingent[i].rule !== rule) continue
@@ -3392,8 +3412,13 @@ function use_contingent(amount, type, rule)
 		while ((amount > 0) && (G.action_points_contingent[i].amount > 0)) {
 			amount--
 			G.action_points_contingent[i].amount--
+			//console.log ("i:" + i + "   amount:" + amount)
 		}
 	}
+
+	//for (let i = 0; i < G.action_points_contingent.length; i++) {
+	//	console.log ("Rule: " + G.action_points_contingent[i].rule + "  Amount: " + G.action_points_contingent[i].amount)
+	//}
 
 	return amount
 }
@@ -5298,6 +5323,7 @@ P.event_hyder_ali = {
 		if (L.taking_control) {
 			reflag_space(s, R)
 			if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+			end()
 		} else {
 			add_conflict_marker(s)
 			L.conflicts_done++
@@ -6547,7 +6573,7 @@ function reveal_ministry(who, index) {
 	}
 
 	if (m === EDMUND_BURKE) {
-		if (is_entirely_in_europe(DIPLO)) {
+		if ((G.action_round_subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 		}
 	}
@@ -9018,6 +9044,11 @@ function pay_action_cost() {
 
 	G.paid_action_cost = true
 
+	G.debug += tell_action_points()
+
+	let prev_cost = G.action_cost
+	let cost_string = " Cost: "	+ G.action_cost
+
 	let msg = G.action_cost + " " + data.action_points[G.action_type].name + " action point" + s(G.action_cost) + " spent."
 	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.action_points_minor[G.action_type] > 0) {
 		if (G.action_minor) {
@@ -9031,12 +9062,21 @@ function pay_action_cost() {
 	log(italic(msg))
 
 	G.action_cost -= G.action_points_committed_bonus[G.action_type] // Spend any committed bonus points first
+	if (G.action_cost !== prev_cost) {
+		cost_string += " ComBonus: " + (prev_cost - G.action_cost)
+		prev_cost = G.action_cost
+	}
 	G.action_points_committed_bonus[G.action_type] = 0
 
 	if (G.action_minor) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
 		G.action_cost = Math.max(0, G.action_cost - G.action_points_minor[G.action_type])
 		G.action_points_minor[G.action_type] = 0
+
+		if (G.action_cost !== prev_cost) {
+			cost_string += "  MinorDrain: " + (prev_cost - G.action_cost)
+			prev_cost = G.action_cost
+		}
 	}
 
 	// Spent contingent points, if available
@@ -9044,6 +9084,11 @@ function pay_action_cost() {
 		if (rule === RULE_EUROPE_BURKE) continue
 
 		G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
+
+		if (G.action_cost !== prev_cost) {
+			cost_string += "  rule:" + rule + ":" + (prev_cost - G.action_cost)
+			prev_cost = G.action_cost
+		}
 
 		// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
 		if (G.action_minor && !G.action_points_eligible_major[G.action_type]) {
@@ -9059,6 +9104,11 @@ function pay_action_cost() {
 
 			G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
 
+			if (G.action_cost !== prev_cost) {
+				cost_string += "  rule:" + rule + ":" + (prev_cost - G.action_cost)
+				prev_cost = G.action_cost
+			}
+
 			// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
 			if (G.action_minor && !G.action_points_eligible_major[G.action_type]) {
 				drain_non_independent(G.action_type, rule)
@@ -9071,6 +9121,11 @@ function pay_action_cost() {
 
 	if ((G.action_type === MIL) && G.buying_war_tile && get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY)) {
 		G.action_cost = use_contingent(G.action_cost, G.action_type, RULE_WAR_TILE_OR_DEPLOY)
+
+		if (G.action_cost !== prev_cost) {
+			cost_string += "  WarTileOrDeploy:" + (prev_cost - G.action_cost)
+			prev_cost = G.action_cost
+		}
 	}
 
 	if (G.action_points_major[G.action_type] >= G.action_cost) {
@@ -9078,11 +9133,97 @@ function pay_action_cost() {
 		G.action_cost = 0
 	}
 	else {
-		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (G.action_minor ? " (Was minor action)" : ""))
+		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (G.action_minor ? " (Was minor action)" : "") + " Space:" + G.active_space + "  Type: "+ G.action_type + "   Last:" + G.debug + "  Actions:" + tell_action_points() + "  Cost: " + cost_string)
 		//G.action_points_major[G.action_type] = 0
 		//G.action_cost = 0
 	}
 }
+
+
+function tell_action_points(space = true, brackets = true) {
+
+	if (!is_action_phase()) return ""
+	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
+
+	let verbose = "medium"
+	let names = []
+	let shortest = (verbose === "short")
+	for (i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		if (verbose === "short") {
+			names[i] = data.action_points[i].letter
+		} else if (verbose === "long") {
+			names[i] = data.action_points[i].name
+		} else {
+			names[i] = data.action_points[i].short
+		}
+	}
+
+
+	var need_comma = false;
+	var early = [ false, false, false ]
+	var tell = ""
+	for (var level = MAJOR; level <= MINOR; level++) {
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			if (G.action_points_eligible === undefined) continue
+			if (action_points_eligible(i, active_rules())) {
+				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
+
+					if (need_comma) {
+						tell += ", "
+					}
+					tell += names[i] + (shortest ? "" : ": ")
+					need_comma = true;
+
+					tell += G.action_points_major[i] //+ " major"
+					if (G.action_points_minor[i]) {
+						tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
+						early[i] = true
+					}
+				}
+
+				if ((level === MAJOR) === early[i]) {
+					if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+						if (level === MINOR) {
+							if (need_comma) {
+								tell += ", "
+							}
+							tell += names[i] + (shortest ? "" : ": ")
+						}
+
+						tell += G.action_points_minor[i] + (shortest ? "m" : " Minor")
+						need_comma = true;
+					}
+
+					if (G.action_points_committed_bonus[i] > 0) {
+						if (need_comma) {
+							tell += ", "
+						}
+						tell += G.action_points_committed_bonus[i] + " Bonus"
+						need_comma = true;
+					}
+
+					for (let rule of active_rules_list()) {
+						let amount = get_contingent(i, rule.rule)
+						if (any_contingent(i, rule.rule)) {
+							if (need_comma) tell += ", "
+							tell += amount + " " + (shortest ? rule.short : rule.rule)
+							need_comma = true
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (tell === "") return tell
+	if (brackets) tell = "(" + tell + ")"
+	if (space) tell = " " + tell
+	return italic(tell)
+
+
+	//console.log (get_preference("actionverbosity", "medium"))
+}
+
 
 function do_reflag_space(repair_if_damaged = true) {
 	let whom = (G.flags[G.active_space] === NONE) ? G.active : NONE
@@ -9343,40 +9484,49 @@ P.action_round_core = {
 	},
 	military_upgrade() {
 		push_undo()
+		G.debug = "Military Upgrade"
 		L.clicked_upgrade = true
 		// This is mostly just a dummy - only effect of button is to scroll down to war
 	},
 	draw_event() {
 		push_undo()
+		G.debug = "Draw Event"
 		handle_buy_event()
 	},
 	construct_squadron() {
 		push_undo()
+		G.debug = "Construct Squadron"
 		handle_construct_squadron_button()
 	},
 	basic_war(t) {
 		push_undo()
+		G.debug = "Basic War Tile"
 		handle_military_upgrade(t)
 	},
 	navy_box() {
 		push_undo()
+		G.debug = "Navy Box"
 		handle_navy_box()
 	},
 	buy_bonus_war_tile() {	// buy a bonus war tile, and deploy it into the next war
 		push_undo()
+		G.debug = "Buy Bonus War Tile"
 		G.buying_war_tile = true
 		handle_buy_bonus_war_tile()
 	},
 	buy_diplomatic() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
 		push_undo()
+		G.debug = "Buy Diplomatic"
 		handle_buy_diplomatic()
 	},
 	buy_economic() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
 		push_undo()
+		G.debug = "Buy Economic"
 		handle_buy_economic()
 	},
 	confirm_pass_to_reduce_debt() {
 		push_undo()
+		G.debug = "Pass To Reduce Debt"
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
 		log(data.flags[R].name + " passes to " + say_spending("reduce debt by " + debt_reduction, R) + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
@@ -9390,10 +9540,12 @@ P.action_round_core = {
 	},
 	end_action_round() {
 		push_undo()
+		G.debug = "End Action Round"
 		end()
 	},
 	conflict(s) {
 		// Usually clicking conflict just resolves as clicking the space, but if we have military points available *and* the other type for this space then clicking the conflict is explicitly to remove the conflict and clicking the space is to take the regular flag action for the space (w/ conflict discount)
+		G.debug = "Conflict Click"
 		if (!G.action_points_eligible[MIL] || !has_conflict_marker(s)) {
 			this.space(s)
 		} else {
@@ -9406,23 +9558,28 @@ P.action_round_core = {
 	},
 	space(s) {
 		push_undo()
+		G.debug = "Click Space (Probably Flagging)"
 		handle_space_click(s)
 	},
 	ministry_card(m) {
 		push_undo()
+		G.debug = "Click Ministry Card"
 		handle_ministry_card_click(m)
 	},
 	advantage(a) {
 		push_undo()
+		G.debug = "Click Advantage"
 		advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS) // Can't play an event after using an advantage
 		handle_advantage_click(a)
 	},
 	event_card(c) {
 		push_undo()
+		G.debug = "Click Event Card"
 		handle_event_card_click(c)
 	},
 	demand(d) {
 		push_undo()
+		G.debug = "Click Demand"
 		handle_townshend_acts_click(d)
 	},
 	frenchify() {
