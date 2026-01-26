@@ -2919,8 +2919,8 @@ P.victory_check_phase = function () {
 		finish(FRANCE, msg)
 	} else {
 		log ("No automatic victory.")
+		end()
 	}
-	end()
 }
 
 /* 4.1.14 - FINAL SCORING PHASE */
@@ -10473,8 +10473,8 @@ P.war_victory_check_phase = function() {
 		finish(FRANCE, msg)
 	} else {
 		log ("No automatic victory.")
+		end()
 	}
-	end()
 }
 
 
