@@ -9934,9 +9934,9 @@ function start_war_theater_resolution()
 	if (L.war_winner === NONE) {
 		L.result_string = "Theater is tied; no winner or spoils."
 	} else {
-		if (L.war_tier < 0) {
-			console.error("Winner declared but no margin of victory. War: " + G.next_war + " Theater: " + G.theater + " Winner: " + L.war_winner + " Delta: " + L.war_delta + " Tier: " + L.war_tier)
-		}
+		//if (L.war_tier < 0) {
+		//	console.error("Winner declared but no margin of victory. War: " + G.next_war + " Theater: " + G.theater + " Winner: " + L.war_winner + " Delta: " + L.war_delta + " Tier: " + L.war_tier)
+		//}
 
 		L.result_string = "+" + L.war_delta + " " + data.flags[L.war_winner].adj + " victory!"
 
@@ -10013,7 +10013,7 @@ function start_war_theater_resolution()
 			log("France may form USA!")
 		}
 
-		if ((G.next_war === WAR_7YW) && (G.theater === 1)) {
+		if ((G.next_war === WAR_7YW) && (G.theater === 1) && (L.war_tier > 0)) {
 			L.war_atlantic = true
 			L.war_squadrons = L.war_tier
 		}
