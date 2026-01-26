@@ -5493,6 +5493,7 @@ P.event_west_african_gold_mining = {
 		push_undo()
 		add_action_points(ECON, 1)
 		if (G.qualifies_for_bonus) add_contingent(ECON, 2, RULE_CARIBBEAN, SHORT_CARIBBEAN)
+		end()
 	}
 }
 
