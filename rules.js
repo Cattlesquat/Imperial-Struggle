@@ -1857,8 +1857,10 @@ P.deal_cards_phase = function () {
 				if (G.deck.length === 0) {
 					log_dealt(dealt)
 					dealt = [0, 0]
+					console.log ("DISCARD PILE SHUFFLED")
 					log (bold("Discard Pile shuffled to form new Event Deck"))
-					G.deck = G.discard_pile
+					G.deck = G.discard_pile.slice()
+					G.discard = []
 					shuffle(G.deck)
 				}
 
@@ -1872,6 +1874,7 @@ P.deal_cards_phase = function () {
 				}
 
 				let c = G.deck.pop()
+				console.log("c: " + c)
 				if ((data.cards[c].era === SUCCESSION_ERA) && (current_era() === REVOLUTION_ERA)) {
 					log ("Succession Era event card removed from game: " + say_event(c, NONE))
 				} else {
@@ -1943,8 +1946,8 @@ P.deal_cards_discard = {
 			for (var who = FRANCE; who <= BRITAIN; who++) {
 				for (let c of L.discarded[who]) {
 					log(data.flags[who].name + " discards " + say_event(c, who))
+					G.discard_pile.push(c);
 				}
-				G.discard_pile.push(L.discarded[who]);
 			}
 			end()
 		}
@@ -3054,8 +3057,6 @@ P.game_over = function () {
 			finish (BRITAIN, msg)
 		}
 	}
-
-	end()
 }
 
 /* 5.0 - ACTION ROUNDS */
@@ -3532,7 +3533,7 @@ function selected_a_tile(tile)
 
 	if (has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
 		if (G.demand_flag_count[FRANCE][FURS] + G.demand_flag_count[FRANCE][FISH] > G.demand_flag_count[BRITAIN][FURS] + G.demand_flag_count[BRITAIN][FISH]) {
-			set_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)
+			set_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)
 			if (G.action_points_major[ECON]) G.action_points_major[ECON]++
 			if (G.action_points_minor[ECON]) G.action_points_minor[ECON]++
 			if (G.action_points_major[ECON] || G.action_points_minor[ECON]) {
@@ -5093,7 +5094,7 @@ P.event_pacte_de_famille = {
 			let msg = "Refresh up to two Advantages in Europe "
 			if (L.num_refreshed < 2) {
 				for (let a = 0; a < NUM_ADVANTAGES; a++) {
-					if (!has_advantage(who, a)) continue
+					if (!has_advantage(R, a)) continue
 					if (!is_advantage_exhausted(a)) continue
 					action_advantage(a)
 					any = true
@@ -6644,7 +6645,8 @@ P.ministry_robert_walpole = {
 
 		if (G.deck.length === 0) {
 			log ("Discard Pile shuffled to form new Event Deck")
-			G.deck = G.discard_pile
+			G.deck = G.discard_pile.slice()
+			G.discard_pile = []
 			shuffle(G.deck)
 		}
 
@@ -6921,7 +6923,7 @@ P.ministry_charles_hanbury_williams = {
 	},
 	unflag_discount() {
 		push_undo()
-		exhaust_ministry(who, CHARLES_HANBURY_WILLIAMS)
+		exhaust_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		set_transient(R, TRANSIENT_CHARLES_HANBURY_WILLIAMS)
 		log (say_ministry(CHARLES_HANBURY_WILLIAMS) + " reduces the cost to unflag French-flagged spaces in Prussia, German States, and Russia for the rest of the action round.")
 		end()
@@ -7798,8 +7800,10 @@ P.buy_event_decisions = {
 
 function do_buy_event(who) {
 	if (G.deck.length === 0) {
+		console.log ("Discard Pile reshuffled")
 		log ("Discard Pile shuffled to form new Event Deck")
-		G.deck = G.discard_pile
+		G.deck = G.discard_pile.slice()
+		G.discard_pile = []
 		shuffle(G.deck)
 	}
 
@@ -9259,7 +9263,7 @@ P.action_round_core = {
 				}
 			}
 
-			if (has_active_ministry(R, TOWNSHEND_ACTS) && !is_ministry_exhausted(who, TOWNSHEND_ACTS)) {
+			if (has_active_ministry(R, TOWNSHEND_ACTS) && !is_ministry_exhausted(R, TOWNSHEND_ACTS)) {
 				if (any) prompt += ", "
 				prompt += "Use Townshend Acts"
 				any = true
