@@ -7920,7 +7920,6 @@ function is_prussia(s)
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
 	debug_log ("I am here!" + s)
-	return 0
 	on_view(R)
 	if (s < 0 || (s >= NUM_SPACES)) {
 		debug_log ("Wrong space somehow: " + s)
@@ -7928,6 +7927,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		return 0
 	}
 	var cost = data.spaces[s].cost
+
+	return 0
 
 	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
 	G.action_cost_breakdown = "Space cost: " + cost + "."
