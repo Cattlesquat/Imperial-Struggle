@@ -11025,6 +11025,8 @@ exports.action = function (state, role, action, argument) {
 	if (old_active !== G.active)
 		clear_undo()
 
+	if (Array.isArray(G.active) && G.active.length === 0) throw new Error("Nobody is active - who's been naughty?")
+
 	return G
 }
 
