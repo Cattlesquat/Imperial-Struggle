@@ -5716,6 +5716,18 @@ P.event_father_le_loutre = {
 				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 			}
 		}
+		end()
+	},
+	done() {
+		push_undo()
+		if (G.qualifies_for_bonus) {
+			if (R === BRITAIN) {
+				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+			} else {
+				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+			}
+		}
+		end()
 	}
 }
 
@@ -5911,6 +5923,9 @@ P.event_haitian_revolution = {
 		push_undo()
 		L.conflicts_done++
 		add_conflict_marker(s, CONFLICT_PLUS_ONE)
+		if (L.conflict_done >= L.conflicts_to_do) {
+			end()
+		}
 	},
 	done() {
 		push_undo()
@@ -6106,6 +6121,7 @@ P.event_jesuit_abolition = {
 		} else {
 			reduce_debt(FRANCE, 2)
 			if (G.qualifies_for_bonus) award_vp(FRANCE, 2)
+			end()
 		}
 	},
 }
@@ -6122,6 +6138,7 @@ P.event_wealth_of_nations = {
 		push_undo()
 		reduce_debt(R, 2)
 		if (G.qualifies_for_bonus) add_action_points(ECON, 3)
+		end()
 	}
 }
 
@@ -6140,6 +6157,7 @@ P.event_debt_crisis = {
 		if (G.qualifies_for_bonus) {
 			award_vp(R, 2)
 		}
+		end()
 	}
 }
 
@@ -6171,6 +6189,7 @@ P.event_east_asia_piracy = {
 		} else {
 			log ("No VP award (you have " + me + " combined squadrons, forts, and alliances; your opponent has " + you + ").")
 		}
+		end()
 	}
 }
 
@@ -6377,6 +6396,7 @@ P.event_cook_and_bougainville = {
 				log("No squadron added: all French squadrons are already in play!")
 			}
 			if (G.qualifies_for_bonus) reduce_debt(FRANCE, 2)
+			end()
 		}
 	}
 }
