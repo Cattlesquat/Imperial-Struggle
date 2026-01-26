@@ -7919,7 +7919,8 @@ function is_prussia(s)
 
 function action_point_cost (who, s, type, ignore_region_switching = false)
 {
-	debug_log ("I am here!")
+	debug_log ("I am here!" + s)
+	return 0
 	on_view(R)
 	if (s < 0 || (s >= NUM_SPACES)) {
 		debug_log ("Wrong space somehow: " + s)
