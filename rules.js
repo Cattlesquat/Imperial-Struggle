@@ -2248,8 +2248,8 @@ P.confirm_use_advantage = {
 		V.prompt = say_action_header() + say_action("Use " + data.advantages[G.advantage].name + " Advantage?")
 		if ((G.advantage_required_because !== undefined) && (G.advantage_required_because !== "")) V.prompt += " (" + G.advantage_required_because + ")"
 		V.prompt += say_action_points()
-		action("use_advantage")
-		if (G.advantage_optional) action("dont_use_advantage")
+		button("use_advantage")
+		if (G.advantage_optional) button("dont_use_advantage")
 	},
 	use_advantage() {
 		push_undo()
@@ -2270,7 +2270,7 @@ P.ask_about_huguenots = {
 		let region = data.spaces[G.active_space].region
 		for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
 			if (!has_fresh_huguenots(s)) continue
-			action("huguenots", s)
+			button("huguenots", s)
 		}
 		button("pass")
 	},
@@ -6553,12 +6553,12 @@ P.confirm_reveal_ministry = {
 	prompt() {
 		if (!G.ministry_revealed[R][G.ministry_index]) {
 			V.prompt = say_action_header() + say_action("Reveal " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card?")
-			action("reveal_ministry")
-			if (G.ministry_optional) action("dont_reveal_ministry")
+			button("reveal_ministry")
+			if (G.ministry_optional) button("dont_reveal_ministry")
 		} else {
 			V.prompt = say_action_header() + say_action("Exhaust " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card Ability?")
 			action ("exhaust_ministry")
-			if (G.ministry_optional) action("dont_exhaust_ministry")
+			if (G.ministry_optional) button("dont_exhaust_ministry")
 		}
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
 
@@ -6768,6 +6768,10 @@ P.ministry_cardinal_ministers = {
 	confirm() {
 		push_undo()
 		use_cardinal_ministers()
+		end()
+	},
+	pass() {
+		push_undo()
 		end()
 	}
 }
@@ -9010,8 +9014,11 @@ function pay_action_cost() {
 		G.action_cost = 0
 	}
 	else {
-		// Bad. Somehow we got in here without enough action points to pay for the cost
-		console.error("ERROR: Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!")
+		console.log("Action type: " + G.action_type)
+		console.log("Major: " + G.action_points_major)
+
+
+		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!")
 		G.action_points_major[G.action_type] = 0
 		G.action_cost = 0
 	}
@@ -9046,8 +9053,8 @@ function do_reflag_space(repair_if_damaged = true) {
 P.choice_use_minor_action = {
 	prompt() {
 		V.prompt = say_action_header() + say_action("Use major or minor action" + ((G.action_string !== "") ? " " + G.action_string : "") + "?") + say_action_points()
-		action ("major")
-		action ("minor")
+		button ("major")
+		button ("minor")
 	},
 	major() {
 		push_undo()
@@ -9095,10 +9102,10 @@ P.confirm_spend_debt_or_trps = {
 			V.prompt += " (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += say_action_points()
 			if ((available_debt(R) > 0) || can_merchant_bank()) {
-				action("paydebt")
+				button("paydebt")
 			}
 			if (G.treaty_points[R] > 0) {
-				action("paytrp")
+				button("paytrp")
 			}
 		} else {
 			V.prompt = say_action_header()
@@ -9111,7 +9118,7 @@ P.confirm_spend_debt_or_trps = {
 			}
 			V.prompt += say_action(((G.action_string !== "") ? " " + G.action_string : "") + "?")
 			V.prompt += say_action_points()
-			action("confirm")
+			button("confirm")
 		}
 	},
 	paydebt() {
@@ -9260,6 +9267,7 @@ P.action_round_core = {
 		}
 	},
 	military_upgrade() {
+		push_undo()
 		L.clicked_upgrade = true
 		// This is mostly just a dummy - only effect of button is to scroll down to war
 	},
