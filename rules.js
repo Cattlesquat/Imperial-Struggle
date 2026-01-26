@@ -1281,6 +1281,7 @@ function add_next_war_bonus_tiles() {
 
 function draw_basic_war_tile(who, theater) {
 	if (G.basic_war_tiles[who].length < 1) return -1
+	shuffle(G.basic_war_tiles[who])
 	let tile = G.basic_war_tiles[who].pop()
 	G.theater_basic_war_tiles[who][theater].push(tile)
 	return tile
@@ -1288,6 +1289,7 @@ function draw_basic_war_tile(who, theater) {
 
 function draw_bonus_war_tile(who, theater) {
 	if (G.bonus_war_tiles[who].length < 1) return -1
+	shuffle(G.bonus_war_tiles[who])
 	let tile = G.bonus_war_tiles[who].pop()
 	G.theater_bonus_war_tiles[who][theater].push(tile)
 	return tile
@@ -8184,7 +8186,6 @@ P.military_upgrade_decisions = {
 	return_to_pool() {
 		push_undo()
 		G.basic_war_tiles[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
-		shuffle(G.basic_war_tiles[G.active])
 		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
 		end()
 	},
