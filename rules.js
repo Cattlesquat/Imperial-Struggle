@@ -9159,6 +9159,7 @@ P.confirm_spend_debt_or_trps = {
 P.action_round_core = {
 	_begin() {
 		G.buying_war_tile = false
+		L.clicked_upgrade = false
 	},
 	_resume() {
 		log_box_end()
@@ -9166,6 +9167,7 @@ P.action_round_core = {
 	},
 	_end() {
 		G.buying_war_tile = false
+		L.clicked_upgrade = false
 	},
 	prompt() {
 		var header = "ACTION ROUND " + G.round + ": "
@@ -9199,6 +9201,12 @@ P.action_round_core = {
 			}
 		}
 
+		if (L.clicked_upgrade) {
+			if (any) prompt += ", "
+			prompt += "Select basic war tile for military upgrade"
+			any = true
+		}
+
 		if (any) prompt += ", "
 		prompt += "Spend Action Points or activate Advantage / Ministry. "
 		V.prompt = say_action_header(header) + say_action(prompt) + say_action_points();
@@ -9226,9 +9234,14 @@ P.action_round_core = {
 			}
 		}
 
+		var left = 0
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			left += G.action_points_major[i] + G.action_points_minor[i]
+		}
+
 		//Maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
 		if (G.military_upgrade) {
-			// button ("military_upgrade") // Maybe a button "for visibility" or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
+			if (!left) button("military_upgrade") // Only show special button if we're out of anything else to do
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
 				for (var t of G.theater_basic_war_tiles[G.active][theater]) {
 					action_basic_war_tile(t)
@@ -9240,15 +9253,15 @@ P.action_round_core = {
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
 
-		var left = 0
-		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			left += G.action_points_major[i] + G.action_points_minor[i]
-		}
 		if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {
 			button("confirm_pass_to_reduce_debt")
 		} else {
 			button((left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : "end_action_round")
 		}
+	},
+	military_upgrade() {
+		L.clicked_upgrade = true
+		// This is mostly just a dummy - only effect of button is to scroll down to war
 	},
 	draw_event() {
 		push_undo()

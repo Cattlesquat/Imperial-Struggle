@@ -1032,6 +1032,10 @@ function scroll_log_to_end() {
 }
 
 
+function scroll_to_war() {
+	scroll_into_view(document.getElementById("war"))
+}
+
 function on_update() {
 	var i, r, s, a
 
@@ -1214,6 +1218,8 @@ function on_update() {
 
 	confirm_action_button("confirm_pass_to_reduce_debt", "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
+
+	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
 
 	action_button("end_action_round", "End Action Round")
 
