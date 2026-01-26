@@ -3073,8 +3073,6 @@ P.action_round = script (`
 function start_action_round() {
 	G.action_round_subphase = BEFORE_PICKING_TILE
 
-	//console.log ("Start Action Round for " + data.flags[G.active].name + ", turn " + data.turns[G.turn].name)
-
 	// Certain effects care if we controlled particular spaces from beginning of action round
 	// <br><b>
 	// set_has(G.controlled_start_of_round, space)
@@ -3313,7 +3311,7 @@ function active_rules() {
 function active_rules_list() {
 	let rules = []
 	for (const contingency of G.action_points_contingent) {
-		rules.push( { "rule": contingency.rule, "short": contingency.short } )
+		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
 	}
 	return rules
 }
@@ -3335,7 +3333,6 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 	contingent.rule = rule
 	contingent.short = short
 	contingent.not_independent = not_independent
-	//let contingent = { "type": type, "amount": amount, "rule": rule, "short": short, "not_independent": not_independent }
 	G.action_points_contingent.push(structuredClone(contingent))
 	log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
@@ -3346,15 +3343,18 @@ function get_contingent(type, rules, require_independent)
 	let amount = 0
 	if ((rules !== undefined) && (rules !== null)) {
 		if (rules.constructor === Array) {
-			for (let rule of rules) {
-				for (let i = 0; i < G.action_points_contingent.length; i++) {
-					if (G.action_points_contingent[i].type !== type) continue
+			for (let i = 0; i < G.action_points_contingent.length; i++) {
+				if (G.action_points_contingent[i].type !== type) continue
+				let any = false
+				for (const rule of rules) {
 					if (G.action_points_contingent[i].rule !== rule) continue
-					if (require_independent) {
-						if (G.action_points_contingent[i].not_independent) continue
-					}
-					amount += G.action_points_contingent[i].amount
+					any = true
 				}
+				if (!any) continue
+				if (require_independent) {
+					if (G.action_points_contingent[i].not_independent) continue
+				}
+				amount += G.action_points_contingent[i].amount
 			}
 		} else {
 			for (let i = 0; i < G.action_points_contingent.length; i++) {
@@ -3401,10 +3401,6 @@ function any_contingent(type, rules, require_independent) {
 // Use up contingent action points matching a specific rule, to the extent available. Returns amount that wasn't satisfied from contingent points (still to be paid)
 function use_contingent(amount, type, rule)
 {
-	//for (let i = 0; i < G.action_points_contingent.length; i++) {
-	//	console.log ("Rule: " + G.action_points_contingent[i].rule + "  Amount: " + G.action_points_contingent[i].amount)
-	//}
-
 	for (let i = 0; i < G.action_points_contingent.length; i++) {
 		if (G.action_points_contingent[i].type !== type) continue
 		if (G.action_points_contingent[i].rule !== rule) continue
@@ -3412,14 +3408,8 @@ function use_contingent(amount, type, rule)
 		while ((amount > 0) && (G.action_points_contingent[i].amount > 0)) {
 			amount--
 			G.action_points_contingent[i].amount--
-			//console.log ("i:" + i + "   amount:" + amount)
 		}
 	}
-
-	//for (let i = 0; i < G.action_points_contingent.length; i++) {
-	//	console.log ("Rule: " + G.action_points_contingent[i].rule + "  Amount: " + G.action_points_contingent[i].amount)
-	//}
-
 	return amount
 }
 
@@ -7835,7 +7825,6 @@ P.buy_event_decisions = {
 
 function do_buy_event(who) {
 	if (G.deck.length === 0) {
-		//console.log ("Discard Pile reshuffled")
 		log ("Discard Pile shuffled to form new Event Deck")
 		G.deck = G.discard_pile.slice()
 		G.discard_pile = []
@@ -9043,9 +9032,6 @@ function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
 	G.paid_action_cost = true
-
-	G.debug += tell_action_points()
-
 	let prev_cost = G.action_cost
 	let cost_string = " Cost: "	+ G.action_cost
 
@@ -9203,7 +9189,7 @@ function tell_action_points(space = true, brackets = true) {
 					}
 
 					for (let rule of active_rules_list()) {
-						let amount = get_contingent(i, rule.rule)
+						let amount = rule.amount
 						if (any_contingent(i, rule.rule)) {
 							if (need_comma) tell += ", "
 							tell += amount + " " + (shortest ? rule.short : rule.rule)
@@ -9219,9 +9205,6 @@ function tell_action_points(space = true, brackets = true) {
 	if (brackets) tell = "(" + tell + ")"
 	if (space) tell = " " + tell
 	return italic(tell)
-
-
-	//console.log (get_preference("actionverbosity", "medium"))
 }
 
 

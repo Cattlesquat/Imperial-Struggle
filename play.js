@@ -2162,7 +2162,7 @@ function active_rules() {
 function active_rules_list() {
 	let rules = []
 	for (const contingency of G.action_points_contingent) {
-		rules.push( { "rule": contingency.rule, "short": contingency.short } )
+		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
 	}
 	return rules
 }
@@ -2238,7 +2238,7 @@ function say_action_points(space = true, brackets = true) {
 					}
 
 					for (let rule of active_rules_list()) {
-						let amount = get_contingent(i, rule.rule)
+						let amount = rule.amount //get_contingent(i, rule.rule)
 						if (any_contingent(i, rule.rule)) {
 							if (need_comma) tell += ", "
 							tell += amount + " " + (shortest ? rule.short : rule.rule)
