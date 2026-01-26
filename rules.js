@@ -8725,8 +8725,8 @@ P.space_flow = script(`
 
     if (G.needs_to_flip_ministry >= 0) {
     	eval { 
-    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)    		
-    	    G.action_cost = action_point_cost(G.active, G.action_space, G.action_type)
+    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)			    		
+    	    G.action_cost = action_point_cost(G.active, G.active_space, G.action_type)
     	}	    	
     }
         
