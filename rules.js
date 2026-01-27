@@ -7123,7 +7123,7 @@ P.advantage_baltic_trade = {
 			let amount = Math.min(2, G.debt[R])
 			V.prompt = advantage_prompt(R, G.active_advantage, "Use advantage to reduce debt by " + amount + "?")
 			if (amount === 1) V.prompt += " (You currently have only 1 debt)"
-			action ("use_advantage")
+			button ("use_advantage")
 		}
 	},
 	use_advantage() {
