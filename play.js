@@ -100,7 +100,7 @@ const war_layout = {
 
 	// 7YW - Strength
 	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
-	war_7yw_theater_1_strength_br: [480, 405, 50, 25],
+	war_7yw_theater_1_strength_br: [490, 405, 50, 25],
 	war_7yw_theater_2_strength_fr: [560, 405, 50, 25],
 	war_7yw_theater_2_strength_br: [1015, 405, 50, 25],
 	war_7yw_theater_3_strength_fr: [42, 775, 50, 25],
@@ -109,16 +109,16 @@ const war_layout = {
 	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
 
 	// 7YW - Winner
-	war_7yw_theater_1_winner: [320, 78, 60, 25],
-	war_7yw_theater_2_winner: [780, 78, 60, 25],
-	war_7yw_theater_3_winner: [380, 448, 60, 25],
-	war_7yw_theater_4_winner: [700, 448, 60, 25],
+	war_7yw_theater_1_winner: [340, 98, 60, 25],
+	war_7yw_theater_2_winner: [860, 98, 60, 25],
+	war_7yw_theater_3_winner: [340, 466, 60, 25],
+	war_7yw_theater_4_winner: [810, 466, 60, 25],
 
 	// 7YW - Alliances
 	war_7yw_theater_1_alliances: [500, 144, 50, 152],
 	war_7yw_theater_2_alliances: [1022, 160, 50, 152],
-	war_7yw_theater_3_alliances: [500, 538, 50, 152],
-	war_7yw_theater_4_alliances: [1022, 510, 50, 152],
+	war_7yw_theater_3_alliances: [533, 514, 50, 152],
+	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
 
 	// AWI - Strength
 	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
