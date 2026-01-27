@@ -6586,7 +6586,7 @@ P.confirm_reveal_ministry = {
 			if (G.ministry_optional) button("dont_reveal_ministry")
 		} else {
 			V.prompt = say_action_header() + say_action("Exhaust " + say_ministry(G.ministry[R][G.ministry_index]) + " Ministry Card Ability?")
-			action ("exhaust_ministry")
+			button ("exhaust_ministry")
 			if (G.ministry_optional) button("dont_exhaust_ministry")
 		}
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
