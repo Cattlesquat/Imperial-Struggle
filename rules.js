@@ -5271,7 +5271,7 @@ P.event_hyder_ali = {
 			}
 			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path (exception for Fuzzer)
 			if (globalThis.RTT_FUZZER) {
-				action("done")
+				button("done")
 			}
 		} else {
 			msg = "Place two conflict markers in unprotected spaces in India"
