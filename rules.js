@@ -4328,11 +4328,12 @@ P.event_native_american_alliances = {
 				L.done_alliance = true
 			}
 		} else {
-			if (L.done_action_points || !G.qualifies_for_bonus) {
-				end()
-			} else {
+			if (!L.done_action_points) {
 				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 				L.done_action_points = true
+				if (!G.qualifies_for_bonus) end()
+			} else {
+				end()
 			}
 		}
 	},
