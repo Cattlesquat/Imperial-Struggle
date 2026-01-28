@@ -1551,7 +1551,7 @@ function update_war_display() {
 				region_match = true
 			}
 			if (theater_data.conflicts && region_match) {
-				if (set_has(V.conflicts, s) && (flag === FRANCE || flag === BRITAIN)) {
+				if (map_get(V.conflicts, s, 0) && (flag === FRANCE || flag === BRITAIN)) {
 					let opponent = 1 - flag
 					if (!conflicts["_Conflicts"]) {
 						conflicts["_Conflicts"] = { fr: [], br: [] }
