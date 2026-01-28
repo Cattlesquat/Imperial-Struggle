@@ -8694,6 +8694,8 @@ function reflag_space(s, who, silent = false) {
 		remove_huguenots(s)
 	}
 
+	set_isolated_market(s, false) // A reflagged space is never isolated that same turn
+
 	remove_conflict_marker(s) // Reflagging a space removes any conflict marker
 
 	update_advantages() // This could change the ownership of an advantage
