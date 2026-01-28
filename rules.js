@@ -7554,7 +7554,8 @@ function action_eligible_spaces_mil(region)
 				}
 				else {
 					/* 5.6.4 - Seize ('repair') an enemy fort  */
-					if (!is_damaged_fort(space.num)) continue                              // Must be damaged
+					if (!is_damaged_fort(space.num)) continue // Must be damaged
+					if (!action_points_eligible_major(MIL, space_rules(space.num, MIL)) && !eligible_for_minor_action(space.num, R)) continue // Cannot use minor action
 					var allowed_to_seize_fort = false
 					for (const link of space.connects) {
 						if (G.flags[link] !== R) continue
@@ -7563,6 +7564,12 @@ function action_eligible_spaces_mil(region)
 						break
 					}
 					if (!allowed_to_seize_fort) continue
+				}
+			}
+
+			if (space.type === NAVAL) {
+				if (G.flags[space.num] !== NONE) {
+					if (!action_points_eligible_major(MIL, space_rules(space.num, MIL)) && !eligible_for_minor_action(space.num, R)) continue // Cannot use minor action
 				}
 			}
 		}
@@ -8511,6 +8518,11 @@ function action_naval_destinations()
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
 		if (G.flags[s] === G.active) continue
+
+		if (G.flags[s] !== NONE) {
+			if (!action_points_eligible_major(MIL, space_rules(s, MIL)) && !eligible_for_minor_action(s, R)) continue
+		}
+
 		action_space(s)
 		avail++
 	}
