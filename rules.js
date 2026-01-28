@@ -7325,21 +7325,21 @@ P.advantage_unflag_discount = {
 				L.adv_string = "space in Russia, Silesia, or Bavaria"
 				L.adv_plural = "spaces in Russia, Silesia, or Bavaria"
 				L.adv_region = REGION_EUROPE
-				L.adv_market = true
+				L.adv_market = false
 				L.adv_for_one = true
 				break
 			case SILESIA_NEGOTIATIONS:
 				L.adv_string = "space in Prussia or the German States"
 				L.adv_plural = "spaces in Prussia or the German States"
 				L.adv_region = REGION_EUROPE
-				L.adv_market = true
+				L.adv_market = false
 				L.adv_for_one = true
 				break
 			case ITALY_INFLUENCE:
 				L.adv_string = "space in Spain or Austria"
 				L.adv_plural = "spaces in Spain or Austria"
 				L.adv_region = REGION_EUROPE
-				L.adv_market = true
+				L.adv_market = false
 				L.adv_for_one = true
 				break
 		}
@@ -7361,10 +7361,11 @@ P.advantage_unflag_discount = {
 			let any_non_conflict = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== L.adv_region) continue
-				if (data.spaces[s].type !== L.space_type) continue
+				if (data.spaces[s].type !== space_type) continue
 				if (G.flags[s] !== 1 - G.active) continue
 				any_flagged = true
-				if (!allowed_to_shift_market(s, R)) continue
+				if ((type === ECON) && !allowed_to_shift_market(s, R)) continue
+				if (!is_shift_allowed(s, R, true, space_rules(s, type))) continue
 				if (!has_conflict_marker(s)) any_non_conflict = true
 				if (!action_points_eligible_major(type, space_rules(s, type)) && !eligible_for_minor_action(s, R)) continue
 				action_space(s)
@@ -7409,6 +7410,7 @@ function allowed_to_shift_market(s, who)
 	}
 	return false
 }
+
 
 /* 5.3.2 "Minor Actions may not be used to remove opposing flags or Squadrons, unless the space has a Conflict Marker." Returns true if eligible for a minor action in the space (enemy spaces can only be unflagged if a conflict marker is present, or the Jonathan Swift / Townshend Acts ministry exceptions) */
 function eligible_for_minor_action(s, who)
@@ -8884,7 +8886,7 @@ P.space_flow = script(`
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_turn < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_round < 2)) {
 			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
 			if (G.used_required_advantage) {
 				eval {
@@ -8902,7 +8904,7 @@ P.space_flow = script(`
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_turn < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_round < 2)) {
 			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
 			if (G.used_required_advantage) {
 				eval {
