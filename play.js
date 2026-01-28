@@ -111,11 +111,11 @@ const war_layout = {
 	// 7YW - Winner
 	war_7yw_theater_1_winner: [340, 98, 60, 25],
 	war_7yw_theater_2_winner: [860, 98, 60, 25],
-	war_7yw_theater_3_winner: [340, 466, 60, 25],
+	war_7yw_theater_3_winner: [340, 476, 60, 25],
 	war_7yw_theater_4_winner: [810, 466, 60, 25],
 
 	// 7YW - Alliances
-	war_7yw_theater_1_alliances: [500, 144, 50, 152],
+	war_7yw_theater_1_alliances: [518, 147, 50, 152],
 	war_7yw_theater_2_alliances: [1022, 160, 50, 152],
 	war_7yw_theater_3_alliances: [533, 514, 50, 152],
 	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
