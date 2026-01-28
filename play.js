@@ -1493,9 +1493,24 @@ function update_war_display() {
 					if (a[0] !== war_number || a[1] !== theater) continue
 					
 					// Group forts and naval spaces together
-					let name = (space.type === FORT) ? "_Forts" 
-					         : (space.type === NAVAL) ? "_Squadrons" 
-					         : space.name
+					let name
+					if (space.type === FORT) {
+						name = "_Forts"
+					} else if (space.type === NAVAL) {
+						if (war_number === WAR_7YW && theater === 1) {
+							if (space.region === REGION_CARIBBEAN) {
+								name = "_Squadrons (Caribbean)"
+							} else if (space.region === REGION_NORTH_AMERICA) {
+								name = "_Squadrons (N. Amer.)"
+							} else {
+								name = "_Squadrons"
+							}
+						} else {
+							name = "_Squadrons"
+						}
+					} else {
+						name = space.name
+					}
 					
 					if (!alliances[name]) {
 						alliances[name] = { fr: [], br: [], type: space.type }
@@ -1537,11 +1552,27 @@ function update_war_display() {
 			flag_html += `</div>`
 		}
 		
-		// 2. Alliances TODO : CHECK SORTING TYPE, ALPHABET) 
+		// 2. Alliances
 		let alliance_names = Object.keys(alliances).sort((a, b) => {
+			// 1. order by type
 			let orderA = TYPE_SORT_ORDER[alliances[a].type] ?? 3
 			let orderB = TYPE_SORT_ORDER[alliances[b].type] ?? 3
-			return orderA !== orderB ? orderA - orderB : a.localeCompare(b)
+			if (orderA !== orderB) return orderA - orderB
+			
+			// 2. Special case : 7YW theater 1 (Atlantic Dominance)
+			if (war_number === WAR_7YW && theater === 1) {
+				const regionOrder = { 
+					"_Squadrons (Caribbean)": 0,
+					"_Squadrons": 1,
+					"_Squadrons (N. Amer.)": 2
+				}
+				if (regionOrder[a] !== undefined && regionOrder[b] !== undefined) {
+					return regionOrder[a] - regionOrder[b]
+				}
+			}
+
+			// 3. Otherwise, sort alphabetically
+			return a.localeCompare(b)
 		})
 		
 		for (let name of alliance_names) {
