@@ -6935,6 +6935,7 @@ P.ministry_pitt_the_elder = {
 	},
 	diplomatic_point() {
 		push_undo()
+		exhaust_ministry(R, PITT_THE_ELDER, 0)
 		add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
 		end()
 	},
