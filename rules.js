@@ -10019,7 +10019,10 @@ P.war_theater_reveal = {
 				end()
 			}
 		} else {
-			if ((G.review_step[FRANCE] >= 1) && (G.review_step[BRITAIN] >= 1)) review_end()
+			if ((G.review_step[FRANCE] >= 1) && (G.review_step[BRITAIN] >= 1)) {
+				review_end()
+				if (!L.wartile_choices[R].length) end()
+			}
 		}
 	},
 	space(s) {
@@ -10055,12 +10058,13 @@ P.war_theater_reveal = {
 
 		if (done) {
 			L.wartile_choices[R] = []
-			if (L.wartile_choices[1 - R].length > 0) {
+			if ((L.wartile_choices[1 - R].length > 0) || (G.review_step[1 - R] < G.review_index.length)) {
 				G.active = 1 - R
 				increase_debt(R, L.wartile_debt[R])
 				clear_dirty()
 				G.dirty_who = G.active
 			} else {
+				review_end()
 				end()
 			}
 		}
