@@ -1260,6 +1260,7 @@ function on_update() {
 	action_button("discard_event_for_trp", "Discard Event for TRP")
 	action_button("increase_debt_limit", "Increase Debt Limit")
 	action_button("jacobite_vp", "Score VP")
+	action_button("unflag_discount", "Use Discount This Round")
 
 	action_button("shift_market", "Shift Market")
 	action_button("place_conflict_marker", "Place Conflict Marker")
