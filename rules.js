@@ -654,6 +654,9 @@ function on_setup(scenario, options) {
 	// Integer: the number of advantages the G.active player has already used this turn
 	G.advantages_used_this_round  = 0
 
+	// Bitflags = which regions has the G.active player already used an advantage in this turn
+	G.advantage_regions           = 0
+
 	// All the flags on the map by space: G.flags[space]
 	// <br><b>
 	// if (G.flags[IRELAND_1] === FRANCE) { ... }
@@ -1211,6 +1214,7 @@ function has_advantage_eligible(who, a, ignore_exhaustion = false)
 	if ((G.advantages_exhausted & (1 << a)) && !ignore_exhaustion) return false	 // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		                         // 8.1 - can't be used if any conflict markers, but remains "controlled"
 	if (G.advantages_used_this_round >= 2) return false                          // 8.2 - Can only use 2 advantages per action round
+	if (G.advantage_regions & (1 << get_advantage_region(a))) return false       // 8.2 - Can only use 1 advantage in a region per action round
 	return true
 }
 
@@ -2256,6 +2260,7 @@ P.confirm_use_advantage = {
 	use_advantage() {
 		push_undo()
 		G.advantages_used_this_round++
+		G.advantage_regions |= (1 << get_advantage_region(G.advantage))
 		exhaust_advantage(G.advantage, true, G.advantage_required_because)
 		end()
 	},
@@ -3088,6 +3093,7 @@ function start_action_round() {
 	update_advantages()
 	advantages_acquired_last_round_now_available()
 	G.advantages_used_this_round = 0
+	G.advantage_regions = 0
 
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
 	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
@@ -4305,6 +4311,7 @@ P.event_native_american_alliances = {
 		push_undo()
 		G.active_advantage = a
 		G.advantages_used_this_round++
+		G.advantage_regions |= (1 << get_advantage_region(a))
 		G.advantage_already_exhausted = false
 		goto ("advantage_flow")
 	},
@@ -6027,6 +6034,7 @@ P.event_loge_des_neuf_soeurs = {
 
 		G.active_advantage = a
 		G.advantages_used_this_round++
+		G.advantage_regions |= (1 << get_advantage_region(a))
 		G.advantage_already_exhausted = false
 		goto ("advantage_flow")
 	},
@@ -7073,6 +7081,7 @@ function handle_advantage_click(a)
 {
 	G.active_advantage = a
 	G.advantages_used_this_round++
+	G.advantage_regions |= (1 << get_advantage_region(a))
 	G.advantage_already_exhausted = is_advantage_exhausted(a)
 	call ("advantage_flow")
 }
@@ -9578,6 +9587,7 @@ P.action_round_core = {
 		debug_log("Advantages Refreshed")
 		advantages_acquired_last_round_now_available()
 		G.advantages_used_this_round = 0
+		G.advantage_regions = 0
 	},
 	cheat_huguenots() {
 		push_undo()

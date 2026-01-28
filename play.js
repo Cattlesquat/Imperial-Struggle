@@ -1138,8 +1138,22 @@ function on_update() {
 	if (V.all_ministries)
 		populate_with_list("panel-all-ministries", "ministry_card", V.all_ministries)
 
-	populate_with_list("panel-available-investments", "investment", G.available_investments)
-	populate_with_list("panel-used-investments", "investment", G.used_investments)
+	V.available_investments.sort((a, b) =>
+	{
+		let aa = data.investments[a].majortype * 100 + (5 - data.investments[a].majorval) * 10 + data.investments[a].minortype
+		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
+		return aa - bb
+	})
+
+	V.used_investments.sort((a, b) =>
+	{
+		let aa = data.investments[a].majortype * 100 + (5 - data.investments[a].majorval) * 10 + data.investments[a].minortype
+		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
+		return aa - bb
+	})
+
+	populate_with_list("panel-available-investments", "investment", V.available_investments)
+	populate_with_list("panel-used-investments", "investment", V.used_investments)
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		if (!V.ministry) continue
