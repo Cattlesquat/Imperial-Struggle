@@ -1755,6 +1755,16 @@ function escape_square_brackets(text) {
 				break; // Gonna cheat and break here, because I only use this at the end of strings. Sorry, future-self-using-it-somewhere-else...
 			}
 
+			if (inside[1] === "Click") {
+				text = text.replace(/\[.*?]/, ("ontouchstart" in window) ? "Tap" : "Click")
+				continue
+			}
+
+			if (inside[1] === "click") {
+				text = text.replace(/\[.*?]/, ("ontouchstart" in window) ? "tap" : "click")
+				continue
+			}
+
 			let key = inside[1][1]                  // Second character tells us what nation color to use, if any
 			let msg = inside[1].slice(2)            // Rest of string is the message
 			let value = 0

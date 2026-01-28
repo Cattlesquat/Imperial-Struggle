@@ -1916,7 +1916,7 @@ P.deal_cards_discard = {
 	prompt() {
 		if (G.review_step[R] < G.review_index.length) {
 			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": ")
-			V.prompt += "Click \"Done\" to proceed to next phase."
+			V.prompt += "[Click] \"Done\" to proceed to next phase."
 			button ("done")
 		} else if (G.hand[R].length > 3) {
 			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
@@ -6750,7 +6750,7 @@ P.ministry_robert_walpole = {
 	inactive: "activate Robert Walpole",
 	prompt() {
 		if (L.drawn_extra) {
-			V.prompt = say_ministry_header() + say_action("You must now click an event card to discard.") + say_action_points()
+			V.prompt = say_ministry_header() + say_action("You must now [click] an event card to discard.") + say_action_points()
 			for (var c of G.hand[R]) {
 				action_event_card(c)
 			}
@@ -10087,7 +10087,7 @@ P.war_theater_reveal = {
 		let msg = say_action_header("WAR THEATER " + G.theater + ": ")
 
 		if (G.review_step[R] < G.review_index.length) {
-			msg += say_action_header("Click the " + data.wars[G.next_war].theater_names[G.theater] + " theater on the " + data.wars[G.next_war].name + " mat to reveal war tiles.")
+			msg += say_action_header("[Click] the " + data.wars[G.next_war].theater_names[G.theater] + " theater on the " + data.wars[G.next_war].name + " mat to reveal war tiles.")
 			action_theater(G.theater)
 		} else if ((L.wartile_debt[1 - R] > 0) && L.wartile_choices[R].includes(WAR_DEBT)) {
 			msg += say_action("You have revealed " + L.wartile_debt[1 - R] + " tile" + s(L.wartile_debt[1 - R]) + " with " + a(L.wartile_debt[1 - R]) + "debt marker" + s(L.wartile_debt[1 - R]) +  ". " + data.flags[1 - R].adj + " debt increased by " + L.wartile_debt[1 - R] + ".")
