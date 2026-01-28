@@ -111,7 +111,7 @@ const war_layout = {
 	// 7YW - Winner
 	war_7yw_theater_1_winner: [340, 98, 60, 25],
 	war_7yw_theater_2_winner: [860, 98, 60, 25],
-	war_7yw_theater_3_winner: [340, 476, 60, 25],
+	war_7yw_theater_3_winner: [350, 466, 60, 25],
 	war_7yw_theater_4_winner: [810, 466, 60, 25],
 
 	// 7YW - Alliances
@@ -1491,13 +1491,17 @@ function update_war_display() {
 			if (space.alliance) {
 				for (const a of space.alliance) {
 					if (a[0] !== war_number || a[1] !== theater) continue
-					
+
+					// 7YW Theater 3 includes both North America and Caribbean
+					if (war_number === WAR_7YW && theater === 3) {
+						if (space.region !== REGION_NORTH_AMERICA && space.region !== REGION_CARIBBEAN) continue
+					}
 					// Group forts and naval spaces together
 					let name
 					if (space.type === FORT) {
 						name = "_Forts"
 					} else if (space.type === NAVAL) {
-						if (war_number === WAR_7YW && theater === 1) {
+						if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
 							if (space.region === REGION_CARIBBEAN) {
 								name = "_Squadrons (Caribbean)"
 							} else if (space.region === REGION_NORTH_AMERICA) {
@@ -1527,21 +1531,41 @@ function update_war_display() {
 			}
 				
 			// Conflict markers
-			if (theater_data.conflicts && space.region === theater_data.region) {
+			let region_match = space.region === theater_data.region
+			if (war_number === WAR_7YW && theater === 3 && space.region === REGION_CARIBBEAN) {
+				region_match = true
+			}
+			if (theater_data.conflicts && region_match) {
 				if (set_has(V.conflicts, s) && (flag === FRANCE || flag === BRITAIN)) {
 					let opponent = 1 - flag
-					let name = space.name
-					if (!conflicts[name]) {
-						conflicts[name] = { fr: [], br: [], space: s }
+					if (!conflicts["_Conflicts"]) {
+						conflicts["_Conflicts"] = { fr: [], br: [] }
 					}
-					if (opponent === FRANCE) conflicts[name].fr.push(s)
-					if (opponent === BRITAIN) conflicts[name].br.push(s)
+					if (opponent === FRANCE && !conflicts["_Conflicts"].fr.includes(s)) conflicts["_Conflicts"].fr.push(s)
+					if (opponent === BRITAIN && !conflicts["_Conflicts"].br.includes(s)) conflicts["_Conflicts"].br.push(s)
 				}
+			}
+		}
+		if (war_number === WAR_7YW && theater === 3) {
+			for (let s of [SAN_AGUSTIN, ASIENTO]) {
+				let flag = V.flags[s]
+				if (flag !== FRANCE && flag !== BRITAIN) continue
+				
+				if (!alliances["_Spain"]) {
+					alliances["_Spain"] = { fr: [], br: [], type: TERRITORY }
+				}
+				
+				if (flag === FRANCE && !alliances["_Spain"].fr.includes(s)) alliances["_Spain"].fr.push(s)
+				if (flag === BRITAIN && !alliances["_Spain"].br.includes(s)) alliances["_Spain"].br.push(s)
 			}
 		}
 		
 		// Build HTML
 		let flag_html = ""
+
+		if (conflicts["_Conflicts"]) {
+			alliances["_Conflicts"] = { fr: conflicts["_Conflicts"].fr, br: conflicts["_Conflicts"].br, type: -1 }
+		}
 
 		// 1. Ministry keyword bonus
 		if (ministry_keyword > 0) {
@@ -1553,37 +1577,28 @@ function update_war_display() {
 		}
 		
 		// 2. Alliances
+		// Sort order: political (0), conflicts (1), forts (2), naval (3)
+		const SORT_ORDER = { [TERRITORY]: 0, [POLITICAL]: 0, [-1]: 1, [FORT]: 2, [NAVAL]: 3 }	
+		
 		let alliance_names = Object.keys(alliances).sort((a, b) => {
-			// 1. order by type
-			let orderA = TYPE_SORT_ORDER[alliances[a].type] ?? 3
-			let orderB = TYPE_SORT_ORDER[alliances[b].type] ?? 3
+			let orderA = SORT_ORDER[alliances[a].type] ?? 4
+			let orderB = SORT_ORDER[alliances[b].type] ?? 4
 			if (orderA !== orderB) return orderA - orderB
 			
-			// 2. Special case : 7YW theater 1 (Atlantic Dominance)
-			if (war_number === WAR_7YW && theater === 1) {
-				const regionOrder = { 
-					"_Squadrons (Caribbean)": 0,
-					"_Squadrons": 1,
-					"_Squadrons (N. Amer.)": 2
-				}
+			// Special sort for 7YW theater 1 & 3
+			if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
+				const regionOrder = { "_Squadrons (Caribbean)": 0, "_Squadrons": 1, "_Squadrons (N. Amer.)": 2 }
 				if (regionOrder[a] !== undefined && regionOrder[b] !== undefined) {
 					return regionOrder[a] - regionOrder[b]
 				}
 			}
-
-			// 3. Otherwise, sort alphabetically
+			
 			return a.localeCompare(b)
 		})
 		
 		for (let name of alliance_names) {
 			flag_html += build_flag_row(alliances[name], name)
 		}
-
-		// 3. Conflicts TODO : LIKELY SMALL BUGS
-		for (let name of Object.keys(conflicts).sort()) {
-			flag_html += build_flag_row(conflicts[name], name + " (conflict)")
-		}
-		// TODO : war 4 with diff conflict markers
 		
 		update_text_html(`lout-${war_prefix}-alliance`, theater, flag_html)
 	}
