@@ -1563,6 +1563,11 @@ function say_bonus_war_tile(t, color = true) {
 }
 
 
+function say_scroll_to_war() {
+	return "[V]"
+}
+
+
 function say_action_header(msg = null)
 {
 	if (msg !== null) return bold(msg)
@@ -3573,6 +3578,13 @@ P.select_investment_tile = {
 	_resume() {
 		log_box_end()
 	},
+	inactive() {
+		if (G.theater_bonus_war_tiles[1-R][0].length) {
+			return "place Austrian Succession bonus war tiles"
+		} else {
+			return "select an investment tile"
+		}
+	},
 	prompt() {
 		if (G.theater_bonus_war_tiles[R][0].length) {
 			if (L.tile_to_move >= 0) {
@@ -3581,7 +3593,7 @@ P.select_investment_tile = {
 					action_theater(theater)
 				}
 			} else {
-				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + (L.moved_any_tiles ? say_action ("Select next bonus war tile to place") : say_action("Scroll down to War board and select a bonus war tile to place."))
+				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + (L.moved_any_tiles ? say_action ("Select next bonus war tile to place") : say_action("Scroll down to War board and select a bonus war tile to place.") + say_scroll_to_war())
 				for (const tile of G.theater_bonus_war_tiles[R][0]) {
 					action_bonus_war_tile(tile)
 				}
@@ -11005,10 +11017,17 @@ exports.view = function (state, role) {
 		} else {
 			var inactive = P[L.P]?.inactive
 			if (inactive) {
-				if (Array.isArray(G.active))
-					V.prompt = `Waiting for ${G.active.join(" and ")} to ${inactive}.`
-				else
-					V.prompt = `Waiting for ${G.active} to ${inactive}.`
+				if (typeof inactive === "function") {
+					if (Array.isArray(G.active))
+						V.prompt = `Waiting for ${G.active.join(" and ")} to ${inactive()}.`
+					else
+						V.prompt = `Waiting for ${G.active} to ${inactive()}.`
+				} else {
+					if (Array.isArray(G.active))
+						V.prompt = `Waiting for ${G.active.join(" and ")} to ${inactive}.`
+					else
+						V.prompt = `Waiting for ${G.active} to ${inactive}.`
+				}
 			} else {
 				if (Array.isArray(G.active))
 					V.prompt = `Waiting for ${G.active.join(" and ")}.`

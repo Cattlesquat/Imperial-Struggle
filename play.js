@@ -1825,6 +1825,10 @@ function escape_square_brackets(text) {
 						onmouseleave="_tip_blur_space()"
 						>${escape_typography(msg)}</span>`
 					break
+				case "V":
+					tooltip_text = `${escape_typography(msg)}`
+					scroll_to_war()
+					break
 				case "$":
 				default:
 					className = "tip-spending"
