@@ -10113,10 +10113,6 @@ function start_war_theater_resolution()
 	if (L.war_winner === NONE) {
 		L.result_string = "Theater is tied; no winner or spoils."
 	} else {
-		//if (L.war_tier < 0) {
-		//	console.error("Winner declared but no margin of victory. War: " + G.next_war + " Theater: " + G.theater + " Winner: " + L.war_winner + " Delta: " + L.war_delta + " Tier: " + L.war_tier)
-		//}
-
 		L.result_string = "+" + L.war_delta + " " + data.flags[L.war_winner].adj + " victory!"
 
 		L.war_vp = data.wars[G.next_war].theater[G.theater].vp[L.war_tier]
@@ -10502,6 +10498,7 @@ P.war_theater_resolve = {
 				}
 			} else if (data.spaces[s].type === TERRITORY) {
 				let cost = conquest_point_cost(s)
+				mark_dirty(s)
 				L.confirming_conquest = true
 			}
  		} else if (L.war_unflag > 0) {
@@ -10553,6 +10550,7 @@ P.war_theater_resolve = {
 	},
 	confirm() {
 		push_undo()
+		mark_dirty(L.war_space)
 		L.confirming_conquest = false
 		let cost = conquest_point_cost(L.war_space)
 		log(data.flags[L.war_winner].name + " spends " + cost + " Conquest Point" + s(cost) + ".")
