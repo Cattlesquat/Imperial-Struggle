@@ -9383,7 +9383,7 @@ function tell_action_points(space = true, brackets = true) {
 
 function do_reflag_space(repair_if_damaged = true) {
 	let whom = (G.flags[G.active_space] === NONE) ? G.active : NONE
-	silent = false
+	let silent = false
 
 	if ((data.spaces[G.active_space].type === FORT) && repair_if_damaged) {
 		if (is_damaged_fort(G.active_space)) {
