@@ -1618,7 +1618,7 @@ menu li.separator {
     justify-content: center;
 }
 
-.marker.demand-winner-slot {
+.marker.demand-winner-slot, .marker.award-winner-slot {
     width: 40px;
     min-height: 20px;
     display: flex;
@@ -1627,7 +1627,7 @@ menu li.separator {
     padding: 2px 4px;
 }
 
-.demand-flag {
+.demand-flag, .award-flag {
     width: 16px;
     height: 16px;
     background-size: contain;
@@ -1635,21 +1635,23 @@ menu li.separator {
     background-position: center;
 }
 
-.demand-flag.fr {
+.demand-flag.fr, .award-flag.fr  {
     background-image: url(tiles75/square-sm/flag_fr.png);
 }
 
-.demand-flag.br {
+.demand-flag.br, .award-flag.br {
     background-image: url(tiles75/square-sm/flag_br.png);
 }
 
-.demand-count {
+.marker.award-winner-slot.prestige {
+    border: 2px solid springgreen;
+}
+
+.demand-count, .award-count {
     font-size: 11px;
     color: #333;
     margin-left: 2px;
 }
-
-
 
 #map_tip {
     position: fixed;

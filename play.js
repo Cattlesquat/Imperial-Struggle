@@ -727,6 +727,18 @@ function on_init() {
 		define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
 	}
 
+	for (let r = 0; r < NUM_REGIONS; r++) {
+		define_marker("award-winner", r)
+			.keyword("award-winner-slot")
+	}
+	define_marker("award-winner-prestige", 0)
+		.keyword("award-winner-slot prestige")
+	define_layout("lout-award-winner", REGION_EUROPE, find_layout_node("Award_winner Europe"))
+	define_layout("lout-award-winner", REGION_NORTH_AMERICA, find_layout_node("Award_winner North America"))
+	define_layout("lout-award-winner", REGION_CARIBBEAN, find_layout_node("Award_winner Caribbean"))
+	define_layout("lout-award-winner", REGION_INDIA, find_layout_node("Award_winner India"))
+	define_layout("lout-award-winner-prestige", 0, find_layout_node("Award_winner Europe Prestige"))
+
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
 	for (let i = 0; i < 3; i++) {
 		define_marker("demand-winner", i)
@@ -1068,9 +1080,47 @@ function on_update() {
 	populate("turn-track", V.turn, "game-turn")
 	populate("lout-initiative", "initiative", V.initiative)
 
+
+	for (let r = 0; r < NUM_REGIONS; r++) {
+		populate("lout-award-winner", r, "award-winner", r)
+		
+		let winner = region_flag_winner(r)
+		let delta = region_flag_delta(r)
+		let fr_count = V.flag_count[FRANCE][r]
+		let br_count = V.flag_count[BRITAIN][r]
+		
+		let html = ""
+		if (winner !== NONE) {
+			let flag_class = winner === FRANCE ? "fr" : "br"
+			html += `<span class="award-flag ${flag_class}"></span>`
+			html += `<span class="award-count">(${fr_count}-${br_count})</span>`
+		} else if (fr_count > 0 || br_count > 0) {
+			html += `<span class="award-count">(${fr_count}-${br_count})</span>`
+		}
+		
+		update_text_html("award-winner", r, html)
+	}
+
+	// Europe prestige winner indicator
+	populate("lout-award-winner-prestige", 0, "award-winner-prestige", 0)
+
+	let prestige_win = prestige_winner()
+	let prestige_delta = prestige_flag_delta()
+	let prestige_fr = V.prestige_flags[FRANCE]
+	let prestige_br = V.prestige_flags[BRITAIN]
+
+	let prestige_html = ""
+	if (prestige_win !== NONE) {
+		let flag_class = prestige_win === FRANCE ? "fr" : "br"
+		prestige_html += `<span class="award-flag ${flag_class}"></span>`
+		prestige_html += `<span class="award-count">(${prestige_fr}-${prestige_br})</span>`
+	} else if (prestige_fr > 0 || prestige_br > 0) {
+		prestige_html += `<span class="award-count">(${prestige_fr}-${prestige_br})</span>`
+	}
+
+	update_text_html("award-winner-prestige", 0, prestige_html)
+
 	populate_with_list("lout-demand", "demand", V.global_demand)
-
-
 	for (let i = 0; i < V.global_demand.length; i++) {
 		populate("lout-demand-winner", 0, "demand-winner", i)
 		
