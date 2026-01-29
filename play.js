@@ -1090,6 +1090,7 @@ function on_update() {
 
 	for (var d of global_demand_chits) {
 		populate("stack-deal", undefined, "demand", d)
+	}
 
 	for (var a of V.award_chits) {
 		populate("stack-deal", undefined, "award", a)
