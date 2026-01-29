@@ -35,6 +35,8 @@ const war_layout = {
 	war_awi_theater_2_britain: [747, 443, 152, 152],
 	war_awi_theater_3_france: [115, 613, 152, 152],
 	war_awi_theater_3_britain: [300, 613, 152, 152],
+	war_awi_theater_4_france: [577, 132, 152, 152],
+	war_awi_theater_4_britain: [747, 132, 152, 152],
 	war_7yw_theater_1: [36, 76, 507, 360],
 	war_7yw_theater_2: [550, 76, 505, 360],
 	war_7yw_theater_3: [36, 447, 507, 360],
@@ -50,6 +52,7 @@ const war_layout = {
 	war_awi_theater_1: [36, 76, 507, 465],
 	war_awi_theater_2: [557, 76, 505, 297],
 	war_awi_theater_3: [557, 387, 505, 425],
+	war_awi_theater_4: [59, 568, 443, 219],
 
 	// WSS - Strength
 	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
@@ -119,11 +122,11 @@ const war_layout = {
 
 	// AWI - Strength
 	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
-	war_awi_theater_1_strength_br: [510, 510, 50, 25],
+	war_awi_theater_1_strength_br: [350, 510, 50, 25],
 	war_awi_theater_2_strength_fr: [557, 345, 50, 25],
-	war_awi_theater_2_strength_br: [1040, 345, 50, 25],
+	war_awi_theater_2_strength_br: [870, 345, 50, 25],
 	war_awi_theater_3_strength_fr: [557, 780, 50, 25],
-	war_awi_theater_3_strength_br: [1035, 780, 50, 25],
+	war_awi_theater_3_strength_br: [870, 780, 50, 25],
 
 	// AWI - Winner
 	war_awi_theater_1_winner: [330, 78, 60, 25],
@@ -131,9 +134,10 @@ const war_layout = {
 	war_awi_theater_3_winner: [700, 388, 60, 25],
 
 	// AWI - Alliances
-	war_awi_theater_1_alliances: [502, 144, 50, 152],
-	war_awi_theater_2_alliances: [1037, 164, 50, 152],
-	war_awi_theater_3_alliances: [1037, 315, 50, 152],
+	war_awi_theater_1_alliances: [500, 144, 50, 152],
+	war_awi_theater_2_alliances: [1022, 160, 50, 152],
+	war_awi_theater_3_alliances: [500, 538, 50, 152],
+	war_awi_theater_4_alliances: [1022, 510, 50, 152],
 }
 
 const layout_theater_drawn = [0, 0, 1800, 70] // Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
