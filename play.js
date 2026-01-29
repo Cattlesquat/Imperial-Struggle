@@ -750,7 +750,7 @@ function on_init() {
 	define_layout("lout-award-winner-prestige-right", 0, find_layout_node("Award_winner Europe Prestige Right"))
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
-	for (let i = 0; i < 3; i++) {
+	for (let i = 0; i < 4; i++) {
 		define_marker("demand-winner", i)
 			.keyword("demand-winner-slot")
 	}
@@ -1121,8 +1121,6 @@ function on_update() {
 			let flag_class = winner === FRANCE ? "fr" : "br"
 			html_left += `<span class="award-flag ${flag_class}"></span>`
 			html_right += `<span class="award-count">+${delta}</span>`
-		//} else if (fr_count > 0 || br_count > 0) {
-		//	html += `<span class="award-count">(${delta})</span>`
 		}
 		
 		update_text_html("award-winner-left", r, html_left)
@@ -1144,8 +1142,6 @@ function on_update() {
 		let flag_class = prestige_win === FRANCE ? "fr" : "br"
 		prestige_html_left += `<span class="award-flag ${flag_class}"></span>`
 		prestige_html_right += `<span class="award-count">+${prestige_delta}</span>`
-	//} else if (prestige_fr > 0 || prestige_br > 0) {
-	//	prestige_html += `<span class="award-count">(${prestige_fr}-${prestige_br})</span>`
 	}
 
 	update_text_html("award-winner-prestige-left", 0, prestige_html_left)
@@ -1165,9 +1161,7 @@ function on_update() {
 		if (winner !== NONE) {
 			let flag_class = winner === FRANCE ? "fr" : "br"
 			html += `<span class="demand-flag ${flag_class}"></span>`
-			html += `<span class="demand-count">(+${delta})</span>`
-		//} else if (fr_count > 0 || br_count > 0) {
-		//	html += `<span class="demand-count">(${fr_count}-${br_count})</span>`
+			html += `<span class="demand-count"><span style="background-color:#e5c28a">+${delta}</span></span>`
 		}
 		
 		update_text_html("demand-winner", i, html)
