@@ -963,6 +963,7 @@ function on_view(RR = undefined) {
 		]
 
 		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + opponent hand
+		V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 	}
 	if (RR === BRITAIN) {
 		V.hand = [
@@ -975,6 +976,7 @@ function on_view(RR = undefined) {
 		]
 
 		V.deck = G.deck.concat(G.hand[FRANCE]) // Deck + opponent hand
+		V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 	}
 	if (RR < 0) {
 		V.hand = [

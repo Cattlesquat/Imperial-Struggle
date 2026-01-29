@@ -833,14 +833,14 @@ function on_init() {
 
 	for (i = 1; i <= NUM_EVENT_CARDS; ++i) {
 		// define_card if no animations desired
-		define_marker ("event_card", i)
+		define_card ("event_card", i)
 			.keyword("c" + i)
 			.tooltip(event_tooltip(i))
 	}
 
 	for (i = 1; i <= 26; ++i) {
 		// define_card if no animations desired
-		define_marker("ministry_card", i)
+		define_card("ministry_card", i)
 			.keyword("c" + i)
 			.tooltip(ministry_tooltip(i))
 	}
@@ -1291,9 +1291,13 @@ function on_update() {
 		}
 	}
 
-	if (V.deck) {
-		////
-	}
+	//if (V.deck) {
+	//	for (const c in V.deck) {
+	//		console.log (c)
+	//		//populate("stack-deal", undefined, "event_card", c)
+	//	}
+	//}
+
 
 	if (V.hand) {
 		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
