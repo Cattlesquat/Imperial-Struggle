@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 2
+const GAME_STATE_VERSION = 3
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -216,6 +216,10 @@ const NUM_SPACES_CARIBBEAN      = 30
 const NUM_SPACES_INDIA = 22
 
 // SPACES
+const SPACE_NAVY_BOX = -1	// The negative numbers are for keeping track of squadron "token" locations for animation purposes
+const SPACE_UNBUILT = -2
+const SPACE_THE_BRIG = -3
+const SPACE_REMOVED_FROM_GAME = -4
 const IRELAND_1 = 0
 const IRELAND_2 = 1
 const SCOTLAND_1 = 2
@@ -768,6 +772,11 @@ function on_setup(scenario, options) {
 	G.navy_box[FRANCE] = 1
 	G.navy_box[BRITAIN] = 2
 
+	// Which space each individual squadron thinks it's in, of the 8 "physical squadron counters" provided to each side (this is tracked *only* for the purpose of having squadrons animate between their changing positions)
+	// <br><b>
+	// G.squadrons[who][0 - 7]
+	G.squadrons = [ [ SPACE_NAVY_BOX, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT ], [ SPACE_NAVY_BOX, SPACE_NAVY_BOX, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT, SPACE_UNBUILT ] ]
+
 	// British navies can get sent away to come back on the next peace turn
 	G.the_brig = 0
 
@@ -853,13 +862,39 @@ function on_setup(scenario, options) {
 }
 
 
+// Graceful upgrades of obsolete game-states
 function on_load()
 {
 	if (G.game_state_version === undefined) G.game_state_version = 0
+	if (G.game_state_created_with === undefined) G.game_state_created_with = G.game_state_version
 
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
-	if (G.game_state_created_with === undefined) G.game_state_created_with = G.game_state_version
+	if (G.game_state_version < 3) {
+		G.squadrons = [ [], [] ]
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== NAVAL) continue
+			let who = G.flags[s]
+			if (who === NONE) continue
+			G.squadrons[who].push(s)
+		}
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			for (let ss = 0; ss < G.navy_box[who]; ss++) {
+				G.squadrons[who].push(SPACE_NAVY_BOX)
+			}
+			for (let ss = 0; ss < G.unbuilt_squadrons[who]; ss++) {
+				G.squadrons[who].push(SPACE_UNBUILT)
+			}
+			if (who === BRITAIN) {
+				for (let ss = 0; ss < G.the_brig; ss++) {
+					G.squadrons[who].push(SPACE_THE_BRIG)
+				}
+			}
+			if (G.squadrons[who].length !== NUM_SQUADRONS) {
+				throw new Error("Failed squadron conversion: " + data.flags[who].name + " " + G.squadrons[who].length)
+			}
+		}
+	}
 
 	G.game_state_version = GAME_STATE_VERSION
 }
@@ -937,6 +972,7 @@ function on_view(RR = undefined) {
 
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
+	V.squadrons = G.squadrons
 	V.the_brig = G.the_brig
 
 	V.played_tile  = G.played_tile
@@ -1601,6 +1637,24 @@ function say_action_points() {
 }
 
 
+// Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
+function get_squadron_token(who, s)
+{
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		if (G.squadrons[who][sq] === s) return sq
+	}
+	console.error ("No squadron found for space: " + s)
+	return 0
+}
+
+
+// Changes the location of a squadron token (used only to animate squadrons between spaces)
+// The negative "off board locations" are allowed as well as space numbers
+function move_squadron_token(who, from, to)
+{
+	G.squadrons[who][get_squadron_token(who, from)] = to
+}
+
 
 /* 4.0 - GAME SEQUENCE */
 
@@ -1848,6 +1902,10 @@ P.reset_phase = function () {
 
 	// British navies return from jail
 	if ((G.the_brig !== undefined) && (G.the_brig > 0)) {
+		for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+			if (G.squadrons[BRITAIN][sq] !== SPACE_THE_BRIG) continue
+			G.squadrons[BRITAIN][sq] = SPACE_NAVY_BOX
+		}
 		G.navy_box[BRITAIN] += G.the_brig
 		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " return" + s(1 - G.the_brig) + " to the Navy Box."))
 		log (say_navy_box())
@@ -4791,6 +4849,8 @@ P.event_calico_acts = {
 			reflag_space(s, NONE)
 			if (!G.qualifies_for_bonus) end()
 		} else {
+			move_squadron_token(BRITAIN, s, SPACE_NAVY_BOX)
+
 			reflag_space (s, NONE, true)
 			G.navy_box[BRITAIN]++
 
@@ -4910,6 +4970,7 @@ P.do_military_spending_overruns = {
 		if (data.spaces[s].type === FORT) {
 			set_damaged_fort(s)
 		} else {
+			move_squadron_token(G.active, s, SPACE_NAVY_BOX)
 			reflag_space (s, NONE, true)
 			G.navy_box[G.active]++
 
@@ -5271,6 +5332,7 @@ P.event_byngs_trial = {
 	},
 	space(s) {
 		push_undo()
+		move_squadron_token(BRITAIN, s, SPACE_THE_BRIG)
 		reflag_space(s, NONE, true)
 		log (bold("British squadron removed from " + say_space(s) + ". It will return to the Navy Box on the next peace turn."))
 		if (G.the_brig === undefined) G.the_brig = 0
@@ -5283,6 +5345,7 @@ P.event_byngs_trial = {
 	},
 	navy_box() {
 		push_undo()
+		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_THE_BRIG)
 		G.navy_box[BRITAIN]--
 		if (G.the_brig === undefined) G.the_brig = 0
 		G.the_brig++
@@ -5625,6 +5688,7 @@ function quadruple_alliance_british_bonus()
 		log("No unbuilt British squadrons remain -- cannot construct one.")
 		return true
 	}
+	move_squadron_token(BRITAIN, SPACE_UNBUILT, SPACE_NAVY_BOX)
 	G.navy_box[BRITAIN]++
 	log ("British squadron constructed to Navy Box.")
 }
@@ -5683,6 +5747,7 @@ P.event_war_of_the_quadruple_alliance = {
 	space(s) {
 		push_undo()
 		if (R === BRITAIN) {
+			move_squadron_token(BRITAIN, s, SPACE_THE_BRIG)
 			reflag_space(s, NONE, true)
 			L.picked_squadron = true
 			G.the_brig++
@@ -5698,6 +5763,7 @@ P.event_war_of_the_quadruple_alliance = {
 	navy_box() {
 		push_undo()
 		L.picked_squadron = true
+		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_THE_BRIG)
 		G.navy_box[BRITAIN]--
 		G.the_brig++
 		log("British squadron removed from Navy Box (will return next peace turn).")
@@ -5951,6 +6017,7 @@ function nootka_bonus()
 		award_vp(BRITAIN, score, false, (score/2) + " flag" + s(score/2) + " removed from alliance spaces in Spain")
 	} else {
 		if (G.unbuilt_squadrons[FRANCE] > 0) {
+			move_squadron_token(FRANCE, SPACE_UNBUILT, SPACE_NAVY_BOX)
 			G.navy_box[FRANCE]++
 			G.unbuilt_squadrons[FRANCE]--
 			log ("French squadron added to Navy Box.")
@@ -5999,6 +6066,7 @@ P.event_nootka_incident = {
 	},
 	space(s) {
 		push_undo()
+		move_squadron_token(BRITAIN, s, SPACE_NAVY_BOX)
 		reflag_space(s, NONE)
 		G.navy_box[BRITAIN]++
 		log ("British squadron from " + say_space(s) + " displaced to Navy Box.")
@@ -6440,6 +6508,7 @@ P.event_falklands_crisis = {
 			reflag_space(s, NONE)
 			end()
 		} else {
+			move_squadron_token(BRITAIN, s, SPACE_REMOVED_FROM_GAME)
 			reflag_space(s, NONE, silent)
 			log("British squadron at " + say_space(s) + " removed from the game.")
 			end()
@@ -6447,6 +6516,7 @@ P.event_falklands_crisis = {
 	},
 	navy_box() {
 		push_undo()
+		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_REMOVED_FROM_GAME)
 		G.navy_box[BRITAIN]--
 		log ("British squadron from Navy Box removed from the game.")
 		log (say_navy_box())
@@ -6531,6 +6601,7 @@ P.event_cook_and_bougainville = {
 			}
 		} else {
 			if (G.unbuilt_squadrons[FRANCE] > 0) {
+				move_squadron_token(FRANCE, SPACE_UNBUILT, SPACE_NAVY_BOX)
 				G.navy_box[FRANCE]++
 				log("French squadron added to Navy Box.")
 				log(say_navy_box())
@@ -7305,6 +7376,7 @@ P.advantage_naval_bastion = {
 	},
 	space(s) {
 		push_undo()
+		move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 		G.navy_box[1 - R]++
 		reflag_space(s, NONE, true)
 
@@ -8100,7 +8172,8 @@ P.construct_squadron_flow = script(`
 function do_construct_squadron(who) {
 	if (G.unbuilt_squadrons[who] <= 0) return // Can't construct a squadron if there aren't any left to build
 
-	G.unbuilt_squadrons[who] -= 1
+	move_squadron_token(who, SPACE_UNBUILT, SPACE_NAVY_BOX)
+	G.unbuilt_squadrons[who]--
 	G.navy_box[who]++
 
 	log_br()
@@ -8810,15 +8883,20 @@ function execute_naval_move()
 	let msg = data.flags[G.active].name + " "
 	if (G.navy_displace) {
 		msg += " DISPLACES " + data.flags[1 - G.active].adj + " squadron at " + say_space(G.navy_to)
+		move_squadron_token(1 - G.active, G.navy_to, SPACE_NAVY_BOX)
 		if (G.navy_from_navy_box) {
 			msg += " with a squadron from the Navy Box."
+			move_squadron_token(G.active, SPACE_NAVY_BOX, G.navy_to)
 		} else {
 			msg += " with its squadron from " + say_space(G.navy_from) + "."
+			move_squadron_token(G.active, G.navy_from, G.navy_to)
 		}
 	} else if (G.navy_from_navy_box) {
 		msg += " deploys a squadron from the Navy Box to " + say_space(G.navy_to) + "."
+		move_squadron_token(G.active, SPACE_NAVY_BOX, G.navy_to)
 	} else {
 		msg += " moves its squadron from " + say_space(G.navy_from) + " to " + say_space(G.navy_to) + "."
+		move_squadron_token(G.active, G.navy_from, G.navy_to)
 	}
 	log (msg)
 
@@ -10216,6 +10294,7 @@ P.war_theater_reveal = {
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
 			case NAVAL:
+				move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 				reflag_space(s, NONE)
 				G.navy_box[1-R]++
 				log (data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box")
@@ -10685,10 +10764,12 @@ P.war_theater_resolve = {
 			L.war_squadrons--
 			reflag_space(s, NONE)
 			if (current_era() === REVOLUTION_ERA) {
-				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
+				log (data.flags[G.active].name + " removes the squadron at " + say_space(s) + " from the game.")
+				move_squadron_token(G.active, s, SPACE_REMOVED_FROM_GAME)
 			} else {
 				G.unbuilt_squadrons[G.active]++
-				log (data.flags[G.active].name + " removes the squadron at " + say_space(s) + " from the game.")
+				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
+				move_squadron_token(G.active, s, SPACE_UNBUILT)
 			}
 		} else if (L.picking_squadron) {
 			conquer_from_space(s)
@@ -10744,10 +10825,12 @@ P.war_theater_resolve = {
 			L.war_squadrons--
 			G.navy_box[G.active]--
 			if (current_era() === REVOLUTION_ERA) {
-				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
+				log (data.flags[G.active].name + " removes a squadron in the Navy Box from the game.")
+				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_REMOVED_FROM_GAME)
 			} else {
 				G.unbuilt_squadrons[G.active]++
-				log (data.flags[G.active].name + " removes a squadron in the Navy Box from the game.")
+				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_UNBUILT)
+				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
 			}
 		} else {
 			conquer_from_navy_box()
