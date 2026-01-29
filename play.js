@@ -728,6 +728,11 @@ function on_init() {
 	}
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
+	for (let i = 0; i < 3; i++) {
+		define_marker("demand-winner", i)
+			.keyword("demand-winner-slot")
+	}
+	define_layout("lout-demand-winner", 0, find_layout_node("Demand_winner"))
 	define_layout("lout-navy", undefined, find_layout_node("Navy Box"))
 	define_space("navy_box", 0, find_layout_node("Navy Box")).tooltip(() => bizarro_space_tooltip(NAVY_BOX))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
@@ -1065,6 +1070,27 @@ function on_update() {
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
 
+
+	for (let i = 0; i < V.global_demand.length; i++) {
+		populate("lout-demand-winner", 0, "demand-winner", i)
+		
+		let demand = V.global_demand[i]
+		let winner = demand_flag_winner(demand)
+		let fr_count = V.demand_flag_count[FRANCE][demand]
+		let br_count = V.demand_flag_count[BRITAIN][demand]
+		
+		let html = ""
+		if (winner !== NONE) {
+			let flag_class = winner === FRANCE ? "fr" : "br"
+			html += `<span class="demand-flag ${flag_class}"></span>`
+			html += `<span class="demand-count">(${fr_count}-${br_count})</span>`
+		} else if (fr_count > 0 || br_count > 0) {
+			html += `<span class="demand-count">(${fr_count}-${br_count})</span>`
+		}
+		
+		update_text_html("demand-winner", i, html)
+	}
+	
 	let jacobite_count = V.jacobite_victory + (V.jacobite_defeat > 0 ? 1 : 0)
 
 	if (jacobite_count > 0) {

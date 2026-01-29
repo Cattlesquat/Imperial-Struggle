@@ -1613,6 +1613,42 @@ menu li.separator {
     top:264px;
 }
 
+.layout.lout-demand-winner {
+    display: flex;
+    justify-content: center;
+}
+
+.marker.demand-winner-slot {
+    width: 40px;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    background: rgba(245, 235, 220, 0.85);
+    padding: 2px 4px;
+}
+
+.demand-flag {
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.demand-flag.fr {
+    background-image: url(tiles75/square-sm/flag_fr.png);
+}
+
+.demand-flag.br {
+    background-image: url(tiles75/square-sm/flag_br.png);
+}
+
+.demand-count {
+    font-size: 11px;
+    color: #333;
+    margin-left: 2px;
+}
+
 
 
 #map_tip {
