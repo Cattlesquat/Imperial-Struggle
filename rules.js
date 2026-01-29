@@ -631,6 +631,10 @@ function on_setup(scenario, options) {
 
 	// The stack of available (but not currently active) award chits
 	G.award_chits = []
+	for (let i = 0; i < NUM_AWARD_TILES; i++) {
+		G.award_chits.push(i)
+	}
+	shuffle(G.award_chits)
 
 	// For each advantage, tells which player owns it
 	// <br><b>
@@ -908,6 +912,7 @@ function on_view(RR = undefined) {
 	V.available_investments = G.available_investments
 	V.played_investments = G.played_investments
 	V.used_investments = G.used_investments
+	V.investment_tile_stack = G.investment_tile_stack
 
 	// Flags on the board are always visible
 	V.flags = G.flags
@@ -9378,12 +9383,15 @@ function tell_action_points(space = true, brackets = true) {
 
 function do_reflag_space(repair_if_damaged = true) {
 	let whom = (G.flags[G.active_space] === NONE) ? G.active : NONE
+	silent = false
 
 	if ((data.spaces[G.active_space].type === FORT) && repair_if_damaged) {
 		if (is_damaged_fort(G.active_space)) {
 			set_damaged_fort(G.active_space, false)
 			if (G.flags[G.active_space] === G.active) {
 				log ("Fort repaired at " + say_space(G.active_space))
+				whom = G.active // Stays on our team
+				silent = true
 			}
 			else {
 				log ("Damaged fort seized at " + say_space(G.active_space))
@@ -9397,7 +9405,7 @@ function do_reflag_space(repair_if_damaged = true) {
 		return
 	}
 
-	reflag_space(G.active_space, whom)
+	reflag_space(G.active_space, whom, silent)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
 }
 

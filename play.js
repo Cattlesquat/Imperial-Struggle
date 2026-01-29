@@ -1098,12 +1098,17 @@ function on_update() {
 		global_demand_chits.push(i)
 	}
 
-	for (var d of global_demand_chits) {
+	// These keep a hidden stack of all the not-presently-in-play demands, awards, and investment tiles, to provide the better visuals of tiles "being dealt out" and "cleared away"
+	for (const d of global_demand_chits) {
 		populate("stack-deal", undefined, "demand", d)
 	}
 
-	for (var a of V.award_chits) {
+	for (const a of V.award_chits) {
 		populate("stack-deal", undefined, "award", a)
+	}
+
+	for (const i of V.investment_tile_stack) {
+		populate("stack-deal", undefined, "investment", i)
 	}
 
 	for (let r = 0; r < NUM_REGIONS; r++) {
