@@ -87,10 +87,10 @@ const war_layout = {
 	war_was_theater_4_strength_br: [1030, 815, 50, 25],
 
 	// WAS - Winner
-	war_was_theater_1_winner: [275, 94, 60, 25],
-	war_was_theater_2_winner: [675, 94, 60, 25],
-	war_was_theater_3_winner: [325, 464, 60, 25],
-	war_was_theater_4_winner: [835, 464, 60, 25],
+	war_was_theater_1_winner: [275, 84, 60, 25],
+	war_was_theater_2_winner: [850, 84, 60, 25],
+	war_was_theater_3_winner: [325, 415, 60, 25],
+	war_was_theater_4_winner: [865, 415, 60, 25],
 
 	// WAS - Alliances
 	war_was_theater_1_alliances: [500, 122, 50, 152],
