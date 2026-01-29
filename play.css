@@ -1627,7 +1627,8 @@ menu li.separator {
     min-height: 20px;
     display: flex;
     align-items: center;
-    background: rgba(245, 235, 220, 0.85);
+    pointer-events: none;
+    /* background: rgba(245, 235, 220, 0.85); */
     padding: 2px 4px;
 }
 
@@ -1648,7 +1649,8 @@ menu li.separator {
 }
 
 .marker.award-winner-slot.prestige {
-    border: 2px solid springgreen;
+    pointer-events: none;
+    /* border: 2px solid springgreen; */
 }
 
 .demand-count, .award-count {

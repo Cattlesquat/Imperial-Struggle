@@ -114,6 +114,8 @@ layout.nodes = {
 	"North America/Award": {
 		"Award North America": [669,48,118,119],
 		"Award_winner North America": [669, 132, 118, 25],
+		"Award_winner North America Left": [684, 95, 40, 25],
+		"Award_winner North America Right": [757, 95, 40, 25],
 	},
 	"India/Political": {
 		"Maratha": [1788,719,90,90],
@@ -157,6 +159,8 @@ layout.nodes = {
 	"India/Award": {
 		"Award India": [1437,888,118,119],
 		"Award_winner India": [1437, 972, 118, 25],
+		"Award_winner India Left": [1451, 935, 40, 25],
+		"Award_winner India Right": [1526, 935, 40, 25],
 	},
 	"Europe/Political": {
 		"Austria_1": [2321,484,90,90],
@@ -205,8 +209,12 @@ layout.nodes = {
 	},
 	"Europe/Award": {
 		"Award Europe": [1307,530,118,119],
-		"Award_winner Europe": [1307, 614, 118, 25],
-		"Award_winner Europe Prestige": [1307, 640, 118, 25],
+		"Award_winner Europe": [1321, 562, 40, 25],
+		"Award_winner Europe Left": [1321, 562, 40, 25],
+		"Award_winner Europe Right": [1395, 562, 40, 25],
+		"Award_winner Europe Prestige": [1321, 592, 40, 25],
+		"Award_winner Europe Prestige Left": [1321, 592, 40, 25],
+		"Award_winner Europe Prestige Right": [1395, 592, 40, 25],
 	},
 	"Caribbean/Political": {
 		"Buccaneers": [515,1533,90,90],
@@ -256,6 +264,8 @@ layout.nodes = {
 	"Caribbean/Award": {
 		"Award Caribbean": [1100,1238,118,119],
 		"Award_winner Caribbean": [1100, 1317, 118, 25],
+		"Award_winner Caribbean Left": [1114, 1284, 40, 25],
+		"Award_winner Caribbean Right": [1188, 1284, 40, 25],
 	},
 }
 
