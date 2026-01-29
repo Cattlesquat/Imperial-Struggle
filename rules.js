@@ -872,7 +872,7 @@ function absolute_view() {
 	V.log_hide_after = G.log_hide_after
 }
 
-function on_view(RR) {
+function on_view(RR = undefined) {
 	if (!V) {
 		V = { log: G.log }
 	}
@@ -885,7 +885,7 @@ function on_view(RR) {
 		}
 	}
 
-	if (RR === undefined) RR = R // Pirate's favorite letter
+	if ((RR === undefined) || (RR === null)) RR = R // Pirate's favorite letter
 
 	absolute_view()
 
@@ -1621,10 +1621,17 @@ function review_push(phase)
 
 		// Get latest view for each player, and store it
 		let views = []
-		on_view(1-R)
-		views[1-R] = structuredClone(V)
-		on_view(R)
-		views[R] = structuredClone(V)
+		if ((R === FRANCE) || (R === BRITAIN)) {
+			on_view(1-R)
+			views[1-R] = structuredClone(V)
+			on_view(R)
+			views[R] = structuredClone(V)
+		} else { // Sometimes R is null or whatever especially when starting up
+			on_view(FRANCE)
+			views[FRANCE] = structuredClone(V)
+			on_view(BRITAIN)
+			views[BRITAIN] = structuredClone(V)
+		}
 		G.review_view.push(views)
 	}
 }
