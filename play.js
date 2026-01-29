@@ -31,10 +31,10 @@ const war_layout = {
 	war_awi_theater_drawn: [227, 0, 667, 93],
 	war_awi_theater_1_france: [57, 132, 152, 152],
 	war_awi_theater_1_britain: [225, 132, 152, 152],
-	war_awi_theater_2_france: [579, 443, 152, 152],
-	war_awi_theater_2_britain: [747, 443, 152, 152],
-	war_awi_theater_3_france: [115, 613, 152, 152],
-	war_awi_theater_3_britain: [300, 613, 152, 152],
+	war_awi_theater_2_france: [579, 132, 152, 152],
+	war_awi_theater_2_britain: [747, 132, 152, 152],
+	war_awi_theater_3_france: [579, 443, 152, 152],
+	war_awi_theater_3_britain: [747, 443, 152, 152],
 	war_awi_theater_4_france: [577, 132, 152, 152],
 	war_awi_theater_4_britain: [747, 132, 152, 152],
 	war_7yw_theater_1: [36, 76, 507, 360],
@@ -122,11 +122,11 @@ const war_layout = {
 
 	// AWI - Strength
 	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
-	war_awi_theater_1_strength_br: [350, 510, 50, 25],
+	war_awi_theater_1_strength_br: [495, 510, 50, 25],
 	war_awi_theater_2_strength_fr: [557, 345, 50, 25],
-	war_awi_theater_2_strength_br: [870, 345, 50, 25],
+	war_awi_theater_2_strength_br: [1010, 345, 50, 25],
 	war_awi_theater_3_strength_fr: [557, 780, 50, 25],
-	war_awi_theater_3_strength_br: [870, 780, 50, 25],
+	war_awi_theater_3_strength_br: [1010, 780, 50, 25],
 
 	// AWI - Winner
 	war_awi_theater_1_winner: [330, 78, 60, 25],
@@ -134,9 +134,9 @@ const war_layout = {
 	war_awi_theater_3_winner: [700, 388, 60, 25],
 
 	// AWI - Alliances
-	war_awi_theater_1_alliances: [500, 144, 50, 152],
-	war_awi_theater_2_alliances: [1022, 160, 50, 152],
-	war_awi_theater_3_alliances: [500, 538, 50, 152],
+	war_awi_theater_1_alliances: [502, 144, 50, 152],
+	war_awi_theater_2_alliances: [1037, 164, 50, 152],
+	war_awi_theater_3_alliances: [1032, 445, 50, 152],
 	war_awi_theater_4_alliances: [1022, 510, 50, 152],
 }
 
