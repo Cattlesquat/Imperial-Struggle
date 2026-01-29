@@ -832,15 +832,13 @@ function on_init() {
 	}
 
 	for (i = 1; i <= NUM_EVENT_CARDS; ++i) {
-		// define_card if no animations desired
-		define_card ("event_card", i)
+		define_card_animated ("event_card", i)
 			.keyword("c" + i)
 			.tooltip(event_tooltip(i))
 	}
 
 	for (i = 1; i <= 26; ++i) {
-		// define_card if no animations desired
-		define_card("ministry_card", i)
+		define_card_animated("ministry_card", i)
 			.keyword("c" + i)
 			.tooltip(ministry_tooltip(i))
 	}
@@ -1291,13 +1289,24 @@ function on_update() {
 		}
 	}
 
-	//if (V.deck) {
-	//	for (const c in V.deck) {
-	//		console.log (c)
-	//		//populate("stack-deal", undefined, "event_card", c)
-	//	}
-	//}
+	if (V.deck) {
+		for (const c of V.deck) {
+			populate("stack-deal", undefined, "event_card", c)
+		}
+	}
 
+	if (V.discard_pile) {
+		for (const c of V.discard_pile) {
+			populate("stack-deal", undefined, "event_card", c)
+		}
+	}
+
+	if (V.played_events) {
+		for (const c of V.played_events) {
+			if (c === V.played_event) continue // Except for the one that goes on the played_event slot
+			populate("stack-deal", undefined, "event_card", c)
+		}
+	}
 
 	if (V.hand) {
 		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")

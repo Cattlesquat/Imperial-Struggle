@@ -490,6 +490,14 @@ function define_card(action, id, keywords) {
 		.keyword(keywords)
 }
 
+function define_card_animated(action, id, keywords) {
+	return define_thing(action, id)
+		.keyword("card")
+		.action()
+		.animate()
+		.keyword(keywords)
+}
+
 function define_piece_list(action, a, b, keywords) {
 	for (var i = a; i <= b; ++i)
 		define_piece(action, i, keywords)
