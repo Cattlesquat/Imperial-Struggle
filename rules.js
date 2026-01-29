@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION   = 1
+const GAME_STATE_VERSION = 2
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -46,7 +46,8 @@ const NUM_BONUS_WAR_TILES   = 12 // per side, per war
 const NUM_WARS              = 4
 const NUM_EVENT_CARDS       = 41
 const NUM_MINISTRY_KEYWORDS = 5
-const NUM_MINISTRY_CARDS    = 21
+const NUM_MINISTRY_CARDS    = 26
+const OLD_NUM_MINISTRY_CARDS= 21
 const NUM_MINISTRY_SLOTS    = 2
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
@@ -858,6 +859,8 @@ function on_load()
 
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
+	if (G.game_state_created_with === undefined) G.game_state_created_with = G.game_state_version
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -958,6 +961,8 @@ function on_view(RR = undefined) {
 			G.ministry[FRANCE],
 			G.ministry[BRITAIN].map(x => -1),
 		]
+
+		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + opponent hand
 	}
 	if (RR === BRITAIN) {
 		V.hand = [
@@ -968,6 +973,8 @@ function on_view(RR = undefined) {
 			G.ministry[FRANCE].map(x => -1),
 			G.ministry[BRITAIN],
 		]
+
+		V.deck = G.deck.concat(G.hand[FRANCE]) // Deck + opponent hand
 	}
 	if (RR < 0) {
 		V.hand = [
@@ -978,6 +985,8 @@ function on_view(RR = undefined) {
 			G.ministry[FRANCE].map(x => -1),
 			G.ministry[BRITAIN].map(x => -1),
 		]
+
+		V.deck = [] // No deck view if not on a side
 	}
 
 	V.ministry_exhausted = G.ministry_exhausted
@@ -2400,7 +2409,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
 	if (Array.isArray(G.ministry_exhausted[0])) {
-		return set_has(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+		return set_has(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 	} else {
 		G.ministry_exhausted = [ [], [] ] // TODO: this whole if statement can eventually just be replaced by the return set_has...
 	}
@@ -2433,7 +2442,7 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed (just upgrades ancient pre-launch saves)
 	}
 
-	set_add(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+	set_add(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 
 	if (!silent) {
 		log_br()
@@ -2457,7 +2466,7 @@ function refresh_ministry (who, m, ability = 0)
 		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed
 	}
 
-	set_delete(G.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+	set_delete(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 }
 
 

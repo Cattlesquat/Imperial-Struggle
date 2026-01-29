@@ -750,7 +750,7 @@ function on_init() {
 	define_layout("lout-award-winner-prestige-right", 0, find_layout_node("Award_winner Europe Prestige Right"))
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
-	for (let i = 0; i < 4; i++) {
+	for (let i = 0; i < 5; i++) {
 		define_marker("demand-winner", i)
 			.keyword("demand-winner-slot")
 	}
@@ -831,14 +831,16 @@ function on_init() {
 			.tooltip(investment_tooltip)
 	}
 
-	for (i = 1; i <= 41; ++i) {
-		define_card("event_card", i)
+	for (i = 1; i <= NUM_EVENT_CARDS; ++i) {
+		// define_card if no animations desired
+		define_marker ("event_card", i)
 			.keyword("c" + i)
 			.tooltip(event_tooltip(i))
 	}
 
 	for (i = 1; i <= 26; ++i) {
-		define_card("ministry_card", i)
+		// define_card if no animations desired
+		define_marker("ministry_card", i)
 			.keyword("c" + i)
 			.tooltip(ministry_tooltip(i))
 	}
@@ -1287,6 +1289,10 @@ function on_update() {
 				populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br"))
 			}
 		}
+	}
+
+	if (V.deck) {
+		////
 	}
 
 	if (V.hand) {
