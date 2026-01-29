@@ -773,6 +773,8 @@ function on_init() {
 	define_marker("initiative", FRANCE, "square-sm initiative-fr").tooltip(initiative_tooltip)
 	define_marker("initiative", BRITAIN, "square-sm initiative-br").tooltip(initiative_tooltip)
 
+	define_stack("stack-deal", undefined, find_layout_node("Deal Tiles"))
+
 	for (i = 0; i < 4; ++i) {
 		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip(bold("Britain Action Round " + (i + 1)))
 		define_marker("action-fr", i, `square-sm action_${i + 1} fr`).tooltip(bold("France Action Round " + (i + 1)))
@@ -1080,6 +1082,18 @@ function on_update() {
 	populate("turn-track", V.turn, "game-turn")
 	populate("lout-initiative", "initiative", V.initiative)
 
+	var global_demand_chits = []
+	for (var i = 0; i < NUM_DEMANDS; i++) {
+		if (V.global_demand.includes(i)) continue
+		global_demand_chits.push(i)
+	}
+
+	for (var d of global_demand_chits) {
+		populate("stack-deal", undefined, "demand", d)
+
+	for (var a of V.award_chits) {
+		populate("stack-deal", undefined, "award", a)
+	}
 
 	for (let r = 0; r < NUM_REGIONS; r++) {
 		populate("lout-award-winner", r, "award-winner", r)

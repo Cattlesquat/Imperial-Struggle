@@ -4,6 +4,7 @@ layout.nodes = {
 	"General Track": {
 		"Demand": [1111,327,324,61],
 		"Demand_winner":[1111, 375, 324, 25],
+		"Deal Tiles": [1250,0,324,61],
 		"record track 0": [2083,1302,58,58],
 		"record track 1": [2143,1302,58,58],
 		"record track 2": [2201,1302,58,58],

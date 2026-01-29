@@ -921,6 +921,7 @@ function on_view(RR) {
 
 	// Award tiles
 	V.awards = G.awards
+	V.award_chits = G.award_chits
 
 	// Advantage tiles
 	V.advantages = G.advantages
@@ -1634,11 +1635,13 @@ function review_step(step, who)
 		G.log_hide_after[who] = G.review_index[step]
 		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
 		G.temp_view[who] = G.review_view[step][who]
+		if (who === R) on_view()
 	} else {
 		G.log_hide_after[who] = -1
 		if (G.temp_view !== undefined) {
 			G.temp_view[who] = undefined
 		}
+		if (who === R) on_view()
 	}
 }
 
