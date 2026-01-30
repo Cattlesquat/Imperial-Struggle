@@ -1297,6 +1297,8 @@ function on_update() {
 
 	if (V.discard_pile) {
 		for (const c of V.discard_pile) {
+			if (Array.isArray(c)) continue
+			if (!c) continue
 			populate("stack-deal", undefined, "event_card", c)
 		}
 	}
