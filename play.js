@@ -1,5 +1,6 @@
 "use strict"
 
+const data = require("./data");
 const war_layout = {
 	war_7yw_theater_drawn: [353, 0, 667, 93],
 	war_7yw_theater_1_france: [57, 132, 152, 152],
@@ -1021,6 +1022,29 @@ function on_init() {
 // Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
 function get_squadron_token(who, s)
 {
+	if (V.squadrons === undefined) {
+		V.squadrons = [ [], [] ]
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== NAVAL) continue
+			let who = G.flags[s]
+			if (who === NONE) continue
+			V.squadrons[who].push(s)
+		}
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			for (let ss = 0; ss < G.navy_box[who]; ss++) {
+				V.squadrons[who].push(SPACE_NAVY_BOX)
+			}
+			for (let ss = 0; ss < G.unbuilt_squadrons[who]; ss++) {
+				V.squadrons[who].push(SPACE_UNBUILT)
+			}
+			if (who === BRITAIN) {
+				for (let ss = 0; ss < V.the_brig; ss++) {
+					V.squadrons[who].push(SPACE_THE_BRIG)
+				}
+			}
+		}
+	}
+
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 		if (V.squadrons[who][sq] === s) return sq
 	}
