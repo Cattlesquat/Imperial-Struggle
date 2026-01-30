@@ -1891,6 +1891,7 @@ function _tip_focus_award(a, who)
 }
 
 function _tip_blur_award() {
+	world.tip.removeAttribute("class")
 	world.tip.hidden = true
 	world.status.innerHTML = ""
 }
@@ -1906,6 +1907,7 @@ function _tip_focus_investment(i, who)
 }
 
 function _tip_blur_investment() {
+	world.tip.removeAttribute("class")
 	world.status.innerHTML = ""
 	world.tip.hidden = true
 }
@@ -1921,6 +1923,7 @@ function _tip_focus_basic_war_tile(t, who)
 }
 
 function _tip_blur_basic_war_tile() {
+	world.tip.removeAttribute("class")
 	world.status.innerHTML = ""
 	world.tip.hidden = true
 }
@@ -1936,6 +1939,7 @@ function _tip_focus_bonus_war_tile(t, who)
 }
 
 function _tip_blur_bonus_war_tile() {
+	world.tip.removeAttribute("class")
 	world.status.innerHTML = ""
 	world.tip.hidden = true
 }
@@ -2198,6 +2202,7 @@ function _tip_focus_advantage(who, a, name) {
 function _tip_blur_advantage(action, id) {
 	world.tip.removeAttribute("class")
 	world.tip.hidden = true
+	world.tip.innerHTML = ""
 	world.status.innerHTML = ""
 }
 
@@ -2220,8 +2225,10 @@ function _tip_focus_space(who, s, name) {
 }
 
 function _tip_blur_space(action, id) {
+	world.map_tip.hidden = true
 	world.tip.removeAttribute("class")
 	world.tip.hidden = true
+	world.map_tip.hidden = true
 	world.status.innerHTML = ""
 }
 
