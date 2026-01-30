@@ -50,6 +50,8 @@ layout.nodes = {
 		"record track 35": [2378,1601,58,58],
 		"record track 36": [2437,1601,58,58],
 		"Navy Box": [887,836,282,138],
+		"Navy Box France": [925,875,60,60],
+		"Navy Box Britain": [1050,875,60,60],
 	},
 	"Turn Track": {
 		"Turn 5": [126,1180,58,101],

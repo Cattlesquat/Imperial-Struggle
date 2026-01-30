@@ -871,6 +871,8 @@ function on_load()
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
 	if (G.game_state_version < 3) {
+		// Upconvert squadrons
+
 		G.squadrons = [ [], [] ]
 		for (let s = 0; s < NUM_SPACES; s++) {
 			if (data.spaces[s].type !== NAVAL) continue
@@ -890,9 +892,19 @@ function on_load()
 					G.squadrons[who].push(SPACE_THE_BRIG)
 				}
 			}
-			if (G.squadrons[who].length !== NUM_SQUADRONS) {
-				throw new Error("Failed squadron conversion: " + data.flags[who].name + " " + G.squadrons[who].length)
+		}
+
+		// Automatically fix corrupted discard piles
+		let discards = []
+		for (const c of G.discard_pile) {
+			if (Array.isArray(c)) {
+				for (const cc of c) {
+					if (cc) discards.push(cc)
+				}
+			} else if (c) {
+				discards.push(cc)
 			}
+			G.discard_pile = discards
 		}
 	}
 

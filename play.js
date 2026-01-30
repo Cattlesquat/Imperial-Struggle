@@ -785,6 +785,9 @@ function on_init() {
 
 	define_stack("stack-deal", undefined, find_layout_node("Deal Tiles"))
 
+	define_stack("lout-navy-fr", undefined, find_layout_node("Navy Box Britain"), 8, -8)
+	define_stack("lout-navy-br", undefined, find_layout_node("Navy Box France"), 8, -8)
+
 	for (i = 0; i < 4; ++i) {
 		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip(bold("Britain Action Round " + (i + 1)))
 		define_marker("action-fr", i, `square-sm action_${i + 1} fr`).tooltip(bold("France Action Round " + (i + 1)))
@@ -991,10 +994,14 @@ function on_init() {
 		define_layout("lout-awi-alliance", 3, war_layout.war_awi_theater_3_alliances)
 	}
 
-	for (let s = 0; s < NUM_SPACES; s++) {
-		if (data.spaces[s].type !== NAVAL) continue
-		define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
-		define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+	//for (let s = 0; s < NUM_SPACES; s++) {
+	//	if (data.spaces[s].type !== NAVAL) continue
+	//	define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+	//	define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+	//}
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		define_marker("squadron-fr", sq, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+		define_marker("squadron-br", sq, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
 	}
 
 	for (let s = 0; s < NUM_SPACES; s++) {
@@ -1004,11 +1011,23 @@ function on_init() {
 		define_marker("huguenots_spent", s, "marker square-sm huguenots_spent").tooltip(bold("Huguenots (Spent)") + ": increases conquest cost of space by 1. Can be refreshed once per game by North American Trade ministry in Revolutionary Era.")
 	}
 
-	for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
-		define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
-		define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
-	}
+	//for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
+	//	define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
+	//	define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
+	//}
 }
+
+
+// Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
+function get_squadron_token(who, s)
+{
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		if (V.squadrons[who][sq] === s) return sq
+	}
+	console.error ("No squadron found for space: " + s)
+	return 0
+}
+
 
 
 // True if ministry is presently exhausted
@@ -1186,22 +1205,32 @@ function on_update() {
 		}
 	}
 
-	for (i = 0; i < V.navy_box[FRANCE]; i++) {
-		populate("lout-navy", "squadron-fr-navy", i)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let sq = NUM_SQUADRONS - 1; sq >= 0; sq--) { // Count backwards so that when one leaves the navy box it will be the "top one in the stack"
+			if (V.squadrons[who][sq] !== SPACE_NAVY_BOX) continue
+			populate("lout-navy" + ((who === FRANCE) ? "-fr" : "-br"), (who === FRANCE) ? "squadron-fr" : "squadron-br", sq)
+			//document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(index - 2) * -10}px; margin-left:${index * 10}px`
+		}
 	}
 
-	for (i = 0; i < V.navy_box[BRITAIN]; i++) {
-		populate("lout-navy", "squadron-br-navy", i)
-		document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
-	}
+	//for (i = 0; i < V.navy_box[FRANCE]; i++) {
+	//	populate("lout-navy", "squadron-fr-navy", i)
+	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
+	//}
+
+	//for (i = 0; i < V.navy_box[BRITAIN]; i++) {
+	//	populate("lout-navy", "squadron-br-navy", i)
+	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
+	//}
 
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
-			if (V.flags[s.num] === FRANCE)
-				populate("lout-space", s.num, "squadron-fr", s.num)
-			if (V.flags[s.num] === BRITAIN)
-				populate("lout-space", s.num, "squadron-br", s.num)
+			if (V.flags[s.num] === FRANCE) {
+				populate("lout-space", s.num, "squadron-fr", get_squadron_token(FRANCE, s.num))
+			}
+			if (V.flags[s.num] === BRITAIN) {
+				populate("lout-space", s.num, "squadron-br", get_squadron_token(BRITAIN, s.num))
+			}
 		} else {
 			if (V.flags[s.num] === FRANCE)
 				populate_generic("lout-space", s.num, "marker square-sm flag_fr")

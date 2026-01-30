@@ -216,6 +216,10 @@ const NUM_SPACES_CARIBBEAN      = 30
 const NUM_SPACES_INDIA = 22
 
 // SPACES
+const SPACE_NAVY_BOX = -1	// The negative numbers are for keeping track of squadron "token" locations for animation purposes
+const SPACE_UNBUILT = -2
+const SPACE_THE_BRIG = -3
+const SPACE_REMOVED_FROM_GAME = -4
 const IRELAND_1 = 0
 const IRELAND_2 = 1
 const SCOTLAND_1 = 2
