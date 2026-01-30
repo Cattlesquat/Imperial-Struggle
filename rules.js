@@ -872,19 +872,15 @@ function on_load()
 
 	if (G.game_state_version < 3) {
 		// Upconvert squadrons
-		upconvert_squadrons()
+		upconvert_squadrons(G)
+		for (const state in G.undo) {
+			upconvert_squadrons(state)
+		}
 
 		// Automatically fix corrupted discard piles
-		let discards = []
-		for (const c of G.discard_pile) {
-			if (Array.isArray(c)) {
-				for (const cc of c) {
-					if (cc) discards.push(cc)
-				}
-			} else if (c) {
-				discards.push(c)
-			}
-			G.discard_pile = discards
+		upconvert_discards(G)
+		for (const state in G.undo) {
+			upconvert_discards(state)
 		}
 	}
 
@@ -896,6 +892,22 @@ function on_save()
 {
 	G.game_state_version = GAME_STATE_VERSION
 }
+
+
+function upconvert_discards(GAME) {
+	let discards = []
+	for (const c of GAME.discard_pile) {
+		if (Array.isArray(c)) {
+			for (const cc of c) {
+				if (cc) discards.push(cc)
+			}
+		} else if (c) {
+			discards.push(c)
+		}
+		GAME.discard_pile = discards
+	}
+}
+
 
 
 /* VIEW & ACTIONS */
@@ -1640,25 +1652,25 @@ function get_squadron_token(who, s)
 }
 
 
-function upconvert_squadrons()
+function upconvert_squadrons(GAME)
 {
-	G.squadrons = [ [], [] ]
+	GAME.squadrons = [ [], [] ]
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
-		let who = G.flags[s]
+		let who = GAME.flags[s]
 		if (who === NONE) continue
-		G.squadrons[who].push(s)
+		GAME.squadrons[who].push(s)
 	}
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		for (let ss = 0; ss < G.navy_box[who]; ss++) {
-			G.squadrons[who].push(SPACE_NAVY_BOX)
+		for (let ss = 0; ss < GAME.navy_box[who]; ss++) {
+			GAME.squadrons[who].push(SPACE_NAVY_BOX)
 		}
-		for (let ss = 0; ss < G.unbuilt_squadrons[who]; ss++) {
-			G.squadrons[who].push(SPACE_UNBUILT)
+		for (let ss = 0; ss < GAME.unbuilt_squadrons[who]; ss++) {
+			GAME.squadrons[who].push(SPACE_UNBUILT)
 		}
 		if (who === BRITAIN) {
-			for (let ss = 0; ss < G.the_brig; ss++) {
-				G.squadrons[who].push(SPACE_THE_BRIG)
+			for (let ss = 0; ss < GAME.the_brig; ss++) {
+				GAME.squadrons[who].push(SPACE_THE_BRIG)
 			}
 		}
 	}

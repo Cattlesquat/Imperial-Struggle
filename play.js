@@ -1030,7 +1030,7 @@ function get_squadron_token(who, s)
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 		if (V.squadrons[who][sq] === s) return sq
 	}
-	
+
 	return 0
 }
 
