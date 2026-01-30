@@ -9934,15 +9934,11 @@ P.action_round_core = {
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 
 		push_undo()
-		G.hand[BRITAIN][0] = ALBERONIS_AMBITION
-		G.hand[BRITAIN][1] = FAMINE_IN_IRELAND
-		G.hand[BRITAIN][2] = INTEREST_PAYMENTS
-
-		G.hand[FRANCE][0] = ALBERONIS_AMBITION
-		G.hand[FRANCE][1] = FAMINE_IN_IRELAND
-		G.hand[FRANCE][2] = INTEREST_PAYMENTS
-
-		G.flags[NIAGARA] = FRANCE
+		if (G.vp < 0) {
+			G.vp = 33
+		} else {
+			G.vp = -3
+		}
 	}
 }
 

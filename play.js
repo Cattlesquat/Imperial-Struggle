@@ -610,7 +610,7 @@ function on_init() {
 	define_panel("#available_investment_tiles", "panel-available-investments")
 	define_panel("#used_investment_tiles", "panel-used-investments")
 
-	define_board("#map", 2550, 1650, [24, 24, 24, 24])
+	define_board("#map", 2550, 1650, [0, 0, 0, 0])
 
 	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], -5, -5)
 	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip("Jacobite Victory")
