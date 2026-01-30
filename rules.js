@@ -8747,11 +8747,22 @@ function num_available_squadrons(who) {
 	let avail = 0
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
-		if (G.flags[s] !== G.active) continue
+		if (G.flags[s] !== who) continue
 		if (set_has(G.dirty, s)) continue
 		avail++
 	}
 	return avail
+}
+
+
+function num_map_squadrons(who) {
+	let ships = 0
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		if (G.flags[s] !== who) continue
+		ships++
+	}
+	return ships
 }
 
 function action_naval_sources()
@@ -8828,6 +8839,9 @@ P.naval_decisions = {
 
 			if ((G.navy_box[G.active] < 1) && num_available_squadrons(G.active) < 1) {
 				msg = "You have no available squadrons to move there."
+				if (num_map_squadrons(G.active) > 0) {
+					msg = "All squadrons in play have already moved this round. You have none left to move."
+				}
 			}
 		} else if (G.navy_from_navy_box || (G.navy_from >= 0)) {
 			msg = "Select target naval space."
@@ -8920,6 +8934,7 @@ function execute_naval_move()
 	}
 
 	// Log the result
+	/*
 	let msg = data.flags[G.active].name + " "
 	if (G.navy_displace) {
 		msg += " DISPLACES " + data.flags[1 - G.active].adj + " squadron at " + say_space(G.navy_to)
@@ -8938,7 +8953,17 @@ function execute_naval_move()
 		msg += " moves its squadron from " + say_space(G.navy_from) + " to " + say_space(G.navy_to) + "."
 		move_squadron_token(G.active, G.navy_from, G.navy_to)
 	}
+	*/
+	let msg;
+	if (G.navy_from_navy_box) {
+		msg = "Navy box to " + say_space(G.navy_to, G.active)
+	} else {
+		msg = "Squadron " + say_space(G.navy_from) + " to " + say_space(G.navy_to, G.active)
+	}
 	log (msg)
+	if (G.navy_displace) {
+		log (bold(data.flags[1-G.active].adj + " squadron displaced."))
+	}
 
 	if (G.navy_from_navy_box || G.navy_displace) {
 		log (say_navy_box())

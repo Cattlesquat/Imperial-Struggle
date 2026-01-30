@@ -245,8 +245,20 @@ function space_tooltip(s) {
 	}
 
 	var other = ""
-	if (has_conflict_marker(s)) other = "Conflict"
-	if (is_damaged_fort(s)) other = "Damaged"
+
+	if (type === NAVAL) {
+		if (V.flags[s] !== NONE) {
+			other = bold(data.flags[V.flags[s]].adj + " Squadron")
+			if (set_has(V.dirty, s)) {
+				other += italic(" (already moved this round)")
+			}
+		}
+	} else if (V.flags[s] !== NONE) {
+		other = bold(data.flags[V.flags[s]].adj + " Flag")
+	}
+
+	if (has_conflict_marker(s)) other += ((other !== "") ? ". " : "") + bold("Conflict.")
+	if (is_damaged_fort(s)) other += ((other !== "") ? ". " : "") + bold("Damaged.")
 
 	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")") + ((other !== "") ? ": " + other : "")
 }
