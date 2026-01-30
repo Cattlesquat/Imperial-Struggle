@@ -489,6 +489,12 @@ function setup_procs()
 
 /* SETUP */
 function on_setup(scenario, options) {
+	// Most recently written game state version
+	G.game_state_version      = GAME_STATE_VERSION
+
+	// Version the game state was created under
+	G.game_state_created_with = GAME_STATE_VERSION
+
 	// Usually this is an integer containing the id of the active player (i.e. FRANCE or BRITAIN).
 	// But *sometimes*, horrifyingly, it's actually an *array* that we fill with both player IDs for multiactive phases.
 	// And then we delete player ids from the array as players individually complete the phase.
@@ -3957,10 +3963,11 @@ P.event_flow = script (`
     	eval {
     		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.played_event].keyword].name, true)    		
     	}
-    	
-    	eval {
-	    	check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus	    	
-    	}
+    	if (G.has_required_ministry) {
+			eval {
+				check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus	    	
+			}
+		}
     }
     
     if (G.qualifies_for_bonus) {
@@ -3969,9 +3976,11 @@ P.event_flow = script (`
     	}
     }
     
-    eval { 
-    	begin_event_play(G.played_event) 
-    }
+    if (true) { // Make sure this waits for Lavoisier, above
+		eval { 
+			begin_event_play(G.played_event) 
+		}
+	}
     
     // Here we branch to an unholy number of possible events 
 	if (data.cards[G.played_event].proc !== undefined) {
@@ -6825,6 +6834,7 @@ P.confirm_reveal_ministry = {
 		}
 		reveal_ministry(R, G.ministry_index)
 		if (G.ministry_prompt_to_exhaust) exhaust_ministry(R, G.ministry_id, G.ministry_ability)
+		G.has_required_ministry = true
 		end()
 	},
 	dont_reveal_ministry() {
@@ -9120,9 +9130,11 @@ P.space_flow = script(`
 
     if (G.needs_to_flip_ministry >= 0) {
     	eval { 
-    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)			    		
-    	    G.action_cost = action_point_cost(G.active, G.active_space, G.action_type)
-    	}	    	
+    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)
+    	}
+	   	if (G.has_required_ministry) {
+	        eval { G.action_cost = action_point_cost(G.active, G.active_space, G.action_type) }
+	    }    	
     }
         
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
