@@ -1006,6 +1006,8 @@ function on_view(RR = undefined) {
 	// Advantage tiles
 	V.advantages = G.advantages
 	V.advantages_exhausted = G.advantages_exhausted
+	V.advantage_regions = G.advantage_regions
+	V.advantages_newly_acquired = G.advantages_newly_acquired
 
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
@@ -1238,6 +1240,12 @@ function has_advantage(who, a) {
 	return true
 }
 
+function whose_advantage(a) {
+	if (has_advantage(FRANCE, a)) return FRANCE
+	if (has_advantage(BRITAIN, a)) return BRITAIN
+	return NONE
+}
+
 function is_advantage_conflicted(a)
 {
 	for (var s of data.advantages[a].req) {
@@ -1312,12 +1320,7 @@ function has_advantage_eligible(who, a, ignore_exhaustion = false)
 function update_advantages(silent = false) {
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
 		var old = G.advantages[a]
-		if (has_advantage(FRANCE, a))
-			G.advantages[a] = FRANCE
-		else if (has_advantage(BRITAIN, a))
-			G.advantages[a] = BRITAIN
-		else
-			G.advantages[a] = NONE
+		G.advantages[a] = whose_advantage(a)
 
 		if (old !== G.advantages[a]) {
 			G.advantages_newly_acquired |= (1 << a)

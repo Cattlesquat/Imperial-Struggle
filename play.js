@@ -408,7 +408,25 @@ function ministry_tooltip(m, who) {
 
 
 function advantage_tooltip(a) {
-	return bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc)
+	let msg = bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc + ".")
+
+	if (is_advantage_exhausted(a)) {
+		msg += bold(" EXHAUSTED")
+	} else if (is_advantage_conflicted(a)) {
+		msg += bold(" CONFLICT MARKER - cannot use advantage.")
+	} else if ((whose_advantage(a) === V.active) && (V.action_round_subphase !== NOT_ACTION_PHASE)) {
+		if (V.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) {
+			msg += bold(" Must pick investment tile before using advantages.")
+		} else if (V.advantages_used_this_round >= 2) {
+			msg += bold(" You have already used two advantages this round (see 8.2)")
+		} else if (V.advantage_regions & (1 << get_advantage_region(a))) {
+			msg += bold(" You have already used an advantage in the same region this round (see 8.2)")
+		} else if (V.advantages_newly_acquired & (1 << a)) {
+			msg += bold(" Cannot use an advantage you just acquired (see 8.0)")
+		}
+	}
+
+	return msg
 }
 
 function investment_tooltip(i)
@@ -1065,6 +1083,32 @@ function is_ministry_exhausted(who, m, ability = 0) {
 function is_advantage_exhausted(a) {
 	return !!(V.advantages_exhausted & (1 << a))
 }
+
+function get_advantage_region(a) {
+	return data.spaces[data.advantages[a].req[0]].region
+}
+
+function has_advantage(who, a) {
+	for (var s of data.advantages[a].req)
+		if (V.flags[s] !== who)
+			return false
+	return true
+}
+
+function whose_advantage(a) {
+	if (has_advantage(FRANCE, a)) return FRANCE
+	if (has_advantage(BRITAIN, a)) return BRITAIN
+	return NONE
+}
+
+function is_advantage_conflicted(a)
+{
+	for (var s of data.advantages[a].req) {
+		if (has_conflict_marker(s)) return true
+	}
+	return false
+}
+
 
 
 function is_ministry_fully_exhausted(who, m) {
