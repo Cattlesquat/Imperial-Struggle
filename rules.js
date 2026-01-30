@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 3
+const GAME_STATE_VERSION = 4
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -870,7 +870,7 @@ function on_load()
 
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
-	if (G.game_state_version < 3) {
+	if (G.game_state_version < 4) {
 		// Upconvert squadrons
 		upconvert_squadrons(G)
 		for (const state in G.undo) {
@@ -1680,9 +1680,6 @@ function upconvert_squadrons(GAME)
 // The negative "off board locations" are allowed as well as space numbers
 function move_squadron_token(who, from, to)
 {
-	if (G.squadrons === undefined) {
-		upconvert_squadrons()
-	}
 	G.squadrons[who][get_squadron_token(who, from)] = to
 }
 
