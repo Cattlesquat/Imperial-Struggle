@@ -1653,6 +1653,19 @@ menu li.separator {
     /* border: 2px solid springgreen; */
 }
 
+.vp-overlay {
+    font-size: 28px;
+    color: #333;
+    font-weight:bold;
+    background-color: #ECD8BB;
+    top: -4px;
+    left: -2px;
+    padding-left: 2px;
+    padding-right: 4px;
+
+    font-family: "Garamond", serif;
+}
+
 .demand-count, .award-count {
     font-size: 12px;
     color: #333;

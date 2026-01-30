@@ -712,6 +712,12 @@ function on_init() {
 		)
 	}
 
+	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
+		define_layout("general-track-text", i,
+			resize_rect(find_layout_node("record track " + i), 49, 49)
+		)
+	}
+
 	for (s of data.turns) {
 		define_layout("turn-track", s.num, find_layout_node(s.layout))
 	}
@@ -1106,6 +1112,10 @@ function on_update() {
 	update_debt_display()
 
 	populate("general-track", V.vp, "victory-points")
+
+	if ((V.vp < 0) || (V.vp > 30)) {
+		update_text_html("general-track-text", V.vp, `<span class="vp-overlay">${V.vp}</span>`)
+	}
 
 	populate("general-track", V.debt[FRANCE], "debt", FRANCE)
 	populate("general-track", V.debt_limit[FRANCE], "debt-limit", FRANCE)

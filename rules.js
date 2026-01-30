@@ -9932,10 +9932,11 @@ P.action_round_core = {
 		}
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
-
 		push_undo()
 		if (G.vp < 0) {
 			G.vp = 33
+		} else if (G.vp === 33) {
+			G.vp = 15
 		} else {
 			G.vp = -3
 		}
