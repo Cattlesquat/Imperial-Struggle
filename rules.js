@@ -902,7 +902,7 @@ function on_load()
 					if (cc) discards.push(cc)
 				}
 			} else if (c) {
-				discards.push(cc)
+				discards.push(c)
 			}
 			G.discard_pile = discards
 		}
