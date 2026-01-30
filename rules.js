@@ -871,9 +871,8 @@ function on_load()
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
 	if (G.game_state_version < 4) {
-		// Upconvert squadrons
+		// Upconvert squadrons (so they always have tokens)
 		upconvert_squadrons(G)
-
 		for (let i = 0; i < G.undo.length; i++) {
 			upconvert_squadrons(G.undo[i])
 		}
@@ -888,9 +887,9 @@ function on_load()
 	G.game_state_version = GAME_STATE_VERSION
 }
 
-function upconvert_discards(GAME) {
+function upconvert_discards(STATE) {
 	let discards = []
-	for (const c of GAME.discard_pile) {
+	for (const c of STATE.discard_pile) {
 		if (Array.isArray(c)) {
 			for (const cc of c) {
 				if (cc) discards.push(cc)
@@ -898,7 +897,31 @@ function upconvert_discards(GAME) {
 		} else if (c) {
 			discards.push(c)
 		}
-		GAME.discard_pile = discards
+		STATE.discard_pile = discards
+	}
+}
+
+function upconvert_squadrons(STATE)
+{
+	STATE.squadrons = [ [], [] ]
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		let who = STATE.flags[s]
+		if (who === NONE) continue
+		STATE.squadrons[who].push(s)
+	}
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let ss = 0; ss < STATE.navy_box[who]; ss++) {
+			STATE.squadrons[who].push(SPACE_NAVY_BOX)
+		}
+		for (let ss = 0; ss < STATE.unbuilt_squadrons[who]; ss++) {
+			STATE.squadrons[who].push(SPACE_UNBUILT)
+		}
+		if (who === BRITAIN) {
+			for (let ss = 0; ss < STATE.the_brig; ss++) {
+				STATE.squadrons[who].push(SPACE_THE_BRIG)
+			}
+		}
 	}
 }
 
@@ -1651,31 +1674,6 @@ function get_squadron_token(who, s)
 	}
 	console.error ("No squadron found for space: " + s)
 	return 0
-}
-
-
-function upconvert_squadrons(GAME)
-{
-	GAME.squadrons = [ [], [] ]
-	for (let s = 0; s < NUM_SPACES; s++) {
-		if (data.spaces[s].type !== NAVAL) continue
-		let who = GAME.flags[s]
-		if (who === NONE) continue
-		GAME.squadrons[who].push(s)
-	}
-	for (let who = FRANCE; who <= BRITAIN; who++) {
-		for (let ss = 0; ss < GAME.navy_box[who]; ss++) {
-			GAME.squadrons[who].push(SPACE_NAVY_BOX)
-		}
-		for (let ss = 0; ss < GAME.unbuilt_squadrons[who]; ss++) {
-			GAME.squadrons[who].push(SPACE_UNBUILT)
-		}
-		if (who === BRITAIN) {
-			for (let ss = 0; ss < GAME.the_brig; ss++) {
-				GAME.squadrons[who].push(SPACE_THE_BRIG)
-			}
-		}
-	}
 }
 
 // Changes the location of a squadron token (used only to animate squadrons between spaces)
