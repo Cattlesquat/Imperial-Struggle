@@ -871,20 +871,21 @@ function on_load()
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
 	if (G.game_state_version < 4) {
-		// Upconvert squadrons (so they always have tokens)
-		upconvert_squadrons(G)
-		for (let i = 0; i < G.undo.length; i++) {
-			upconvert_squadrons(G.undo[i])
-		}
-
-		// Automatically fix corrupted discard piles
-		upconvert_discards(G)
-		for (let i = 0; i < G.undo.length; i++) {
-			upconvert_discards(G.undo[i])
-		}
+		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
+		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
 	}
 
 	G.game_state_version = GAME_STATE_VERSION
+}
+
+
+function upconvert(version, converter) {
+	converter(G)
+	G.game_state_version = version
+	for (let i = 0; i < G.undo.length; i++) {
+		converter(G.undo[i])
+		G.undo[i].game_state_version = version
+	}
 }
 
 function upconvert_discards(STATE) {
