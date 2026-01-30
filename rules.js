@@ -879,6 +879,7 @@ function on_load()
 }
 
 
+// Applies a conversion method to the main game state and all of its undo states
 function upconvert(version, converter) {
 	converter(G)
 	G.game_state_version = version
@@ -888,9 +889,9 @@ function upconvert(version, converter) {
 	}
 }
 
-function upconvert_discards(STATE) {
+function upconvert_discards(state) {
 	let discards = []
-	for (const c of STATE.discard_pile) {
+	for (const c of state.discard_pile) {
 		if (Array.isArray(c)) {
 			for (const cc of c) {
 				if (cc) discards.push(cc)
@@ -898,29 +899,29 @@ function upconvert_discards(STATE) {
 		} else if (c) {
 			discards.push(c)
 		}
-		STATE.discard_pile = discards
+		state.discard_pile = discards
 	}
 }
 
-function upconvert_squadrons(STATE)
+function upconvert_squadrons(state)
 {
-	STATE.squadrons = [ [], [] ]
+	state.squadrons = [ [], [] ]
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
-		let who = STATE.flags[s]
+		let who = state.flags[s]
 		if (who === NONE) continue
-		STATE.squadrons[who].push(s)
+		state.squadrons[who].push(s)
 	}
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		for (let ss = 0; ss < STATE.navy_box[who]; ss++) {
-			STATE.squadrons[who].push(SPACE_NAVY_BOX)
+		for (let ss = 0; ss < state.navy_box[who]; ss++) {
+			state.squadrons[who].push(SPACE_NAVY_BOX)
 		}
-		for (let ss = 0; ss < STATE.unbuilt_squadrons[who]; ss++) {
-			STATE.squadrons[who].push(SPACE_UNBUILT)
+		for (let ss = 0; ss < state.unbuilt_squadrons[who]; ss++) {
+			state.squadrons[who].push(SPACE_UNBUILT)
 		}
 		if (who === BRITAIN) {
-			for (let ss = 0; ss < STATE.the_brig; ss++) {
-				STATE.squadrons[who].push(SPACE_THE_BRIG)
+			for (let ss = 0; ss < state.the_brig; ss++) {
+				state.squadrons[who].push(SPACE_THE_BRIG)
 			}
 		}
 	}
