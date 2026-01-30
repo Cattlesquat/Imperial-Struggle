@@ -873,26 +873,24 @@ function on_load()
 	if (G.game_state_version < 4) {
 		// Upconvert squadrons
 		upconvert_squadrons(G)
+
+		/*
 		for (let i = 0; i < G.undo.length; i++) {
 			upconvert_squadrons(G.undo[i])
 		}
+		*/
 
 		// Automatically fix corrupted discard piles
 		upconvert_discards(G)
+		/*
 		for (let i = 0; i < G.undo.length; i++) {
 			upconvert_discards(G.undo[i])
 		}
+		*/
 	}
 
 	G.game_state_version = GAME_STATE_VERSION
 }
-
-
-function on_save()
-{
-	G.game_state_version = GAME_STATE_VERSION
-}
-
 
 function upconvert_discards(GAME) {
 	let discards = []
@@ -907,6 +905,14 @@ function upconvert_discards(GAME) {
 		GAME.discard_pile = discards
 	}
 }
+
+
+
+function on_save()
+{
+	G.game_state_version = GAME_STATE_VERSION
+}
+
 
 
 
