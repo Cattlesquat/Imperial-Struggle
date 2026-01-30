@@ -873,14 +873,14 @@ function on_load()
 	if (G.game_state_version < 4) {
 		// Upconvert squadrons
 		upconvert_squadrons(G)
-		for (const state in G.undo) {
-			upconvert_squadrons(state)
+		for (let i = 0; i < G.undo.length; i++) {
+			upconvert_squadrons(G.undo[i])
 		}
 
 		// Automatically fix corrupted discard piles
 		upconvert_discards(G)
-		for (const state in G.undo) {
-			upconvert_discards(state)
+		for (let i = 0; i < G.undo.length; i++) {
+			upconvert_discards(G.undo[i])
 		}
 	}
 
