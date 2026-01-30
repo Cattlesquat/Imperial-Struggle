@@ -872,27 +872,7 @@ function on_load()
 
 	if (G.game_state_version < 3) {
 		// Upconvert squadrons
-
-		G.squadrons = [ [], [] ]
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].type !== NAVAL) continue
-			let who = G.flags[s]
-			if (who === NONE) continue
-			G.squadrons[who].push(s)
-		}
-		for (let who = FRANCE; who <= BRITAIN; who++) {
-			for (let ss = 0; ss < G.navy_box[who]; ss++) {
-				G.squadrons[who].push(SPACE_NAVY_BOX)
-			}
-			for (let ss = 0; ss < G.unbuilt_squadrons[who]; ss++) {
-				G.squadrons[who].push(SPACE_UNBUILT)
-			}
-			if (who === BRITAIN) {
-				for (let ss = 0; ss < G.the_brig; ss++) {
-					G.squadrons[who].push(SPACE_THE_BRIG)
-				}
-			}
-		}
+		upconvert_squadrons()
 
 		// Automatically fix corrupted discard piles
 		let discards = []
@@ -1660,10 +1640,37 @@ function get_squadron_token(who, s)
 }
 
 
+function upconvert_squadrons()
+{
+	G.squadrons = [ [], [] ]
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		let who = G.flags[s]
+		if (who === NONE) continue
+		G.squadrons[who].push(s)
+	}
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let ss = 0; ss < G.navy_box[who]; ss++) {
+			G.squadrons[who].push(SPACE_NAVY_BOX)
+		}
+		for (let ss = 0; ss < G.unbuilt_squadrons[who]; ss++) {
+			G.squadrons[who].push(SPACE_UNBUILT)
+		}
+		if (who === BRITAIN) {
+			for (let ss = 0; ss < G.the_brig; ss++) {
+				G.squadrons[who].push(SPACE_THE_BRIG)
+			}
+		}
+	}
+}
+
 // Changes the location of a squadron token (used only to animate squadrons between spaces)
 // The negative "off board locations" are allowed as well as space numbers
 function move_squadron_token(who, from, to)
 {
+	if (G.squadrons === undefined) {
+		upconvert_squadrons()
+	}
 	G.squadrons[who][get_squadron_token(who, from)] = to
 }
 
