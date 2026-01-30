@@ -1025,6 +1025,12 @@ function get_squadron_token(who, s)
 		if (V.squadrons[who][sq] === s) return sq
 	}
 	console.error ("No squadron found for space: " + s)
+
+	upconvert_squadrons()
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		if (V.squadrons[who][sq] === s) return sq
+	}
+	
 	return 0
 }
 
@@ -1211,26 +1217,7 @@ function on_update() {
 
 	// Upconvert squadrons if we've "undone"
 	if (V.squadrons === undefined) {
-		V.squadrons = [ [], [] ]
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].type !== NAVAL) continue
-			let who = G.flags[s]
-			if (who === NONE) continue
-			V.squadrons[who].push(s)
-		}
-		for (let who = FRANCE; who <= BRITAIN; who++) {
-			for (let ss = 0; ss < V.navy_box[who]; ss++) {
-				V.squadrons[who].push(SPACE_NAVY_BOX)
-			}
-			for (let ss = 0; ss < V.unbuilt_squadrons[who]; ss++) {
-				V.squadrons[who].push(SPACE_UNBUILT)
-			}
-			if (who === BRITAIN) {
-				for (let ss = 0; ss < V.the_brig; ss++) {
-					V.squadrons[who].push(SPACE_THE_BRIG)
-				}
-			}
-		}
+		upconvert_squadrons()
 	}
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
@@ -1493,6 +1480,31 @@ function on_update() {
 	}
 
 	end_update()
+}
+
+
+function upconvert_squadrons()
+{
+	V.squadrons = [ [], [] ]
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (data.spaces[s].type !== NAVAL) continue
+		let who = G.flags[s]
+		if (who === NONE) continue
+		V.squadrons[who].push(s)
+	}
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (let ss = 0; ss < V.navy_box[who]; ss++) {
+			V.squadrons[who].push(SPACE_NAVY_BOX)
+		}
+		for (let ss = 0; ss < V.unbuilt_squadrons[who]; ss++) {
+			V.squadrons[who].push(SPACE_UNBUILT)
+		}
+		if (who === BRITAIN) {
+			for (let ss = 0; ss < V.the_brig; ss++) {
+				V.squadrons[who].push(SPACE_THE_BRIG)
+			}
+		}
+	}
 }
 
 
