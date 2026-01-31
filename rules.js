@@ -2544,13 +2544,11 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	set_add(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 
 	if (!silent) {
-		log_br()
 		let msg = "Ministry Exhausted: " + say_ministry(m, who)
 		if (data.ministries[m].abilities > 1) {
 			msg += " (Ability #" + (ability + 1) + ")"
 		}
 		log(msg)
-		log_br()
 	}
 }
 
@@ -7326,13 +7324,15 @@ function handle_advantage_click(a)
 
 
 P.advantage_flow = script (`  
-	eval { 
-		if (!G.advantage_already_exhausted) {
-			exhaust_advantage(G.active_advantage, false) //NB: This also begins a log box with LOG_BOX_ADVANTAGE
-		} else {
-			log_box_begin(R, say_advantage(G.active_advantage, R), LOG_BOX_ADVANTAGE)
-		} 
+	if ((R === FRANCE) && get_advantage_region(G.active_advantage) === REGION_EUROPE) {
+		eval { require_ministry(R, POMPADOUR_AND_DU_BARRY, "For an extra TRP when activating an advantage in Europe", true) } 
 	}
+	
+	if (!G.advantage_already_exhausted) {
+		eval { exhaust_advantage(G.active_advantage, false) } //NB: This also begins a log box with LOG_BOX_ADVANTAGE
+	} else {
+		eval { log_box_begin(R, say_advantage(G.active_advantage, R), LOG_BOX_ADVANTAGE) }
+	} 
 
 	if (data.advantages[G.active_advantage].proc !== undefined) {
 		call (data.advantages[G.active_advantage].proc)
