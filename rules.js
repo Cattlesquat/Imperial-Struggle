@@ -8003,6 +8003,7 @@ P.buy_diplomatic_flow = script(`
 function do_buy_diplomatic(who)
 {
 	G.action_points_major[DIPLO]++
+	G.action_points_eligible[DIPLO] = true
 	G.action_points_eligible_major[DIPLO] = true
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " buys 1 Diplomatic Action Point (for 2 Military Action Points)."))
@@ -8035,6 +8036,7 @@ P.buy_economic_flow = script(`
 function do_buy_economic(who)
 {
 	G.action_points_major[ECON]++
+	G.action_points_eligible[ECON] = true
 	G.action_points_eligible_major[ECON] = true
 	G.bought_action_points = ECON
 	log (bold(data.flags[who].name + " buys 1 Economic Action Point (for 2 Military Action Points)."))
