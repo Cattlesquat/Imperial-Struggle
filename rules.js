@@ -9978,6 +9978,10 @@ var cheat_damage_flag = false
 P.before_end_of_action_round = script(`
 	eval { G.action_round_subphase = NOT_ACTION_PHASE }
 		
+	if ((G.round === 1) && has_inactive_ministry(R, JAMES_WATT)) {
+		eval { require_ministry(R, JAMES_WATT, "Must be active before opponent's turn to receive a bonus when opponent activates an advantage.", true) }
+	}		
+		
 	if (G.round < 4) {
 		return // Only need to do the below reminders on the player's last action round of the turn 
 	}
