@@ -379,13 +379,22 @@ function event_tooltip(c, who) {
 
 	if ((data.cards[c].label !== "") || (data.cards[c].effect !== "")) {
 		msg += say_event_effect(data.cards[c].label, data.cards[c].effect, data.cards[c].bonus)
-	} else if (who === FRANCE) {
-		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
-	} else if (who === BRITAIN){
-		msg += say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
 	} else {
-		msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
-		msg += " / " + say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
+		if ((who === undefined) && ((R === FRANCE) || (R === BRITAIN))) {
+			if (V.hand[R].includes(c)) who = R
+			if (V.played_event === c) {
+				who = V.active
+			}
+		}
+
+		if (who === FRANCE) {
+			msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
+		} else if (who === BRITAIN){
+			msg += say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
+		} else {
+			msg += say_event_effect(data.cards[c].frenchlabel, data.cards[c].frencheffect, data.cards[c].frenchbonus)
+			msg += " / " + say_event_effect(data.cards[c].britishlabel, data.cards[c].britisheffect, data.cards[c].britishbonus)
+		}
 	}
 
 	return msg.trim()
@@ -873,7 +882,7 @@ function on_init() {
 	for (i = 1; i <= NUM_EVENT_CARDS; ++i) {
 		define_card_animated ("event_card", i)
 			.keyword("c" + i)
-			.tooltip(event_tooltip(i))
+			.tooltip(event_tooltip)
 	}
 
 	for (i = 1; i <= 26; ++i) {
