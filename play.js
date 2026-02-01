@@ -2316,8 +2316,9 @@ const log_box_keywords = ["fr", "br", "both"]
 const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
 
 function on_log(text, ix) {
-	var p = document.createElement("div")
+	if (typeof text !== "string") text = String(text)  // instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
 
+	var p = document.createElement("div")
 	update_log_boxes(ix)
 
 	if (text.startsWith("=br")) {

@@ -1692,6 +1692,7 @@ function get_squadron_token(who, s)
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 		if (G.squadrons[who][sq] === s) return sq
 	}
+	throw new Error ("No squadron found for space: " + s)
 	console.error ("No squadron found for space: " + s)
 	return 0
 }
@@ -3507,7 +3508,7 @@ function get_contingent(type, rules, require_independent)
 {
 	let amount = 0
 	if ((rules !== undefined) && (rules !== null)) {
-		if (rules.constructor === Array) {
+		if ((typeof rules !== "string") && (rules.constructor === Array)) {
 			for (let i = 0; i < G.action_points_contingent.length; i++) {
 				if (G.action_points_contingent[i].type !== type) continue
 				let any = false
@@ -7231,7 +7232,7 @@ P.ministry_choiseul = {
 	},
 	military_point() {
 		push_undo()
-		add_contingent(DIPLO, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
+		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
 		exhaust_ministry(R, CHOISEUL, 0)
 		end()
 	},
@@ -8622,7 +8623,7 @@ function use_choiseul()
 
 
 P.buy_bonus_war_tile_flow = script(`
-	eval {
+	eval {	    
 		require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
 	}
 	if (G.has_required_ministry) {
@@ -8899,6 +8900,14 @@ function get_naval_cost()
 P.naval_flow = script(`
     eval {
     	G.action_cost = get_naval_cost()
+    	
+    	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
+    	if (L.choiseul > 0) {	
+			G.action_points_committed_bonus[MIL] += L.choiseul
+			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
+			G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account
+		}
+    	
     	require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
     }
 	if (G.has_required_ministry) {
