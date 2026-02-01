@@ -414,6 +414,7 @@ function setup_procs()
 	data.ministries[BANK_OF_ENGLAND].proc = "ministry_bank_of_england"
 	data.ministries[EDMOND_HALLEY].proc = "ministry_edmond_halley"
 	data.ministries[THE_CARDINAL_MINISTERS].proc = "ministry_cardinal_ministers"
+	data.ministries[NEW_WORLD_HUGUENOTS].proc = "ministry_new_world_huguenots"
 	data.ministries[JACOBITE_UPRISINGS].proc = "ministry_jacobite_uprisings"
 	data.ministries[PITT_THE_ELDER].proc = "ministry_pitt_the_elder"
 	data.ministries[CHARLES_HANBURY_WILLIAMS].proc = "ministry_charles_hanbury_williams"
@@ -4029,6 +4030,9 @@ function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
 
 P.event_not_implemented = {
 	inactive: "to discover an unimplemented event",
+	_begin() {
+		console.error ("Event not yet emplemented: " + data.events[G.played_event].name)
+	},
 	prompt() {
 		let msg = "Event not yet implemented."
 		V.prompt = event_prompt(R, G.played_event, msg)
@@ -6881,6 +6885,9 @@ P.ministry_not_activatable = {
 
 P.ministry_not_implemented = {
 	inactive: "use a ministry's ability",
+	_begin() {
+		console.error ("Ministry not yet emplemented: " + data.events[G.ministry_id].name)
+	},
 	prompt() {
 		let msg = "Ministry not yet implemented"
 		V.prompt = ministry_prompt(R, G.ministry_id, msg)
@@ -7054,6 +7061,33 @@ P.ministry_cardinal_ministers = {
 		push_undo()
 		end()
 	}
+}
+
+
+P.ministry_new_world_huguenots = {
+	inactive: "place New World Huguenots",
+	prompt() {
+		let msg = "Place Huguenots marker in a French-flagged territory in North America or the Caribbean"
+		let any = false
+		for (let s = 0; s < NUM_SPACES; s++) {
+			if (data.spaces[s].type !== TERRITORY) continue
+			if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) continue
+			if (G.flags[s] !== FRANCE) continue
+			if (has_huguenots(s)) continue
+			action_space(s)
+			any = true
+		}
+		if (!any) {
+			msg += " (None possible)"
+		}
+		V.prompt = ministry_prompt(R, NEW_WORLD_HUGUENOTS, msg)
+	},
+	space(s) {
+		push_undo()
+		add_huguenots(s)
+		log (bold("Huguenots added at " + say_space(s, FRANCE)))
+		end()
+	},
 }
 
 
