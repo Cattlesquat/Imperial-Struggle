@@ -3127,8 +3127,8 @@ P.final_scoring_phase = {
 				if (!any) {
 					any = true
 					log_box_begin (FRANCE, "Final Scoring: TERRITORIES")
-					award_vp(FRANCE, 2, false, "Control of " + say_space(s, FRANCE))
 				}
+				award_vp(FRANCE, 2, false, "Control of " + say_space(s, FRANCE))
 			}
 		}
 		if (any) log_box_end()
@@ -3139,8 +3139,9 @@ P.final_scoring_phase = {
 				if (!any) {
 					any = true
 					log_box_begin (BRITAIN, "Final Scoring: TERRITORIES")
-					award_vp(BRITAIN, 2, false, "Control of " + say_space(s, BRITAIN))
+
 				}
+				award_vp(BRITAIN, 2, false, "Control of " + say_space(s, BRITAIN))
 			}
 		}
 		if (any) log_box_end()
