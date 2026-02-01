@@ -7695,8 +7695,8 @@ function action_points_eligible_major(type, rules = []) {
 
 
 // Returns the number of major action points available of the type, checking the optional list of rules for potential contingent points
-function action_points_major(type, rules = []) {
-	return G.action_points_major[type] + get_contingent(type, rules, !action_points_eligible_major(type, rules))
+function action_points_major(type, rules = [], allow_minor = false) {
+	return G.action_points_major[type] + get_contingent(type, rules, !action_points_eligible_major(type, rules) && !allow_minor)
 }
 
 
@@ -7709,10 +7709,10 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 
 	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
 		if (!eligible_minor) return 0
-		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0)
+		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + action_points_major(type, rules, eligible_minor)
 	}
 
-	return action_points_major(type, rules) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+	return action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
 }
 
 // True if we're legally allowed to shift the space (includes minor action rules).
@@ -9259,6 +9259,7 @@ P.space_flow = script(`
     		eval { 
     			exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0)
     			add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
+    			G.action_points_available_now++
     		} 
     	}
     }
@@ -9269,12 +9270,18 @@ P.space_flow = script(`
     		eval { 
     			exhaust_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS, 0)
     			add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
+    			G.action_points_available_now += 2
     		}
     	}
     }
     
     if ((G.action_type === DIPLO) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0)) {
     	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true) }
+    	if (G.has_required_ministry) {
+    		eval {
+    			G.action_points_available_now += potential_burke_points(G.active)
+    		}
+    	}
     }
     
     if ((G.action_type === ECON) && (G.action_points_available_now < G.action_cost)) {
