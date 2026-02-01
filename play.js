@@ -1180,7 +1180,7 @@ function on_update() {
 	populate("general-track", tell_vp, "victory-points")
 
 	if ((V.vp < 0) || (V.vp > 30)) {
-		update_text_html("general-track-text", V.vp, `<span class="vp-overlay">${V.vp}</span>`)
+		update_text_html("general-track-text", tell_vp, `<span class="vp-overlay">${V.vp}</span>`)
 	}
 
 	populate("general-track", V.debt[FRANCE], "debt", FRANCE)
