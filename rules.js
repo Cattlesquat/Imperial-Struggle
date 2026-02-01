@@ -3110,7 +3110,7 @@ P.final_scoring_phase = {
 		review_push ("Review Final Debt Scoring")
 
 		for (let d = 0; d < NUM_DEMANDS; d++) {
-			winner = demand_flag_winner()
+			winner = demand_flag_winner(d)
 			if (winner !== NONE) {
 				log_box_begin(winner, "Final Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d) + " flags")
 				award_vp(winner, 1)
