@@ -958,6 +958,7 @@ function on_save()
 function absolute_view() {
 	V.active         = G.active
 	V.log_hide_after = G.log_hide_after
+	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 }
 
 function on_view(RR = undefined) {
