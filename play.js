@@ -1297,9 +1297,12 @@ function on_update() {
 	}
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
+		let total = 0
 		for (let sq = NUM_SQUADRONS - 1; sq >= 0; sq--) { // Count backwards so that when one leaves the navy box it will be the "top one in the stack"
 			if (V.squadrons[who][sq] !== SPACE_NAVY_BOX) continue
 			populate("lout-navy" + ((who === FRANCE) ? "-fr" : "-br"), (who === FRANCE) ? "squadron-fr" : "squadron-br", sq)
+			total++
+			if (total >= V.navy_box[who]) break
 			//document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(index - 2) * -10}px; margin-left:${index * 10}px`
 		}
 	}
