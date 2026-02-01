@@ -1176,7 +1176,8 @@ function on_update() {
 
 	update_debt_display()
 
-	populate("general-track", V.vp, "victory-points")
+	let tell_vp = Math.min(36, Math.max(-7, V.vp))
+	populate("general-track", tell_vp, "victory-points")
 
 	if ((V.vp < 0) || (V.vp > 30)) {
 		update_text_html("general-track-text", V.vp, `<span class="vp-overlay">${V.vp}</span>`)
