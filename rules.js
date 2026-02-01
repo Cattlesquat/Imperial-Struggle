@@ -3700,7 +3700,7 @@ function selected_a_tile(tile)
 	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
 	G.action_point_regions = [ [], [], [] ]
 
-	//TODO: ministries might increase our amounts right away
+	// Ministries that increase action points right away
 
 	if (has_active_ministry(G.active, EDMUND_BURKE)) {
 		if (action_points_eligible_major[DIPLO]) {
@@ -6799,7 +6799,7 @@ function reveal_ministry(who, index) {
 	}
 
 	if (m === EDMUND_BURKE) {
-		if ((G.action_round_subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO)) {
+		if ((G.action_round_subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 		}
 	}
@@ -7719,9 +7719,23 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 	var eligible_minor = eligible_for_minor_action(s, who)
 	if (!action_points_eligible_major(type, rules) && !eligible_minor) return 0
 
-	if ((type === DIPLO) && has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
-		if (!eligible_minor) return 0
-		return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + action_points_major(type, rules, eligible_minor)
+	if (type === DIPLO) {
+		// If we have already spent "Edmund Burke major-action-must-be-all-in-europe" points, then we can't do diplomatic actions *outside* of europe unless we have a minor action
+		if (has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
+			if (!eligible_minor) return 0
+			return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + action_points_major(type, rules, eligible_minor)
+		}
+
+		if (eligible_minor) {
+			let burke = get_contingent(DIPLO, RULE_EUROPE_BURKE, false)
+			if (burke > 0) {
+				// Don't combine Edmund Burke diplo-major points with minor actions
+				return Math.max(
+					action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0),
+					action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] - burke : 0)
+				)
+			}
+		}
 	}
 
 	return action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
@@ -8285,6 +8299,11 @@ function is_austria(s)
 function is_prussia(s)
 {
 	return (s >= PRUSSIA_1) && (s <= PRUSSIA_4)
+}
+
+function is_europe(s)
+{
+	return data.spaces[s].region === REGION_EUROPE
 }
 
 
@@ -9298,11 +9317,15 @@ P.space_flow = script(`
     	}
     }
     
-    if ((G.action_type === DIPLO) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0)) {
+    if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) { 
     	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true) }
     	if (G.has_required_ministry) {
     		eval {
+    			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
     			G.action_points_available_now += potential_burke_points(G.active)
+    			if (G.action_points_minor[DIPLO] > 0) {
+    			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.action_points_minor[DIPLO]) // Burke points don't combine with minor action points
+    			}
     		}
     	}
     }
@@ -9360,7 +9383,7 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     		}
     	}  	
     }
-    
+        
     // If it is going to cost debt or TRPs, then see if player wants to spend them
     if (G.action_points_available_now < G.action_cost) {
     	call confirm_spend_debt_or_trps
