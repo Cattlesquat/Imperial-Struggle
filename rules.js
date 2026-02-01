@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 4
+const GAME_STATE_VERSION = 5
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -874,11 +874,17 @@ function on_load()
 	if (G.game_state_version === undefined) G.game_state_version = 0
 	if (G.game_state_created_with === undefined) G.game_state_created_with = G.game_state_version
 
+	if (G.game_state_version > GAME_STATE_VERSION) {
+		console.error ("Code is older than the version save was made with. (Code version: " + GAME_STATE_VERSION + ", file made with: " + G.game_state_version + ")")
+	}
+
 	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
 
 	if (G.game_state_version < 4) {
 		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
 		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
+	} else if (G.game_state_version < 5) {
+		upconvert (5, upconvert_squadrons) // Clean up after the horrible error I introduced
 	}
 
 	G.game_state_version = GAME_STATE_VERSION
@@ -929,6 +935,9 @@ function upconvert_squadrons(state)
 			for (let ss = 0; ss < state.the_brig; ss++) {
 				state.squadrons[who].push(SPACE_THE_BRIG)
 			}
+		}
+		while (state.squadrons[who].length < NUM_SQUADRONS) {
+			state.squadrons[who].push(SPACE_REMOVED_FROM_GAME)
 		}
 	}
 }
@@ -8963,12 +8972,15 @@ function execute_naval_move()
 	let msg;
 	if (G.navy_from_navy_box) {
 		msg = "Navy box to " + say_space(G.navy_to, G.active)
+		move_squadron_token(G.active, SPACE_NAVY_BOX, G.navy_to)
 	} else {
 		msg = "Squadron " + say_space(G.navy_from) + " to " + say_space(G.navy_to, G.active)
+		move_squadron_token(G.active, G.navy_from, G.navy_to)
 	}
 	log (msg)
 	if (G.navy_displace) {
 		log (bold(data.flags[1-G.active].adj + " squadron displaced."))
+		move_squadron_token(1 - G.active, G.navy_to, SPACE_NAVY_BOX)
 	}
 
 	if (G.navy_from_navy_box || G.navy_displace) {
