@@ -1145,7 +1145,7 @@ function on_view(RR = undefined) {
 		]
 		V.ministry = [
 			G.ministry[FRANCE],
-			G.ministry[BRITAIN].map(x => -1),
+			G.ministry[BRITAIN].map((x) => (G.ministry_revealed[BRITAIN][G.ministry[BRITAIN].indexOf(x)] ? x : -1)),
 		]
 
 		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + opponent hand
@@ -1157,7 +1157,7 @@ function on_view(RR = undefined) {
 			G.hand[BRITAIN],
 		]
 		V.ministry = [
-			G.ministry[FRANCE].map(x => -1),
+			G.ministry[FRANCE].map((x) => (G.ministry_revealed[FRANCE][G.ministry[FRANCE].indexOf(x)] ? x : -1)),
 			G.ministry[BRITAIN],
 		]
 
@@ -1170,8 +1170,8 @@ function on_view(RR = undefined) {
 			G.hand[BRITAIN].map(x => -1),
 		]
 		V.ministry = [
-			G.ministry[FRANCE].map(x => -1),
-			G.ministry[BRITAIN].map(x => -1),
+			G.ministry[FRANCE].map((x) => (G.ministry_revealed[FRANCE][G.ministry[FRANCE].indexOf(x)] ? x : -1)),
+			G.ministry[BRITAIN].map((x) => (G.ministry_revealed[BRITAIN][G.ministry[BRITAIN].indexOf(x)] ? x : -1)),
 		]
 
 		V.deck = [] // No deck view if not on a side
