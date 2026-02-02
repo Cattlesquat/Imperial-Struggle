@@ -537,7 +537,7 @@ function populate(parent_action, arg2, arg3, arg4) {
 	parent.element.appendChild(child.element)
 }
 
-// populate_with_list(parent_action, [parent_id], child_action, child_id_list, fallback)
+// populate_with_list(parent_action, [parent_id], child_action, child_id_list, fallback) -- returns array of fallback items, for optionally passing to set_fallback_tips
 function populate_with_list(parent_action, arg2, arg3, arg4, arg5) {
 	var parent_id, child_action, child_id_list, fallback
 	if (typeof arg2 === "string") {
@@ -582,7 +582,7 @@ function _create_generic(keywords) {
 	return e
 }
 
-// populate_generic(parent_action, [parent_id], keywords, n=1)
+// populate_generic(parent_action, [parent_id], keywords, n=1) -- returns array of fallback items, for optionally passing to set_fallback_tips
 function populate_generic(parent_action, arg2, arg3, arg4) {
 	var parent_id, keywords, n
 	if (typeof arg2 === "string" || Array.isArray(arg2)) {
@@ -597,8 +597,13 @@ function populate_generic(parent_action, arg2, arg3, arg4) {
 	n = n ?? 1
 	var parent = lookup_thing(parent_action, parent_id)
 	parent.ensure_parent()
-	while (n-- > 0)
-		parent.element.appendChild(_create_generic(keywords))
+	var fallbacks = []
+	while (n-- > 0) {
+		let child = _create_generic(keywords)
+		parent.element.appendChild(child)
+		fallbacks.push(child)
+	}
+	return fallbacks
 }
 
 function update_position(action, id, x, y) {

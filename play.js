@@ -1420,7 +1420,7 @@ function on_update() {
 				//	}
 				//}
 			} else {
-				populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br"))
+				set_fallback_tips(populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br")), (bold(((who === FRANCE) ? "French" : "British") + " Ministry: ")) + "Hidden.")
 			}
 		}
 	}
@@ -1447,8 +1447,8 @@ function on_update() {
 	}
 
 	if (V.hand) {
-		populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck")
-		populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck")
+		set_fallback_tips(populate_with_list("panel-events", FRANCE, "event_card", V.hand[FRANCE], "card event_card deck"), bold("French Event Card: ") + "Hidden.")
+		set_fallback_tips(populate_with_list("panel-events", BRITAIN, "event_card", V.hand[BRITAIN], "card event_card deck"), bold("British Event Card: ") + "Hidden.")
 	}
 
 	//BR// Show any event played THIS action round in the played event slot
