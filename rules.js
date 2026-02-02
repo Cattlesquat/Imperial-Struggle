@@ -2561,11 +2561,14 @@ P.ask_about_huguenots = {
 // "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
 function require_ministry(who, m, why, optional = false, prompt_to_exhaust = false)
 {
+	debug_log ("require")
 	// True if the player (now) has the requested/required ministry revealed and thus active
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
 		G.has_required_ministry = true
 		G.ministry_already_revealed = true
+		debug_log ("already")
+
 	}
 	else {
 		if (!has_ministry(who, m)) {
@@ -2595,7 +2598,10 @@ function require_ministry(who, m, why, optional = false, prompt_to_exhaust = fal
 
 function require_ministry_unexhausted(who, m, why, ability = 0, optional = false, prompt_to_exhaust = false)
 {
+	debug_log ("require_unexhausted")
 	if (is_ministry_exhausted(who, m, ability)) {
+		debug_log ("nope: " + who + "  " + data.ministries[m].name + "  " + ability)
+
 		G.has_required_ministry = false
 		return
 	}
@@ -3921,7 +3927,7 @@ function handle_event_card_click(c) {
 	if (data.cards[c].action !== WILD) {
 		if (data.cards[c].action !== data.investments[G.played_tile].majortype) {
 			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
-				exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+				//exhaust_ministry(R, BANK_OF_ENGLAND, 1)
 			} else {
 				console.error("Mismatched event play allowed without use of Bank of England ministry: " + data.cards[c].name)
 			}
@@ -3930,7 +3936,7 @@ function handle_event_card_click(c) {
 
 	if (data.investments[G.played_tile].majorval > 3) {
 		if (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET)) {
-			exhaust_ministry(R, MARQUIS_DE_CONDORCET)
+			//exhaust_ministry(R, MARQUIS_DE_CONDORCET)
 		} else {
 			console.error("Allowed play of event without an event symbol on investment tile")
 		}
@@ -6944,6 +6950,7 @@ function reveal_ministry(who, index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
+		debug_log ("confirm reveal: has_required = " + G.has_required_ministry + "  prompt_to_exhaust = " + G.ministry_prompt_to_exhaust)
 		if (G.has_required_ministry === false) end()
 		if (G.ministry_revealed[R][G.ministry_index] && !G.ministry_prompt_to_exhaust) end()
 	},
