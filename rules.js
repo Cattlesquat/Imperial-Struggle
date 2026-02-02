@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 6
+const GAME_STATE_VERSION = 7
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -881,6 +881,7 @@ function dump_squadrons(message)
 		let out_of_game = 0
 		let on_map = 0
 		let unbuilt = 0
+
 		for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 			let s = G.squadrons[who][sq]
 			if (s >= 0) {
@@ -949,7 +950,7 @@ function on_load()
 	if (G.game_state_version < 4) {
 		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
 		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
-	} else if (G.game_state_version < 6) {
+	} else if (G.game_state_version < 7) {
 		upconvert (6, upconvert_squadrons) // Clean up after the horrible error I introduced
 		dump_squadrons("DONE LOAD")
 	}
@@ -984,14 +985,39 @@ function upconvert_discards(state) {
 
 function upconvert_squadrons(state)
 {
+	let num_removed = [ 0, 0 ]
+	if (Array.isArray(state.squadrons)) {
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+				if (state.squadrons[who][sq] !== SPACE_REMOVED_FROM_GAME) continue
+				num_removed[who]++
+			}
+		}
+	}
+
 	state.squadrons = [ [], [] ]
+	let num_squadrons = [ 0, 0 ]
+
 	for (let s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
 		let who = state.flags[s]
 		if (who === NONE) continue
 		state.squadrons[who].push(s)
+		num_squadrons[who]++
 	}
+
 	for (let who = FRANCE; who <= BRITAIN; who++) {
+		while ((num_squadrons[who] + state.navy_box[who] + state.unbuilt_squadrons[who] + num_removed[who] + ((who === BRITAIN) ? state.the_brig : 0)) > NUM_SQUADRONS) {
+			if (state.unbuilt_squadrons[who] > 0) {
+				state.unbuilt_squadrons[who]--
+			} else if (num_removed[who] > 0) {
+				num_removed[who]--
+			} else if (state.num_navy_box[who] > 0) {
+				state.num_navy_box[who]--
+			} else {
+				break
+			}
+		}
 		for (let ss = 0; ss < state.navy_box[who]; ss++) {
 			state.squadrons[who].push(SPACE_NAVY_BOX)
 		}
