@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 5
+const GAME_STATE_VERSION = 6
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -949,11 +949,10 @@ function on_load()
 	if (G.game_state_version < 4) {
 		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
 		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
-	} else if (G.game_state_version < 5) {
-		upconvert (5, upconvert_squadrons) // Clean up after the horrible error I introduced
+	} else if (G.game_state_version < 6) {
+		upconvert (6, upconvert_squadrons) // Clean up after the horrible error I introduced
+		dump_squadrons("DONE LOAD")
 	}
-
-	dump_squadrons("DONE LOAD")
 
 	G.game_state_version = GAME_STATE_VERSION
 }
@@ -3861,7 +3860,7 @@ P.select_investment_tile = {
 	investment(tile) {
 		push_undo()
 		selected_a_tile(tile)
-		goto ("after_selecting_tile")
+		goto ("afterselecting_tile")
 	},
 	ministry_card(m) {
 		push_undo()
