@@ -2019,6 +2019,12 @@ function is_digit(c) {
 }
 
 
+// Returns true if we're playing this on a mobile platform e.g. phone
+function is_mobile() {
+	return ("ontouchstart" in window)
+}
+
+
 function escape_square_brackets(text) {
 	let runaway = 0
 	let match = ""
@@ -2036,12 +2042,12 @@ function escape_square_brackets(text) {
 			}
 
 			if (inside[1] === "Click") {
-				text = text.replace(/\[.*?]/, ("ontouchstart" in window) ? "Tap" : "Click")
+				text = text.replace(/\[.*?]/, is_mobile() ? "Tap" : "Click")
 				continue
 			}
 
 			if (inside[1] === "click") {
-				text = text.replace(/\[.*?]/, ("ontouchstart" in window) ? "tap" : "click")
+				text = text.replace(/\[.*?]/, is_mobile() ? "tap" : "click")
 				continue
 			}
 

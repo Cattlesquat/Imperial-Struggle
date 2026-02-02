@@ -869,7 +869,7 @@ function on_setup(scenario, options) {
 }
 
 
-function dump_squadrons(message)
+function validate_squadrons(message)
 {
 	//console.log ("=======" + message)
 	for (let who = FRANCE; who <= BRITAIN; who++) {
@@ -942,17 +942,19 @@ function on_load()
 	if (G.game_state_created_with === undefined) G.game_state_created_with = G.game_state_version
 
 	if (G.game_state_version > GAME_STATE_VERSION) {
-		console.error ("Code is older than the version save was made with. (Code version: " + GAME_STATE_VERSION + ", file made with: " + G.game_state_version + ")")
+		console.error ("WARNING: Code is older than the version game state was made with. (Code version: " + GAME_STATE_VERSION + ", file made with: " + G.game_state_version + ")")
 	}
 
-	if (G.game_state_version < 1) G.ministry_exhausted = [ [], [] ]
+	if (G.game_state_version < 1) {
+		upconvert (1, upconvert_exhausted)
+	}
 
 	if (G.game_state_version < 4) {
 		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
 		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
 	} else if (G.game_state_version < 7) {
-		upconvert (6, upconvert_squadrons) // Clean up after the horrible error I introduced
-		dump_squadrons("DONE LOAD")
+		upconvert (6, upconvert_squadrons) // Clean up after The Buggening
+		validate_squadrons("DONE LOAD")
 	}
 
 	G.game_state_version = GAME_STATE_VERSION
@@ -962,11 +964,17 @@ function on_load()
 // Applies a conversion method to the main game state and all of its undo states
 function upconvert(version, converter) {
 	converter(G)
-	G.game_state_version = version
+	G.game_state_version = version // In case someone "undoes" back to here, it will remember it has been upgraded
 	for (let i = 0; i < G.undo.length; i++) {
 		converter(G.undo[i])
 		G.undo[i].game_state_version = version
 	}
+}
+
+
+function upconvert_exhausted(state)
+{
+	state.ministry_exhausted = [ [], [] ]
 }
 
 function upconvert_discards(state) {
@@ -1786,7 +1794,7 @@ function get_squadron_token(who, s)
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 		if (G.squadrons[who][sq] === s) return sq
 	}
-	dump_squadrons("FOUND SQUADRON MISSING")
+	validate_squadrons("FOUND SQUADRON MISSING")
 	throw new Error ("No squadron found for space: " + s)
 	console.error ("No squadron found for space: " + s)
 	return 0
@@ -5005,7 +5013,7 @@ P.event_calico_acts = {
 			reflag_space (s, NONE, true)
 			G.navy_box[BRITAIN]++
 
-			dump_squadrons("CALICO")
+			validate_squadrons("CALICO")
 
 			let msg = data.flags[G.active].adj + " player moves British squadron from " + say_space(s) + " to Navy Box."
 			log (msg)
@@ -5127,7 +5135,7 @@ P.do_military_spending_overruns = {
 			reflag_space (s, NONE, true)
 			G.navy_box[G.active]++
 
-			dump_squadrons("MILITARY_SPENDING_OVERRUNS")
+			validate_squadrons("MILITARY_SPENDING_OVERRUNS")
 
 			let msg = data.flags[G.active].adj + " player removes squadron from " + say_space(s) + " to Navy Box."
 			log (msg)
@@ -5492,7 +5500,7 @@ P.event_byngs_trial = {
 		log (bold("British squadron removed from " + say_space(s) + ". It will return to the Navy Box on the next peace turn."))
 		if (G.the_brig === undefined) G.the_brig = 0
 		G.the_brig++
-		dump_squadrons("BYNGS TRIAL")
+		validate_squadrons("BYNGS TRIAL")
 
 		end()
 	},
@@ -5506,7 +5514,7 @@ P.event_byngs_trial = {
 		G.navy_box[BRITAIN]--
 		if (G.the_brig === undefined) G.the_brig = 0
 		G.the_brig++
-		dump_squadrons("BYNGS TRIAL NAVY BOX")
+		validate_squadrons("BYNGS TRIAL NAVY BOX")
 
 		log (bold("British squadron removed from Navy Box. It will return to the Navy Box on the next peace turn."))
 		log (say_navy_box())
@@ -5851,7 +5859,7 @@ function quadruple_alliance_british_bonus()
 
 	G.unbuilt_squadrons[BRITAIN]--
 	G.navy_box[BRITAIN]++
-	dump_squadrons("QUADRUPLE ALLIANCE BUILD")
+	validate_squadrons("QUADRUPLE ALLIANCE BUILD")
 	log ("British squadron constructed to Navy Box.")
 }
 
@@ -5915,7 +5923,7 @@ P.event_war_of_the_quadruple_alliance = {
 			L.picked_squadron = true
 			G.the_brig++
 			log("British squadron at " + say_space(s, BRITAIN) + " removed (will return next peace turn).")
-			dump_squadrons("QUADRUPLE MAP") //TODO: remove
+			validate_squadrons("QUADRUPLE MAP") //TODO: remove
 			award_vp(BRITAIN, 2)
 			if (quadruple_alliance_british_bonus()) end()
 		} else {
@@ -5930,7 +5938,7 @@ P.event_war_of_the_quadruple_alliance = {
 		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_THE_BRIG)
 		G.navy_box[BRITAIN]--
 		G.the_brig++
-		dump_squadrons("QUADRUPLE NAVY BOX") //TODO: remove
+		validate_squadrons("QUADRUPLE NAVY BOX") //TODO: remove
 		log("British squadron removed from Navy Box (will return next peace turn).")
 		log(say_navy_box())
 		award_vp(BRITAIN, 2)
@@ -6185,7 +6193,7 @@ function nootka_bonus()
 			move_squadron_token(FRANCE, SPACE_UNBUILT, SPACE_NAVY_BOX)
 			G.navy_box[FRANCE]++
 			G.unbuilt_squadrons[FRANCE]--
-			dump_squadrons("NOOTKA")
+			validate_squadrons("NOOTKA")
 
 			log ("French squadron added to Navy Box.")
 			log (say_navy_box())
@@ -6237,7 +6245,7 @@ P.event_nootka_incident = {
 		reflag_space(s, NONE)
 		G.navy_box[BRITAIN]++
 		log ("British squadron from " + say_space(s) + " displaced to Navy Box.")
-		dump_squadrons("NOOTKA DISPLACE")
+		validate_squadrons("NOOTKA DISPLACE")
 
 		log (say_navy_box())
 		nootka_bonus()
@@ -6679,7 +6687,7 @@ P.event_falklands_crisis = {
 		} else {
 			move_squadron_token(BRITAIN, s, SPACE_REMOVED_FROM_GAME)
 			reflag_space(s, NONE, silent)
-			dump_squadrons("FALKLANDS")
+			validate_squadrons("FALKLANDS")
 
 			log("British squadron at " + say_space(s) + " removed from the game.")
 			end()
@@ -6689,7 +6697,7 @@ P.event_falklands_crisis = {
 		push_undo()
 		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_REMOVED_FROM_GAME)
 		G.navy_box[BRITAIN]--
-		dump_squadrons("FALKLANDS NAVY BOX")
+		validate_squadrons("FALKLANDS NAVY BOX")
 
 		log ("British squadron from Navy Box removed from the game.")
 		log (say_navy_box())
@@ -6778,7 +6786,7 @@ P.event_cook_and_bougainville = {
 				G.navy_box[FRANCE]++
 				G.unbuilt_squadrons[FRANCE]--
 				log("French squadron added to Navy Box.")
-				dump_squadrons("COOK AND BOUG")
+				validate_squadrons("COOK AND BOUG")
 
 				log(say_navy_box())
 			} else {
@@ -7588,7 +7596,7 @@ P.advantage_naval_bastion = {
 		move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 		G.navy_box[1 - R]++
 		reflag_space(s, NONE, true)
-		dump_squadrons("QUADRUPLE NAVAL BASTION")
+		validate_squadrons("QUADRUPLE NAVAL BASTION")
 
 
 		log (bold(data.flags[1-R].adj + " squadron returned from " + say_space(s) + " to Navy Box."))
@@ -8402,7 +8410,7 @@ function do_construct_squadron(who) {
 	move_squadron_token(who, SPACE_UNBUILT, SPACE_NAVY_BOX)
 	G.unbuilt_squadrons[who]--
 	G.navy_box[who]++
-	dump_squadrons("DO CONSTRUCT")
+	validate_squadrons("DO CONSTRUCT")
 
 
 	log_br()
@@ -9176,7 +9184,7 @@ function execute_naval_move()
 		move_squadron_token(1 - G.active, G.navy_to, SPACE_NAVY_BOX)
 	}
 
-	dump_squadrons("EXECUTE MOVE (" + G.navy_from + " " + G.navy_to + " " + G.navy_displace + " " + G.navy_from_navy_box + ")")
+	validate_squadrons("EXECUTE MOVE (" + G.navy_from + " " + G.navy_to + " " + G.navy_displace + " " + G.navy_from_navy_box + ")")
 
 	if (G.navy_from_navy_box || G.navy_displace) {
 		log (say_navy_box())
@@ -10592,7 +10600,7 @@ P.war_theater_reveal = {
 				move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 				reflag_space(s, NONE)
 				G.navy_box[1-R]++
-				dump_squadrons("WAR TILE")
+				validate_squadrons("WAR TILE")
 				log (data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box")
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
@@ -11067,7 +11075,7 @@ P.war_theater_resolve = {
 				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
 				move_squadron_token(G.active, s, SPACE_UNBUILT)
 			}
-			dump_squadrons("WAR EFFECT")
+			validate_squadrons("WAR EFFECT")
 		} else if (L.picking_squadron) {
 			conquer_from_space(s)
 			let index = L.free_squadrons.indexOf(s);
@@ -11134,7 +11142,7 @@ P.war_theater_resolve = {
 				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_UNBUILT)
 				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
 			}
-			dump_squadrons("WAR EFFECT NAVY BOX")
+			validate_squadrons("WAR EFFECT NAVY BOX")
 		} else {
 			conquer_from_navy_box()
 		}
