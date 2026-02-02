@@ -9508,7 +9508,7 @@ P.decide_how_and_whether_to_spend_action_points = script(`
         if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type))) { 
 			eval { G.action_minor = true }  // If we're not eligible for a major action in this category, we don't need to make a choice    
         }
-        if (has_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (G.action_type === DIPLO) && (data.spaces[G.active_space].region !== REGION_EUROPE)) {
+        if (has_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (G.action_type === DIPLO) && ((G.active_space < 0) || (data.spaces[G.active_space].region !== REGION_EUROPE))) {
         	eval { G.action_minor = true }  // If we've spent Edmund Burke's special points in Europe already, only a minor action can be used outside of Europe
         }
     }
