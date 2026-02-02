@@ -505,6 +505,7 @@ function initiative_tooltip(who) {
 
 function basic_war_tooltip(t, who) {
 	let msg = bold(data.flags[who].adj + " Basic War Tile: ")
+	let msg2 = ""
 
 	if (t < 0) {
 		msg += "Hidden"
@@ -516,13 +517,19 @@ function basic_war_tooltip(t, who) {
 	switch (data.basic_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
+			msg2 = data.flags[1-who].name + " must spend one debt"
 			break
 		case WAR_FORT:
 			msg += " with Fort/Fleet"
+			msg2 = data.flags[1-who].name + " must damage one of its forts or retire a squadron"
 			break
 		case WAR_FLAG:
 			msg += " with Flag"
+			msg2 = data.flags[who].name + " unflags a " + data.flags[1-who].adj + " market or political space"
 			break
+	}
+	if (msg2 !== "") {
+		msg += " " + italic(parens(msg2))
 	}
 	return msg
 }
@@ -530,6 +537,7 @@ function basic_war_tooltip(t, who) {
 
 function bonus_war_tooltip(t, who) {
 	let msg = bold(data.flags[who].adj + " Bonus War Tile: ")
+	let msg2 = ""
 
 	if (t < 0) {
 		msg += "Hidden"
@@ -542,10 +550,15 @@ function bonus_war_tooltip(t, who) {
 	switch (data.bonus_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
+			msg2 = data.flags[1-who].name + " must spend one debt"
 			break
 		case WAR_FORT:
 			msg += " with Fort/Fleet"
+			msg2 = data.flags[1-who].name + " must damage one of its forts or retire a squadron"
 			break
+	}
+	if (msg2 !== "") {
+		msg += ". " + italic(msg2)
 	}
 	msg += ")"
 	return msg
