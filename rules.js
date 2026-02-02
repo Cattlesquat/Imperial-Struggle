@@ -3886,7 +3886,7 @@ P.select_investment_tile = {
 	investment(tile) {
 		push_undo()
 		selected_a_tile(tile)
-		goto ("afterselecting_tile")
+		goto ("after_selecting_tile")
 	},
 	ministry_card(m) {
 		push_undo()
