@@ -8957,9 +8957,12 @@ P.naval_flow = script(`
     	
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
+    		console.log ("Action Cost @ Naval Flow: " + G.action_cost)
+    		console.log ("Contingent to use: " + L.choiseul)
+    		console.log ("Other points available: " + G.action_points_available_now)
 			G.action_points_committed_bonus[MIL] += L.choiseul
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
-			G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account
+			//G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account  ///
 		}
     	
     	require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
@@ -9451,6 +9454,9 @@ function an(amount) {
 
 function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+
+	console.log ("Cost: " + G.action_cost)
+	console.log ("Committed: " + G.action_points_committed_bonus[G.action_type])
 
 	G.paid_action_cost = true
 	let prev_cost = G.action_cost
