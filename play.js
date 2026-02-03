@@ -65,10 +65,10 @@ const war_layout = {
 	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
 
 	// WSS - Winner
-	war_wss_theater_1_winner: [275, 94, 60, 25],
-	war_wss_theater_2_winner: [675, 94, 60, 25],
-	war_wss_theater_3_winner: [325, 464, 60, 25],
-	war_wss_theater_4_winner: [835, 464, 60, 25],
+	war_wss_theater_1_winner: [290, 94, 60, 25],
+	war_wss_theater_2_winner: [690, 94, 60, 25],
+	war_wss_theater_3_winner: [340, 464, 60, 25],
+	war_wss_theater_4_winner: [850, 464, 60, 25],
 
 	// WSS - Alliances
 	war_wss_theater_1_alliances: [500, 142, 50, 152],
@@ -81,22 +81,22 @@ const war_layout = {
 	war_was_theater_1_strength_br: [490, 360, 50, 25],
 	war_was_theater_2_strength_fr: [560, 360, 50, 25],
 	war_was_theater_2_strength_br: [1015, 360, 50, 25],
-	war_was_theater_3_strength_fr: [42, 770, 50, 25],
-	war_was_theater_3_strength_br: [490, 770, 50, 25],
+	war_was_theater_3_strength_fr: [40, 670, 50, 25],
+	war_was_theater_3_strength_br: [492, 670, 50, 25],
 	war_was_theater_4_strength_fr: [560, 815, 50, 25],
 	war_was_theater_4_strength_br: [1030, 815, 50, 25],
 
 	// WAS - Winner
-	war_was_theater_1_winner: [275, 84, 60, 25],
-	war_was_theater_2_winner: [850, 84, 60, 25],
-	war_was_theater_3_winner: [325, 415, 60, 25],
-	war_was_theater_4_winner: [865, 415, 60, 25],
+	war_was_theater_1_winner: [295, 82, 60, 25],
+	war_was_theater_2_winner: [865, 82, 60, 25],
+	war_was_theater_3_winner: [335, 413, 60, 25],
+	war_was_theater_4_winner: [865, 413, 60, 25],
 
 	// WAS - Alliances
 	war_was_theater_1_alliances: [500, 122, 50, 152],
 	war_was_theater_2_alliances: [1022, 142, 50, 152],
-	war_was_theater_3_alliances: [500, 478, 50, 152],
-	war_was_theater_4_alliances: [1022, 454, 50, 152],
+	war_was_theater_3_alliances: [500, 472, 50, 152],
+	war_was_theater_4_alliances: [1022, 445, 50, 152], 
 
 	// 7YW - Strength
 	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
@@ -109,10 +109,10 @@ const war_layout = {
 	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
 
 	// 7YW - Winner
-	war_7yw_theater_1_winner: [340, 98, 60, 25],
-	war_7yw_theater_2_winner: [860, 98, 60, 25],
-	war_7yw_theater_3_winner: [350, 466, 60, 25],
-	war_7yw_theater_4_winner: [810, 466, 60, 25],
+	war_7yw_theater_1_winner: [355, 94, 60, 25],
+	war_7yw_theater_2_winner: [875, 94, 60, 25],
+	war_7yw_theater_3_winner: [355, 465, 60, 25],
+	war_7yw_theater_4_winner: [810, 465, 60, 25],
 
 	// 7YW - Alliances
 	war_7yw_theater_1_alliances: [518, 147, 50, 152],
@@ -121,22 +121,22 @@ const war_layout = {
 	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
 
 	// AWI - Strength
-	war_awi_theater_1_strength_fr: [36, 510, 50, 25],
-	war_awi_theater_1_strength_br: [495, 510, 50, 25],
-	war_awi_theater_2_strength_fr: [557, 345, 50, 25],
-	war_awi_theater_2_strength_br: [1010, 345, 50, 25],
-	war_awi_theater_3_strength_fr: [557, 780, 50, 25],
+	war_awi_theater_1_strength_fr: [36,  508, 50, 25],
+	war_awi_theater_1_strength_br: [495, 508, 50, 25],
+	war_awi_theater_2_strength_fr: [560,  343, 50, 25],
+	war_awi_theater_2_strength_br: [1015, 343, 50, 25],
+	war_awi_theater_3_strength_fr: [560, 780, 50, 25],
 	war_awi_theater_3_strength_br: [1010, 780, 50, 25],
 
 	// AWI - Winner
-	war_awi_theater_1_winner: [330, 78, 60, 25],
-	war_awi_theater_2_winner: [700, 78, 60, 25],
-	war_awi_theater_3_winner: [700, 388, 60, 25],
+	war_awi_theater_1_winner: [355, 93, 60, 25],
+	war_awi_theater_2_winner: [780, 93, 60, 25],
+	war_awi_theater_3_winner: [780, 404, 60, 25],
 
 	// AWI - Alliances
-	war_awi_theater_1_alliances: [502, 144, 50, 152],
+	war_awi_theater_1_alliances: [502,  135, 50, 152],
 	war_awi_theater_2_alliances: [1037, 164, 50, 152],
-	war_awi_theater_3_alliances: [1032, 445, 50, 152],
+	war_awi_theater_3_alliances: [1032, 435, 50, 152],
 	war_awi_theater_4_alliances: [1022, 510, 50, 152],
 }
 
@@ -1725,7 +1725,7 @@ function update_war_display() {
 				update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
 				update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="flag"></span><span>${margin}</span>`)
 				update_show(`lout-${war_prefix}-winner`, theater, true)
-			} 
+			}
 			else {
 				update_show(`lout-${war_prefix}-winner`, theater, false)
 			}
@@ -1857,7 +1857,7 @@ function update_war_display() {
 			}
 		}
 		if (war_number === WAR_7YW && theater === 3) {
-			for (let s of [SAN_AGUSTIN, ASIENTO]) {
+			for (let s of [ SPAIN_1, SPAIN_3]) {
 				let flag = V.flags[s]
 				if (flag !== FRANCE && flag !== BRITAIN) continue
 				
@@ -1907,6 +1907,7 @@ function update_war_display() {
 		})
 		
 		for (let name of alliance_names) {
+			if (theater === 3) console.log (alliances[name])
 			flag_html += build_flag_row(alliances[name], name)
 		}
 		

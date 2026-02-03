@@ -856,7 +856,7 @@ data.spaces = [
 
 
     // CARIBBEAN
-    { "layout": "Asciento",                "num":  60, "name": "Asiento",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2, },
+    { "layout": "Asiento",                 "num":  60, "name": "Asiento",                 "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 2, },
     { "layout": "Privateers",              "num":  61, "name": "Privateers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ]  },
     { "layout": "Buccaneers",              "num":  62, "name": "Buccaneers",              "era": 0, "region": 2,              "type": 0, "prestige": false, "cost": 2, "flag": 4,                                                                                                                                                                                       "alliance": [ ], },
     { "layout": "Carolinas",               "num":  63, "name": "Carolinas",               "era": 0, "region": 2,              "type": 3, "prestige": false, "cost": 1, "flag": 1,              "connects": [ GEORGIA, BAHAMAS_RUN_WEST ],                                                  "conquest": [ SAN_AGUSTIN ] },
