@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 7
+const GAME_STATE_VERSION = 10
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -865,6 +865,16 @@ function on_setup(scenario, options) {
 	// Which demand do Townshend Acts currently apply to (if any)
 	G.townshend_acts = -1
 
+	// For completed wars, the player who won each theater, or NONE for ties. -1 means not yet happened
+	// <br/>
+	// G.old_war_theater_winner[WAR_WSS][3] -> the winner of theater 3 in WAR_WSS
+	G.old_war_theater_winners = [ [], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [ -1, -1, -1, -1, -1] ]
+
+	// For completed wars, the margin by which each theater was won
+	// <br/>
+	// G.old_war_theater_margin[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
+	G.old_war_theater_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
+
 	call("main")
 }
 
@@ -957,6 +967,10 @@ function on_load()
 		validate_squadrons("DONE LOAD")
 	}
 
+	if (G.game_state_version < 10) {
+		upconvert (10, upconvert_old_wars)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -971,6 +985,11 @@ function upconvert(version, converter) {
 	}
 }
 
+
+function upconvert_old_wars(state) {
+	state.old_war_theater_winners = [ [], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1] ]
+	state.old_war_theater_margins = [ [], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
+}
 
 function upconvert_exhausted(state)
 {
@@ -1243,6 +1262,9 @@ function on_view(RR = undefined) {
 	V.action_round_subphase = G.action_round_subphase
 
 	V.townshend_acts = G.townshend_acts
+
+	V.old_war_theater_winners = G.old_war_theater_winners
+	V.old_war_theater_margins = G.old_war_theater_margins
 }
 
 
@@ -10679,6 +10701,9 @@ function start_war_theater_resolution()
 	log_box_begin(L.war_winner, header)
 
 	G.war_winner[G.theater] = L.war_winner
+
+	G.old_war_theater_winners[G.next_war][G.theater] = L.war_winner
+	G.old_war_theater_margins[G.next_war][G.theater] = L.war_delta
 
 	if (L.war_tier === data.wars[G.next_war].theater[G.theater].margin.length - 1) {
 		if ((G.won_all_theaters_by_maximum_level === -1) || (G.won_all_theaters_by_maximum_level === L.war_winner)) {

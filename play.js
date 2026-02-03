@@ -1671,9 +1671,32 @@ function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
 
+	let allwars = get_preference("allwars", false)
 	for (var w = 0; w < NUM_WARS; w++) {
-		let allwars = get_preference("allwars", false)
 		war_display[w].hidden = allwars ? false : (war !== w)
+	}
+
+	const war_prefixes = ["wss", "was", "7yw", "awi"]
+
+	if (allwars) {
+		for (let w = 1; w < G.next_war; w++) {
+			var num_theaters = data.wars[w].theaters
+			let war_prefix = war_prefixes[w-1]
+			for (theater = 1; theater <= num_theaters; theater++) {
+				if (V.old_war_theater_winners && (V.old_war_theater_winners[w][theater] !== -1)) {
+					let winner = V.old_war_theater_winners[w][theater]
+					let margin = V.old_war_theater_margins[w][theater]
+					let is_tie = margin === 0
+					let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
+
+					update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
+					update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="flag"></span><span>${margin}</span>`)
+					update_show(`lout-${war_prefix}-winner`, theater, true)
+				} else {
+					update_show(`lout-${war_prefix}-winner`, theater, false)
+				}
+			}
+		}
 	}
 
 	if (war < NUM_WARS) {
@@ -1702,7 +1725,7 @@ function update_war_display() {
 			}
 		}
 
-		const war_prefix = ["wss", "was", "7yw", "awi"][war]
+		let war_prefix = war_prefixes[war]
 		const num_theaters = data.wars[G.next_war].theaters
 
 		for (theater = 1; theater <= num_theaters; ++theater) {
@@ -1750,7 +1773,6 @@ function update_war_display() {
 	}
 
 	// Alliance flags for all wars
-	const war_prefixes = ["wss", "was", "7yw", "awi"]
 	const war_number = war + 1
 	const war_prefix = war_prefixes[war]
 	const num_war_theaters = data.wars[war_number].theaters
@@ -1909,7 +1931,6 @@ function update_war_display() {
 		})
 		
 		for (let name of alliance_names) {
-			if (theater === 3) console.log (alliances[name])
 			flag_html += build_flag_row(alliances[name], name)
 		}
 		
