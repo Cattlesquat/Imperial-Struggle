@@ -1708,6 +1708,7 @@ menu li.separator {
 
 [data-tooltip]:after {
     content: attr(data-tooltip);
+    pointer-events: none;
     position: absolute;
     top: 20px;
     left: 20px;
