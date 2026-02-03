@@ -9638,7 +9638,7 @@ function pay_action_cost() {
 			msg += " (Major action)"
 		}
 	}
-	if (G.action_cost_adjusted) msg += " Cost Breakdown: " + G.action_cost_breakdown
+	if (G.action_cost_adjusted) msg += " Cost: " + G.action_cost_breakdown
 	G.action_cost_breakdown = "" // Get unneeded string back out of our game state blob
 	log(italic(msg))
 
