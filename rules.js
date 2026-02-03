@@ -4319,6 +4319,7 @@ P.event_acts_of_union = {
 	space(s) {
 		push_undo()
 		reflag_space(s, NONE)
+		end()
 	},
 	confirm() {
 		push_undo()
