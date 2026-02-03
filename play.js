@@ -2605,6 +2605,7 @@ function say_action_points(space = true, brackets = true) {
 	var need_comma = false;
 	var early = [ false, false, false ]
 	var tell = ""
+	var told_name = [ false, false, false ]
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 			if (G.action_points_eligible === undefined) continue
@@ -2615,6 +2616,7 @@ function say_action_points(space = true, brackets = true) {
 						tell += ", "
 					}
 					tell += names[i] + (shortest ? "" : ": ")
+					told_name[i] = true
 					need_comma = true;
 
 					tell += G.action_points_major[i] //+ " major"
@@ -2625,12 +2627,13 @@ function say_action_points(space = true, brackets = true) {
 				}
 
 				if ((level === MAJOR) === early[i]) {
-					if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+					if (data.investments[V.played_tile].minortype === i) { // (G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
 						if (level === MINOR) {
 							if (need_comma) {
 								tell += ", "
 							}
 							tell += names[i] + (shortest ? "" : ": ")
+							told_name[i] = true
 						}
 
 						tell += G.action_points_minor[i] + (shortest ? "m" : " Minor")
@@ -2641,6 +2644,12 @@ function say_action_points(space = true, brackets = true) {
 						if (need_comma) {
 							tell += ", "
 						}
+
+						if (!told_name[i]) {
+							tell += names[i] + (shortest ? "" : ": ")
+							told_name[i] = true
+						}
+
 						tell += G.action_points_committed_bonus[i] + " Bonus"
 						need_comma = true;
 					}
@@ -2649,6 +2658,10 @@ function say_action_points(space = true, brackets = true) {
 						let amount = rule.amount //get_contingent(i, rule.rule)
 						if (any_contingent(i, rule.rule)) {
 							if (need_comma) tell += ", "
+							if (!told_name[i]) {
+								tell += names[i] + (shortest ? "" : ": ")
+								told_name[i] = true
+							}
 							tell += amount + " " + (shortest ? rule.short : rule.rule)
 							need_comma = true
 						}

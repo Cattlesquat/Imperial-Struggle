@@ -1111,6 +1111,7 @@ function on_view(RR = undefined) {
 	V.discard_pile = G.discard_pile
 	V.played_events = G.played_events
 	V.played_event = G.played_event
+	V.played_tile = G.played_tile
 
 	// Current available investments, and used investment pile, are public.
 	// Shuffled investment deck is not.
