@@ -884,6 +884,8 @@ function on_init() {
 			.keyword("square advantage a" + a.num)
 			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
+
+		define_marker ("advantage-exhausted", a.num).tooltip(advantage_tooltip).tooltip_image(advantage_tooltip_image)
 	}
 
 	for (a of data.investments) {
@@ -1373,6 +1375,10 @@ function on_update() {
 			reverse = (is_advantage_exhausted(a) && !noflipsies)
 		}
 		populate(layout, index, "advantage", a)
+
+		if (is_advantage_exhausted(a) && (V.advantages[a] !== NONE)) {
+			populate("lout-advantage", a, "advantage-exhausted", a)
+		}
 
 		update_keyword("advantage", a, "reverse", reverse)
 		update_keyword("advantage", a, "exhausted", is_advantage_exhausted(a) && (noflipsies || (downanddirty && V.advantages[a] === NONE)))

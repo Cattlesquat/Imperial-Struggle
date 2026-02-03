@@ -737,6 +737,17 @@ body[data-noanims="false"] .card.action {
 	right: 0;
 }
 
+.marker.advantage-exhausted {
+    content: "";
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    background-image: url(tiles75/square-sm/exhausted.png);
+    background-size: 38px;
+    background-position: center;
+    top: 45px;
+}
+
 .bonus_war.hidden, .basic_war.hidden {
 	filter: brightness(0.95) saturate(0.8);
 }
