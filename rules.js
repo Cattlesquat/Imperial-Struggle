@@ -979,9 +979,11 @@ function on_load()
 function upconvert(version, converter) {
 	converter(G)
 	G.game_state_version = version // In case someone "undoes" back to here, it will remember it has been upgraded
-	for (let i = 0; i < G.undo.length; i++) {
-		converter(G.undo[i])
-		G.undo[i].game_state_version = version
+	if (G.undo) {
+		for (let i = 0; i < G.undo.length; i++) {
+			converter(G.undo[i])
+			G.undo[i].game_state_version = version
+		}
 	}
 }
 
