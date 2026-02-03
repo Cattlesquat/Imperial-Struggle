@@ -2153,6 +2153,7 @@ function escape_square_brackets(text) {
 						class="${className}"
 						onmouseenter="_tip_focus_investment(${value}, ${who})"
 						onmouseleave="_tip_blur_investment()"
+						onmousedown="_tip_click_light('investment',${value})"
 						>${escape_typography(msg)}</span>`
 					break
 				case "W":
@@ -2162,6 +2163,7 @@ function escape_square_brackets(text) {
 						class="${className}"
 						onmouseenter="_tip_focus_award(${value}, ${who})"
 						onmouseleave="_tip_blur_award()"
+						onmousedown="_tip_click_light('award',${value})"
 						>${escape_typography(msg)}</span>`
 					break
 				case "S":
@@ -2172,6 +2174,7 @@ function escape_square_brackets(text) {
 						class="${className}"
 						onmouseenter="_tip_focus_space(${who}, ${value})"
 						onmouseleave="_tip_blur_space()"
+						onmousedown="_tip_click_light('space',${value})"
 						>${escape_typography(msg)}</span>`
 					break
 				case "V":
@@ -2186,6 +2189,7 @@ function escape_square_brackets(text) {
 						class="${className}"
 						onmouseenter="_tip_focus_spending(${who})"
 						onmouseleave="_tip_blur_spending()"
+						onmousedown="_tip_click_light('general-track', '15')"
 						>${escape_typography(msg)}</span>`
 					break
 			}
@@ -2264,6 +2268,7 @@ function escape_demand(text, re, log_className, tip_className, names) {
 		class="${log_className}"
 		onmouseenter="_tip_focus_demand('${x}', '${tip_className.replace("$1", demand_name(x))}')"
 		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${x})"
 		>${escape_typography(names[x])}</span>`
 	)
 }
@@ -2287,6 +2292,7 @@ function escape_event(text, re, log_className, tip_className, names, who) {
 		class="${log_className}"
 		onmouseenter="_tip_focus_event('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_event()"
+		onmousedown="_tip_click_light('event_card',${x})"
 		>${escape_typography(names[x])}</span>`
 	)
 }
@@ -2310,6 +2316,7 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 		class="${log_className}"
 		onmouseenter="_tip_focus_ministry('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_ministry()"
+		onmousedown="_tip_click_light('ministry_card',${x})"
 		>${escape_typography(names[x])}</span>`
 	)
 }
@@ -2340,6 +2347,7 @@ function escape_advantage(text, re, log_className, tip_className, names, who) {
 		class="${log_className}"
 		onmouseenter="_tip_focus_advantage('${who}', '${x}', '${tip_className.replace("$1", x)}')"
 		onmouseleave="_tip_blur_advantage()"
+		onmousedown="_tip_click_light('advantage',${x})"
 		>${escape_typography(names[x])}</span>`
 	)
 }
