@@ -1196,7 +1196,7 @@ function on_view(RR = undefined) {
 				((who === RR) || set_has(G.basic_war_tile_revealed[who], tile)) ? tile : -1
 			)
 			V.theater_bonus_war_tiles[who][theater] = G.theater_bonus_war_tiles[who][theater].map(tile =>
-				((who === RR) || set_has(G.bonus_war_tile_revealed[who], tile)) ? tile : -1
+				((who === RR) || set_has(G.bonus_war_tile_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
 			)
 		}
 	}
@@ -3870,6 +3870,7 @@ P.select_investment_tile = {
 	},
 	theater(theater) {
 		push_undo()
+		theater = display_to_theater(theater)
 		L.moved_any_tiles = true
 		if (L.theaters === undefined) L.theaters = []
 
@@ -4707,7 +4708,7 @@ P.event_austro_spanish_rivalry = {
 	},
 	theater(t) {
 		push_undo()
-		L.theater = t
+		L.theater = display_to_theater(t)
 	},
 	confirm() {
 		clear_undo() // No going back once we've effectively revealed a war tile
@@ -5292,11 +5293,14 @@ P.event_famine_in_ireland = {
 		end()
 	},
 	bonus_war(t) {
+		push_undo()
 		L.placing_displaced_tile = true
 		L.displaced_tile = t
 		if (G.theater_bonus_war_tiles[FRANCE][4].indexOf(t) >= 2) L.displaced_a_new_one = true
 	},
 	theater(theater) {
+		push_undo()
+		theater = display_to_theater(theater)
 		array_delete_item(G.theater_bonus_war_tiles[FRANCE][4], L.displaced_tile)
 		G.theater_bonus_war_tiles[FRANCE][theater].push(L.displaced_tile)
 		let msg = "France displaces a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
@@ -5490,6 +5494,7 @@ P.event_byngs_trial = {
 	},
 	theater(theater) {
 		push_undo()
+		theater = display_to_theater(theater)
 		G.byng = theater
 		log (bold("Byng +2 tile placed in theater " + theater + ": " + data.wars[G.next_war].theater_names[theater]))
 		end()
@@ -8881,6 +8886,7 @@ P.bonus_war_tile_decisions = {
 		L.new_tile = draw_bonus_war_tile(G.active, 0)
 	},
 	theater(t) {
+		t = display_to_theater(t)
 		push_undo()
 		if (L.theater <= 0) {
 			L.theater = t
@@ -10371,7 +10377,7 @@ function theater_strength(who, theater)
 	}
 
 	for (const t of G.theater_bonus_war_tiles[who][theater]) {
-		if (set_has(G.bonus_war_tile_revealed[who], t)) score += data.bonus_war_tiles[t].val
+		if (set_has(G.bonus_war_tile_revealed[who], t) || (t === BYNG) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
 	}
 
 	if ((who === BRITAIN) && (G.byng === theater)) score += 2
@@ -10576,6 +10582,7 @@ P.war_theater_reveal = {
 	},
 	theater(t) {
 		push_undo()
+		t = display_to_theater(t) // Presently unused but it makes me nervous to leave the conversion out in case we change this later
 		review_step(++G.review_step[R], R)
 		if (Array.isArray(G.active)) {
 			set_delete(G.active, R)
@@ -11150,6 +11157,7 @@ P.war_theater_resolve = {
 	},
 	theater(t) {
 		push_undo()
+		t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
 		L.war_atlantic = false
 		G.theater_bonus_war_tiles[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
 	},
@@ -11422,9 +11430,20 @@ function action_navy_box()
 	action("navy_box", 0)
 }
 
+
+function theater_to_display(t)
+{
+	return t + (G.next_war - 1) * 4
+}
+
+function display_to_theater(t)
+{
+	return t - (G.next_war - 1) * 4
+}
+
 function action_theater(t)
 {
-	action("theater", t)
+	action("theater", theater_to_display(t))
 }
 
 function action_all_theaters() {

@@ -641,6 +641,7 @@ function on_init() {
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
+	init_preference_checkbox("allwars", false)
 
 	init_preference_radio("actionverbosity", "medium")
 
@@ -961,10 +962,10 @@ function on_init() {
 
 	define_board("#war_was", 1100, 850)
 	{
-		define_space("theater", 1, war_layout.war_was_theater_1)
-		define_space("theater", 2, war_layout.war_was_theater_2)
-		define_space("theater", 3, war_layout.war_was_theater_3)
-		define_space("theater", 4, war_layout.war_was_theater_4)
+		define_space("theater", 5, war_layout.war_was_theater_1)
+		define_space("theater", 6, war_layout.war_was_theater_2)
+		define_space("theater", 7, war_layout.war_was_theater_3)
+		define_space("theater", 8, war_layout.war_was_theater_4)
 		define_layout("lout-theater-drawn", 1, layout_theater_drawn) // war_layout.war_was_theater_drawn)
 		define_layout("lout-theater", 9, war_layout.war_was_theater_1_france)
 		define_layout("lout-theater", 10, war_layout.war_was_theater_1_britain)
@@ -994,10 +995,10 @@ function on_init() {
 
 	define_board("#war_7yw", 1100, 850)
 	{
-		define_space("theater", 1, war_layout.war_7yw_theater_1)
-		define_space("theater", 2, war_layout.war_7yw_theater_2)
-		define_space("theater", 3, war_layout.war_7yw_theater_3)
-		define_space("theater", 4, war_layout.war_7yw_theater_4)
+		define_space("theater", 9, war_layout.war_7yw_theater_1)
+		define_space("theater", 10, war_layout.war_7yw_theater_2)
+		define_space("theater", 11, war_layout.war_7yw_theater_3)
+		define_space("theater", 12, war_layout.war_7yw_theater_4)
 		define_layout("lout-theater-drawn", 2, layout_theater_drawn) // war_layout.war_7yw_theater_drawn)
 		define_layout("lout-theater", 17, war_layout.war_7yw_theater_1_france)
 		define_layout("lout-theater", 18, war_layout.war_7yw_theater_1_britain)
@@ -1027,10 +1028,10 @@ function on_init() {
 
 	define_board("#war_awi", 1100, 850)
 	{
-		define_space("theater", 1, war_layout.war_awi_theater_1)
-		define_space("theater", 2, war_layout.war_awi_theater_2)
-		define_space("theater", 3, war_layout.war_awi_theater_3)
-		define_space("theater", 4, war_layout.war_awi_theater_4)
+		define_space("theater", 13, war_layout.war_awi_theater_1)
+		define_space("theater", 14, war_layout.war_awi_theater_2)
+		define_space("theater", 15, war_layout.war_awi_theater_3)
+		//define_space("theater", 4, war_layout.war_awi_theater_4)
 		define_layout("lout-theater-drawn", 3, layout_theater_drawn) // war_layout.war_awi_theater_drawn)
 		define_layout("lout-theater", 25, war_layout.war_awi_theater_1_france)
 		define_layout("lout-theater", 26, war_layout.war_awi_theater_1_britain)
@@ -1038,8 +1039,8 @@ function on_init() {
 		define_layout("lout-theater", 28, war_layout.war_awi_theater_2_britain)
 		define_layout("lout-theater", 29, war_layout.war_awi_theater_3_france)
 		define_layout("lout-theater", 30, war_layout.war_awi_theater_3_britain)
-		define_layout("lout-theater", 31, war_layout.war_awi_theater_4_france)
-		define_layout("lout-theater", 32, war_layout.war_awi_theater_4_britain)
+		//define_layout("lout-theater", 31, war_layout.war_awi_theater_4_france)
+		//define_layout("lout-theater", 32, war_layout.war_awi_theater_4_britain)
 		define_layout("lout-awi-strength-fr", 1, war_layout.war_awi_theater_1_strength_fr)
 		define_layout("lout-awi-strength-br", 1, war_layout.war_awi_theater_1_strength_br)
 		define_layout("lout-awi-winner", 1,  war_layout.war_awi_theater_1_winner)
@@ -1671,7 +1672,8 @@ function update_war_display() {
 	var war = G.next_war - 1 // make it zero-based
 
 	for (var w = 0; w < NUM_WARS; w++) {
-		war_display[w].hidden = (war !== w)
+		let allwars = get_preference("allwars", false)
+		war_display[w].hidden = allwars ? false : (war !== w)
 	}
 
 	if (war < NUM_WARS) {
@@ -1736,7 +1738,7 @@ function update_war_display() {
 		for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) {
 			for (let tile of V.theater_bonus_war_tiles[who][theater]) {
 				if (tile >= 0) {
-					update_keyword("bonus_war", tile, set_has(V.bonus_war_tile_revealed[who], tile) ? "revealed" : "hidden")
+					update_keyword("bonus_war", tile, (set_has(V.bonus_war_tile_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE))  ? "revealed" : "hidden")
 				}
 			}
 			for (let tile of V.theater_basic_war_tiles[who][theater]) {
