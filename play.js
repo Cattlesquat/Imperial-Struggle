@@ -1817,7 +1817,7 @@ function update_war_display() {
 							name = "_Squadrons"
 						}
 					} else {
-						name = space.name
+						name = space.name.split(" - ")[0].replace(/\s*\(\d+\)$/, "").trim()
 					}
 					
 					if (!alliances[name]) {
