@@ -1944,6 +1944,16 @@ const advantage_names = data.advantages.map(x => x?.name)
 const demand_names = data.demands.map(x => x?.name)
 
 function escape_text(text) {
+	let verbose = get_preference("actionverbosity", "medium")
+	let shortest = (verbose === "short")
+
+	if (shortest) {
+		text = text.replace("Britain", "BR")
+		text = text.replace("British", "BR")
+		text = text.replace("France", "FR")
+		text = text.replace("French", "FR")
+	}
+
 	text = escape_event(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names, NONE)
 	text = escape_event(text, /\bEEF(\d+)\b/g, "tip-event-uc-fr", "card event_card c$1", event_card_names, FRANCE)
 	text = escape_event(text, /\bEEB(\d+)\b/g, "tip-event-uc-br", "card event_card c$1", event_card_names, BRITAIN)
