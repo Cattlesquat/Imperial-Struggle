@@ -9222,6 +9222,8 @@ function execute_naval_move()
 	if (G.navy_from_navy_box || G.navy_displace) {
 		log (say_navy_box())
 	}
+
+	log_br() // Leave a blank line
 }
 
 
@@ -9831,6 +9833,8 @@ function do_reflag_space(repair_if_damaged = true) {
 
 	reflag_space(G.active_space, whom, silent)
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
+
+	log_br() // Leave a blank line
 }
 
 
