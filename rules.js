@@ -8509,7 +8509,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	var cost = data.spaces[s].cost
 
 	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
-	G.action_cost_breakdown = "Space cost: " + cost + "."
+	G.action_cost_breakdown = "Space: " + cost + "."
 	G.action_cost_adjusted  = false
 	G.action_cost_adjustable = cost
 
@@ -8537,7 +8537,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 			}
 			if (is_protected(s)) {
 				cost--
-				G.action_cost_breakdown += " -1 protected market."
+				G.action_cost_breakdown += " -1 protected."
 				G.action_cost_adjusted   = true
 			}
 		}
@@ -8545,7 +8545,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
 		if (has_conflict_marker(s)) {
 			cost = 1
-			G.action_cost_breakdown = "Conflict base cost: 1."
+			G.action_cost_breakdown = "Conflict = 1."
 			G.action_cost_adjusted = true
 			G.action_cost_adjustable = 1
 		}
@@ -8554,7 +8554,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 			// Isolated markets cost 1 to shift
 			if (is_isolated_market(s)) {
 				cost = 1
-				G.action_cost_breakdown = "Isolated Market base cost: 1."
+				G.action_cost_breakdown = "Isolated = 1."
 				G.action_cost_adjusted = true
 				G.action_cost_adjustable = 1
 			}
@@ -8569,7 +8569,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				cost = 1
 				G.action_cost_adjusted = true
 				G.action_cost_adjustable = 1
-				G.action_cost_breakdown = "Cost set to 1 by " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
+				G.action_cost_breakdown = "Set to 1 by " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
 			}
 		}
 
@@ -8632,7 +8632,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 			// Protected markets cost +1 to shift
 			if (is_protected(s)) {
 				cost++
-				G.action_cost_breakdown += " +1 Protected Market."
+				G.action_cost_breakdown += " +1 Protected."
 				G.action_cost_adjusted = true
 			}
 		}
@@ -8640,13 +8640,13 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		// Region-switching penalty
 		if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) {
 			cost++
-			G.action_cost_breakdown += " +1 Region Switching."
+			G.action_cost_breakdown += " +1 Extra Region."
 			G.action_cost_adjusted = true
 		}
 
 		if (cost < 1) {
 			cost = 1 // Can't be reduced below 1 (5.4.2)
-			G.action_cost_breakdown += " Final: 1 -- can't be reduced below 1."
+			G.action_cost_breakdown += " Minimum: 1."
 			G.action_cost_adjusted = true
 		}
 	}
