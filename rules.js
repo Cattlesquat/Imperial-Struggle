@@ -2561,13 +2561,11 @@ P.ask_about_huguenots = {
 // "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
 function require_ministry(who, m, why, optional = false, prompt_to_exhaust = false)
 {
-	debug_log ("require")
 	// True if the player (now) has the requested/required ministry revealed and thus active
 	G.has_required_ministry = undefined
 	if (has_active_ministry(who, m)) {
 		G.has_required_ministry = true
 		G.ministry_already_revealed = true
-		debug_log ("already")
 
 	}
 	else {
@@ -2598,10 +2596,7 @@ function require_ministry(who, m, why, optional = false, prompt_to_exhaust = fal
 
 function require_ministry_unexhausted(who, m, why, ability = 0, optional = false, prompt_to_exhaust = false)
 {
-	debug_log ("require_unexhausted")
 	if (is_ministry_exhausted(who, m, ability)) {
-		debug_log ("nope: " + who + "  " + data.ministries[m].name + "  " + ability)
-
 		G.has_required_ministry = false
 		return
 	}
@@ -6950,7 +6945,6 @@ function reveal_ministry(who, index) {
 
 P.confirm_reveal_ministry = {
 	_begin() {
-		debug_log ("confirm reveal: has_required = " + G.has_required_ministry + "  prompt_to_exhaust = " + G.ministry_prompt_to_exhaust)
 		if (G.has_required_ministry === false) end()
 		if (G.ministry_revealed[R][G.ministry_index] && !G.ministry_prompt_to_exhaust) end()
 	},
