@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 10
+const GAME_STATE_VERSION = 11
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -20,6 +20,7 @@ const WAR_TURN_7YW = 6
 const PEACE_TURN_5 = 7
 const WAR_TURN_AWI = 8
 const PEACE_TURN_6 = 9
+const GAME_OVER    = 10
 
 // FLAGS
 const FRANCE  = 0
@@ -971,6 +972,10 @@ function on_load()
 		upconvert (10, upconvert_old_wars)
 	}
 
+	if (G.game_state_version < 11) {
+		upconvert (11, upconvert_did_the_brig)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -987,6 +992,11 @@ function upconvert(version, converter) {
 	}
 }
 
+
+function upconvert_did_the_brig(state)
+{
+	state.did_the_brig = true
+}
 
 function upconvert_old_wars(state) {
 	state.old_war_theater_winners = [ [], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1] ]
@@ -1146,6 +1156,7 @@ function on_view(RR = undefined) {
 	V.unbuilt_squadrons = G.unbuilt_squadrons
 	V.squadrons = G.squadrons
 	V.the_brig = G.the_brig
+	V.did_the_brig = G.did_the_brig
 
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
@@ -1913,6 +1924,7 @@ function start_of_peace_turn() {
 
 	G.awards = []        // Clear any award markers left over from last turn
 	G.global_demand = [] // Clear any demand markers left over from last turn
+	G.did_the_brig = false;
 
 	review_begin()
 	review_push("START OF TURN " + data.turns[G.turn].id)
@@ -2091,6 +2103,7 @@ P.reset_phase = function () {
 	}
 	G.the_brig = 0
 	G.townshend_acts = -1
+	G.did_the_brig = true
 
 	review_push("RESET PHASE")
 	end()
@@ -10231,13 +10244,7 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		if (G.vp < 0) {
-			G.vp = 33
-		} else if (G.vp === 33) {
-			G.vp = 15
-		} else {
-			G.vp = -3
-		}
+		G.turn = (G.turn + 1) % 10
 	}
 }
 

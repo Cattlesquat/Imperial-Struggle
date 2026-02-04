@@ -772,7 +772,7 @@ function on_init() {
 	}
 
 	for (s of data.turns) {
-		define_layout("turn-track", s.num, find_layout_node(s.layout))
+		define_stack("turn-track", s.num, find_layout_node(s.layout), 5, -5)
 	}
 
 	for (s of data.bizarro_spaces) {
@@ -831,7 +831,7 @@ function on_init() {
 
 	define_marker("exhausted", undefined, "square-sm")
 
-	define_marker("game-turn", undefined, "square-sm").tooltip(game_turn_tooltip)
+	define_marker("game-turn", 0, "square-sm").tooltip(game_turn_tooltip)
 	define_marker("victory-points", undefined, "square-sm black").tooltip(vp_tooltip)
 	define_marker("debt", FRANCE, "square-sm fr").tooltip(debt_tooltip)
 	define_marker("debt", BRITAIN, "square-sm br").tooltip(debt_tooltip)
@@ -1177,6 +1177,17 @@ function scroll_to_war() {
 	scroll_into_view(document.getElementById("war"))
 }
 
+
+function next_peace_turn(turn)
+{
+	if (turn < PEACE_TURN_2) return PEACE_TURN_2
+	if (turn < PEACE_TURN_3) return PEACE_TURN_3
+	if (turn < PEACE_TURN_4) return PEACE_TURN_4
+	if (turn < PEACE_TURN_5) return PEACE_TURN_5
+	if (turn < PEACE_TURN_6) return PEACE_TURN_6
+	return GAME_OVER
+}
+
 function on_update() {
 	var i, r, s, a
 
@@ -1206,7 +1217,14 @@ function on_update() {
 	populate("general-track", V.debt_limit[BRITAIN], "debt-limit", BRITAIN)
 	populate("general-track", V.treaty_points[BRITAIN], "treaty-points", BRITAIN)
 
-	populate("turn-track", V.turn, "game-turn")
+	if (V.the_brig > 0) {
+		for (let i = 0; i < V.the_brig; i++) {
+			let turn = (V.did_the_brig ? next_peace_turn(V.turn) : V.turn)
+			if (turn < GAME_OVER) populate("turn-track", turn, "squadron-br", get_squadron_token(BRITAIN, SPACE_THE_BRIG))
+		}
+	}
+
+	populate("turn-track", V.turn, "game-turn", 0)
 	populate("lout-initiative", "initiative", V.initiative)
 
 	var global_demand_chits = []

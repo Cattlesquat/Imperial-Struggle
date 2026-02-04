@@ -21,6 +21,7 @@ const WAR_TURN_7YW = 6
 const PEACE_TURN_5 = 7
 const WAR_TURN_AWI = 8
 const PEACE_TURN_6 = 9
+const GAME_OVER    = 10
 
 // FLAGS
 const FRANCE  = 0
