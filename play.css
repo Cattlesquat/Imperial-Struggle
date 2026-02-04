@@ -1734,7 +1734,7 @@ div[data-tooltip]:after {
 
 /* Animations */
 
-.space.attract {
+.space.attract, .marker.attract, .card.attract {
     border-color: transparent !important;
     animation: attract-animation 0.5s ease-in-out infinite !important;
 }
