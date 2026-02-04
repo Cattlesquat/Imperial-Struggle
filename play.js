@@ -2698,5 +2698,19 @@ function say_action_points(space = true, brackets = true) {
 	//console.log (get_preference("actionverbosity", "medium"))
 }
 
+function on_reply(q, params)
+{
+	console.log (q)
+	console.log (params)
+	/*
+	if (q === 'cp_supply')
+		show_cp_supply(params)
+	if (q === 'ap_supply')
+		show_ap_supply(params)
+	if (q === 'ap_cards')
+		show_card_list("ap_card_dialog", params)
+	if (q === 'cp_cards')
+		show_card_list("cp_card_dialog", params)
 
-
+	 */
+}

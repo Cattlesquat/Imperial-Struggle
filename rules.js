@@ -12546,3 +12546,10 @@ function strike (s, condition = true )
 	return "<s>" + s + "</s>"
 	//return "<span style=\"text-decoration: line-through;\">" + s + "</span>"
 }
+
+
+function on_query (q, params)
+{
+	console.log (q)
+	console.log (params)
+}

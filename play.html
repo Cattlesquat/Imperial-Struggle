@@ -45,7 +45,17 @@
 				<li><a href="info/cards.html" target="_blank">Cards</a>
 			</menu>
 		</details>
-		<button onclick="toggle_markers()"><img src="/images/earth-africa-europe.svg"></button>
+        <details id="info_menu">
+            <summary><img src="/images/wooden-sign.svg"></summary>
+            <menu>
+                <li onclick="send_query('discard_pile')"> Inspect Discard Pile
+                <li onclick="send_query('played_events')"> Inspect Played Events
+                <li class="separator">
+                <li onclick="send_query('scoring_summary')"> Scoring Summary
+            </menu>
+        </details>
+
+        <button onclick="toggle_markers()"><img src="/images/earth-africa-europe.svg"></button>
 	</div>
 </header>
 
