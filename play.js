@@ -2704,19 +2704,119 @@ function attract(e) {
 }
 
 
+function format_card_info(c) {
+	let text = data.cards[c].name
+	return text
+}
+
+
 function on_reply(q, params)
 {
-	console.log (q)
-	console.log (params)
-	/*
-	if (q === 'cp_supply')
-		show_cp_supply(params)
-	if (q === 'ap_supply')
-		show_ap_supply(params)
-	if (q === 'ap_cards')
-		show_card_list("ap_card_dialog", params)
-	if (q === 'cp_cards')
-		show_card_list("cp_card_dialog", params)
+	if (q === "discard_pile") {
+		show_card_list("event_card_dialog", params)
+	} else if (q === "played_events") {
+		show_card_list("event_card_dialog", params)
+	} else if (q === "scoring_summary") {
 
-	 */
+	}
 }
+
+
+function show_card_list(id, params) {
+	show_dialog(id, (body) => {
+		let dl = document.createElement("dl")
+		let append_header = (text) => {
+			let header = document.createElement("dt")
+			header.textContent = text
+			dl.appendChild(header)
+		}
+		let append_card = (c) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
+			p.onmouseenter = () => _tip_focus_event(NONE, c, data.cards[c].name)
+			p.onmouseleave = () => _tip_blur_event()
+			p.innerHTML = format_card_info(c)
+			dl.appendChild(p)
+		}
+
+		append_header(`Played Event Cards (${V.played_events.length})`)
+		V.played_events.forEach(append_card)
+		append_header(`Discarded Event Cards (${V.discard_pile.length})`)
+		V.discard_pile.forEach(append_card)
+		append_header(`In Hand or Deck (${V.deck.length})`)
+		V.deck.forEach(append_card)
+
+		body.appendChild(dl)
+	})
+}
+
+
+function show_dialog(id, dialog_generator) {
+	document.getElementById(id).classList.add("show")
+	let body = document.getElementById(id).querySelector(".dialog_body")
+	body.replaceChildren()
+	if (dialog_generator) {
+		dialog_generator(body)
+	}
+	if (!is_mobile()) dragElement(document.getElementById(id))
+}
+
+
+//BR// Makes an element/dialog draggable by the player
+function dragElement(e) {
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
+	var the_e = e
+	if (document.getElementById(e.id + "header")) {
+		document.getElementById(e.id + "header").onmousedown = dragMouseDown  // Drag by the header if it exists
+	} else {
+		e.onmousedown = dragMouseDown                                                  // Otherwise drag by the whole element
+	}
+
+	function dragMouseDown(e) {
+		e.preventDefault()
+		pos3 = e.clientX
+		pos4 = e.clientY
+		document.onmouseup = closeDragElement
+		document.onmousemove = elementDrag
+	}
+
+	function elementDrag(e) {
+		e.preventDefault()
+
+		pos1 = pos3 - e.clientX
+		pos2 = pos4 - e.clientY
+		pos3 = e.clientX
+		pos4 = e.clientY
+
+		// set the element's new position
+
+		the_e.style.position = "absolute";
+		the_e.style.top = (the_e.offsetTop - pos2) + "px"
+		the_e.style.left = (the_e.offsetLeft - pos1) + "px"
+	}
+
+	function closeDragElement() {
+		// stop moving when mouse button is released
+		document.onmouseup = null
+		document.onmousemove = null
+	}
+}
+
+function hide_dialog(id) {
+	document.getElementById(id).classList.remove("show")
+}
+
+function toggle_dialog_collapse(id) {
+	let dialog_body = document.getElementById(id).querySelector(".dialog_body")
+	let dialog_x = document.getElementById(id).querySelector(".dialog_x")
+	if (dialog_body.className.includes("hide")) {
+		dialog_body.classList.remove("hide")
+		dialog_x.textContent = "A"
+	} else {
+		dialog_body.classList.add("hide")
+		dialog_x.textContent = "V"
+	}
+}
+
+

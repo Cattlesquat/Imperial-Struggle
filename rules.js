@@ -1171,7 +1171,6 @@ function on_view(RR = undefined) {
 		]
 
 		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + opponent hand
-		V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 	}
 	if (RR === BRITAIN) {
 		V.hand = [
@@ -1184,7 +1183,6 @@ function on_view(RR = undefined) {
 		]
 
 		V.deck = G.deck.concat(G.hand[FRANCE]) // Deck + opponent hand
-		V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 	}
 	if (RR < 0) {
 		V.hand = [
@@ -1196,8 +1194,10 @@ function on_view(RR = undefined) {
 			G.ministry[BRITAIN].map((x) => (G.ministry_revealed[BRITAIN][G.ministry[BRITAIN].indexOf(x)] ? x : -1)),
 		]
 
-		V.deck = [] // No deck view if not on a side
+		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + both hands
+		V.deck = V.deck.concat(G.hand[FRANCE])
 	}
+	V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 
 	V.ministry_exhausted = G.ministry_exhausted
 
@@ -12550,6 +12550,5 @@ function strike (s, condition = true )
 
 function on_query (q, params)
 {
-	console.log (q)
-	console.log (params)
+	// So far it looks like this needs to be here but doesn't have to "do" anything
 }
