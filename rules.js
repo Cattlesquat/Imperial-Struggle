@@ -1255,6 +1255,7 @@ function on_view(RR = undefined) {
 
 	V.jacobite_victory = G.jacobite_victory
 	V.jacobite_defeat  = G.jacobite_defeat
+	V.jacobites_never  = G.jacobites_never
 
 	V.action_points_major = G.action_points_major
 	V.action_points_minor = G.action_points_minor

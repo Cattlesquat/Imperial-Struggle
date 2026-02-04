@@ -2705,20 +2705,32 @@ function attract(e) {
 
 
 function format_card_info(c) {
-	let text = data.cards[c].name
-	return text
+	let text = "E" + c
+	return escape_text(text)
+}
+
+function format_ministry_info(c) {
+	let text = "M" + c
+	return escape_text(text)
 }
 
 
 function on_reply(q, params)
 {
-	if (q === "discard_pile") {
+	if (q === "event_cards") {
 		show_card_list("event_card_dialog", params)
-	} else if (q === "played_events") {
-		show_card_list("event_card_dialog", params)
+	} else if (q === "french_ministry") {
+		show_card_list("french_ministry_dialog", params)
+	} else if (q === "british_ministry") {
+		show_card_list("british_ministry_dialog", params)
 	} else if (q === "scoring_summary") {
-
+		show_card_list("scoring_summary_dialog", params)
 	}
+}
+
+function is_observing()
+{
+	return (R !== FRANCE) && (R !== BRITAIN)
 }
 
 
@@ -2740,12 +2752,101 @@ function show_card_list(id, params) {
 			dl.appendChild(p)
 		}
 
-		append_header(`Played Event Cards (${V.played_events.length})`)
-		V.played_events.forEach(append_card)
-		append_header(`Discarded Event Cards (${V.discard_pile.length})`)
-		V.discard_pile.forEach(append_card)
-		append_header(`In Hand or Deck (${V.deck.length})`)
-		V.deck.forEach(append_card)
+		let append_ministry = (m) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
+			p.onmouseenter = () => _tip_focus_ministry(NONE, m, data.ministries[m].name)
+			p.onmouseleave = () => _tip_blur_ministry()
+			p.innerHTML = format_ministry_info(m)
+			dl.appendChild(p)
+		}
+
+		console.log (id)
+
+		if (id === "event_card_dialog") {
+			append_header(`Played Event Cards (${V.played_events.length})`)
+			V.played_events.forEach(append_card)
+			append_header(`Discarded Event Cards (${V.discard_pile.length})`)
+			V.discard_pile.forEach(append_card)
+			append_header(is_observing() ? `Player Hands or Deck (${V.deck.length})` : `Opponent's Hand or Deck (${V.deck.length})`)
+			V.deck.forEach(append_card)
+			if (!is_observing()) {
+				append_header(`Your Hand (${V.hand[R].length})`)
+				V.hand[R].forEach(append_card)
+			}
+			if (current_era() < EMPIRE_ERA) {
+				append_header(`Empire Era (not yet in play) (15)`)
+				for (let c = SUCCESSION_ERA_CARDS + 1; c <= EMPIRE_ERA_CARDS; c++) {
+					append_card(c)
+				}
+			}
+			if (current_era() < REVOLUTION_ERA) {
+				append_header(`Revolution Era (not yet in play) (11)`)
+				for (let c = EMPIRE_ERA_CARDS + 1; c <= REVOLUTION_ERA_CARDS; c++) {
+					append_card(c)
+				}
+			}
+		} else if ((id === "french_ministry_dialog") || (id === "british_ministry_dialog")) {
+			let who = (id === "french_ministry_dialog") ? FRANCE : BRITAIN
+			append_header("Current Available Ministers")
+			for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+				if (data.ministries[m].side !== who) continue
+				if (!data.ministries[m].era.includes(current_era())) continue
+				if ((m === JACOBITE_UPRISINGS) && V.jacobites_never) continue
+				append_ministry(m)
+			}
+
+			if (current_era() === SUCCESSION_ERA) {
+				append_header("Empire Era Ministers (not yet in play)")
+				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+					if (data.ministries[m].side !== who) continue
+					if (data.ministries[m].era.includes(current_era())) continue
+					if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+					append_ministry(m)
+				}
+			}
+
+			if (current_era() === EMPIRE_ERA) {
+				append_header("Revolution Era Ministers (not yet in play)")
+				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+					if (data.ministries[m].side !== who) continue
+					if (data.ministries[m].era.includes(current_era())) continue
+					if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+					if (!data.ministries[m].era.includes(REVOLUTION_ERA)) continue
+					append_ministry(m)
+				}
+			}
+
+			if (V.jacobites_never && (who === FRANCE)) {
+				append_header("Removed From Game")
+				append_ministry(JACOBITE_UPRISINGS)
+			}
+
+			if (current_era() === REVOLUTION_ERA) {
+				append_header("Empire Era Ministers (out of play)")
+				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+					if (data.ministries[m].side !== who) continue
+					if (data.ministries[m].era.includes(current_era())) continue
+					if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+					append_ministry(m)
+				}
+			}
+
+			if (current_era() !== SUCCESSION_ERA) {
+				append_header("Succession Era Ministers (out of play)")
+				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+					if (data.ministries[m].side !== who) continue
+					if (data.ministries[m].era.includes(current_era())) continue
+					if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+					if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
+					if ((m === JACOBITE_UPRISINGS) && V.jacobites_never) continue
+					append_ministry(m)
+				}
+			}
+		} else if (id === "scoring_summary_dialog") {
+
+		}
 
 		body.appendChild(dl)
 	})

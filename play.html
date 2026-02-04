@@ -25,13 +25,13 @@
 </div>
 
 <div id="french_ministry_dialog" class="dialog">
-    <div class="dialog_header">Event Cards</div>
+    <div class="dialog_header">French Ministry</div>
     <div class="dialog_x" onclick="hide_dialog('french_ministry_dialog')">&#x274c;</div>
     <div class="dialog_body"></div>
 </div>
 
 <div id="british_ministry_dialog" class="dialog">
-    <div class="dialog_header">Event Cards</div>
+    <div class="dialog_header">British Ministry</div>
     <div class="dialog_x" onclick="hide_dialog('british_ministry_dialog')">&#x274c;</div>
     <div class="dialog_body"></div>
 </div>
@@ -66,8 +66,10 @@
         <details id="info_menu">
             <summary><img src="/images/wooden-sign.svg"></summary>
             <menu>
-                <li onclick="send_query('discard_pile')"> Inspect Discard Pile
-                <li onclick="send_query('played_events')"> Inspect Played Events
+                <li onclick="send_query('event_cards')"> Inspect Event Cards
+                <li class="separator">
+                <li onclick="send_query('french_ministry')"> Inspect French Ministry
+                <li onclick="send_query('british_ministry')"> Inspect British Ministry
                 <li class="separator">
                 <li onclick="send_query('scoring_summary')"> Scoring Summary
             </menu>

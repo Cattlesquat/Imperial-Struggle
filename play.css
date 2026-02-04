@@ -1826,7 +1826,7 @@ div[data-tooltip]:after {
 .dialog_body dl { margin: 0; }
 .dialog_body dd { margin-left: 20px; }
 
-#scoring_summary { top: 100px; left: 60px; }
+#scoring_summary_dialog { top: 100px; left: 60px; }
 #event_card_dialog { top: 160px; left: 120px; }
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
