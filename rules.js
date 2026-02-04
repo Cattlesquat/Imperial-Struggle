@@ -1753,7 +1753,7 @@ function who_from_basic(t) {
 
 function say_basic_war_tile(t, color = true) {
 	let val = data.basic_war_tiles[t].val
-	let msg = "[b" + encode_who((color ? who_from_bonus(t) : NONE)) + encode_value(t) + ((val >= 0) ? "+" + val : val)
+	let msg = "[b" + encode_who((color ? who_from_basic(t) : NONE)) + encode_value(t) + ((val >= 0) ? "+" + val : val)
 	switch (data.basic_war_tiles[t].type) {
 		case WAR_DEBT:
 			msg += " with Debt"
