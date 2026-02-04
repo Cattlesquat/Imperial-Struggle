@@ -1122,6 +1122,7 @@ function _tip_blur_light(action, id) {
 
 function _tip_click_light(action, id) {
 	scroll_into_view(lookup_thing(action, id).element)
+	attract(lookup_thing(action, id).element)
 }
 
 function escape_tip_light(text, re, log_className, action, names) {

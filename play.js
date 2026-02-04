@@ -2698,6 +2698,12 @@ function say_action_points(space = true, brackets = true) {
 	//console.log (get_preference("actionverbosity", "medium"))
 }
 
+function attract(e) {
+	e.classList.add("attract")
+	window.setTimeout(() => e.classList.remove("attract"), 1500)
+}
+
+
 function on_reply(q, params)
 {
 	console.log (q)

@@ -1731,6 +1731,48 @@ div[data-tooltip]:after {
     left: 5px!important;
 }
 
+
+.space.attract {
+    outline-style: solid;
+    animation: attract-animation 0.5s ease-in-out infinite;
+}
+
+
+@keyframes attract-animation {
+    0%, 100% {
+        box-shadow: 0 0 0 4px #c000c0, 0 0 12px 4px #c000c0; /* Baseline */
+    }
+    83.5% {
+        box-shadow: 0 0 0 4px #800080, 0 0 12px 4px #800080; /* ... a slow drift to here, then a quick pulse back */
+    }
+}
+
+/* Animations */
+@keyframes attractAnimation {
+    0% {
+        outline-width: 2px;
+        outline-offset: 0;
+        outline-color: rgba(255, 0, 255, 1);
+        z-index: 10000;
+    }
+
+    80% {
+        outline-width: 8px;
+        outline-offset: 4px;
+        outline-color: rgba(255, 0, 255, 0.3);
+        z-index: 10000;
+    }
+
+    100% {
+        outline-width: 8px;
+        outline-offset: 4px;
+        outline-color: rgba(255, 0, 255, 0);
+        z-index: 1000;
+    }
+}
+
+
+
 /*
 [title] {
     position: relative;
