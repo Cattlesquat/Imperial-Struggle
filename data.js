@@ -465,7 +465,7 @@ data.wars[WAR_WSS].theater = []
 data.wars[WAR_WSS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [2,2,3], "cp": [0,1,2], "trp": [1,2,3], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO, HUDSON_BAY, ACADIA ] }
 data.wars[WAR_WSS].theater[2] = { "region": REGION_EUROPE,        "keyword": GOVERNANCE, "conflicts": false, "naval": true,  "margin": [1,2,4], "vp": [1,1,1], "cp": [0,1,2], "trp": [1,2,2], "unflag": [0,0,0], "additional": [ SAN_AGUSTIN, ASIENTO ] }
 data.wars[WAR_WSS].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,4], "vp": [1,1,1], "cp": [0,1,1], "trp": [0,1,2], "unflag": [0,0,1], "additional": [] }
-data.wars[WAR_WSS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [1,2,4], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,0,0], "additional": [] }
+data.wars[WAR_WSS].theater[4] = { "region": REGION_EUROPE,        "keyword": STYLE,      "conflicts": true,  "naval": false, "margin": [1,3,5], "vp": [1,2,4], "cp": [0,0,0], "trp": [0,1,2], "unflag": [0,0,0], "additional": [] }
 
 data.wars[WAR_WAS].theater = []
 data.wars[WAR_WAS].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3],   "vp": [1,1],   "cp": [0,1],   "trp": [0,1],   "unflag": [0,0],   "additional": [ HUDSON_BAY, SAN_AGUSTIN, ACADIA, ASIENTO ] }
@@ -475,7 +475,7 @@ data.wars[WAR_WAS].theater[4] = { "region": REGION_EUROPE,        "keyword": STY
 
 data.wars[WAR_7YW].theater = []
 data.wars[WAR_7YW].theater[1] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": true,  "margin": [2,3,5], "vp": [0,0,0], "cp": [0,0,0], "trp": [0,0,0], "unflag": [0,0,0], "additional": [ ] }
-data.wars[WAR_7YW].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": false, "naval": true,  "margin": [1,3,5], "vp": [0,0,0], "cp": [1,1,2], "trp": [1,2,3], "unflag": [0,1,1], "additional": [ ] }
+data.wars[WAR_7YW].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,5], "vp": [0,0,0], "cp": [1,1,2], "trp": [1,2,3], "unflag": [0,1,1], "additional": [ ] }
 data.wars[WAR_7YW].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3,5], "vp": [0,1,2], "cp": [1,2,3], "trp": [1,3,4], "unflag": [1,0,0], "additional": [ MINORCA, GIBRALTAR ] }
 data.wars[WAR_7YW].theater[4] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [2,3,4], "cp": [0,0,0], "trp": [0,0,1], "unflag": [0,0,0], "additional": [ ]	}
 
