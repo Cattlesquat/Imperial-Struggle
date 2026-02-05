@@ -205,10 +205,6 @@ function demand_flag_delta(demand) {
 	return Math.abs(V.demand_flag_count[FRANCE][demand] - V.demand_flag_count[BRITAIN][demand])
 }
 
-function on_ask() {
-	return "whee"
-}
-
 function space_tooltip(s) {
 	var type = data.spaces[s].type
 	var typename
@@ -502,6 +498,16 @@ function initiative_tooltip(who) {
 	return bold("Initiative: ") + data.flags[who].name
 }
 
+function jacobite_victory_tooltip() {
+	return bold("Jacobite Victory: ") + "+1 VP when using Jacobite Uprisings ministry."
+}
+
+function jacobite_defeat_tooltip() {
+	return bold("Jacobite Defeat: ") + "No more Jacobite Uprisings for rest of game."
+}
+
+
+
 
 function basic_war_tooltip(t, who) {
 	let msg = bold(data.flags[who].adj + " Basic War Tile: ")
@@ -666,14 +672,14 @@ function on_init() {
 	define_board("#map", 2550, 1650, [0, 0, 0, 0])
 
 	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5, 0, -50)
-	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip("Jacobite Victory")
-	define_marker("jacobite-victory", 1, "square-sm jacobite-victory").tooltip("Jacobite Victory")
-	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)
+	define_marker("jacobite-victory", 1, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)
+	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip(jacobite_defeat_tooltip)
 
 	// Extra ones to put on the turn track
-	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").tooltip("Jacobite Victory")    // These ones go on turn track and should "center" in their turn track spaces
-	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip("Jacobite Victory")
-	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)    // These ones go on turn track and should "center" in their turn track spaces
+	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)
+	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip(jacobite_defeat_tooltip)
 
 
 	for (s of data.spaces) {
