@@ -5469,6 +5469,7 @@ P.event_pacte_de_famille = {
 				for (let a = 0; a < NUM_ADVANTAGES; a++) {
 					if (!has_advantage(R, a)) continue
 					if (!is_advantage_exhausted(a)) continue
+					if (get_advantage_region(a) !== REGION_EUROPE) continue
 					action_advantage(a)
 					any = true
 				}
@@ -5484,6 +5485,7 @@ P.event_pacte_de_famille = {
 	advantage(a) {
 		push_undo()
 		refresh_advantage(a)
+		L.num_refreshed++
 		if ((L.num_refreshed >= 2) && !G.qualifies_for_bonus) end()
 	},
 	done() {
