@@ -471,7 +471,14 @@ function available_debt_tooltip(who) {
 
 
 function game_turn_tooltip(x) {
-	return bold("Game Turn: ") + data.turns[V.turn].name
+	let tip = bold ("Current Game Turn: ")
+	if (data.turns[G.turn].war) {
+		tip += data.turns[G.turn].name
+	} else {
+		tip += data.turns[G.turn].id + " - PEACE"
+	}
+	tip += " " + italic(parens(data.turns[G.turn].dates))
+	return tip
 }
 
 function vp_tooltip(x) {
