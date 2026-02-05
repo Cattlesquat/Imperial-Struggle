@@ -1836,3 +1836,9 @@ div[data-tooltip]:after {
 #event_card_dialog { top: 160px; left: 120px; }
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
+
+.marker.center {
+    display: flex; !important;
+    justify-content: center; !important; /* Centers horizontally */
+    align-items: center;     !important; /* Centers vertically */
+}

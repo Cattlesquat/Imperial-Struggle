@@ -671,9 +671,9 @@ function on_init() {
 	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
 
 	// Extra ones to put on the turn track
-	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").tooltip("Jacobite Victory")
-	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip("Jacobite Victory")
-	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").keyword("center").tooltip("Jacobite Victory")    // These ones go on turn track and should "center" in their turn track spaces
+	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").keyword("center").tooltip("Jacobite Victory")
+	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").keyword("center").tooltip("Jacobite Defeat")
 
 
 	for (s of data.spaces) {
