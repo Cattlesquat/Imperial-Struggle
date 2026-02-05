@@ -3231,15 +3231,12 @@ P.victory_check_phase = function () {
 	log ("=Victory Check Phase")
 	if ((G.won_all_scorings !== NONE) && (G.won_all_scorings >= 0)) {
 		let msg = bold(data.flags[G.won_all_scorings].name + " wins the game by winning all regional and demand scorings!")
-		log (msg)
 		finish (G.won_all_scorings, msg)
 	} else if (G.vp <= 0) {
 		let msg = bold("Britain wins the game: VP 0 or fewer!")
-		log(msg)
 		finish(BRITAIN, msg)
 	} else if (G.vp >= 30) {
 		let msg = bold("France wins the game: VP 30 or greater!")
-		log(msg)
 		finish(FRANCE, msg)
 	} else {
 		log ("No automatic victory.")
@@ -3366,17 +3363,14 @@ P.game_over = function () {
 		log (msg)
 		if (available_debt(FRANCE) > available_debt(BRITAIN)) {
 			msg = bold("France wins! Tie-breaker: more available debt!")
-			log (msg)
 			finish (FRANCE, msg)
 		} else if (available_debt(BRITAIN) > available_debt(FRANCE)) {
 			msg = bold("Britain wins! Tie-breaker: more available debt!")
-			log (msg)
 			finish (BRITAIN, msg)
 		} else {
 			msg = bold("Available debt tied at " + available_debt(FRANCE) + ".")
 			log (msg)
 			msg = bold("Britain wins! Final tie-breaker!")
-			log (msg)
 			finish (BRITAIN, msg)
 		}
 	}
