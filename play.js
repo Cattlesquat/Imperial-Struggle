@@ -1061,11 +1061,6 @@ function on_init() {
 		define_layout("lout-awi-alliance", 3, war_layout.war_awi_theater_3_alliances)
 	}
 
-	//for (let s = 0; s < NUM_SPACES; s++) {
-	//	if (data.spaces[s].type !== NAVAL) continue
-	//	define_marker("squadron-fr", s, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
-	//	define_marker("squadron-br", s, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
-	//}
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
 		define_marker("squadron-fr", sq, "marker hex fleet_fr").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
 		define_marker("squadron-br", sq, "marker hex fleet_br").tooltip(space_tooltip).tooltip_image(space_tooltip_image)
@@ -1077,19 +1072,19 @@ function on_init() {
 		define_marker("huguenots", s, "marker square-sm huguenots").tooltip(bold("Huguenots") + ": increases conquest cost of space by 1. Can be flipped once per game to reduce the economic action cost of a market in the same region by 1.")
 		define_marker("huguenots_spent", s, "marker square-sm huguenots_spent").tooltip(bold("Huguenots (Spent)") + ": increases conquest cost of space by 1. Can be refreshed once per game by North American Trade ministry in Revolutionary Era.")
 	}
-
-	//for (let ships = 0; ships < NUM_SQUADRONS; ships++) {
-	//	define_marker("squadron-fr-navy", ships, "marker hex fleet_fr").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
-	//	define_marker("squadron-br-navy", ships, "marker hex fleet_br").tooltip(() => bizarro_space_tooltip(NAVY_BOX))
-	//}
 }
 
 
 // Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
-function get_squadron_token(who, s)
+function get_squadron_token(who, s, match = 0)
 {
+	let matches = 0
+
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
-		if (V.squadrons[who][sq] === s) return sq
+		if (V.squadrons[who][sq] === s) {
+			if (matches >= match) return sq
+			matches++
+		}
 	}
 	console.error ("No squadron found for space: " + s)
 
@@ -1226,7 +1221,7 @@ function on_update() {
 	if (V.the_brig > 0) {
 		for (let i = 0; i < V.the_brig; i++) {
 			let turn = (V.did_the_brig ? next_peace_turn(V.turn) : V.turn)
-			if (turn < GAME_OVER) populate("turn-track", turn, "squadron-br", get_squadron_token(BRITAIN, SPACE_THE_BRIG))
+			if (turn < GAME_OVER) populate("turn-track", turn, "squadron-br", get_squadron_token(BRITAIN, SPACE_THE_BRIG, i))
 		}
 	}
 
