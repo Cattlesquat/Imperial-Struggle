@@ -1285,8 +1285,11 @@ function on_update() {
 	if (prestige_win !== NONE) {
 		let flag_class = prestige_win === FRANCE ? "fr" : "br"
 		prestige_html_left += `<span class="award-flag ${flag_class}"></span>`
-		prestige_html_right += `<span class="award-count">+${prestige_delta}</span>`
+		prestige_html_right += `<span class="award-count">+${prestige_delta}<span style = "color:#007000; font-weight: bold;">♢</span></span>`
 	}
+
+	// Feather = 🪶
+	// Diamond = ♢
 
 	update_text_html("award-winner-prestige-left", 0, prestige_html_left)
 	update_text_html("award-winner-prestige-right", 0, prestige_html_right)

@@ -216,7 +216,7 @@ layout.nodes = {
 		"Award_winner Europe Right": [1395, 562, 40, 25],
 		"Award_winner Europe Prestige": [1321, 592, 40, 25],
 		"Award_winner Europe Prestige Left": [1321, 592, 40, 25],
-		"Award_winner Europe Prestige Right": [1395, 592, 40, 25],
+		"Award_winner Europe Prestige Right": [1393, 592, 40, 25],
 	},
 	"Caribbean/Political": {
 		"Buccaneers": [515,1533,90,90],
