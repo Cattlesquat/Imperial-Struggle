@@ -1837,8 +1837,11 @@ div[data-tooltip]:after {
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
 
-.marker.center {
-    display: flex; !important;
-    justify-content: center; !important; /* Centers horizontally */
-    align-items: center;     !important; /* Centers vertically */
+.turn-track {
+    display: flex; 
+    align-items: center;
+}
+.game-turn {
+    position:relative;
+    margin-left:4px;
 }
