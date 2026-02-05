@@ -665,7 +665,7 @@ function on_init() {
 
 	define_board("#map", 2550, 1650, [0, 0, 0, 0])
 
-	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5)
+	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5, 0, -50)
 	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip("Jacobite Victory")
 	define_marker("jacobite-victory", 1, "square-sm jacobite-victory").tooltip("Jacobite Victory")
 	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
@@ -778,7 +778,7 @@ function on_init() {
 	}
 
 	for (s of data.turns) {
-		define_stack_centered("turn-track", s.num, find_layout_node(s.layout), 8, -8)
+		define_stack_centered("turn-track", s.num, find_layout_node(s.layout), 8, -8, 0, -50)
 	}
 
 	for (s of data.bizarro_spaces) {
@@ -850,8 +850,8 @@ function on_init() {
 
 	define_stack("stack-deal", undefined, find_layout_node("Deal Tiles"))
 
-	define_stack("lout-navy-fr", undefined, find_layout_node("Navy Box Britain"), 8, -8)
-	define_stack("lout-navy-br", undefined, find_layout_node("Navy Box France"), 8, -8)
+	define_stack("lout-navy-fr", undefined, find_layout_node("Navy Box Britain"), 8, -8, 0, -50)
+	define_stack("lout-navy-br", undefined, find_layout_node("Navy Box France"), 8, -8, 0, -50)
 
 	for (i = 0; i < 4; ++i) {
 		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip(bold("Britain Action Round " + (i + 1)))
