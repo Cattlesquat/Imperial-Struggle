@@ -671,9 +671,9 @@ function on_init() {
 	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
 
 	// Extra ones to put on the turn track
-	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").keyword("center").tooltip("Jacobite Victory")    // These ones go on turn track and should "center" in their turn track spaces
-	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").keyword("center").tooltip("Jacobite Victory")
-	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").keyword("center").tooltip("Jacobite Defeat")
+	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").tooltip("Jacobite Victory")    // These ones go on turn track and should "center" in their turn track spaces
+	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip("Jacobite Victory")
+	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
 
 
 	for (s of data.spaces) {
@@ -778,7 +778,7 @@ function on_init() {
 	}
 
 	for (s of data.turns) {
-		define_stack("turn-track", s.num, find_layout_node(s.layout), 5, -5)
+		define_stack_centered("turn-track", s.num, find_layout_node(s.layout), 8, -8)
 	}
 
 	for (s of data.bizarro_spaces) {
@@ -2989,7 +2989,6 @@ function preview_scoring_results() {
 
 function on_reply(q, params)
 {
-	console.log (q)
 	if (q === "event_cards") {
 		show_card_list("event_card_dialog", params)
 	} else if (q === "french_ministry") {
@@ -3009,8 +3008,6 @@ function is_observing()
 
 function show_card_list(id, params) {
 	show_dialog(id, (body) => {
-		console.log (id)
-
 		let dl = document.createElement("dl")
 		let append_header = (text) => {
 			let header = document.createElement("dt")
@@ -3181,7 +3178,6 @@ function show_card_list(id, params) {
 
 
 function show_dialog(id, dialog_generator) {
-	console.log(id)
 	document.getElementById(id).classList.add("show")
 	let body = document.getElementById(id).querySelector(".dialog_body")
 	body.replaceChildren()

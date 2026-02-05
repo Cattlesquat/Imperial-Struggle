@@ -281,6 +281,24 @@ class Thing {
 		return this
 	}
 
+
+	//BR// This kind centers the stack on the center of the space
+	stack_centered(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap) {
+		this.stack(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap)
+		if (Array.isArray(rect))
+			var [ x, y, w, h ] = rect
+		else
+			var { x, y, w, h } = rect
+		this.element.style.left = (Math.round(x) + Math.round(w)/2) + "px"
+		this.element.style.top = (Math.round(y) + Math.round(h)/2) + "px"
+		this.element.style.width = Math.round(w) + "px"
+		this.element.style.height = Math.round(h) + "px"
+
+		this.my_stack.center = true
+		return this
+	}
+
+
 	keyword(keywords, on = true) {
 		if (keywords && on) {
 			if (typeof keywords === "string")
@@ -393,6 +411,13 @@ function define_stack(action, id, rect, dx=-12, dy=-12, major_dx=dx, major_dy=dy
 	return define_thing(action, id)
 		.keyword("stack")
 		.stack(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap)
+}
+
+//BR// Center the stack on the center of the space
+function define_stack_centered(action, id, rect, dx=-12, dy=-12, major_dx=dx, major_dy=dy, minor_dx=0, minor_dy=0, threshold=1, wrap=1000) {
+	return define_thing(action, id)
+		.keyword("stack")
+		.stack_centered(rect, dx, dy, major_dx, major_dy, minor_dx, minor_dy, threshold, wrap)
 }
 
 function define_layout(action, id, rect, keywords, styles) {
@@ -747,12 +772,14 @@ function _layout_stacks() {
 		start_x -= stack.element.offsetLeft
 		start_y -= stack.element.offsetTop
 
+		let center = stack.my_stack.center //BR// Check if we're centering
+
 		var i = 0, k = 0
 		for (var child of stack.element.children) {
 			var x = start_x + major_dx * i + minor_dx * k
 			var y = start_y + major_dy * i + minor_dy * k
-			child.style.left = x + "px"
-			child.style.top = y + "px"
+			child.style.left = (x - (center ? child.offsetWidth/2 : 0)) + "px"
+			child.style.top = (y - (center ? child.offsetHeight/2 : 0)) + "px"
 			child.style.zIndex = z
 			if (++i === wrap) {
 				i = 0
