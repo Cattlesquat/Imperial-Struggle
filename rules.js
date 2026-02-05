@@ -4446,7 +4446,7 @@ P.event_south_sea_speculation = {
 			}
 
 			if (!any) {
-				V.prompt = event_prompt(R, G.played_event, "Unflag a market whose removal does not isolate any other markets (None Possible)")
+				V.prompt = event_prompt(R, G.played_event, "Unflag a market whose removal does not isolate any other markets (None possible)")
 				button("done")
 			}
 		} else if (G.qualifies_for_bonus) {
@@ -4527,7 +4527,7 @@ P.event_war_of_jenkins_ear = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button ("done")
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
@@ -4579,7 +4579,7 @@ P.event_native_american_alliances = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
@@ -4592,7 +4592,7 @@ P.event_native_american_alliances = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				} else {
 					button("pass") //BR// Among other things, we might have an advantage that is available but doesn't have any valid targets, so the activation will fail and player will have to undo back to here (and needs a way out of the flow)
@@ -4614,7 +4614,7 @@ P.event_native_american_alliances = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
@@ -4693,7 +4693,7 @@ P.event_austro_spanish_rivalry = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 			} else if (L.theater <= 0) {
@@ -4705,8 +4705,10 @@ P.event_austro_spanish_rivalry = {
 					action_theater(theater)
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
+				} else {
+					msg += " (Pick theater to remove a random tile from)"
 				}
 			} else {
 				msg = "Confirm removal of French bonus tile from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "? (CANNOT BE UNDONE!)"
@@ -4724,7 +4726,7 @@ P.event_austro_spanish_rivalry = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 			} else {
@@ -5024,7 +5026,7 @@ P.event_calico_acts = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 			} else {
@@ -5037,7 +5039,7 @@ P.event_calico_acts = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 			}
@@ -5228,7 +5230,7 @@ P.event_alberonis_ambition = {
 					any = true
 				}
 				if (!any) {
-					msg += " (None Possible)"
+					msg += " (None possible)"
 					button("done")
 				}
 				V.prompt = event_prompt(R, G.played_event, msg, "if both Savoy and Sardinia are FR-flagged, score 3 VP")
@@ -5289,7 +5291,7 @@ P.event_famine_in_ireland = {
 			}
 			if (!any) {
 				button ("done")
-				msg += " (None Possible)"
+				msg += " (None possible)"
 			}
 			V.prompt = event_prompt(R, G.played_event, msg)
 		} else {
@@ -5527,7 +5529,7 @@ P.event_byngs_trial = {
 			}
 			let msg = "Remove one British Squadron from the map or Navy Box to the turn track. It will return to the navy box on the next Peace Turn's reset phase."
 			if (!any) {
-				msg += " (None Possible)"
+				msg += " (None possible)"
 				button("done")
 			}
 			V.prompt = event_prompt(R, G.played_event, msg)
@@ -10610,7 +10612,7 @@ P.war_theater_reveal = {
 			msg += say_action("Execute war tile actions for Theater " + G.theater + ", " + data.wars[G.next_war].theater_names[G.theater] + ". " + say_war_choices(R))
 			if (!any) {
 				if (L.wartile_choices[R].length) {
-					msg += say_action(" (None Possible)")
+					msg += say_action(" (None possible)")
 				} else {
 					msg += say_action(" (Done)")
 				}
@@ -11044,12 +11046,12 @@ P.war_theater_resolve = {
 			}
 
 			if (!any) {
-				msg += " (None Possible)"
+				msg += " (p)"
 				button("done")
 			}
 		} else if (L.war_unflag) {
 				if (data.wars[G.next_war].theater[G.theater].region === REGION_EUROPE) {
-				msg += say_action("Unflag a political space in Europe.") ///
+				msg += say_action("Unflag a political space in Europe.")
 
 				let any = false
 				for (let s = 0; s < NUM_SPACES; s++) {
@@ -11061,7 +11063,7 @@ P.war_theater_resolve = {
 				}
 
 				if (!any) {
-					msg += say_action(" (None Possible)")
+					msg += say_action(" (None possible)")
 					button("done")
 				}
 			} else {
@@ -11077,7 +11079,7 @@ P.war_theater_resolve = {
 				}
 
 				if (!any) {
-					msg += say_action(" (None Possible)")
+					msg += say_action(" (None possible)")
 					button("done")
 				}
 			}
