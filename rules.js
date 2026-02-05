@@ -11225,6 +11225,7 @@ P.war_theater_resolve = {
 		let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3
 		log(bold(data.flags[1 - L.war_winner].name + " refuses conquest of " + data.spaces[L.war_space].name) + "!")
 		award_vp(1 - L.war_winner, -vp_cost) // Construe it as paying/losing VP by the war loser
+		G.war_refused[1 - L.war_winner]++
 		G.war_refused_list.push(L.war_space) // Put it on the list of refused spaces -- conquest can't be attempted again during this war
 		L.checking_refusal = false
 		G.active = 1 - G.active
