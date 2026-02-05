@@ -3098,6 +3098,7 @@ P.scoring_phase = function () {
 				}
 				if (has_active_ministry(winner, SAMUEL_JOHNSON)) {
 					log(say_ministry(SAMUEL_JOHNSON, winner) + " increases VP value of Europe award by +1.")
+					vp++
 				} else if (has_active_ministry(1 - winner, SAMUEL_JOHNSON)) {
 					if (vp > 0) {
 						vp--
@@ -4699,7 +4700,7 @@ P.event_austro_spanish_rivalry = {
 				msg  = "Remove a French bonus war tile from the next war, returning it to their pool"
 				let any= false
 				for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 through theaters inclusive is correct
-					if (G.theater_bonus_war_tiles[FRANCE][theater].length < 1) continue;
+					if (G.theater_bonus_war_tiles[FRANCE][theater].length < 1) continue
 					any = true
 					action_theater(theater)
 				}
@@ -9245,6 +9246,7 @@ function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
+		set_delete(G.controlled_start_of_round, s) // 5.4.1 - change in control means we can't chain from here later in the round even if we get it back during the round
 		if (!silent) {
 			let msg = say_space(s) + " "
 			if (who === NONE) {

@@ -2122,8 +2122,8 @@ function escape_square_brackets(text) {
 				continue
 			}
 
-			let key = inside[1][1]                  // Second character tells us what nation color to use, if any
-			let msg = inside[1].slice(2)            // Rest of string is the message
+			let who_key = inside[1][1]                  // Second character tells us what nation color to use, if any
+			let msg     = inside[1].slice(2)            // Rest of string is the message
 			let value = 0
 
 			if (["I", "W", "S", "B", "b"].includes(type)) {	// Some items encode a three-digit number
@@ -2141,7 +2141,17 @@ function escape_square_brackets(text) {
 				}
 			}
 
-			let who = (key === "F") ? FRANCE : (key === "B") ? BRITAIN : NONE
+			let who = (who_key === "F") ? FRANCE : (who_key === "B") ? BRITAIN : NONE
+
+			// Second character is usually F/B/X for French/British/None
+			// b - [bF001] - basic war tile
+			// B - [BF001] - bonus war tile
+			// F - [FFstring] - "Flag" string - colored by nationality of second letter (i.e. F/B/X)
+			// I - [IF001] - Investment tile
+			// W - [WF001] - Award tile
+			// S - [SF001] - Space name
+			// V - [V] - scroll down to war mat
+			// $ - [$Fstring] - Display string, link to spending
 
 			let tooltip_text = ""
 			let className = ""
@@ -2162,6 +2172,13 @@ function escape_square_brackets(text) {
 						class="${className}"
 						onmouseenter="_tip_focus_bonus_war_tile(${value}, ${who})"
 						onmouseleave="_tip_blur_bonus_war_tile()"
+						>${escape_typography(msg)}</span>`
+					break
+				case "F":
+					className = "flag-string"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+					tooltip_text = `<span 
+						class="${className}"
 						>${escape_typography(msg)}</span>`
 					break
 				case "I":
@@ -2733,8 +2750,233 @@ function format_ministry_info(c) {
 }
 
 
+function say_flag_color(who, string)
+{
+	return escape_square_brackets("[F" + ((who === FRANCE) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
+}
+
+function format_prestige_info()
+{
+	let winner = prestige_winner()
+	let delta = prestige_flag_delta()
+	let leader = ""
+
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta)
+	} else {
+		leader = "+0"
+	}
+
+	return leader + " Prestige: 2 VP"
+}
+
+function format_award_info(r, a)
+{
+	let winner = region_flag_winner(r)
+	let delta = region_flag_delta(r)
+	let leader = ""
+
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta)
+	} else {
+		leader = "+0"
+	}
+
+	let msg = data.regions[r].name + ": " + data.awards[a].name
+
+	return leader + " " + msg
+}
+
+function format_demand_info(d)
+{
+	let awards = data.demands[d].awards[current_era()]
+	let msg = data.demands[d].name + ": +" + awards.vp + " VP"
+	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
+	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
+	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
+
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta)
+	} else {
+		leader = "+0"
+	}
+
+	return leader + " " + msg
+}
+
+
+function format_results_info()
+{
+	preview_scoring_results()
+
+	let msg = ""
+	if (V.preview_vp === 0) {
+		msg += "+0 VP"
+	} else if (V.preview_vp > 0) {
+		msg += escape_square_brackets("[FF+" + V.preview_vp + " VP France]")
+	} else {
+		msg += escape_square_brackets("[FB+" + Math.abs(V.preview_vp) + " VP Britain]")
+	}
+	if (V.preview_trp[FRANCE] || V.preview_trp[BRITAIN]) {
+		msg += "<br/>"
+		if (V.preview_trp[FRANCE]) {
+			msg += escape_square_brackets("[FF+" + V.preview_trp[FRANCE] + " TRP France]")
+		}
+		if (V.preview_trp[BRITAIN]) {
+			if (V.preview_trp[FRANCE]) msg += ", "
+			msg += escape_square_brackets("[FB+" + V.preview_trp[BRITAIN] + " TRP Britain]")
+		}
+	}
+	if (V.preview_debt[FRANCE] || V.preview_debt[BRITAIN]) {
+		msg += "<br/>"
+		if (V.preview_debt[FRANCE]) {
+			msg += escape_square_brackets("[FF" + ((V.preview_debt[FRANCE] > 0) ? "+" : "") + V.preview_debt[FRANCE] + " Debt France]")
+		}
+		if (V.preview_debt[BRITAIN]) {
+			if (V.preview_debt[FRANCE]) msg += ", "
+			msg += escape_square_brackets("[FB" + ((V.preview_debt[BRITAIN] > 0) ? "+" : "") + V.preview_debt[BRITAIN] + " Debt Britain]")
+		}
+	}
+	if (V.preview_ministries.length > 0) {
+		msg += "<br/>"
+		msg += "Ministries: "
+		let any = false
+		for (const m of V.preview_ministries) {
+			if (any) msg += ", "
+			msg += escape_text("M" + ((data.ministries[m].side === FRANCE) ? "F" : "B") + m)
+			any = true
+		}
+	}
+
+	return msg
+}
+
+
+// Ministry is active if it's one of the player's ministry cards AND it has been revealed
+function has_active_ministry(who, m)
+{
+	if (!G.ministry[who].includes(m)) return false
+	let idx = G.ministry[who].indexOf(m)
+	return G.ministry_revealed[who][idx]
+}
+
+
+function preview_scoring_results() {
+	let vp = 0
+	let trp = [0, 0]
+	let debt = [0, 0]
+	let ministries = []
+
+	let winner = prestige_winner()
+	if (winner !== NONE) {
+		vp += ((winner === FRANCE) ? 2 : -2)
+	}
+
+	//TODO it would be *more sound* if this stuff was pre-computed in rules using the same code that runs "scoring_phase". It would require refactoring that code.
+
+	for (let r = 0; r < NUM_REGIONS; r++) {
+		let award = G.awards[r]
+		let winner = region_flag_winner(r)
+		let delta = region_flag_delta(r)
+		if (data.awards[award].by2 && region_flag_delta(r) < 2) continue
+		if (winner === NONE) continue
+
+		let award_vp = data.awards[award].vp
+		let award_trp = data.awards[award].trp
+		if (r === REGION_EUROPE) {
+			if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
+				award_vp++
+				ministries.push(COURT_OF_THE_SUN_KING)
+			}
+			if (has_active_ministry(winner, SAMUEL_JOHNSON)) {
+				ministries.push(SAMUEL_JOHNSON)
+				award_vp++
+			} else if (has_active_ministry(1 - winner, SAMUEL_JOHNSON)) {
+				if (award_vp > 0) {
+					award_vp--
+					ministries.push(SAMUEL_JOHNSON)
+				}
+			}
+		} else if (r === REGION_INDIA) {
+			if (has_active_ministry(winner, DUPLEIX)) {
+				award_trp++
+				ministries.push(DUPLEIX)
+			}
+		}
+
+		if (award_vp > 0) {
+			vp += ((winner === FRANCE) ? award_vp : -award_vp)
+		}
+		trp[winner] += award_trp
+
+		if (r === REGION_EUROPE) {
+			if (has_active_ministry(FRANCE, VOLTAIRE)) {
+				let multispace = 0
+				if (G.flags[IRELAND_2] === FRANCE) multispace++
+				if (G.flags[SCOTLAND_2] === FRANCE) multispace++
+				if ((G.flags[PRUSSIA_2] === FRANCE) || (G.flags[PRUSSIA_4] === FRANCE)) multispace++
+				if (G.flags[DUTCH_2] === FRANCE) multispace++
+				if ((G.flags[AUSTRIA_2] === FRANCE) || (G.flags[AUSTRIA_4] === FRANCE)) multispace++
+				if ((G.flags[SPAIN_2] === FRANCE) || (G.flags[SPAIN_4] === FRANCE)) multispace++
+
+				let countries = Math.min(3, multispace)
+				if (countries) {
+					vp += countries
+					ministries.push(VOLTAIRE)
+				}
+			}
+		}
+	}
+
+	for (const d of G.global_demand) {
+		let winner = demand_flag_winner(d)
+		if (winner === NONE) continue
+
+		let award_vp = data.demands[d].awards[current_era()].vp
+		let award_trp = data.demands[d].awards[current_era()].trp
+		let award_debt = data.demands[d].awards[current_era()].debt
+
+		if ((d === COTTON) || (d === SPICE)) {
+			if (has_active_ministry(winner, DUPLEIX)) {
+				award_trp++
+				if (!ministries.includes(DUPLEIX)) ministries.push(DUPLEIX)
+			}
+		}
+
+		if (award_vp > 0) {
+			vp += ((winner === FRANCE) ? award_vp : -award_vp)
+		}
+		trp[winner] += award_trp
+		debt[winner] += award_debt
+	}
+
+	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
+		let award_vp = 0
+		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
+			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
+				award_vp++
+			}
+		}
+		award_vp = Math.min(award_vp, 3)
+		if (award_vp > 0) {
+			vp -= award_vp
+			ministries.push(EAST_INDIA_COMPANY)
+		}
+	}
+
+	V.preview_vp = vp
+	V.preview_trp = trp
+	V.preview_debt = debt
+	V.preview_ministries = ministries
+}
+
+
 function on_reply(q, params)
 {
+	console.log (q)
 	if (q === "event_cards") {
 		show_card_list("event_card_dialog", params)
 	} else if (q === "french_ministry") {
@@ -2754,6 +2996,8 @@ function is_observing()
 
 function show_card_list(id, params) {
 	show_dialog(id, (body) => {
+		console.log (id)
+
 		let dl = document.createElement("dl")
 		let append_header = (text) => {
 			let header = document.createElement("dt")
@@ -2780,7 +3024,39 @@ function show_card_list(id, params) {
 			dl.appendChild(p)
 		}
 
-		console.log (id)
+		let append_prestige = () => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
+			p.onmouseleave = () => _tip_blur_award()
+			p.innerHTML = format_prestige_info()
+			dl.appendChild(p)
+		}
+
+		let append_region = (r, a) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_award(a)
+			p.onmouseleave = () => _tip_blur_award()
+			p.innerHTML = format_award_info(r, a)
+			dl.appendChild(p)
+		}
+
+		let append_demand = (d) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_demand(d)
+			p.onmouseleave = () => _tip_blur_demand()
+			p.innerHTML = format_demand_info(d)
+			dl.appendChild(p)
+		}
+
+		let append_results = () => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.innerHTML = format_results_info()
+			dl.appendChild(p)
+		}
 
 		if (id === "event_card_dialog") {
 			append_header(`Played Event Cards (${V.played_events.length})`)
@@ -2863,7 +3139,27 @@ function show_card_list(id, params) {
 				}
 			}
 		} else if (id === "scoring_summary_dialog") {
+			append_header ("Prestige")
+			append_prestige()
 
+			append_header ("Regions")
+			for (let r = 0; r < NUM_REGIONS; r++) {
+				var a = V.awards[r]
+				append_region(r, a)
+			}
+
+			append_header ("Global Demand")
+			for (let d = 0; d < NUM_DEMANDS; d++) {
+				if (!V.global_demand.includes(d)) continue
+				append_demand(d)
+			}
+
+			let header = document.createElement("dt")
+			header.innerHTML = "<br/>"
+			dl.appendChild(header)
+
+			append_header("Projected Results")
+			append_results()
 		}
 
 		body.appendChild(dl)
@@ -2872,6 +3168,7 @@ function show_card_list(id, params) {
 
 
 function show_dialog(id, dialog_generator) {
+	console.log(id)
 	document.getElementById(id).classList.add("show")
 	let body = document.getElementById(id).querySelector(".dialog_body")
 	body.replaceChildren()

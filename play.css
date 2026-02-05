@@ -21,6 +21,10 @@ body.Britain header.your_turn { background-color: salmon }
 	text-align: center;
 }
 
+.flag-string { color: black }
+.flag-string-fr { color: royalblue }
+.flag-string-br { color: crimson }
+
 #mapwrap {
 	width: 2550px;
 	height: 1650px;
