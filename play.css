@@ -1837,3 +1837,6 @@ div[data-tooltip]:after {
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
 
+.tip-bizarro {
+    z-index: -10
+}
