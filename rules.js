@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 11
+const GAME_STATE_VERSION = 12
 
 // TURNS
 const PEACE_TURN_1 = 0
@@ -976,6 +976,10 @@ function on_load()
 		upconvert (11, upconvert_did_the_brig)
 	}
 
+	if (G.game_state_version < 12) {
+		upconvert (12, upconvert_jacobite_turns)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -990,6 +994,13 @@ function upconvert(version, converter) {
 			G.undo[i].game_state_version = version
 		}
 	}
+}
+
+
+function upconvert_jacobite_turns(state)
+{
+	state.jacobite_victory_wss = (state.jacobite_victory > 0)
+	state.jacobite_victory_was = (state.jacobite_victory === 2)
 }
 
 
@@ -1280,6 +1291,9 @@ function on_view(RR = undefined) {
 
 	V.old_war_theater_winners = G.old_war_theater_winners
 	V.old_war_theater_margins = G.old_war_theater_margins
+
+	V.jacobite_victory_wss = G.jacobite_victory_wss
+	V.jacobite_victory_was = G.jacobite_victory_was
 }
 
 
@@ -10772,12 +10786,14 @@ function start_war_theater_resolution()
 			if ((G.next_war === WAR_WSS) && (G.theater === 4) && (L.war_tier > 0)) {
 				log(bold("Jacobite Victory marker added."))
 				G.jacobite_victory++
+				G.jacobite_victory_wss = true
 			}
 
 			if ((G.next_war === WAR_WAS) && (G.theater === 4)) {
 				log(bold("Jacobite Victory marker added. France may always select " + say_ministry(JACOBITE_UPRISINGS) + " as an extra ministry for rest of game."))
 				G.jacobite_victory++
 				G.jacobites_always = true
+				G.jacobite_victory_was = true
 			}
 		} else if (L.war_winner === BRITAIN) {
 			if ((G.next_war === WAR_WAS) && (G.theater === 4) && (L.war_tier > 0)) {

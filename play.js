@@ -665,10 +665,16 @@ function on_init() {
 
 	define_board("#map", 2550, 1650, [0, 0, 0, 0])
 
-	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], -5, -5)
+	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5)
 	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip("Jacobite Victory")
 	define_marker("jacobite-victory", 1, "square-sm jacobite-victory").tooltip("Jacobite Victory")
 	define_marker("jacobite-defeat", 0, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+
+	// Extra ones to put on the turn track
+	define_marker("jacobite-victory", 2, "square-sm jacobite-victory").tooltip("Jacobite Victory")
+	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip("Jacobite Victory")
+	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip("Jacobite Defeat")
+
 
 	for (s of data.spaces) {
 		let rect = find_layout_node(s.layout ?? s.name)
@@ -760,7 +766,7 @@ function on_init() {
 	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
 		define_stack("general-track", i,
 			resize_rect(find_layout_node("record track " + i), 49, 49),
-			-5, -5,
+			5, -5,
 			0, -50
 		)
 	}
@@ -1224,6 +1230,10 @@ function on_update() {
 		}
 	}
 
+	if (V.jacobite_victory_wss) populate("turn-track", WAR_TURN_WSS, "jacobite-victory", 2)
+	if (V.jacobite_victory_was) populate("turn-track", WAR_TURN_WAS, "jacobite-victory", 3)
+	if (V.jacobite_defeat) populate("turn-track", WAR_TURN_WAS, "jacobite-defeat", 1)
+
 	populate("turn-track", V.turn, "game-turn", 0)
 	populate("lout-initiative", "initiative", V.initiative)
 
@@ -1313,12 +1323,12 @@ function on_update() {
 		
 		update_text_html("demand-winner", i, html)
 	}
-	
+
 	let jacobite_count = V.jacobite_victory + (V.jacobite_defeat > 0 ? 1 : 0)
 
 	if (jacobite_count > 0) {
 		let offset = (jacobite_count - 1) * 2.5
-		update_position("lout-jacobite", undefined, 1750 + offset, 240 + offset)
+		update_position("lout-jacobite", undefined, 1750 + offset, 230 + offset)
 		
 		for (let i = 0; i < V.jacobite_victory; i++) {
 			populate("lout-jacobite", "jacobite-victory", i)
