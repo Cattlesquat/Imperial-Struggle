@@ -1555,6 +1555,17 @@ tiles75/square/investment_reverse.png
         left: 0;
         right: 0;
         bottom: 0;
+        inset: 0;
+        margin: auto;
+    }
+}
+
+@media (max-width: 800px) {
+    .panel {
+        min-width: calc(1650px - 8px);
+    }
+    #tooltip {
+        inset: 0;
         margin: auto;
     }
 }
@@ -1595,15 +1606,6 @@ tiles75/square/investment_reverse.png
 	z-index: 100;
 }
 
-@media (max-width: 800px) {
-	#tooltip {
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		margin: auto;
-	}
-}
 
 menu li.separator {
     cursor: default;
