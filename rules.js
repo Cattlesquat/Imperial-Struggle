@@ -4761,7 +4761,7 @@ P.event_austro_spanish_rivalry = {
 		shuffle(choices)
 
 		L.picked_bonus_tile = choices[0]
-		array_delete_item(G.theater_basic_war_tiles[1 - G.active][L.theater], L.picked_bonus_tile)
+		array_delete_item(G.theater_bonus_war_tiles[1 - G.active][L.theater], L.picked_bonus_tile)
 		G.bonus_war_tiles[1 - G.active].push(L.picked_bonus_tile)
 		shuffle(G.bonus_war_tiles[1 - G.active])
 		end()
