@@ -3896,6 +3896,7 @@ P.select_investment_tile = {
 		log_box_end()
 	},
 	inactive() {
+		return G.active
 		if (G.theater_bonus_war_tiles[G.active][0].length) {
 			return "place Austrian Succession bonus war tiles"
 		} else {
