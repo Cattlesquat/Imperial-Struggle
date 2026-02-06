@@ -2200,7 +2200,9 @@ P.deal_cards_discard = {
 		review_step(0, BRITAIN)
 	},
 	inactive() {
-		if (G.review_step[1-R] < G.review_index.length) {
+		if (R < 0) {
+			return "review newly drawn Event cards"
+		} if (G.review_step[1-R] < G.review_index.length) {
 			return "review start-of-turn phases"
 		} else if (G.hand[1-R] < 3) {
 			return "review newly drawn Event cards"
@@ -2321,7 +2323,7 @@ function show_all_ministry_cards()
 
 P.choose_ministry_cards = {
 	inactive() {
-		if (G.ministry[1-R].length < num_ministry_slots(R)) {
+		if ((R >= 0) && G.ministry[1-R].length < num_ministry_slots(R)) {
 			return "choose two ministry cards"
 		} else {
 			return "confirm choice of ministers"
@@ -3894,8 +3896,7 @@ P.select_investment_tile = {
 		log_box_end()
 	},
 	inactive() {
-		if ((R !== 1) && (R !== 0)) return String(R)
-		if (G.theater_bonus_war_tiles && G.theater_bonus_war_tiles[1-R][0] && G.theater_bonus_war_tiles[1-R][0].length) {
+		if (G.theater_bonus_war_tiles[G.active][0].length) {
 			return "place Austrian Succession bonus war tiles"
 		} else {
 			return "select an investment tile"
@@ -7021,7 +7022,7 @@ P.confirm_reveal_ministry = {
 		if (G.ministry_revealed[R][G.ministry_index] && !G.ministry_prompt_to_exhaust) end()
 	},
 	inactive() {
-		if (!G.ministry_revealed[1-R][G.ministry_index]) {
+		if (!G.ministry_revealed[G.active][G.ministry_index]) {
 			return "reveal a ministry"
 		} else {
 			return "use a ministry's ability"
@@ -10057,7 +10058,7 @@ P.action_round_core = {
 	},
 	inactive() {
 		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
-			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET))) {
+			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(G.active, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(G.active, MARQUIS_DE_CONDORCET))) {
 				return "play an event or begin spending action points and using abilities"
 			} else {
 				return "begin spending action points and using abilities"
@@ -10586,7 +10587,9 @@ P.war_theater_reveal = {
 		}
 	},
 	inactive() {
-		if (G.review_step[1-R] < G.review_index.length) {
+		if (R < 0) {
+			return "review and resolve revealed war tiles"
+		} if (G.review_step[R] < G.review_index.length) {
 			return "review revealed war tiles"
 		} else if ((L.wartile_debt[R] > 0) && L.wartile_choices[1-R].includes(WAR_DEBT)) {
 			return "resolve debt tiles"
