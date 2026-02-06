@@ -9341,7 +9341,7 @@ function reflag_space(s, who, silent = false) {
 
 function eligible_to_play_event()
 {
-	return ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET))
+	return ((data.investments[G.played_tile].majorval <= 3) || (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET)))
 }
 
 function advance_action_round_subphase(subphase)
@@ -10056,7 +10056,7 @@ P.action_round_core = {
 	},
 	inactive() {
 		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
-			if ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET)) {
+			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET))) {
 				return "play an event or begin spending action points and using abilities"
 			} else {
 				return "begin spending action points and using abilities"
@@ -10072,7 +10072,7 @@ P.action_round_core = {
 		let any = false
 
 		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
-			if ((data.investments[G.played_tile].majorval <= 3) || has_ministry(R, MARQUIS_DE_CONDORCET)) { // Eligible for event if our tiles major base value was <= 3
+			if ((data.investments[G.played_tile].majorval <= 3) || (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET))) { // Eligible for event if our tiles major base value was <= 3
 				if (any) prompt += ", "
 				prompt += "Play Event"
 				any = true
