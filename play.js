@@ -1191,6 +1191,19 @@ function scroll_to_war() {
 	scroll_into_view(document.getElementById("war"))
 }
 
+function scroll_to_map() {
+	scroll_into_view(document.getElementById("top"))
+}
+
+function scroll_to_cards() {
+	if (R !== BRITAIN) {
+		scroll_into_view(document.getElementById("ministry_fr"))
+	} else {
+		scroll_into_view(document.getElementById("ministry_br"))
+	}
+	//scroll_into_view(document.getElementById("panels-top"))
+}
+
 
 function next_peace_turn(turn)
 {
@@ -2524,23 +2537,111 @@ window.addEventListener("keydown", function (evt) {
 		case "s":
 		case "S":
 			toggle_dialog("scoring_summary_dialog")
+			evt.preventDefault()
 			break
 
 		case "f":
 		case "F":
 			toggle_dialog("french_ministry_dialog")
+			evt.preventDefault()
 			break
 		case "b":
 		case "B":
 			toggle_dialog("british_ministry_dialog")
+			evt.preventDefault()
 			break
 		case "e":
 		case "E":
 			toggle_dialog("event_card_dialog")
+			evt.preventDefault()
 			break
-		case "r":
-		case "R":
+		case "l":
+		case "L":
+			toggle_log()
+			evt.preventDefault()
 			break
+		case "z":
+		case "Z":
+			toggle_zoom()
+			scroll_to_map()
+			evt.preventDefault()
+			break
+
+		case "h":
+		case "H":
+			window.location.href = "/games/active";
+			evt.preventDefault()
+			break
+
+		case "n":
+		case "N":
+			window.location.href = "/games/next";
+			evt.preventDefault()
+			break
+
+		case "m":
+		case "M":
+			scroll_to_map()
+			evt.preventDefault()
+			break
+
+		case "w":
+		case "W":
+			scroll_to_war()
+			evt.preventDefault()
+			break
+
+		case "c":
+		case "C":
+			scroll_to_cards()
+			evt.preventDefault()
+			break
+
+		case "a":
+		case "A":
+			toggle_preference("allwars")
+			scroll_to_war()
+			evt.preventDefault()
+			break
+
+		case "p":
+		case "P":
+			toggle_notepad()
+			evt.preventDefault()
+			break;
+
+		case "v":
+		case "V":
+			let verbose = get_preference("actionverbosity", "medium")
+			if (verbose === "short") {
+				verbose = "medium"
+			} else if (verbose === "medium") {
+				verbose = "long"
+			} else {
+				verbose = "short"
+			}
+			set_preference("actionverbosity", verbose)
+			evt.preventDefault()
+			break
+
+		case "Tab": // TAB
+			toggle_markers()
+			evt.preventDefault()
+			break;
+
+		case "Escape": // ESC - hide any dialogs, restore approximate "default state"
+			hide_dialog("scoring_summary_dialog")
+			hide_dialog("french_ministry_dialog")
+			hide_dialog("british_ministry_dialog")
+			hide_dialog("event_card_dialog")
+			document.querySelector("aside").hidden = false // Show the log
+			document.body.classList.remove("hide-markers")
+			set_preference("allwars", false)
+			hide_notepad()
+			update_zoom()
+			evt.preventDefault()
+			break;
+
 		case " ":
 			if (window.location.search.includes("France")) {
 				window.location.search = window.location.search.replace("France", "Britain")
@@ -2549,15 +2650,11 @@ window.addEventListener("keydown", function (evt) {
 			}
 			evt.preventDefault()
 			break
-		case "h":
-			break;
-		case "o":
-			break;
-		case "d":
-		case "y":
-			break;
-		case "c":
+
+		case "x":
+		case "X":
 			send_message("action", ["cheat_cheat", null, game_cookie])
+			evt.preventDefault()
 			break;
 	}
 })

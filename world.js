@@ -1251,6 +1251,11 @@ function set_preference(name, value) {
 	return value
 }
 
+function toggle_preference(name)
+{
+	set_preference(name, !get_preference(name, false))
+}
+
 function init_preference_checkbox(name, initial) {
 	var input = document.querySelector(`input[name="${name}"]`)
 	var value = get_preference(name, initial)
