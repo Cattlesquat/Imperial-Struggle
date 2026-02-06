@@ -2501,8 +2501,18 @@ function on_log(text, ix) {
 }
 
 
-// DEBUG KEYS
-//TODO take out :)
+function toggle_dialog(id)
+{
+	if (document.getElementById(id).classList.contains("show")) {
+		hide_dialog(id)
+	} else {
+		show_card_list(id, null)
+	}
+}
+
+
+// Hotkeys
+// TODO take out any cheating ones :)
 window.addEventListener("keydown", function (evt) {
 	if (document.activeElement instanceof HTMLInputElement)
 		return
@@ -2511,24 +2521,27 @@ window.addEventListener("keydown", function (evt) {
 	if (evt.altKey || evt.ctrlKey)
 		return
 	switch (evt.key) {
+		case "s":
+		case "S":
+			toggle_dialog("scoring_summary_dialog")
+			break
+
 		case "f":
 		case "F":
-			send_message("action", ["frenchify", null, game_cookie])
-			evt.preventDefault()
+			toggle_dialog("french_ministry_dialog")
 			break
 		case "b":
 		case "B":
-			send_message("action", ["britify", null, game_cookie])
-			evt.preventDefault()
+			toggle_dialog("british_ministry_dialog")
+			break
+		case "e":
+		case "E":
+			toggle_dialog("event_card_dialog")
 			break
 		case "r":
 		case "R":
-			send_message("action", ["cheatrefresh", null, game_cookie])
-			evt.preventDefault()
 			break
 		case " ":
-		case "X":
-		case "x":
 			if (window.location.search.includes("France")) {
 				window.location.search = window.location.search.replace("France", "Britain")
 			} else {
@@ -2537,14 +2550,11 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 		case "h":
-			send_message("action", ["cheat_huguenots", null, game_cookie])
 			break;
 		case "o":
-			send_message("action", ["cheat_conflict", null, game_cookie])
 			break;
 		case "d":
 		case "y":
-			send_message("action", ["cheat_damage", null, game_cookie])
 			break;
 		case "c":
 			send_message("action", ["cheat_cheat", null, game_cookie])
