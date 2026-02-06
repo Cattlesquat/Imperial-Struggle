@@ -1549,27 +1549,6 @@ tiles75/square/investment_reverse.png
     */
 }
 
-@media (max-width: 800px) {
-    #tip {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        inset: 0;
-        margin: auto;
-    }
-}
-
-@media (max-width: 800px) {
-    .panel {
-        min-width: calc(1650px - 8px);
-    }
-    #tooltip {
-        inset: 0;
-        margin: auto;
-    }
-}
-
 
 #tooltip {
 	display: none;
@@ -1837,6 +1816,45 @@ div[data-tooltip]:after {
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
 
+/* Keep the auto-rollover-tipped bizarro spaces from being on top of the counters' rollovers */
 .tip-bizarro {
     z-index: -10
+}
+
+
+@media (max-width: 800px) {
+    #tip {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        inset: 0;
+        margin: auto;
+    }
+}
+
+@media (max-width: 800px) {
+    .panel {
+        min-width: calc(1650px - 8px);
+    }
+    #tooltip {
+        inset: 0;
+        margin: auto;
+    }
+
+    .dialog {
+        position: static;
+        grid-column: 1;
+        grid-row: 2/4;
+        display: none;
+        width: auto;
+        box-shadow: none;
+        border: none;
+    }
+    .dialog_body {
+        height: auto;
+    }
+    .dialog.show {
+        display: grid;
+    }
 }
