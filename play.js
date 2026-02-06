@@ -262,7 +262,7 @@ function space_tooltip(s) {
 
 function space_tooltip_image(s, onoff)
 {
-	if (onoff) {
+	if (onoff && !is_mobile()) {
 		let rect = find_layout_node(data.spaces[s].layout ?? data.spaces[s].name)
 		if (!rect) return
 
@@ -320,7 +320,7 @@ const demand_columns = [ "1180px", "1266px", "1352px"]
 const demand_rows = [ "178px", "198px", "219px", "239px", "260px", "280px"]
 
 function demand_tooltip_image(d, onoff) {
-	if (onoff) {
+	if (onoff && !is_mobile()) {
 		world.demand_highlight.hidden = false
 		world.demand_highlight.style.left = demand_columns[current_era()]
 		world.demand_highlight.style.top  = demand_rows[d]
@@ -2308,7 +2308,7 @@ function _tip_blur_class(action, id) {
 function _tip_focus_demand(d, name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 	world.status.innerHTML = demand_tooltip(d)
 	demand_tooltip_image(d, true)
 }
@@ -2334,7 +2334,7 @@ function escape_demand(text, re, log_className, tip_className, names) {
 function _tip_focus_event(who, c, name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 	world.status.innerHTML = event_tooltip(c, who)
 }
 
@@ -2358,7 +2358,7 @@ function escape_event(text, re, log_className, tip_className, names, who) {
 function _tip_focus_ministry(who, m, name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 	world.status.innerHTML = ministry_tooltip(m, who)
 }
 
@@ -2382,7 +2382,7 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 function _tip_focus_advantage(who, a, name) {
 	//world.tip.setAttribute("class", name)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 	world.status.innerHTML = advantage_tooltip(a)
 
 	// Show BOTH sides of the marker
@@ -2411,7 +2411,7 @@ function escape_advantage(text, re, log_className, tip_className, names, who) {
 
 
 function _tip_focus_space(who, s, name) {
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 	space_tooltip_image(s, true)
 	position_tip_image()
 	world.status.innerHTML = space_tooltip(s)
@@ -2562,7 +2562,7 @@ function advantage_tooltip_image(a, onoff) {
 }
 
 function on_focus_advantage_tip(a) {
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 
 	// Show BOTH sides of the marker
 	world.tip.innerHTML = `
