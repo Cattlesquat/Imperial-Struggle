@@ -1578,7 +1578,7 @@ function on_update() {
 	action_button("diplomatic2", is_mobile() ? "+2 Diplo" : "+2 Diplomatic")
 	action_button("economic2", is_mobile() ? "+2 Econ" : "+2 Economic")
 	action_button("scorecotton", "Score Cotton")
-	action_button("construct_squadron_now", is_mobile() ? : "Squadron" : "Build Squadron Now")
+	action_button("construct_squadron_now", is_mobile() ?  "Squadron" : "Build Squadron Now")
 	action_button("defer", "Defer")
 	action_button("fur", "Fur")
 	action_button("cotton", "Cotton")
