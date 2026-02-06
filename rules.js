@@ -1360,7 +1360,9 @@ function increase_debt(who, amount) {
 
 function pay_treaty_points(who, amount) {
 	if (amount > G.treaty_points[who]) {
-		console.error("Paid more treaty points than had available. Who: " + who + "  Avail: " + G.treaty_points[who] + "  Paid " + amount)
+		let msg = "Paid more treaty points than had available. Who: " + who + "  Avail: " + G.treaty_points[who] + "  Paid " + amount
+		console.error(msg)
+		if (globalThis.RTT_FUZZER) throw new Error(msg)
 		amount = G.treaty_points[who]
 	}
 	G.treaty_points[who] -= amount
@@ -1632,7 +1634,9 @@ function add_huguenots(s)
 		throw new Error("Tried to add Huguenots outside of North America and Caribbean")
 	}
 	if (has_huguenots(s)) {
-		console.error("Tried to add Huguenots to a space that already has them: " + data.spaces[s].name)
+		let msg = "Tried to add Huguenots to a space that already has them: " + data.spaces[s].name
+		console.error(msg)
+		if (globalThis.RTT_FUZZER) throw new Error(msg)
 		return
 	}
 	if (G.flags[s] !== FRANCE) {
@@ -3973,25 +3977,24 @@ function handle_event_card_click(c) {
 	if (data.cards[c].action !== WILD) {
 		if (data.cards[c].action !== data.investments[G.played_tile].majortype) {
 			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
-				//exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+				//exhaust_ministry(R, BANK_OF_ENGLAND, 1) //NB: these get exhausted later
 			} else {
-				console.error("Mismatched event play allowed without use of Bank of England ministry: " + data.cards[c].name)
+				let msg = "Mismatched event play allowed without use of Bank of England ministry: " + data.cards[c].name
+				console.error(msg)
+				if (globalThis.RTT_FUZZER) throw new Error(msg)
 			}
 		}
 	}
 
 	if (data.investments[G.played_tile].majorval > 3) {
 		if (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET)) {
-			//exhaust_ministry(R, MARQUIS_DE_CONDORCET)
+			//exhaust_ministry(R, MARQUIS_DE_CONDORCET) //NB: these get exhausted later
 		} else {
-			console.error("Allowed play of event without an event symbol on investment tile")
+			let msg = "Allowed play of event without an event symbol on investment tile: " + data.cards[c].name
+			console.error(msg)
+			if (globalThis.RTT_FUZZER) throw new Error(msg)
 		}
 	}
-
-	//if ((data.cards[c].action === WILD) || (data.cards[c].action === data.investments[G.played_tile].majortype) ||
-	//	(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON))) {
-		//action_event_card(c)
-	//}
 
 	call ("event_flow")
 }
@@ -4191,7 +4194,9 @@ function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
 P.event_not_implemented = {
 	inactive: "to discover an unimplemented event",
 	_begin() {
-		console.error ("Event not yet emplemented: " + data.events[G.played_event].name)
+		let msg = "Event not yet emplemented: " + data.events[G.played_event].name
+		console.error (msg)
+		if (globalThis.RTT_FUZZER) throw new Error(msg)
 	},
 	prompt() {
 		let msg = "Event not yet implemented."
@@ -7081,7 +7086,9 @@ P.ministry_not_activatable = {
 P.ministry_not_implemented = {
 	inactive: "use a ministry's ability",
 	_begin() {
-		console.error ("Ministry not yet emplemented: " + data.events[G.ministry_id].name)
+		let msg = "Ministry not yet emplemented: " + data.events[G.ministry_id].name
+		console.error (msg)
+		if (globalThis.RTT_FUZZER) throw new Error(msg)
 	},
 	prompt() {
 		let msg = "Ministry not yet implemented"
@@ -8745,7 +8752,10 @@ function get_theater_from_basic_war_tile(who, tile) {
 	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
 		if (G.theater_basic_war_tiles[who][theater].includes(tile)) return theater
 	}
-	console.error ("Could not find theater for basic war tile. Who: " + who + "  Tile: " + tile)
+	let msg = "Could not find theater for basic war tile. Who: " + who + "  Tile: " + tile
+	console.error (msg)
+	if (globalThis.RTT_FUZZER) throw new Error(msg)
+
 	return 1
 }
 
@@ -8754,7 +8764,9 @@ function get_theater_from_bonus_war_tile(who, tile) {
 	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
 		if (G.theater_bonus_war_tiles[who][theater].includes(tile)) return theater
 	}
-	console.error ("Could not find theater for bonus war tile. Who: " + who + "  Tile: " + tile)
+	let msg = "Could not find theater for bonus war tile. Who: " + who + "  Tile: " + tile
+	console.error (msg)
+	if (globalThis.RTT_FUZZER) throw new Error(msg)
 	return 1
 }
 
