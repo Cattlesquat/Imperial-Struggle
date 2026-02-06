@@ -2045,7 +2045,7 @@ function _tip_focus_award(a, who)
 {
 	world.tip.setAttribute("class", "square-sm marker award a" + a)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		if (V.awards[region] === a) world.status.innerHTML = award_tooltip(region)
@@ -2063,7 +2063,7 @@ function _tip_focus_investment(i, who)
 {
 	world.tip.setAttribute("class", "square marker investment i" + i)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 
 	world.status.innerHTML = investment_tooltip(i)
 }
@@ -2079,7 +2079,7 @@ function _tip_focus_basic_war_tile(t, who)
 {
 	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war-basic" + t)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 
 	world.status.innerHTML = basic_war_tooltip(t, who)
 }
@@ -2095,7 +2095,7 @@ function _tip_focus_bonus_war_tile(t, who)
 {
 	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war" + t)
 	position_tip_image()
-	world.tip.hidden = false
+	world.tip.hidden = is_mobile()
 
 	world.status.innerHTML = bonus_war_tooltip(t, who)
 }
