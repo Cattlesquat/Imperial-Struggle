@@ -8579,7 +8579,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				cost -= 1 // Repairing friendly fort costs one less than strength
 				G.action_cost_breakdown += " -1 friendly fort."
 				G.action_cost_adjusted = true
-			} else {
+			} else if (G.flags[s] === G.active - 1) {
 				cost += 1 // Seizing enemy fort costs one more than strength
 				G.action_cost_breakdown += " +1 enemy fort."
 				G.action_cost_adjusted = true
