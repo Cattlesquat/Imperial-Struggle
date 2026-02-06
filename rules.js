@@ -3856,11 +3856,12 @@ function selected_a_tile(tile)
 
 	// Ministries that increase action points right away
 
-	if (has_active_ministry(G.active, EDMUND_BURKE)) {
+	if (has_active_ministry(G.active, EDMUND_BURKE) && !is_ministry_exhausted(G.active, EDMUND_BURKE)) {
 		if (action_points_eligible_major[DIPLO]) {
 			let points = burke_points(G.active)
 			if (points > 0) {
 				add_contingent(DIPLO, points, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+				exhaust_ministry(G.active, EDMUND_BURKE)
 			}
 		}
 	}
@@ -6998,6 +6999,7 @@ function reveal_ministry(who, index) {
 	if (m === EDMUND_BURKE) {
 		if ((G.action_round_subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+			exhaust_ministry(who, m)
 		}
 	}
 
@@ -9318,6 +9320,7 @@ function reflag_space(s, who, silent = false) {
 		if (has_active_ministry(who, EDMUND_BURKE) && [IRELAND_1, IRELAND_2].includes(s)) {
 			if (is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, active_rules())) {
 				add_contingent(DIPLO, 1, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+				exhaust_ministry(who, EDMUND_BURKE) // but we don't *check* exhaustion before allowing here, because he's allowed to gain strength on the fly
 			}
 		}
 	}
@@ -9582,12 +9585,13 @@ P.space_flow = script(`
     		}
     	}
     }
-    
+     
     if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) { 
     	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true) }
-    	if (G.has_required_ministry) {
+    	if (G.has_required_ministry && !is_ministry_exhausted(R, EDMUND_BURKE)) {
     		eval {
     			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+    			exhaust_ministry(R, EDMUND_BURKE)
     			G.action_points_available_now += potential_burke_points(G.active)
     			if (G.action_points_minor[DIPLO] > 0) {
     			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.action_points_minor[DIPLO]) // Burke points don't combine with minor action points
