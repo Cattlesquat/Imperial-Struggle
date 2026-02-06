@@ -3896,8 +3896,7 @@ P.select_investment_tile = {
 		log_box_end()
 	},
 	inactive() {
-		return G.active
-		if (G.theater_bonus_war_tiles[G.active][0].length) {
+		if (G.theater_bonus_war_tiles[((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN][0].length) {
 			return "place Austrian Succession bonus war tiles"
 		} else {
 			return "select an investment tile"
@@ -7023,7 +7022,7 @@ P.confirm_reveal_ministry = {
 		if (G.ministry_revealed[R][G.ministry_index] && !G.ministry_prompt_to_exhaust) end()
 	},
 	inactive() {
-		if (!G.ministry_revealed[G.active][G.ministry_index]) {
+		if (!G.ministry_revealed[((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN][G.ministry_index]) {
 			return "reveal a ministry"
 		} else {
 			return "use a ministry's ability"
@@ -10058,8 +10057,9 @@ P.action_round_core = {
 		L.clicked_upgrade = false
 	},
 	inactive() {
+		whom = ((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN
 		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
-			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(G.active, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(G.active, MARQUIS_DE_CONDORCET))) {
+			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(whom, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(whom, MARQUIS_DE_CONDORCET))) {
 				return "play an event or begin spending action points and using abilities"
 			} else {
 				return "begin spending action points and using abilities"
