@@ -1857,4 +1857,10 @@ div[data-tooltip]:after {
     .dialog.show {
         display: grid;
     }
+
+    #scoring_summary_dialog { top: 100px; left: 0px; }
+    #event_card_dialog { top: 100px; left: 0px; }
+    #french_ministry_dialog { top: 100px; left: 0px; }
+    #british_ministry_dialog { top: 100px; left: px; }
+
 }
