@@ -400,9 +400,10 @@ const TRANSIENT_JACOBITES_USED_2            = 2
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
-const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
+const TRANSIENT_NORTH_AMERICAN_TRADE	     = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
+const TRANSIENT_BANK_OF_ENGLAND             = 9
 
 
 /* TILES & CARDS */
@@ -4108,7 +4109,12 @@ P.event_flow = script (`
 
     if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
-        	require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true)
+        	if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
+        		exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+        		G.has_required_ministry = true
+            } else {
+        		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true)
+        	}
         }
         if (!G.has_required_ministry) {
         	eval { pop_undo() }
@@ -7141,11 +7147,23 @@ P.ministry_robert_walpole = {
 
 
 P.ministry_bank_of_england = {
+	_begin() {
+		L.picking_event = false
+	},
 	inactive: "activate the Bank of England",
 	prompt() {
-		V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "You may increase your debt limit by one", null) + say_action_points()
-		if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.action_round_subphase)) {
-			button("increase_debt_limit", !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0))
+		if (!L.picking_event) {
+			V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "You may increase your debt limit by one", "you may play an economic event even if your selected investment tile does not have an economic major action (it must still have the event symbol)") + say_action_points()
+			if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.action_round_subphase)) {
+				button("increase_debt_limit", !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0))
+			}
+			button("play_event", (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))
+		} else {
+			V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "Select an economic event to play")
+			for (const e of G.hand[R]) {
+				if (data.cards[e].action !== ECON) continue
+				action_event_card(e)
+			}
 		}
 		button("pass")
 	},
@@ -7157,6 +7175,17 @@ P.ministry_bank_of_england = {
 		log(bold(data.flags[R].name + " Debt Limit +1"))
 		log_br()
 		end()
+	},
+	play_event() {
+		push_undo()
+		L.picking_event = true
+	},
+	event_card(c) {
+		push_undo()
+		G.played_event = c
+		G.action_header = "PLAY EVENT: "
+		set_transient(R, TRANSIENT_BANK_OF_ENGLAND)
+		goto ("event_flow")
 	},
 	pass() {
 		push_undo()
@@ -9157,7 +9186,7 @@ P.naval_flow = script(`
     		//console.log ("Other points available: " + G.action_points_available_now)
 			G.action_points_committed_bonus[MIL] += L.choiseul
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
-			//G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account  ///
+			//G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account  
 		}
     	
     	require_ministry_unexhausted(R, CHOISEUL, "For an extra military action point", 0, true, true)
@@ -10035,7 +10064,7 @@ P.action_round_core = {
 				for (var card of G.hand[R]) {
 					// Only events that either match=our major action or be "wild" events (the ones that don't show a symbol)
 					if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
-						(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON))) {
+						(has_ministry(R, BANK_OF_ENGLAND) && (data.cards[card].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))) {
 						action_event_card(card)
 					}
 				}
