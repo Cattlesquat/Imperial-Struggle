@@ -2752,7 +2752,7 @@ function say_action_points(space = true, brackets = true) {
 	tell = italic(tell)
 
 	if (is_mobile()) {
-		tell = "<div>" + tell + "</div>"
+		tell = "<div>" + tell + "</div>" // On mobile we don't let the amount of action points fold up
 	}
 
 	return tell
