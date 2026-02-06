@@ -2749,7 +2749,13 @@ function say_action_points(space = true, brackets = true) {
 	if (tell === "") return tell
 	if (brackets) tell = "(" + tell + ")"
 	if (space) tell = " " + tell
-	return italic(tell)
+	tell = italic(tell)
+
+	if (is_mobile()) {
+		tell = "<div>" + tell + "</div>"
+	}
+
+	return tell
 
 
 	//console.log (get_preference("actionverbosity", "medium"))
