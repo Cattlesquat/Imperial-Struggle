@@ -7166,7 +7166,7 @@ P.ministry_bank_of_england = {
 			if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.action_round_subphase)) {
 				button("increase_debt_limit", !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0))
 			}
-			button("play_event", (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))
+			button("play_event", ((G.action_round_subphase <= OPTION_TO_PLAY_EVENT) && (G.action_round_subphase > BEFORE_PICKING_TILE)) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))
 		} else {
 			V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "Select an economic event to play")
 			for (const e of G.hand[R]) {
