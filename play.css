@@ -1822,7 +1822,7 @@ div[data-tooltip]:after {
 }
 
 .hotkey {
-    visibility: visible;
+    hidden: false;
 }
 
 

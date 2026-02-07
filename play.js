@@ -1544,11 +1544,8 @@ function on_update() {
 	if (is_mobile()) {
 		let elements = document.getElementsByClassName("hotkey")
 		for (const e of elements) {
-			e.visibility = false
+			e.hidden = false
 		}
-			//.forEach(element => {
-			//element.visibility = false
-		//})
 	}
 
 	action_button ("fail", "Fuzzer Only Fail Button")
