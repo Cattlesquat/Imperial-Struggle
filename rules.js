@@ -11362,15 +11362,12 @@ P.war_victory_check_phase = function() {
 
 	if ((G.won_all_theaters_by_maximum_level !== NONE) && (G.won_all_theaters_by_maximum_level >= 0)) {
 		let msg = bold(data.flags[G.won_all_theaters_by_maximum_level].name + " wins the game by winning all theaters with the maximum possible spoils of war!")
-		log (msg)
 		finish (G.won_all_theaters_by_maximum_level, msg)
 	} else if (G.vp <= 0) {
 		let msg = bold("Britain wins the game: VP 0 or fewer!")
-		log(msg)
 		finish(BRITAIN, msg)
 	} else if (G.vp >= 30) {
 		let msg = bold("France wins the game: VP 30 or greater!")
-		log(msg)
 		finish(FRANCE, msg)
 	} else {
 		log ("No automatic victory.")
