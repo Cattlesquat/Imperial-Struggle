@@ -1544,7 +1544,7 @@ function on_update() {
 	if (is_mobile()) {
 		let elements = document.getElementsByClassName("hotkey")
 		for (const e of elements) {
-			e.hidden = false
+			e.hidden = true
 		}
 	}
 
