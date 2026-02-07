@@ -11293,6 +11293,7 @@ P.war_theater_resolve = {
 		G.active = 1 - G.active
 	},
 	accept() {
+		log(bold(data.flags[1 - L.war_winner].name + " accepts conquest of " + data.spaces[L.war_space].name) + ".")
 		reflag_space(L.war_space, L.war_winner)
 		L.checking_refusal = false
 		G.active = 1 - G.active
