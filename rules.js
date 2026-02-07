@@ -10856,8 +10856,8 @@ function start_war_theater_resolution()
 				msg += " gains " + L.war_cp + " conquest point" + s(L.war_cp)
 			}
 			if (L.war_unflag) {
-				if (L.war_cp) msg += " and "
-				msg += "may unflag one "
+				if (L.war_cp) msg += " and"
+				msg += " may unflag one "
 				if (data.wars[G.next_war].theater[G.theater].region === REGION_EUROPE) {
 					msg += " political space"
 				} else {
