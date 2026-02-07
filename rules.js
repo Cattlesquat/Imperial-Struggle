@@ -2990,7 +2990,7 @@ P.scoring_review = {
 		} else if (L.region_ticker[R] < NUM_REGIONS) {
 			msg += say_action("Review region scoring for " + data.regions[L.region_ticker[R]].name)
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
-			msg += say_action("Review demand scoring for " + data.demands[L.demand_ticker[R]].name)
+			msg += say_action("Review demand scoring for " + data.demands[G.global_demand[L.demand_ticker[R]]].name)
 		} else {
 			msg += say_action("Review additional bonus scoring")
 		}
