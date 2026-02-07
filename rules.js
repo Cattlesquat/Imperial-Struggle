@@ -1349,6 +1349,7 @@ function increase_debt(who, amount) {
 		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
+		log (data.flags[who].name + " must expend " + say_spending(penalty + ((amount > 0) ? " more" : "") + " Debt", who) + " but is at its " + say_spending("Debt Limit", who) + "!")
 		if (has_active_ministry(who, JAMES_WATT)) {
 			log (say_ministry(JAMES_WATT, who) + " prevents VP penalty from Debt Limit overrun.")
 		} else {
