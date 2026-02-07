@@ -1821,6 +1821,10 @@ div[data-tooltip]:after {
     z-index: -10
 }
 
+.hotkey {
+    visibility: visible;
+}
+
 
 @media (max-width: 800px) {
     #tip {

@@ -1541,6 +1541,12 @@ function on_update() {
 
 	update_war_display()
 
+	if (is_mobile()) {
+		document.getElementsByClassName("hotkey").forEach(element => {
+			element.visibility = false
+		})
+	}
+
 	action_button ("fail", "Fuzzer Only Fail Button")
 
 	action_button("france", "France")
