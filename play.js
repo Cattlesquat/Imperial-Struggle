@@ -134,9 +134,9 @@ const war_layout = {
 	war_awi_theater_3_winner: [780, 404, 60, 25],
 
 	// AWI - Alliances
-	war_awi_theater_1_alliances: [502,  135, 50, 152],
+	war_awi_theater_1_alliances: [502,  144, 50, 152],
 	war_awi_theater_2_alliances: [1037, 164, 50, 152],
-	war_awi_theater_3_alliances: [1032, 435, 50, 152],
+	war_awi_theater_3_alliances: [1032, 442, 50, 152],
 	war_awi_theater_4_alliances: [1022, 510, 50, 152],
 }
 
