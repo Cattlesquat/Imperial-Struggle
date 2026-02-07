@@ -10591,9 +10591,13 @@ P.war_theater_reveal = {
 	},
 	inactive() {
 		if (R < 0) {
-			return "review and resolve revealed war tiles"
-		} if (G.review_step[R] < G.review_index.length) {
-			return "review revealed war tiles"
+			return "review/resolve revealed war tiles"
+		} else if (G.review_step[1-R] < G.review_index.length) {
+			if (G.review_step[1-R] === 0) {
+				return "reveal & review war tiles"
+			} else 			{
+				return "review revealed war tiles"
+			}
 		} else if ((L.wartile_debt[R] > 0) && L.wartile_choices[1-R].includes(WAR_DEBT)) {
 			return "resolve debt tiles"
 		} else {
