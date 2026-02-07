@@ -1542,9 +1542,13 @@ function on_update() {
 	update_war_display()
 
 	if (is_mobile()) {
-		document.getElementsByClassName("hotkey").forEach(element => {
-			element.visibility = false
-		})
+		let elements = document.getElementsByClassName("hotkey")
+		for (const e of elements) {
+			e.visibility = false
+		}
+			//.forEach(element => {
+			//element.visibility = false
+		//})
 	}
 
 	action_button ("fail", "Fuzzer Only Fail Button")
