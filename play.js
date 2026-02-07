@@ -3112,13 +3112,17 @@ function preview_scoring_results() {
 function on_reply(q, params)
 {
 	if (q === "event_cards") {
-		show_card_list("event_card_dialog", params)
+		toggle_dialog("event_card_dialog")
+		//show_card_list("event_card_dialog", params)
 	} else if (q === "french_ministry") {
-		show_card_list("french_ministry_dialog", params)
+		toggle_dialog("french_ministry_dialog")
+		//show_card_list("french_ministry_dialog", params)
 	} else if (q === "british_ministry") {
-		show_card_list("british_ministry_dialog", params)
+		toggle_dialog("british_ministry_dialog")
+		//show_card_list("british_ministry_dialog", params)
 	} else if (q === "scoring_summary") {
-		show_card_list("scoring_summary_dialog", params)
+		toggle_dialog("scoring_summary_dialog")
+		//show_card_list("scoring_summary_dialog", params)
 	}
 }
 

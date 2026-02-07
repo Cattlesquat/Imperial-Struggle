@@ -8983,6 +8983,7 @@ P.bonus_war_tile_decisions = {
 		clear_undo() // Drew a tile - so there's no going back!
 		L.confirmed = true
 		L.new_tile = draw_bonus_war_tile(G.active, 0)
+		log (data.flags[G.active].name + " buys a bonus war tile")
 	},
 	theater(t) {
 		t = display_to_theater(t)
@@ -8992,7 +8993,7 @@ P.bonus_war_tile_decisions = {
 			G.theater_bonus_war_tiles[G.active][L.theater].push(L.new_tile)
 			array_delete_item(G.theater_bonus_war_tiles[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
 			G.bonus_war_tiles_bought_this_round++
-			log(data.flags[G.active].name + " draws a bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+			log(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
 			if (G.theater_bonus_war_tiles[G.active][L.theater].length <= 2) {
 				end() // If we don't need to displace another tile, we're done
 			}
