@@ -828,6 +828,41 @@ body[data-noanims="false"] .card.action {
 
 /* IMAGES + ACTION OUTLINE */
 
+.symbol.econ { background-image: url(images/icon-economic.svg); }
+.symbol.diplo { background-image: url(images/icon-diplomatic.svg); }
+.symbol.mil { background-image: url(images/icon-military.svg); }
+
+#prompt .symbol {
+    display: inline-block;
+    vertical-align: -8px;
+    width: 24px;
+    height: 30px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* border: 1px solid black; */
+}
+
+#prompt .symbol.econ {
+    margin-left: -5px;
+    vertical-align: -6px;
+    height: 28px;
+}
+
+#prompt .symbol.mil {
+    margin-left: -5px;
+}
+
+
+#log .symbol {
+    display: inline-block;
+    vertical-align: 2px;
+    width: 11px;
+    height: 11px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+
 .marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
 .marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
@@ -1865,6 +1900,6 @@ div[data-tooltip]:after {
     #scoring_summary_dialog { top: 100px; left: 0px; }
     #event_card_dialog { top: 100px; left: 0px; }
     #french_ministry_dialog { top: 100px; left: 0px; }
-    #british_ministry_dialog { top: 100px; left: px; }
+    #british_ministry_dialog { top: 100px; left: 0px; }
 
 }

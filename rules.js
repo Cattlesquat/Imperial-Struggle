@@ -10648,7 +10648,7 @@ P.war_theater_reveal = {
 			return "review/resolve revealed war tiles"
 		} else if (G.review_step[1-R] < G.review_index.length) {
 			if (G.review_step[1-R] === 0) {
-				return "reveal & review war tiles"
+				return "review war tiles"
 			} else 			{
 				return "review revealed war tiles"
 			}

@@ -2167,8 +2167,9 @@ function escape_square_brackets(text) {
 				continue
 			}
 
-			let who_key = inside[1][1]                  // Second character tells us what nation color to use, if any
-			let msg     = inside[1].slice(2)            // Rest of string is the message
+			let has_who_key = (type !== "A")
+			let who_key = inside[1][1]                         // Second character tells us what nation color to use, if any
+			let msg     = inside[1].slice(has_who_key ? 2 : 1) // Rest of string is the message
 			let value = 0
 
 			if (["I", "W", "S", "B", "b"].includes(type)) {	// Some items encode a three-digit number
@@ -2184,11 +2185,15 @@ function escape_square_brackets(text) {
 						}
 					}
 				}
+			} else if (type === "A") { // Others have a one-digit number
+				value = msg[0] - '0'
+				msg = msg.substring(1)
 			}
 
 			let who = (who_key === "F") ? FRANCE : (who_key === "B") ? BRITAIN : NONE
 
 			// Second character is usually F/B/X for French/British/None
+			// A - [#0] - Action points symbol (0=Econ, 1=Diplo, 2=Mil)
 			// b - [bF001] - basic war tile
 			// B - [BF001] - bonus war tile
 			// F - [FFstring] - "Flag" string - colored by nationality of second letter (i.e. F/B/X)
@@ -2201,6 +2206,17 @@ function escape_square_brackets(text) {
 			let tooltip_text = ""
 			let className = ""
 			switch (type) {
+				case "A":
+					className = "symbol"
+					switch (value) {
+						case ECON: className += " econ"; break;
+						case DIPLO: className += " diplo"; break;
+						case MIL: className += " mil"; break;
+					}
+					tooltip_text = `<span 
+						class="${className}"
+						>${escape_typography(msg)}</span>`
+					break
 				case "b":
 					className = "tip-basic-war"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
@@ -2783,13 +2799,15 @@ function say_action_points(space = true, brackets = true) {
 	let verbose = get_preference("actionverbosity", "medium")
 	let names = []
 	let shortest = (verbose === "short")
+	let longest = (verbose === "long")
 	for (i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		names[i] = escape_square_brackets("[A" + i + "]")
 		if (verbose === "short") {
-			names[i] = data.action_points[i].letter
+			//names[i] = "" // data.action_points[i].letter
 		} else if (verbose === "long") {
-			names[i] = data.action_points[i].name
+			names[i] += " " + data.action_points[i].name
 		} else {
-			names[i] = data.action_points[i].short
+			//names[i] = data.action_points[i].short
 		}
 	}
 
@@ -2807,7 +2825,7 @@ function say_action_points(space = true, brackets = true) {
 					if (need_comma) {
 						tell += ", "
 					}
-					tell += names[i] + (shortest ? "" : ": ")
+					tell += names[i] + (!longest ? "" : ": ")
 					told_name[i] = true
 					need_comma = true;
 
@@ -2824,7 +2842,7 @@ function say_action_points(space = true, brackets = true) {
 							if (need_comma) {
 								tell += ", "
 							}
-							tell += names[i] + (shortest ? "" : ": ")
+							tell += names[i] + (!longest ? "" : ": ")
 							told_name[i] = true
 						}
 
@@ -2838,7 +2856,7 @@ function say_action_points(space = true, brackets = true) {
 						}
 
 						if (!told_name[i]) {
-							tell += names[i] + (shortest ? "" : ": ")
+							tell += names[i] + (!longest ? "" : ": ")
 							told_name[i] = true
 						}
 
@@ -2851,7 +2869,7 @@ function say_action_points(space = true, brackets = true) {
 						if (any_contingent(i, rule.rule)) {
 							if (need_comma) tell += ", "
 							if (!told_name[i]) {
-								tell += names[i] + (shortest ? "" : ": ")
+								tell += names[i] + (!longest ? "" : ": ")
 								told_name[i] = true
 							}
 							tell += amount + " " + (shortest ? rule.short : rule.rule)
