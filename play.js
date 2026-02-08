@@ -73,7 +73,7 @@ const war_layout = {
 	// WSS - Alliances
 	war_wss_theater_1_alliances: [500, 142, 50, 152],
 	war_wss_theater_2_alliances: [1022, 160, 50, 152],
-	war_wss_theater_3_alliances: [500, 538, 50, 152],
+	war_wss_theater_3_alliances: [500, 542, 50, 152],
 	war_wss_theater_4_alliances: [1022, 510, 50, 152],
 
 	// WAS - Strength
