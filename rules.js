@@ -3883,6 +3883,8 @@ function selected_a_tile(tile)
 			}
 		}
 	}
+	
+	log_br()
 }
 
 // Player is picking an investment tile
