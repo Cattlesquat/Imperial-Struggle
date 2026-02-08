@@ -9024,13 +9024,15 @@ P.bonus_war_tile_decisions = {
 			G.theater_bonus_war_tiles[G.active][L.theater].push(L.new_tile)
 			array_delete_item(G.theater_bonus_war_tiles[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
 			G.bonus_war_tiles_bought_this_round++
-			log(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+			log(bold(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater]))
+			log_br()
 			if (G.theater_bonus_war_tiles[G.active][L.theater].length <= 2) {
 				end() // If we don't need to displace another tile, we're done
 			}
 		} else {
 			G.theater_bonus_war_tiles[G.active][t].push(L.displaced_tile)
-			log(data.flags[G.active].name + " moves a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t])
+			log(bold(data.flags[G.active].name + " moves a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t]))
+			log_br()
 			end()
 		}
 	},
