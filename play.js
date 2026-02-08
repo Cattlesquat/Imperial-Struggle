@@ -1541,6 +1541,7 @@ function on_update() {
 
 	update_war_display()
 
+	// Hide hotkey shortcuts on mobile
 	if (is_mobile()) {
 		let elements = document.getElementsByClassName("hotkey")
 		for (const e of elements) {

@@ -395,8 +395,8 @@ const NOT_ACTION_PHASE				= 6
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
 const NUM_TRANSIENT_BITFLAGS = 32
 const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
-const TRANSIENT_JACOBITES_USED_1            = 1
-const TRANSIENT_JACOBITES_USED_2            = 2
+const TRANSIENT_JACOBITES_USED_1            = 1 // Score VP
+const TRANSIENT_JACOBITES_USED_2            = 2 // Shift spaces with military action points
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
@@ -7364,13 +7364,11 @@ P.ministry_jacobite_uprisings = {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with military action points", "score " + jacobite_vp_value() + " VP for 3 military action points" ) + say_action_points()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.action_round_subphase)) {
 			if (G.action_points_eligible[MIL]) {
-				if (!has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
-					if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0)) {
-						for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
-							if (G.flags[s] !== FRANCE) {
-								if ((G.flags[s] === NONE) || action_points_eligible_major(MIL, space_rules(s, MIL))) { // If we're unflagging, can't use minor action
-									action_space(s, INCLUDE_CONFLICT)
-								}
+				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, JACOBITES_USED_2)) {
+					for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
+						if (G.flags[s] !== FRANCE) {
+							if ((G.flags[s] === NONE) || action_points_eligible_major(MIL, space_rules(s, MIL))) { // If we're unflagging, can't use minor action
+								action_space(s, INCLUDE_CONFLICT)
 							}
 						}
 					}
