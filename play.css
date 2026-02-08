@@ -834,33 +834,54 @@ body[data-noanims="false"] .card.action {
 
 #prompt .symbol {
     display: inline-block;
-    vertical-align: -8px;
+    vertical-align: -4px;
     width: 24px;
     height: 30px;
     background-size: cover;
     background-repeat: no-repeat;
-    /* border: 1px solid black; */
+    margin-top: -4px;
+    margin-bottom: -4px;
+    /*border: 1px solid black;*/
 }
 
 #prompt .symbol.econ {
     margin-left: -5px;
-    vertical-align: -6px;
+    vertical-align: -3px;
     height: 28px;
 }
 
 #prompt .symbol.mil {
     margin-left: -5px;
+    margin-right: 2px;
 }
-
 
 #log .symbol {
     display: inline-block;
-    vertical-align: 2px;
-    width: 11px;
-    height: 11px;
+    vertical-align: -3px;
+    width: 18px;
+    height: 18px;
     background-size: cover;
     background-repeat: no-repeat;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    margin-left: -2px;
+    margin-right: -2px;
+    /* border: 1px solid black; */
 }
+
+#log .symbol.econ {
+    height: 17px;
+    vertical-align: -2px;
+}
+
+#log .symbol.diplo {
+    margin-left: 0px;
+    margin-right: -3px;
+}
+
+#log .symbol.mil {
+}
+
 
 
 .marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
