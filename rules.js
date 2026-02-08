@@ -7347,6 +7347,31 @@ P.jacobite_vp_flow = script (`
     eval { do_award_jacobite_vp() }    
 `)
 
+
+P.jacobite_divert = {
+	inactive: "shift a space",
+	prompt() {
+		V.prompt = "Use diplomatic or military points to shift " + data.spaces[G.active_space].name + "?"
+		button("military")
+		button("diplomatic")
+	},
+	military() {
+		push_undo()
+		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+		action_cost_setup(G.active_space, MIL)
+		G.action_cost   = action_point_cost(R, G.active_space, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
+		G.action_string = "to shift " + say_space(G.active_space) + " space"
+		G.action_header = say_ministry_header()
+		goto ("jacobite_flow")
+	},
+	diplomatic() {
+		push_undo()
+		handle_space_click(G.active_space, DIPLO)
+		end()
+	}
+}
+
+
 P.jacobite_flow = script (`
     call decide_how_and_whether_to_spend_action_points	
 	eval { G.action_header = "" } 
@@ -8105,6 +8130,14 @@ function action_eligible_spaces_mil(region)
 			if (space.type === NAVAL) {
 				if (G.flags[space.num] !== NONE) {
 					if (!action_points_eligible_major(MIL, space_rules(space.num, MIL)) && !eligible_for_minor_action(space.num, R)) continue // Cannot use minor action
+				}
+			}
+
+			if (has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
+				if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(space.num)) {
+					if ((G.flags[space.num] === NONE) || action_points_eligible_major(MIL, space_rules(space.num, MIL))) { // If we're unflagging, can't use minor action
+						action_space(space.num)
+					}
 				}
 			}
 		}
@@ -9422,6 +9455,23 @@ function action_cost_setup(s, t) {
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
 function handle_space_click(s, force_type = -1)
 {
+	if (has_transient(G.active, TRANSIENT_JACOBITES_USED_2) && [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s) && (force_type === -1)) {
+		if (!action_points_available(G.active, s, DIPLO, true, space_rules(s))) {
+			advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
+			action_cost_setup(s, MIL)
+			G.action_cost   = action_point_cost(R, s, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
+			G.action_string = "to shift " + say_space(s) + " space"
+			G.action_header = say_ministry_header()
+			call ("jacobite_flow")
+			return
+		}
+		if (action_points_eligible_major(G.active, s, MIL, true, space_rules(s))) {
+			G.active_space = s
+			call ("jacobite_divert")
+			return
+		}
+	}
+
 	action_cost_setup(s, (force_type > 0) ? force_type : space_action_type(s))
 
 	if (data.spaces[s].type === NAVAL) {

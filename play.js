@@ -1605,6 +1605,8 @@ function on_update() {
 	action_button("cotton", "Cotton")
 	action_button("take_control", is_mobile() ? "Control" : "Take Control")
 	action_button("place_conflicts", is_mobile() ? "Conflict" : "Place Conflict Markers")
+	action_button("diplomatic", is_mobile() ? "Diplo" : "Diplomatic")
+	action_button("military", is_mobile() ? "Mil" : "Military")
 
 	action_button("use_advantage", "Use")
 	action_button("dont_use_advantage", "Don't Use")
