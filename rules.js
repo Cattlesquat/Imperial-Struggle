@@ -8842,7 +8842,7 @@ P.military_upgrade_decisions = {
 		L.confirmed = true
 		L.new_tile = draw_basic_war_tile(G.active, L.theater)
 		G.military_upgrade = false // No longer eligible for a military upgrade
-		log(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+		log(bold(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater]))
 	},
 	basic_war(t) {
 		push_undo()
@@ -8854,11 +8854,13 @@ P.military_upgrade_decisions = {
 		push_undo()
 		G.basic_war_tiles[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
 		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
+		log_br()
 		end()
 	},
 	remove_from_game() {
 		push_undo()
 		log(data.flags[G.active].name + " removes a basic war tile from the game: " + say_basic_war_tile(L.get_rid_of_tile))
+		log_br()
 		end()
 	},
 	done() {
