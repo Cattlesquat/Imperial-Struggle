@@ -3883,7 +3883,7 @@ function selected_a_tile(tile)
 			}
 		}
 	}
-	
+
 	log_br()
 }
 
@@ -10967,7 +10967,7 @@ function start_war_theater_resolution()
 
 function conquer_from_navy_box()
 {
-	log(data.flags[L.war_winner].name + " spends 1 Conquest Point.")
+	log(data.flags[L.war_winner].name + " spends 1 conquest point.")
 	L.war_cp--
 	L.picking_squadron = false
 	G.navy_from_navy_box = true
@@ -10980,7 +10980,7 @@ function conquer_from_navy_box()
 
 function conquer_from_space(s)
 {
-	log(data.flags[L.war_winner].name + " spends 1 Conquest Point.")
+	log(data.flags[L.war_winner].name + " spends 1 conquest point.")
 	L.war_cp--
 	L.picking_squadron = false
 	G.navy_from_navy_box = false
@@ -11078,7 +11078,7 @@ P.war_theater_resolve = {
 			button("accept")
 		} else if (L.confirming_conquest) {
 			let cost = conquest_point_cost(L.war_space)
-			msg += say_action("Confirm spending " + cost + " Conquest Point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "?")
+			msg += say_action("Confirm spending " + cost + " conquest point" + s(cost) + " to take control of " + data.spaces[L.war_space].name + "?")
 			if ((G.flags[L.war_space] === 1 - R) && (G.war_refused[1 - R] < 2)) {
 				msg += say_action(" (CANNOT BE UNDONE)")
 			}
@@ -11102,7 +11102,7 @@ P.war_theater_resolve = {
 				action_navy_box()
 			}
 		} else if (L.war_cp > 0) {
-			msg += say_action(L.result_string) + say_action(" Spend Conquest Point" + s(L.war_cp_start) + " " + parens( (L.war_cp_start - L.war_cp) +  " / " + L.war_cp_start) + ".")
+			msg += say_action(L.result_string) + say_action(" Spend conquest point" + s(L.war_cp_start) + " " + parens( (L.war_cp_start - L.war_cp) +  " / " + L.war_cp_start) + ".")
 
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -11260,7 +11260,7 @@ P.war_theater_resolve = {
 		} else if (L.war_cp > 0) {
 			L.war_space = s
 			if ((data.spaces[s].type === FORT) || (data.spaces[s].type === MARKET)) {
-				log(data.flags[L.war_winner].name + " spends 1 Conquest Point.")
+				log(data.flags[L.war_winner].name + " spends 1 conquest point.")
 				L.war_cp--
 				reflag_space(s, L.war_winner)
 			} else if (data.spaces[s].type === NAVAL) {
@@ -11333,7 +11333,7 @@ P.war_theater_resolve = {
 		mark_dirty(L.war_space)
 		L.confirming_conquest = false
 		let cost = conquest_point_cost(L.war_space)
-		log(data.flags[L.war_winner].name + " spends " + cost + " Conquest Point" + s(cost) + ".")
+		log(data.flags[L.war_winner].name + " spends " + cost + " conquest point" + s(cost) + ".")
 		L.war_cp -= cost
 
 		if ((G.flags[L.war_space] === NONE) || (G.war_refused[1 - L.war_winner] >= 2)) {
