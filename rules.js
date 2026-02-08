@@ -10158,7 +10158,7 @@ P.action_round_core = {
 				return "begin spending action points and using abilities"
 			}
 		} else {
-			return "spend action points or use an ability"
+			return "spend action points or use an ability " + say_action_points_left()
 		}
 	},
 	prompt() {
