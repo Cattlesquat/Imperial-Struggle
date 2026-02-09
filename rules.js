@@ -7350,6 +7350,7 @@ P.ministry_new_world_huguenots = {
 	},
 	space(s) {
 		push_undo()
+		exhaust_ministry(R, NEW_WORLD_HUGUENOTS)
 		add_huguenots(s)
 		log (bold("Huguenots added at " + say_space(s, FRANCE)))
 		end()
