@@ -2743,7 +2743,10 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	set_add(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 
 	if (!silent) {
-		let msg = "Ministry Exhausted: " + say_ministry(m, who)
+		let msg = "Ministry Exhausted"
+		if (!is_log_box(LOG_BOX_MINISTRY)) {
+			msg += ": " + say_ministry(m, who)
+		}
 		if (data.ministries[m].abilities > 1) {
 			msg += " (Ability #" + (ability + 1) + ")"
 		}
@@ -7034,7 +7037,11 @@ function reveal_ministry(who, index) {
 
 	let m = G.ministry[who][index]
 	G.ministry_revealed[who][index] = true
-	log ("Ministry Revealed: \n" + say_ministry(m, who, false))
+	let msg = "Ministry Revealed"
+	if (!is_log_box(LOG_BOX_MINISTRY)) {
+		msg += ": \n" + say_ministry(m, who, false)
+	}
+	log (msg)
 
 	// Effects right when ministry is revealed, if applicable, like pooching off Jacobites if we're the Pope
 
@@ -7929,8 +7936,8 @@ P.advantage_unflag_discount = {
 		return "unflag a space with the " + data.advantages[G.active_advantage].name + " advantage"
 	},
 	prompt() {
-		let msg = "Pick a " + L.adv_string + " to unflag " + (L.adv_for_one ? "for " + say_action_points(1, type) + "." : "for one fewer [@" + type + "].")
 		let type = L.adv_market ? ECON : DIPLO
+		let msg = "Pick a " + L.adv_string + " to unflag " + (L.adv_for_one ? "for " + say_action_points(1, type) + "." : "for one fewer [@" + type + "].")
 		let space_type = L.adv_market ? MARKET : POLITICAL
 		if (!G.action_points_eligible[type] ) {
 			if (type === ECON) {
@@ -11700,6 +11707,17 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	if (who > BRITAIN) who = 2 // Turns e.g. NONE into "both"
 	G.log_box.push({ "type": type, "who": who })
 	log("{" + who + type + header)
+}
+
+
+function is_log_box(type = 0)
+{
+	if (type === 0) return !!G.log_box
+	if (!G.log_box) return false
+	for (const box of G.log_box) {
+		if (box.type === type) return true
+	}
+	return false
 }
 
 function log_box_end(type = 0) {
