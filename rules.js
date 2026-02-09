@@ -2642,7 +2642,7 @@ P.ask_about_huguenots = {
 
 // Player needs to flip a hidden ministry to qualify for what he wants to do. Give him the choice...
 // "optional" means the player could still execute the action (perhaps more expensively) without it, so a "Don't Reveal" option is given; otherwise must either Reveal or Undo
-function require_ministry(who, m, why, optional = false, prompt_to_exhaust = false)
+function require_ministry(who, m, why, optional = false, prompt_to_exhaust = false, leave_log_box_open = false)
 {
 	// True if the player (now) has the requested/required ministry revealed and thus active
 	G.has_required_ministry = undefined
@@ -2673,18 +2673,21 @@ function require_ministry(who, m, why, optional = false, prompt_to_exhaust = fal
 	// True if, finding the ministry already revealed, we should prompt the player whether he wants to exhaust the ministry now
 	G.ministry_prompt_to_exhaust = prompt_to_exhaust
 
+	// True if, after opening a log box when revealing and/or exhausting a minister, it should be left open
+	G.leave_log_box_open = leave_log_box_open
+
 	call ("ministry_is_required")
 }
 
 
-function require_ministry_unexhausted(who, m, why, ability = 0, optional = false, prompt_to_exhaust = false)
+function require_ministry_unexhausted(who, m, why, ability = 0, optional = false, prompt_to_exhaust = false, leave_log_box_open = false)
 {
 	if (is_ministry_exhausted(who, m, ability)) {
 		G.has_required_ministry = false
 		return
 	}
 	G.ministry_ability = ability
-	require_ministry(who, m, why, optional, prompt_to_exhaust)
+	require_ministry(who, m, why, optional, prompt_to_exhaust, leave_log_box_open)
 }
 
 
@@ -2697,7 +2700,7 @@ P.ministry_is_required = script (`
     	} else {    
     		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
     	}
-	    if (G.started_ministry_box) {
+	    if (G.started_ministry_box && !G.leave_log_box_open) {
 	    	log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
 	    	G.started_ministry_box = false
 	    }
@@ -4140,31 +4143,40 @@ function check_event_bonus_requirements(who) {
 		G.qualifies_for_bonus = has_advantage(who, MEDITERRANEAN_INTRIGUE) // "Mediterranean Intrigue"
 	}
 
-	//G.qualifies_for_bonus = true //Uncomment for testing //TODO comment back out!!!
+	//G.qualifies_for_bonus = true //Uncomment for testing if you want every event to qualify for a bonus
 }
 
 
 P.event_flow = script (`
     if (data.investments[G.played_tile].majorval > 3) {
         eval {
-        	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile", 0, false, true)
+        	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile", 0, false, true, true)
         }
         if (!G.has_required_ministry) {
         	eval { pop_undo() } 
         	return
+		} else {
+		    eval {
+			    log_box_ministry(R, MARQUIS_DE_CONDORCET) // Start a box if it didn't already get started above
+	       		log("Used to play event with a non-event Investment Tile")
+				log_box_end(LOG_BOX_MINISTRY)		    
+			}
 		}
     }
 
     if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
-        	if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
+        	if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) { // Up here we're coming in from a ministry flow, having / clicked on Bank of England
         	    log_box_ministry(R, BANK_OF_ENGLAND)
         		exhaust_ministry(R, BANK_OF_ENGLAND, 1)
         		log("Used to play economic event without [@0] major action.")
         		G.has_required_ministry = true
         		log_box_end(LOG_BOX_MINISTRY)
             } else {
-        		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true)
+        		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true, true)
+			    log_box_ministry(R, MARQUIS_DE_CONDORCET) // Start a box if it didn't already get started above
+	       		log("Used to play economic event without [@0] major action.")
+				log_box_end(LOG_BOX_MINISTRY)		            		
         	}
         }
         if (!G.has_required_ministry) {
@@ -7104,7 +7116,7 @@ P.confirm_reveal_ministry = {
 	},
 	reveal_ministry() {
 		push_undo()
-		if (G.ministry_manually_clicked && !is_log_box(LOG_BOX_MINISTRY)) {
+		if (!is_log_box(LOG_BOX_MINISTRY)) {
 			log_box_ministry(R, G.ministry_id) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
 			G.started_ministry_box = true
 		}
@@ -7119,7 +7131,7 @@ P.confirm_reveal_ministry = {
 	},
 	exhaust_ministry() {
 		push_undo()
-		if (G.ministry_manually_clicked && !is_log_box(LOG_BOX_MINISTRY)) {
+		if (!is_log_box(LOG_BOX_MINISTRY)) {
 			log_box_ministry(R, G.ministry_id)
 			G.started_ministry_box = true
 		}
@@ -9709,37 +9721,43 @@ P.space_flow = script(`
     }
     
     if ((G.action_type === DIPLO) && !data.spaces[G.active_space].prestige) {
-    	eval { require_ministry_unexhausted(R, PITT_THE_ELDER, "To gain a diplomatic point usable for shifting non-Prestige political spaces", 0, true, true) }
+    	eval { require_ministry_unexhausted(R, PITT_THE_ELDER, "To gain a diplomatic point usable for shifting non-Prestige political spaces", 0, true, true, true) }
     	if (G.has_required_ministry) {
     		eval { 
+    			log_box_ministry(BRITAIN, PITT_THE_ELDER)
     			exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0)
     			add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
     			G.action_points_available_now++
+    			log_box_end(LOG_BOX_MINISTRY)
     		} 
     	}
     }
     
     if ((G.action_type === DIPLO) && [ SCOTLAND_1, SCOTLAND_2, IRELAND_1, IRELAND_2 ].includes(G.active_space)) {
-    	eval { require_ministry_unexhausted(R, PAPACY_HANOVER_NEGOTIATIONS, "To gain 2 diplomatic points usable for shifting spaces in Scotland and Ireland", 0, true, true) }
+    	eval { require_ministry_unexhausted(R, PAPACY_HANOVER_NEGOTIATIONS, "To gain 2 diplomatic points usable for shifting spaces in Scotland and Ireland", 0, true, true, true) }
     	if (G.has_required_ministry) {
     		eval { 
+    			log_box_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS)
     			exhaust_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS, 0)
     			add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
     			G.action_points_available_now += 2
+    			log_box_end(LOG_BOX_MINISTRY)
     		}
     	}
     }
      
     if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) { 
-    	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true) }
+    	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true, false, true) }
     	if (G.has_required_ministry && !is_ministry_exhausted(R, EDMUND_BURKE)) {
     		eval {
-    			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+    			log_box_ministry(R, EDMUND_BURKE)
     			exhaust_ministry(R, EDMUND_BURKE)
+    			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
     			G.action_points_available_now += potential_burke_points(G.active)
     			if (G.action_points_minor[DIPLO] > 0) {
     			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.action_points_minor[DIPLO]) // Burke points don't combine with minor action points
     			}
+    			log_box_end(LOG_BOX_MINISTRY)
     		}
     	}
     }
@@ -11741,6 +11759,7 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 
 
 function log_box_ministry(who, m) {
+	if (is_log_box(LOG_BOX_MINISTRY)) return
 	log_box_begin(who, say_ministry(m, who), LOG_BOX_MINISTRY)
 }
 
