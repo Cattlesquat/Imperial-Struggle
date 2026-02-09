@@ -1434,7 +1434,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 		if (has_advantage(FRANCE, a) && has_active_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
-			log_box_begin(FRANCE, say_ministry(POMPADOUR_AND_DU_BARRY, FRANCE), LOG_BOX_MINISTRY)
+			log_box_ministry(FRANCE, POMPADOUR_AND_DU_BARRY)
 			log ("France gains " + say_spending("one treaty point", FRANCE) + ".")
 			log_box_end(LOG_BOX_MINISTRY)
 		}
@@ -1443,7 +1443,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 	if (has_advantage(FRANCE, a) && has_active_ministry(BRITAIN, JAMES_WATT) && !is_ministry_exhausted(BRITAIN, JAMES_WATT)) {
 		exhaust_ministry(BRITAIN, JAMES_WATT, 0, true)
 		G.treaty_points[BRITAIN]++
-		log_box_begin(BRITAIN, say_ministry(JAMES_WATT, BRITAIN), LOG_BOX_MINISTRY)
+		log_box_ministry(BRITAIN, JAMES_WATT)
 		log ("Britain gaines " + say_spending("one treaty point", BRITAIN) + ".")
 		log_box_end(LOG_BOX_MINISTRY)
 	}
@@ -2898,7 +2898,7 @@ P.resolve_remaining_powers = function () {
 				announced = true
 				log("=Resolve Remaining Powers Phase")
 			}
-			log_box_begin(FRANCE, say_ministry(JOHN_LAW, FRANCE), LOG_BOX_MINISTRY)
+			log_box_ministry(FRANCE, JOHN_LAW)
 			log(bold(say_spending("French debt", FRANCE) + " reduced by " + debt_reduction + "."))
 			log_box_end(LOG_BOX_MINISTRY)
 		}
@@ -3107,7 +3107,7 @@ P.scoring_phase = function () {
 	G.scoring_demand_trp  = []
 	G.scoring_demand_debt = []
 
-	// Prestige awards are sort notionally done alongside the Europe award, so we go first with that.
+	// Prestige awards are notionally done alongside the Europe award, so we go first with that.
 	let winner = prestige_winner()
 	if (winner !== NONE) {
 		log_box_begin(winner, "Scoring: PRESTIGE" + "\n" + data.flags[winner].name + " +" + prestige_flag_delta() + " flags")
@@ -6951,7 +6951,7 @@ P.ministry_flow = script (`
     }
     
     eval { 
-    	if (!G.log_box) log_box_begin(G.active, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) 
+    	if (!G.log_box) log_box_ministry(G.active, G.ministry_id) 
     }
     
     if (G.ministry_revealed[R][G.ministry_index]) {
@@ -7095,7 +7095,7 @@ P.confirm_reveal_ministry = {
 	reveal_ministry() {
 		push_undo()
 		if (G.ministry_manually_clicked && !G.log_box) {
-			log_box_begin(R, say_ministry(G.ministry_id, R, false), LOG_BOX_MINISTRY) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
+			log_box_ministry(R, G.ministry_id) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
 		}
 		reveal_ministry(R, G.ministry_index)
 		if (G.ministry_prompt_to_exhaust) exhaust_ministry(R, G.ministry_id, G.ministry_ability)
@@ -7592,7 +7592,7 @@ P.ministry_papacy_hanover_negotiations = {
 	},
 	done() {
 		push_undo()
-		log_box_begin(R, say_ministry(PAPACY_HANOVER_NEGOTIATIONS), LOG_BOX_MINISTRY)
+		log_box_ministry(R, PAPACY_HANOVER_NEGOTIATIONS)
 		exhaust_ministry(R, PAPACY_HANOVER_NEGOTIATIONS)
 		add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
 		log_box_end(LOG_BOX_MINISTRY)
@@ -7624,7 +7624,7 @@ P.ministry_townshend_acts = {
 
 function apply_townshend_acts(d)
 {
-	log_box_begin(BRITAIN, say_ministry(TOWNSHEND_ACTS, BRITAIN), LOG_BOX_MINISTRY)
+	log_box_ministry(BRITAIN, TOWNSHEND_ACTS)
 	exhaust_ministry(BRITAIN, TOWNSHEND_ACTS)
 	G.townshend_acts = d
 	log ("Britain applies " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
@@ -8542,7 +8542,7 @@ P.construct_squadron_flow = script(`
         	eval { 
         		G.action_cost = (L.info.ability !== undefined) ? 0 : 2
         		L.flipped_something  = true
-        		log_box_begin(R, say_ministry(L.info.ministry, R), LOG_BOX_MINISTRY)        		
+        		log_box_ministry(R, L.info.ministry)
         		exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
        			log(say_ministry(L.info.ministry, R) + " reduces squadron construction cost by 2.")
        			log_box_end(LOG_BOX_MINISTRY)
@@ -8986,7 +8986,7 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 function use_choiseul()
 {
 	G.action_points_committed_bonus[MIL]++
-	log_box_begin(FRANCE, say_ministry(CHOISEUL, FRANCE), LOG_BOX_MINISTRY)
+	log_box_ministry(FRANCE, CHOISEUL)
 	log ("France receives 1 extra " + say_action_points(1, MIL) + " (usable for deploying squadrons or buying bonus war tiles.")
 	log_box_end(LOG_BOX_MINISTRY)
 }
@@ -9417,7 +9417,7 @@ function reflag_space(s, who, silent = false) {
 		if (has_active_ministry(who, EDMUND_BURKE) && [IRELAND_1, IRELAND_2].includes(s)) {
 			if (is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, active_rules())) {
 				add_contingent(DIPLO, 1, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
-				exhaust_ministry(who, EDMUND_BURKE) // but we don't *check* exhaustion before allowing here, because he's allowed to gain strength on the fly
+				exhaust_ministry(who, EDMUND_BURKE, 0, true) // but we don't *check* exhaustion before allowing here, because he's allowed to gain strength on the fly
 			}
 		}
 	}
@@ -10096,7 +10096,7 @@ P.confirm_spend_debt_or_trps = {
 	paydebt() {
 		push_undo()
 		if (can_merchant_bank()) {
-			log_box_begin(R, say_ministry(MERCHANT_BANKS, R), LOG_BOX_MINISTRY)
+			log_box_ministry(R, MERCHANT_BANKS)
 			log("Britain ignores a point of debt spent for an [@0].")
 			log_box_end(LOG_BOX_MINISTRY)
 			if (!is_ministry_exhausted(R, MERCHANT_BANKS, 0)) {
@@ -11707,6 +11707,11 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	if (who > BRITAIN) who = 2 // Turns e.g. NONE into "both"
 	G.log_box.push({ "type": type, "who": who })
 	log("{" + who + type + header)
+}
+
+
+function log_box_ministry(who, m) {
+	log_box_begin(who, say_ministry(m, who), LOG_BOX_MINISTRY)
 }
 
 
