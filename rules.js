@@ -2689,6 +2689,7 @@ function require_ministry_unexhausted(who, m, why, ability = 0, optional = false
 
 
 P.ministry_is_required = script (`
+    eval { G.started_ministry_box = false }
     call confirm_reveal_ministry
     eval {
     	if (G.ministry_prompt_to_exhaust && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
@@ -2696,7 +2697,10 @@ P.ministry_is_required = script (`
     	} else {    
     		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index]
     	}
-	    log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
+	    if (G.started_ministry_box) {
+	    	log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
+	    	G.started_ministry_box = false
+	    }
     }
 `)
 
@@ -3897,8 +3901,10 @@ function selected_a_tile(tile)
 		if (action_points_eligible_major[DIPLO]) {
 			let points = burke_points(G.active)
 			if (points > 0) {
+				log_box_ministry(G.active, EDMUND_BURKE)
 				add_contingent(DIPLO, points, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 				exhaust_ministry(G.active, EDMUND_BURKE)
+				log_box_end(LOG_BOX_MINISTRY)
 			}
 		}
 	}
@@ -4152,8 +4158,11 @@ P.event_flow = script (`
     if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
         eval {
         	if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
+        	    log_box_ministry(R, BANK_OF_ENGLAND)
         		exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+        		log("Used to play economic event without [@0] major action.")
         		G.has_required_ministry = true
+        		log_box_end(LOG_BOX_MINISTRY)
             } else {
         		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true)
         	}
@@ -6943,6 +6952,7 @@ function handle_ministry_card_click(m)
 
 P.ministry_flow = script (`	
     if (!G.ministry_revealed[R][G.ministry_index]) {
+        eval { G.started_ministry_box = false }
     	call confirm_reveal_ministry
     	eval { G.just_revealed = true }
     	if (G.ministry_manually_clicked && !ministry_useful_this_phase(G.ministry_id, G.action_round_subphase)) {
@@ -6951,7 +6961,7 @@ P.ministry_flow = script (`
     }
     
     eval { 
-    	if (!G.log_box) log_box_ministry(G.active, G.ministry_id) 
+    	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id) 
     }
     
     if (G.ministry_revealed[R][G.ministry_index]) {
@@ -7094,8 +7104,9 @@ P.confirm_reveal_ministry = {
 	},
 	reveal_ministry() {
 		push_undo()
-		if (G.ministry_manually_clicked && !G.log_box) {
+		if (G.ministry_manually_clicked && !is_log_box(LOG_BOX_MINISTRY)) {
 			log_box_ministry(R, G.ministry_id) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
+			G.started_ministry_box = true
 		}
 		reveal_ministry(R, G.ministry_index)
 		if (G.ministry_prompt_to_exhaust) exhaust_ministry(R, G.ministry_id, G.ministry_ability)
@@ -7108,6 +7119,10 @@ P.confirm_reveal_ministry = {
 	},
 	exhaust_ministry() {
 		push_undo()
+		if (G.ministry_manually_clicked && !is_log_box(LOG_BOX_MINISTRY)) {
+			log_box_ministry(R, G.ministry_id)
+			G.started_ministry_box = true
+		}
 		exhaust_ministry(R, G.ministry_id, G.ministry_ability)
 		G.has_required_ministry = true
 		end()
@@ -7170,6 +7185,7 @@ P.ministry_robert_walpole = {
     draw_event() {
 		clear_undo() // Because we're drawing a new event card
 
+		log_box_ministry(R, ROBERT_WALPOLE)
 		exhaust_ministry(R, ROBERT_WALPOLE)
 
 		if (G.deck.length === 0) {
@@ -7185,15 +7201,15 @@ P.ministry_robert_walpole = {
 			log (data.flags[R].name + " draws new event card")
 		} else {
 			log ("Event deck is EMPTY. Cannot an draw event card.")
+			end()
 		}
-
-		// No end() - we stay in this state. I think that's okay?
 	},
 	event_card(c) {
 		log (data.flags[R].name + " discards event: E" + c)
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
 		G.discard_pile.push(c)
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
@@ -7226,11 +7242,13 @@ P.ministry_bank_of_england = {
 	},
 	increase_debt_limit() {
 		push_undo()
+		log_box_ministry(R, BANK_OF_ENGLAND)
 		exhaust_ministry(R, BANK_OF_ENGLAND)
 		G.debt_limit[R]++
 		log_br()
 		log(bold(data.flags[R].name + " Debt Limit +1"))
 		log_br()
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	play_event() {
@@ -7278,6 +7296,7 @@ P.ministry_edmond_halley = {
 	},
 	event_card(c) {
 		push_undo()
+		log_box_ministry(R, EDMOND_HALLEY)
 		exhaust_ministry(R, EDMOND_HALLEY,1)
 
 		// Discard the old card
@@ -7287,6 +7306,7 @@ P.ministry_edmond_halley = {
 
 		G.treaty_points[R]++
 		log (data.flags[R].name + " gains " + say_spending("1 Treaty Point", R))
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
@@ -7303,6 +7323,7 @@ function cardinal_ministers_value()
 
 
 function use_cardinal_ministers() {
+	log_box_begin(R, THE_CARDINAL_MINISTERS)
 	exhaust_ministry(R, THE_CARDINAL_MINISTERS)
 
 	if (G.action_points_major[DIPLO] > 0) {
@@ -7311,6 +7332,7 @@ function use_cardinal_ministers() {
 		G.action_points_minor[DIPLO] += cardinal_ministers_value()
 	}
 	log (bold(data.flags[FRANCE].name + " gains " + say_action_points(cardinal_ministers_value(), DIPLO) + ((G.action_points_major[DIPLO] <= 0) ? " (Minor)" : "")))
+	log_box_end(LOG_BOX_MINISTRY)
 }
 
 
@@ -7357,9 +7379,11 @@ P.ministry_new_world_huguenots = {
 	},
 	space(s) {
 		push_undo()
+		log_box_ministry(R, NEW_WORLD_HUGUENOTS)
 		exhaust_ministry(R, NEW_WORLD_HUGUENOTS)
 		add_huguenots(s)
 		log (bold("Huguenots added at " + say_space(s, FRANCE)))
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 }
@@ -7509,8 +7533,10 @@ P.ministry_pitt_the_elder = {
 	},
 	diplomatic_point() {
 		push_undo()
+		log_box_ministry(R, PITT_THE_ELDER)
 		exhaust_ministry(R, PITT_THE_ELDER, 0)
 		add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
@@ -7533,9 +7559,11 @@ P.ministry_charles_hanbury_williams = {
 	},
 	unflag_discount() {
 		push_undo()
+		log_box_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		exhaust_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		set_transient(R, TRANSIENT_CHARLES_HANBURY_WILLIAMS)
 		log (say_ministry(CHARLES_HANBURY_WILLIAMS) + " reduces the cost to unflag French-flagged spaces in Prussia, German States, and Russia for the rest of the action round.")
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
@@ -7564,8 +7592,10 @@ P.ministry_choiseul = {
 	},
 	military_point() {
 		push_undo()
-		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
+		log_box_ministry(R, CHOISEUL)
 		exhaust_ministry(R, CHOISEUL, 0)
+		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
+		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
 	pass() {
