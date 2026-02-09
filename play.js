@@ -647,7 +647,7 @@ function set_available_debt_tooltips() {
 }
 
 
-var Whole
+var Whole //BR// Hack to let me scroll to this specific element
 
 function on_init() {
 	var i, a, s, x, y, w, h, lout
