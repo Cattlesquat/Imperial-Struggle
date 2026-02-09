@@ -634,6 +634,9 @@ function set_available_debt_tooltips() {
 		world.status.innerHTML = ""
 	})
 
+	roles[FRANCE].stat.addEventListener("click", function () { scroll_to_debt() })
+	roles[BRITAIN].stat.addEventListener("click", function () { scroll_to_debt() })
+
 	id = roles[BRITAIN].stat.my_id
 	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(BRITAIN)
@@ -643,6 +646,8 @@ function set_available_debt_tooltips() {
 	})
 }
 
+
+var Whole
 
 function on_init() {
 	var i, a, s, x, y, w, h, lout
@@ -775,6 +780,10 @@ function on_init() {
 			}
 		}
 	}
+
+	let whole_track_rect = [ 2084, 1242, 413, 417 ]
+	Whole = define_layout("general-track-whole", 0, whole_track_rect)
+	Whole.element.style.setProperty("pointer-events", "none")
 
 	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
 		define_stack("general-track", i,
@@ -1193,6 +1202,11 @@ function scroll_to_war() {
 
 function scroll_to_map() {
 	scroll_into_view(document.getElementById("top"))
+}
+
+function scroll_to_debt()
+{
+	scroll_into_view(Whole.element)
 }
 
 function scroll_to_cards() {
@@ -2629,6 +2643,12 @@ window.addEventListener("keydown", function (evt) {
 		case "c":
 		case "C":
 			scroll_to_cards()
+			evt.preventDefault()
+			break
+
+		case "d":
+		case "D":
+			scroll_to_debt()
 			evt.preventDefault()
 			break
 
