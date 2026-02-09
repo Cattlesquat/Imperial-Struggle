@@ -350,15 +350,15 @@ function say_event_effect(label, effect, bonus) {
 
 	let text = ""
 	if (label !== "") {
-		text += label
+		text += escape_square_brackets(label)
 		text += ": "
 	}
 	if (effect !== "") {
-		text += effect
+		text += escape_square_brackets(effect)
 	}
 
 	if (bonus !== "") {
-		text += italic(" (" + bonus + ")")
+		text += italic(" (" + escape_square_brackets(bonus) + ")")
 	}
 
 	return text
@@ -406,14 +406,14 @@ function ministry_tooltip(m, who) {
 	}
 
 	msg += ": "
-	msg += data.ministries[m].effect
+	msg += escape_square_brackets(data.ministries[m].effect)
 
 	return msg
 }
 
 
 function advantage_tooltip(a) {
-	let msg = bold(data.advantages[a].name) + ": " + italic(data.advantages[a].desc + ".")
+	let msg = bold(data.advantages[a].name) + ": " + italic(escape_square_brackets(data.advantages[a].desc) + ".")
 
 	if (is_advantage_exhausted(a)) {
 		msg += bold(" EXHAUSTED")
