@@ -178,12 +178,21 @@ body.Britain #events_br { grid-row: 2 }
 	--both-advantage: hsl(0, 0%, 75%);
 	--both-advantage-header: hsl(0, 0%, 65%);
 
-	--fr-misc: hsl(206, 85%, 90%);
-	--fr-misc-header: hsl(206, 85%, 85%);
-	--br-misc: hsl(355, 70%, 90%);
-	--br-misc-header: hsl(355, 70%, 85%);
-	--both-misc: hsl(0, 0%, 88%);
-	--both-misc-header: hsl(0, 0%, 80%);
+    --fr-misc: hsl(206, 85%, 80%);
+    --fr-misc-header: hsl(206, 85%, 70%);
+    --br-misc: hsl(355, 70%, 80%);
+    --br-misc-header: hsl(355, 70%, 70%);
+    --both-misc: hsl(0, 0%, 88%);
+    --both-misc-header: hsl(0, 0%, 80%);
+
+    /*
+    --fr-misc: hsl(206, 85%, 90%);
+    --fr-misc-header: hsl(206, 85%, 85%);
+    --br-misc: hsl(355, 70%, 90%);
+    --br-misc-header: hsl(355, 70%, 85%);
+    --both-misc: hsl(0, 0%, 88%);
+    --both-misc-header: hsl(0, 0%, 80%);
+     */
 }
 
 /* Ministry boxes */
