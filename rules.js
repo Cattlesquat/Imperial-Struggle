@@ -2078,7 +2078,7 @@ P.award_phase = function () {
 	for (var i = 0; i < NUM_REGIONS; i++) {
 		var chit = G.award_chits.pop()
 		G.awards[i] = chit
-		log(say_award_tile(data.regions[i].name + " -> " + data.awards[chit].name, chit))
+		log(data.regions[i].name + " -> " + say_award_tile(data.awards[chit].name, chit))
 	}
 
 	review_push ("AWARD PHASE")
