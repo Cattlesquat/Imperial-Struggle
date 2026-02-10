@@ -1922,6 +1922,12 @@ div[data-tooltip]:after {
 
 
 @media (max-width: 800px) {
+    /* Other modules had this, but it was wrecking the IS side-by-side panels
+    .panel {
+        min-width: calc(1650px - 8px);
+    }
+    */
+
     #tip {
         top: 0;
         left: 0;
@@ -1930,12 +1936,7 @@ div[data-tooltip]:after {
         inset: 0;
         margin: auto;
     }
-}
 
-@media (max-width: 800px) {
-    .panel {
-        min-width: calc(1650px - 8px);
-    }
     #tooltip {
         inset: 0;
         margin: auto;
