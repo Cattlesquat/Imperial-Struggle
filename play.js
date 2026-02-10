@@ -2120,7 +2120,6 @@ function _tip_blur_spending() {
 
 function _tip_focus_award(a, who)
 {
-	console.log ("Focus award: " + a)
 	world.tip.setAttribute("class", "square-sm marker award a" + a)
 	position_tip_image()
 	world.tip.hidden = is_mobile()
@@ -2128,7 +2127,6 @@ function _tip_focus_award(a, who)
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		if (V.awards[region] === a) {
 			world.status.innerHTML = award_tooltip(region)
-			console.log ("Found region: " + region)
 		}
 	}
 }
