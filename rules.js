@@ -5272,6 +5272,7 @@ P.do_military_spending_overruns = {
 
 			log (say_navy_box())
 		}
+		if (L.removals_done < L.removals_required) log_br()
 	},
 	bonus_war(t) {
 		push_undo()
