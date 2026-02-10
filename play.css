@@ -1920,9 +1920,14 @@ div[data-tooltip]:after {
     hidden: false;
 }
 
-.in-the-log {
+.award-in-log {
     display: inline-block;
     margin: 20px 20px 20px 20px;
+}
+
+.demand-in-log {
+    display: inline-block;
+    margin: 8px 8px 8px 8px;
 }
 
 .region {
