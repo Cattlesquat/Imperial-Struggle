@@ -2071,11 +2071,38 @@ P.award_phase = function () {
 	}
 
 	// Deal one per region
+	let wrap = 0
+	let msg = "<div style=\"display: flex; justify-content: center;\">"
+	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
+		var chit = G.award_chits.pop()
+		G.awards[region] = chit
+		msg += `<span class="a${chit} award marker black square-sm in-the-log" style="pointer-events: auto;"                  
+				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+				onmouseleave="_tip_blur_award()"
+				onmousedown="_tip_click_light('award',${chit})"
+				><span class="region r${region}">${data.regions[region].name}</span></span>`
+		if (++wrap >= 2) {
+			wrap = 0
+			msg += "</div>"
+			msg += "<div style=\"display: flex; justify-content: center;\">"
+		}
+	}
+	msg += "</div>"
+	console.log(msg)
+	log(msg)
+
+	//for (var i = 0; i < NUM_REGIONS; i++) {
+	//	var chit = G.awards[i]
+	//	log(data.regions[i].name + " -> " + say_award_tile(data.awards[chit].name, chit))
+	//}
+
+	/*
 	for (var i = 0; i < NUM_REGIONS; i++) {
 		var chit = G.award_chits.pop()
 		G.awards[i] = chit
 		log(data.regions[i].name + " -> " + say_award_tile(data.awards[chit].name, chit))
 	}
+	*/
 
 	review_push ("AWARD PHASE")
 	end()
@@ -2097,7 +2124,7 @@ P.global_demand_phase = function () {
 	let msg = "<div style=\"display: flex; justify-content: center;\">"
 	for (var i = 0; i < 3; i++) {
 		var chit = global_demand_chits.pop()
-		msg += `<span class=\"${data.demands[chit].name.toLowerCase()}\ demand marker square-sm" style="display: inline-block; margin: 4px 4px 4px 4px;"
+		msg += `<span class="${data.demands[chit].name.toLowerCase()} demand marker square-sm" style="display: inline-block; margin: 4px 4px 4px 4px;"
           onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
 		  onmouseleave="_tip_blur_demand()"
 		  onmousedown="_tip_click_light('demand',${chit})"
