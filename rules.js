@@ -10287,7 +10287,7 @@ P.action_round_core = {
 			left += G.action_points_major[i] + G.action_points_minor[i]
 		}
 
-		//Maybe here "for visibility", or probably better click just the tile you're upgrading on your war sheet (and have warning if you try to end w/o doing it, so you then you remember to go look)
+		// If we've spent all our action points but still haven't taken an eligible military upgrade, add the top-row button as a hint
 		if (G.military_upgrade) {
 			if (!left) button("military_upgrade") // Only show special button if we're out of anything else to do
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
@@ -10297,6 +10297,18 @@ P.action_round_core = {
 			}
 		}
 
+		// Decide whether to remind about unused advantages
+		let still_advantages = false
+		for (let a = 0; a < NUM_ADVANTAGES; a++) {
+			if (!has_advantage_eligible(R, a)) continue
+
+			// These are the advantages that can generally be used even after spending all one's action points
+			if (![BALTIC_TRADE, CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) continue
+
+			still_advantages = true
+			break
+		}
+
 		// *Possibly* let you click debt/TRP counters to directly spend some in advance of an action
 		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
 		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
@@ -10304,7 +10316,7 @@ P.action_round_core = {
 		if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {
 			button("confirm_pass_to_reduce_debt")
 		} else {
-			button((left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : "end_action_round")
+			button((left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : still_advantages ? "confirm_end_action_round_2" : "end_action_round")
 		}
 	},
 	military_upgrade() {
@@ -10358,6 +10370,9 @@ P.action_round_core = {
 		end()
 	},
 	confirm_end_action_round() {
+		this.end_action_round()
+	},
+	confirm_end_action_round_2() {
 		this.end_action_round()
 	},
 	confirm_no_military_upgrade() {

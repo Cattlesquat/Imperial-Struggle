@@ -1622,6 +1622,7 @@ function on_update() {
 	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
 
 	action_button("end_action_round", is_mobile() ? "End Round" : "End Action Round")
+	confirm_action_button("confirm_end_action_round_2", is_mobile() ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
 
 	action_button("buy_diplomatic", is_mobile() ? "Buy Diplo" : "Buy Diplomatic")
 	action_button("buy_economic", is_mobile() ? "Buy Econ" : "Buy Economic")
