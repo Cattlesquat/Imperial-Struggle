@@ -1224,10 +1224,6 @@ function on_view(RR = undefined) {
 
 	V.ministry_exhausted = G.ministry_exhausted
 
-	if ((G.ministry_exhausted === undefined) || !Array.isArray(G.ministry_exhausted[0])) {  //TODO - eventually remove (this just upgraded ancient saves)
-		V.ministry_exhausted = [ [], [] ]
-	}
-
 	V.ministry_revealed = G.ministry_revealed
 
 	V.next_war = G.next_war
@@ -2096,12 +2092,20 @@ P.global_demand_phase = function () {
 	shuffle(global_demand_chits)
 
 	G.global_demand = []
+
+	// Messily (from the point of view of this code), but beautifully (in terms of the result), display the newly drawn global demand chits in the log
+	let msg = "<div style=\"display: flex; justify-content: center;\">"
 	for (var i = 0; i < 3; i++) {
 		var chit = global_demand_chits.pop()
-		log(say_demand(chit))
-		//log(data.demands[chit].name)
+		msg += `<span class=\"${data.demands[chit].name.toLowerCase()}\ demand marker square-sm" style="display: inline-block; margin: 4px 4px 4px 4px;"
+          onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
+		  onmouseleave="_tip_blur_demand()"
+		  onmousedown="_tip_click_light('demand',${chit})"
+        ></span>`
 		G.global_demand.push(chit)
 	}
+	msg += "</div>"
+	log(msg)
 	review_push ("GLOBAL DEMAND PHASE")
 	end()
 }
@@ -2713,11 +2717,7 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	if (Array.isArray(G.ministry_exhausted[0])) {
-		return set_has(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
-	} else {
-		G.ministry_exhausted = [ [], [] ] // TODO: this whole if statement can eventually just be replaced by the return set_has...
-	}
+	return set_has(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 }
 
 function is_ministry_fully_exhausted(who, m)
@@ -2743,9 +2743,6 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	if (!G.ministry[who].includes(m)) return
 	if (is_ministry_exhausted(who, m, ability)) return
 	var idx = G.ministry[who].indexOf(m)
-	if (!Array.isArray(G.ministry_exhausted[0])) {
-		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed (just upgrades ancient pre-launch saves)
-	}
 
 	set_add(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 
@@ -2767,10 +2764,6 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
-
-	if (!Array.isArray(G.ministry_exhausted[0])) {
-		G.ministry_exhausted = [ [], [] ] // TODO: this whole if block can eventually be removed
-	}
 
 	set_delete(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 }
@@ -4384,8 +4377,6 @@ P.event_acts_of_union = {
 			}
 		} else {
 			add_action_points(DIPLO, 2)
-			add_action_points(MIL, 2) //TODO Take out
-			add_action_points(ECON, 2)
 		}
 	},
 	inactive: "play an Event",
@@ -6059,7 +6050,7 @@ P.event_war_of_the_quadruple_alliance = {
 			L.picked_squadron = true
 			G.the_brig++
 			log("British squadron at " + say_space(s, BRITAIN) + " removed (will return next peace turn).")
-			validate_squadrons("QUADRUPLE MAP") //TODO: remove
+			validate_squadrons("QUADRUPLE MAP")
 			award_vp(BRITAIN, 2)
 			if (quadruple_alliance_british_bonus()) end()
 		} else {
@@ -6074,7 +6065,7 @@ P.event_war_of_the_quadruple_alliance = {
 		move_squadron_token(BRITAIN, SPACE_NAVY_BOX, SPACE_THE_BRIG)
 		G.navy_box[BRITAIN]--
 		G.the_brig++
-		validate_squadrons("QUADRUPLE NAVY BOX") //TODO: remove
+		validate_squadrons("QUADRUPLE NAVY BOX")
 		log("British squadron removed from Navy Box (will return next peace turn).")
 		log(say_navy_box())
 		award_vp(BRITAIN, 2)
@@ -9602,7 +9593,7 @@ function handle_space_click(s, force_type = -1)
 		}
 	}
 
-	//TODO - ministries and stuff that might give discounts
+	//Ministries that might give discounts
 
 	G.needs_to_flip_ministry = -1
 	if ((G.action_type === DIPLO) && [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ].includes(s) && (G.flags[s] === NONE)) {
