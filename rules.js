@@ -2088,7 +2088,6 @@ P.award_phase = function () {
 		}
 	}
 	msg += "</div>"
-	console.log(msg)
 	log(msg)
 
 	/*
