@@ -95,7 +95,7 @@ const war_layout = {
 	// WAS - Alliances
 	war_was_theater_1_alliances: [500, 122, 50, 152],
 	war_was_theater_2_alliances: [1022, 142, 50, 152],
-	war_was_theater_3_alliances: [500, 472, 50, 152],
+	war_was_theater_3_alliances: [500, 471, 50, 152],
 	war_was_theater_4_alliances: [1022, 445, 50, 152], 
 
 	// 7YW - Strength
