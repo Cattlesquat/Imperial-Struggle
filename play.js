@@ -438,7 +438,7 @@ function investment_tooltip(i)
 {
 	let msg = bold("Investment Tile: ") + data.investments[i].name
 	if (V.used_investments.includes(i)) {
-		msg += "(Used on previous turn)"
+		msg += " (Used on previous turn)"
 	} else {
 		let avail = true
 		for (let whom = FRANCE; whom <= BRITAIN; whom++) {
