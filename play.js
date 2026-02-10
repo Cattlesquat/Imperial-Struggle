@@ -505,6 +505,10 @@ function initiative_tooltip(who) {
 	return bold("Initiative: ") + data.flags[who].name
 }
 
+function townshend_tooltip(who) {
+	return bold("Townshend Acts") + " " + italic(parens(data.demands[V.townshend_acts].name)) + ": British minor action can be used to unflag this demand's markets."
+}
+
 function jacobite_victory_tooltip() {
 	return bold("Jacobite Victory: ") + "+1 VP when using Jacobite Uprisings ministry."
 }
@@ -869,6 +873,8 @@ function on_init() {
 	define_marker("treaty-points", BRITAIN, "square-sm treaty-points-br").tooltip(treaty_points_tooltip)
 	define_marker("initiative", FRANCE, "square-sm initiative-fr").tooltip(initiative_tooltip)
 	define_marker("initiative", BRITAIN, "square-sm initiative-br").tooltip(initiative_tooltip)
+
+	define_marker("townshend-acts", undefined, "square-sm townshend_acts").tooltip(townshend_tooltip)
 
 	define_stack("stack-deal", undefined, find_layout_node("Deal Tiles"))
 
@@ -1340,6 +1346,39 @@ function on_update() {
 	update_text_html("award-winner-prestige-right", 0, prestige_html_right)
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
+
+	if (V.townshend_acts >= 0) {
+		let demand_tiles = document.querySelector(".layout.lout-demand").firstElementChild
+		let index = V.global_demand.indexOf(V.townshend_acts)
+		if (index >= 0) {
+			for (let skip = 0; skip < index; skip++) {
+				demand_tiles = demand_tiles.nextElementSibling
+			}
+			let marker = lookup_thing("townshend-acts", undefined)
+			demand_tiles.appendChild(marker.element)
+			switch (index) {
+				case 0:
+					marker.element.style.cssText = "margin-top: -40px; margin-left: -40px"
+					break
+				case 1:
+					marker.element.style.cssText = "margin-top: -40px; margin-left: -2px"
+					break
+				case 2:
+					if (V.global_demand.length === 3) {
+						marker.element.style.cssText = "margin-top: -40px; margin-left: 36px"
+					} else {
+						marker.element.style.cssText = "margin-top: -40px; margin-left: -2px"
+					}
+					break
+				default:
+					marker.element.style.cssText = "margin-top: -40px; margin-left: 36px"
+					break
+			}
+		}
+	} else {
+		populate("stack-deal", undefined, "townshend-acts")
+	}
+
 	for (let i = 0; i < V.global_demand.length; i++) {
 		populate("lout-demand-winner", 0, "demand-winner", i)
 		

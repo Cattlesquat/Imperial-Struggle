@@ -10455,7 +10455,15 @@ P.action_round_core = {
 	},
 	cheat_cheat() { // Whatever random debug code I want to inject right now
 		push_undo()
-		G.turn = (G.turn + 1) % 10
+		if (G.townshend_acts === -1) {
+			G.townshend_acts = G.global_demand[0]
+		} else if (G.townshend_acts === G.global_demand[0]) {
+			G.townshend_acts = G.global_demand[1]
+		} else if (G.townshend_acts === G.global_demand[1]) {
+			G.townshend_acts = G.global_demand[2]
+		} else {
+			G.townshend_acts = -1
+		}
 	}
 }
 
