@@ -7335,7 +7335,7 @@ function cardinal_ministers_value()
 
 
 function use_cardinal_ministers() {
-	log_box_begin(R, THE_CARDINAL_MINISTERS)
+	log_box_ministry(R, THE_CARDINAL_MINISTERS)
 	exhaust_ministry(R, THE_CARDINAL_MINISTERS)
 
 	if (G.action_points_major[DIPLO] > 0) {
