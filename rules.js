@@ -10313,14 +10313,22 @@ P.action_round_core = {
 			break
 		}
 
-		// *Possibly* let you click debt/TRP counters to directly spend some in advance of an action
-		// if (G.debt[R] < G.debt_limit[R]) button ("Spend Debt")
-		// if (G.treaty_points[R] > 0) button ("Spend Treaty Points")
+		let still_bank = (G.round === 4) && has_ministry(R, BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0)
+		let still_halley = (G.round === 4) && has_ministry(R, EDMOND_HALLEY) && !is_ministry_exhausted(R, EDMOND_HALLEY, 1) && ((G.flags[BALEARIC] === BRITAIN) || (G.flags[BISCAY] === BRITAIN)) && (G.hand[R].length > 0)
+		let still_walpole = (G.round === 4) && has_ministry(R, ROBERT_WALPOLE) && !is_ministry_exhausted(R, ROBERT_WALPOLE) && (G.hand[R].length > 0)
+		let still_huguenots = (G.round === 4) && has_ministry(R, NEW_WORLD_HUGUENOTS) && !is_ministry_exhausted(R, NEW_WORLD_HUGUENOTS)
 
 		if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {
 			button("confirm_pass_to_reduce_debt")
 		} else {
-			button((left > 0) ? "confirm_end_action_round" : G.military_upgrade ? "confirm_no_military_upgrade" : still_advantages ? "confirm_end_action_round_2" : "end_action_round")
+			button((left > 0)   ? "confirm_end_action_round" :
+					G.military_upgrade ? "confirm_no_military_upgrade" :
+					still_advantages   ? "confirm_end_action_round_2" :
+					still_bank         ? "confirm_end_action_round_bank" :
+					still_halley       ? "confirm_end_action_round_halley" :
+					still_walpole      ? "confirm_end_action_round_walpole" :
+					still_huguenots    ? "confirm_end_action_round_huguenots" :
+					"end_action_round")
 		}
 	},
 	military_upgrade() {
@@ -10373,6 +10381,11 @@ P.action_round_core = {
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
 	},
+	end_action_round() {
+		push_undo()
+		G.debug = "End Action Round"
+		end()
+	},
 	confirm_end_action_round() {
 		this.end_action_round()
 	},
@@ -10382,10 +10395,17 @@ P.action_round_core = {
 	confirm_no_military_upgrade() {
 		this.end_action_round()
 	},
-	end_action_round() {
-		push_undo()
-		G.debug = "End Action Round"
-		end()
+	confirm_end_action_round_bank() {
+		this.end_action_round()
+	},
+	confirm_end_action_round_halley() {
+		this.end_action_round()
+	},
+	confirm_end_action_round_walpole() {
+		this.end_action_round()
+	},
+	confirm_end_action_round_huguenots() {
+		this.end_action_round()
 	},
 	conflict(s) {
 		// Usually clicking conflict just resolves as clicking the space, but if we have military points available *and* the other type for this space then clicking the conflict is explicitly to remove the conflict and clicking the space is to take the regular flag action for the space (w/ conflict discount)

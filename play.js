@@ -1624,6 +1624,11 @@ function on_update() {
 	action_button("end_action_round", is_mobile() ? "End Round" : "End Action Round")
 	confirm_action_button("confirm_end_action_round_2", is_mobile() ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
 
+	confirm_action_button("confirm_end_action_round_bank", is_mobile() ? "End Round" : "End Action Round", "You have not used Bank of England to increase your debt limit. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_halley", is_mobile() ? "End Round" : "End Action Round", "You have not used Edmond Halley to discard an event card for a treaty point. Confirm ending your final Action Round this turn?")
+	confirm_action_button("confirm_end_action_round_walpole", is_mobile() ? "End Round" : "End Action Round", "You have not used Robert Walpole to draw/discard event cards. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_huguenots", is_mobile() ? "End Round" : "End Action Round", "You have not used New World Huguenots to place Huguenots. Confirm ending your final action round this turn?")
+
 	action_button("buy_diplomatic", is_mobile() ? "Buy Diplo" : "Buy Diplomatic")
 	action_button("buy_economic", is_mobile() ? "Buy Econ" : "Buy Economic")
 
