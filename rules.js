@@ -1252,7 +1252,7 @@ function on_view(RR = undefined) {
 
 	V.byng = G.byng ?? 0
 
-	if (V.byng > 0) V.theater_basic_war_tiles[BRITAIN][V.byng].push(BYNG)
+	if (V.byng > 0) V.theater_bonus_war_tiles[BRITAIN][V.byng].push(BYNG)
 
 	// War viewing totals exist in their own right; they are mostly not analogs to G members
 	V.theater_strength = [ [], [] ]
