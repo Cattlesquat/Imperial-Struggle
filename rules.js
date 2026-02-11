@@ -10066,6 +10066,7 @@ function do_reflag_space(repair_if_damaged = true) {
 
 	if ((G.action_type === MIL) && has_conflict_marker(G.active_space)) {
 		remove_conflict_marker(G.active_space)
+		log_br() // Leave a blank line
 		return
 	}
 
