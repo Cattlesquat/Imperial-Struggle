@@ -3079,6 +3079,46 @@ function format_prestige_info()
 	return leader + " Prestige: 2 VP"
 }
 
+
+function format_final_prestige_info()
+{
+	let winner = prestige_winner()
+	let delta = prestige_flag_delta()
+	let leader = ""
+
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
+	} else {
+		leader = "+0 Prestige: +0 VP"
+	}
+
+	return leader
+}
+
+
+
+function format_debt_info() {
+	let winner = debt_winner()
+	let delta = debt_delta()
+	let award = debt_award()
+	let leader = ""
+
+	if ((winner !== NONE)) {
+		leader = say_flag_color(winner, "+" + delta + " Available Debt: +" + award + " VP")
+	} else {
+		leader = "+0 Available Debt: +0 VP"
+	}
+
+	return leader
+}
+
+
+function format_space_info(s)
+{
+	return say_flag_color(G.flags[s], data.spaces[s].name + ": +2 VP")
+}
+
+
 function format_award_info(r, a)
 {
 	let winner = region_flag_winner(r)
@@ -3115,6 +3155,22 @@ function format_demand_info(d)
 
 	return leader + " " + msg
 }
+
+
+function format_final_demand_info(d)
+{
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta + " " + data.demands[d].name + ": +1 VP")
+	} else {
+		leader = "+0 " + data.demands[d].name
+	}
+
+	return leader
+}
+
 
 
 function format_results_info()
@@ -3288,86 +3344,41 @@ function format_final_scoring_results_info()
 	let vp = 0
 
 	let winner = prestige_winner()
-	let msg = "Prestige: "
 	if (winner !== NONE) {
-		if (winner === FRANCE) {
-			msg += escape_square_brackets("[FF+2 VP France]")
-		} else {
-			msg += escape_square_brackets("[FB+2 VP Britain]")
-		}
 		vp += ((winner === FRANCE) ? 2 : -2)
-	} else {
-		msg += "+0 VP - tied"
 	}
-
-	msg += "<br/>"
 
 	winner = debt_winner()
-	msg += "<br/>"
-	msg += "Debt: "
 	if ((winner !== NONE) && (debt_award() > 0)) {
-		if (winner === FRANCE) {
-			msg += escape_square_brackets("[FF+" + debt_award() + " VP France]")
-		} else {
-			msg += escape_square_brackets("[FB+" + debt_award() + " VP Britain]")
-		}
-
 		vp += ((winner === FRANCE) ? debt_award() : -debt_award())
-	} else {
-		msg += "+0 VP"
 	}
-
-	msg += "<br/>"
 
 	for (let d = 0; d < NUM_DEMANDS; d++) {
-		msg += "<br/>"
-		msg += data.demands[d].name + ": "
 		winner = demand_flag_winner(d)
 		if (winner !== NONE) {
-			if (winner === FRANCE) {
-				msg += escape_square_brackets("[FF+1 VP France]")
-			} else {
-				msg += escape_square_brackets("[FB+1 VP Britain]")
-			}
 			vp += ((winner === FRANCE) ? 1 : -1)
-		} else {
-			msg += "+0 VP"
 		}
 	}
 
-	msg += "<br/>"
-
-	let any = false
 	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
 		if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
-			msg += "<br/>"
-			msg += data.spaces[s].name + ": "
-			msg += escape_square_brackets("[FF+2 VP France]")
 			vp += 2
 		}
 	}
 
 	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
 		if (G.flags[s] === BRITAIN) {
-			msg += "<br/>"
-			msg += data.spaces[s].name + ": "
-			msg += escape_square_brackets("[FB+2 VP Britain]")
 			vp -= 2
 		}
 	}
 
-	msg += "<br/>"
-	msg += "<br/>"
-	msg += "NET RESULT: "
 	if (vp > 0) {
-		msg += escape_square_brackets("[FF+" + vp + " VP France]")
+		return escape_square_brackets("[FF+" + vp + " VP France]")
 	} else if (vp < 0) {
-		msg += escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
+		return escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
 	} else {
-		msg += "+0 VP"
+		return "+0 VP"
 	}
-
-	return msg
 }
 
 
@@ -3448,6 +3459,25 @@ function show_card_list(id, params) {
 			dl.appendChild(p)
 		}
 
+		let append_final_prestige = () => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
+			p.onmouseleave = () => _tip_blur_award()
+			p.innerHTML = format_final_prestige_info()
+			dl.appendChild(p)
+		}
+
+		let append_debt = () => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
+			p.onmouseleave = () => _tip_blur_award()
+			p.innerHTML = format_debt_info()
+			dl.appendChild(p)
+		}
+
+
 		let append_region = (r, a) => {
 			let p = document.createElement("dd")
 			p.className = "cardtip"
@@ -3457,12 +3487,30 @@ function show_card_list(id, params) {
 			dl.appendChild(p)
 		}
 
+		let append_space = (s) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_space(s)
+			p.onmouseleave = () => _tip_blur_space()
+			p.innerHTML = format_space_info(s)
+			dl.appendChild(p)
+		}
+
 		let append_demand = (d) => {
 			let p = document.createElement("dd")
 			p.className = "cardtip"
 			p.onmouseenter = () => _tip_focus_demand(d)
 			p.onmouseleave = () => _tip_blur_demand()
 			p.innerHTML = format_demand_info(d)
+			dl.appendChild(p)
+		}
+
+		let append_final_demand = (d) => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.onmouseenter = () => _tip_focus_demand(d)
+			p.onmouseleave = () => _tip_blur_demand()
+			p.innerHTML = format_final_demand_info(d)
 			dl.appendChild(p)
 		}
 
@@ -3583,8 +3631,46 @@ function show_card_list(id, params) {
 			append_header("Projected Results")
 			append_results()
 		} else if (id === "final_scoring_summary_dialog") {
-			console.log ("Got here")
-			append_header("Final Scoring Summary")
+
+
+			let winner = prestige_winner()
+			append_header("Prestige")
+			append_final_prestige()
+
+			append_header("Debt")
+			append_debt()
+
+			append_header("Global Demand")
+			for (let d = 0; d < NUM_DEMANDS; d++) {
+				append_final_demand(d)
+			}
+
+			let any = false
+			for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+				if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
+					if (!any) {
+						append_header("Conquests")
+						any = true
+					}
+					append_space(s)
+				}
+			}
+
+			for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+				if (G.flags[s] === BRITAIN) {
+					if (!any) {
+						append_header("Conquests")
+						any = true
+					}
+					append_space(s)
+				}
+			}
+
+			let header = document.createElement("dt")
+			header.innerHTML = "<br/>"
+			dl.appendChild(header)
+
+			append_header("Projected Results")
 			append_final_scoring_results()
 		}
 
