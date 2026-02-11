@@ -10264,7 +10264,7 @@ P.action_round_core = {
 			}
 		}
 
-		if (L.clicked_upgrade) {
+		if (L.clicked_upgrade && G.military_upgrade) {
 			if (any) prompt += ", "
 			prompt += "Select basic war tile for military upgrade"
 			any = true
