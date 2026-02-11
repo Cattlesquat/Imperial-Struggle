@@ -2071,32 +2071,13 @@ P.award_phase = function () {
 	}
 
 	// Deal one per region
-	let wrap = 0
-	let msg = "<div style=\"display: flex; justify-content: center;\">"
-	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
-		var chit = G.award_chits.pop()
+	let codes = "~a"
+	for (let region = 0; region < NUM_REGIONS; region++) {
+		let chit = G.award_chits.pop()
 		G.awards[region] = chit
-		msg += `<span class="a${chit} award marker black square-sm award-in-log" style="pointer-events: auto;"                  
-				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
-				onmouseleave="_tip_blur_award()"
-				onmousedown="_tip_click_light('award',${chit})"
-				><span class="region r${region}">${data.regions[region].name}</span></span>`
-		if (++wrap >= 2) {
-			wrap = 0
-			msg += "</div>"
-			msg += "<div style=\"display: flex; justify-content: center;\">"
-		}
+		codes += chit
 	}
-	msg += "</div>"
-	log(msg)
-
-	/*
-	for (var i = 0; i < NUM_REGIONS; i++) {
-		var chit = G.award_chits.pop()
-		G.awards[i] = chit
-		log(data.regions[i].name + " -> " + say_award_tile(data.awards[chit].name, chit))
-	}
-	*/
+	log(codes) // Displays the awards in the log
 
 	review_push ("AWARD PHASE")
 	end()
@@ -2108,25 +2089,19 @@ P.global_demand_phase = function () {
 	log("=Global Demand Phase")
 
 	var global_demand_chits = []
-	for (var i = 0; i < NUM_DEMANDS; i++)
+	for (let i = 0; i < NUM_DEMANDS; i++)
 		global_demand_chits.push(i)
 	shuffle(global_demand_chits)
 
 	G.global_demand = []
-
-	// Messily (from the point of view of this code), but beautifully (in terms of the result), display the newly drawn global demand chits in the log
-	let msg = "<div style=\"display: flex; justify-content: center;\">"
-	for (var i = 0; i < 3; i++) {
-		var chit = global_demand_chits.pop()
-		msg += `<span class="${data.demands[chit].name.toLowerCase()} demand marker square-sm demand-in-log" 
-          onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
-		  onmouseleave="_tip_blur_demand()"
-		  onmousedown="_tip_click_light('demand',${chit})"
-        ></span>`
+	let codes = "~d"
+	for (let i = 0; i < 3; i++) {
+		let chit = global_demand_chits.pop()
 		G.global_demand.push(chit)
+		codes += chit
 	}
-	msg += "</div>"
-	log(msg)
+	log(codes) // Displays the demands in the log
+
 	review_push ("GLOBAL DEMAND PHASE")
 	end()
 }

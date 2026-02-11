@@ -1675,6 +1675,16 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
+	for (let ix = 0; ix < V.log_length; ix++) {
+		let logline = world.log.children[ix]
+		if (!logline) continue
+		if (logline.innerHTML.startsWith("~a")) {
+			logline.innerHTML = log_awards(logline.innerHTML)
+		} else if (logline.innerHTML.startsWith("~d")) {
+			logline.innerHTML = log_demands(logline.innerHTML)
+		}
+	}
+
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
 		log_partially_hidden = true
 		for (let ix = 0; ix < V.log_length; ix++) {
@@ -2582,6 +2592,9 @@ function on_log(text, ix) {
 			p.className = "h2"
 			text = text.substring(1)
 			break
+		case "~":
+			p.innerHTML = text // award/demand codes -- save for processing later in on_update() when we have latest view
+			return p
 	}
 
 	if (text.match(/^\.h1/)) {
@@ -2602,6 +2615,56 @@ function on_log(text, ix) {
 	//p.setAttribute("id", ix) // So we can find it later
 	p.innerHTML = escape_text(text)
 	return p
+}
+
+
+function log_awards(codes)
+{
+	let awards = []
+	awards[REGION_EUROPE] = codes[2] - '0' // Starts at 2  (0 and 1 are the ~a)
+	awards[REGION_NORTH_AMERICA] = codes[3] - '0'
+	awards[REGION_CARIBBEAN] = codes[4] - '0'
+	awards[REGION_INDIA] = codes[5] - '0'
+
+	let wrap = 0
+	let msg = "<div style=\"display: flex; justify-content: center;\">"
+	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
+		var chit = awards[region]
+
+		msg += `<span class="a${chit} award marker black square-sm award-in-log" style="pointer-events: auto;"                  
+				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+				onmouseleave="_tip_blur_award()"
+				onmousedown="_tip_click_light('award',${chit})"
+				><span class="region r${region}">${data.regions[region].name}</span></span>`
+		if (++wrap >= 2) {
+			wrap = 0
+			msg += "</div>"
+			msg += "<div style=\"display: flex; justify-content: center;\">"
+		}
+	}
+	msg += "</div>"
+	return msg
+}
+
+
+function log_demands(codes)
+{
+	let global_demand = []
+	global_demand.push(codes[2] - '0') // Starts at 2  (0 and 1 are the ~d)
+	global_demand.push(codes[3] - '0')
+	global_demand.push(codes[4] - '0')
+
+	let msg = "<div style=\"display: flex; justify-content: center;\">"
+	for (var i = 0; i < 3; i++) {
+		var chit = global_demand[i]
+		msg += `<span class="${data.demands[chit].name.toLowerCase()} demand marker square-sm demand-in-log" 
+          onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
+		  onmouseleave="_tip_blur_demand()"
+		  onmousedown="_tip_click_light('demand',${chit})"
+        ></span>`
+	}
+	msg += "</div>"
+	return msg
 }
 
 
