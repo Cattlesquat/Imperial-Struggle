@@ -4123,8 +4123,8 @@ function check_event_bonus_requirements(who) {
 		if (G.turn < PEACE_TURN_6) {
 			var tiles = [ 0, 0 ]
 			for (let whom = FRANCE; whom <= BRITAIN; whom++) {
-				for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB intentionally from 0 to theaters, inclusive
-					tiles[whom] += G.theater_bonus_war_tiles[whom][theater]
+				for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { //NB intentionally from 1 to theaters, inclusive
+					tiles[whom] += G.theater_bonus_war_tiles[whom][theater].length
 				}
 			}
 
