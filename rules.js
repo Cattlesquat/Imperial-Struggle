@@ -1222,7 +1222,12 @@ function on_view(RR = undefined) {
 	}
 	V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 
+
+
 	V.ministry_exhausted = G.ministry_exhausted
+	if ((G.ministry_exhausted === undefined) || !Array.isArray(G.ministry_exhausted[0])) {
+		V.ministry_exhausted = [ [], [] ]
+	}
 
 	V.ministry_revealed = G.ministry_revealed
 
@@ -2123,7 +2128,7 @@ P.reset_phase = function () {
 	// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 	// <br><b>
 	// if (set_has(G.ministry_exhausted, idx + (ability * NUM_MINISTRY_CARDS))) ... do something if ministry is exhausted
-	G.ministry_exhausted   = [ ]
+	G.ministry_exhausted   = [ [], [] ]
 
 	// move investments to used
 	for (var i of G.available_investments)
@@ -2713,7 +2718,11 @@ function is_ministry_exhausted (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return false
 	var idx = G.ministry[who].indexOf(m)
-	return set_has(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
+	if (Array.isArray(G.ministry_exhausted[0])) {
+		return set_has(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
+	} else {
+		G.ministry_exhausted = [ [], [] ]
+	}
 }
 
 function is_ministry_fully_exhausted(who, m)
@@ -2740,6 +2749,10 @@ function exhaust_ministry (who, m, ability = 0, silent = false)
 	if (is_ministry_exhausted(who, m, ability)) return
 	var idx = G.ministry[who].indexOf(m)
 
+	if (!Array.isArray(G.ministry_exhausted[0])) {
+		G.ministry_exhausted = [ [], [] ]
+	}
+
 	set_add(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 
 	if (!silent) {
@@ -2760,6 +2773,10 @@ function refresh_ministry (who, m, ability = 0)
 {
 	if (!G.ministry[who].includes(m)) return
 	var idx = G.ministry[who].indexOf(m)
+
+	if (!Array.isArray(G.ministry_exhausted[0])) {
+		G.ministry_exhausted = [ [], [] ]
+	}
 
 	set_delete(G.ministry_exhausted[who], idx + (ability * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
 }
