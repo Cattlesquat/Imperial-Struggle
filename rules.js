@@ -10684,7 +10684,7 @@ function theater_strength(who, theater)
 	}
 
 	for (const t of G.theater_bonus_war_tiles[who][theater]) {
-		if (set_has(G.bonus_war_tile_revealed[who], t) || (t === BYNG) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
+		if (set_has(G.bonus_war_tile_revealed[who], t) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
 	}
 
 	if ((who === BRITAIN) && (G.byng === theater)) score += 2

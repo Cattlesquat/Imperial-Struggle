@@ -1864,6 +1864,28 @@ function update_war_display() {
 			let fr_strength = V.theater_strength ? V.theater_strength[FRANCE][theater] : 0
 			let br_strength = V.theater_strength ? V.theater_strength[BRITAIN][theater] : 0
 
+			let unrevealed = 0
+			if ((R === FRANCE) || (R === BRITAIN)) {
+				for (const t of G.theater_basic_war_tiles[R][theater]) {
+					if (!set_has(G.basic_war_tile_revealed[R], t)) unrevealed += data.basic_war_tiles[t].val
+				}
+
+				for (const t of G.theater_bonus_war_tiles[R][theater]) {
+					if (!set_has(G.bonus_war_tile_revealed[R], t)) unrevealed += data.bonus_war_tiles[t].val
+				}
+			}
+
+			if (unrevealed !== 0) {
+				if (unrevealed > 0) {
+					unrevealed = "+" + unrevealed
+				}
+				if (R === FRANCE) {
+					fr_strength = String(fr_strength) + " " + parens(unrevealed)
+				} else {
+					br_strength = String(br_strength) + " " + parens(unrevealed)
+				}
+			}
+
 			// Strength FR
 			update_keyword(`lout-${war_prefix}-strength-fr`, theater, "theater-strength fr")
 			update_text_html(`lout-${war_prefix}-strength-fr`, theater, `<span class="flag"></span><span>${fr_strength}</span>`)
