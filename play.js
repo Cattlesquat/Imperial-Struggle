@@ -948,13 +948,13 @@ function on_init() {
 
 	for (i = 0; i < NUM_BONUS_WAR_TILES; ++i) {
 		define_marker("bonus_war", (i + 0), "hex fr war" + (i + 0)).tooltip(bonus_war_tooltip(i, FRANCE))
-		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12)).tooltip(bonus_war_tooltip(i, BRITAIN))
-		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24)).tooltip(bonus_war_tooltip(i, FRANCE))
-		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36)).tooltip(bonus_war_tooltip(i, BRITAIN))
-		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48)).tooltip(bonus_war_tooltip(i, FRANCE))
-		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60)).tooltip(bonus_war_tooltip(i, BRITAIN))
-		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72)).tooltip(bonus_war_tooltip(i, FRANCE))
-		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84)).tooltip(bonus_war_tooltip(i, BRITAIN))
+		define_marker("bonus_war", (i + 12), "hex br war" + (i + 12)).tooltip(bonus_war_tooltip(i + 12, BRITAIN))
+		define_marker("bonus_war", (i + 24), "hex fr war" + (i + 24)).tooltip(bonus_war_tooltip(i + 24, FRANCE))
+		define_marker("bonus_war", (i + 36), "hex br war" + (i + 36)).tooltip(bonus_war_tooltip(i + 36, BRITAIN))
+		define_marker("bonus_war", (i + 48), "hex fr war" + (i + 48)).tooltip(bonus_war_tooltip(i + 48, FRANCE))
+		define_marker("bonus_war", (i + 60), "hex br war" + (i + 60)).tooltip(bonus_war_tooltip(i + 60, BRITAIN))
+		define_marker("bonus_war", (i + 72), "hex fr war" + (i + 72)).tooltip(bonus_war_tooltip(i + 72, FRANCE))
+		define_marker("bonus_war", (i + 84), "hex br war" + (i + 84)).tooltip(bonus_war_tooltip(i + 84, BRITAIN))
 	}
 
 	define_marker("bonus_war", ATLANTIC_DOMINANCE + FRANCE, "hex-sm atlantic-dominance fr").tooltip(bonus_war_tooltip(96, FRANCE))
