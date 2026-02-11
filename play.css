@@ -1907,6 +1907,7 @@ div[data-tooltip]:after {
 .dialog_body dd { margin-left: 20px; }
 
 #scoring_summary_dialog { top: 100px; left: 60px; }
+#final_scoring_summary_dialog { top: 120px; left: 80px; }
 #event_card_dialog { top: 160px; left: 120px; }
 #french_ministry_dialog { top: 220px; left: 180px; }
 #british_ministry_dialog { top: 280px; left: 240px; }
@@ -1994,9 +1995,9 @@ div[data-tooltip]:after {
     }
 
     #scoring_summary_dialog { top: 100px; left: 0px; }
+    #final_scoring_summary_dialog { top: 100px; left: 0px; }
     #event_card_dialog { top: 100px; left: 0px; }
     #french_ministry_dialog { top: 100px; left: 0px; }
     #british_ministry_dialog { top: 100px; left: 0px; }
-
 }
 

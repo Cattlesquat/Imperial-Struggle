@@ -42,6 +42,12 @@
     <div class="dialog_body"></div>
 </div>
 
+<div id="final_scoring_summary_dialog" class="dialog">
+    <div class="dialog_header">Final Scoring Summary</div>
+    <div class="dialog_x" onclick="hide_dialog('final_scoring_summary_dialog')">&#x274c;</div>
+    <div class="dialog_body"></div>
+</div>
+
 <div id="tip" hidden></div>
 <div id="map_tip" hidden></div>
 
@@ -89,6 +95,11 @@
                     <div style="display: flex; justify-content: space-between;">
                         <div>Scoring Summary</div>
                         <div class="hotkey">S</div>
+                    </div>
+                <li onclick="send_query('final_scoring_summary')">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>Final Scoring Summary</div>
+                        <div class="hotkey">Y</div>
                     </div>
                 <li class="separator">
                 <li onclick="scroll_to_map()">

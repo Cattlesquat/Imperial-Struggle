@@ -2699,6 +2699,12 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 
+		case "y":
+		case "Y":
+			toggle_dialog("final_scoring_summary_dialog")
+			evt.preventDefault()
+			break
+
 		case "f":
 		case "F":
 			toggle_dialog("french_ministry_dialog")
@@ -2796,6 +2802,7 @@ window.addEventListener("keydown", function (evt) {
 
 		case "Escape": // ESC - hide any dialogs, restore approximate "default state"
 			hide_dialog("scoring_summary_dialog")
+			hide_dialog("final_scoring_summary_dialog")
 			hide_dialog("french_ministry_dialog")
 			hide_dialog("british_ministry_dialog")
 			hide_dialog("event_card_dialog")
@@ -3177,7 +3184,7 @@ function preview_scoring_results() {
 		vp += ((winner === FRANCE) ? 2 : -2)
 	}
 
-	//TODO it would be *more sound* if this stuff was pre-computed in rules using the same code that runs "scoring_phase". It would require refactoring that code.
+	//TODO it would be *more sound* if this stuff were pre-computed in rules using the same code that runs "scoring_phase". It would require refactoring that code.
 
 	for (let r = 0; r < NUM_REGIONS; r++) {
 		let award = G.awards[r]
@@ -3276,20 +3283,123 @@ function preview_scoring_results() {
 }
 
 
+function format_final_scoring_results_info()
+{
+	let vp = 0
+
+	let winner = prestige_winner()
+	let msg = "Prestige: "
+	if (winner !== NONE) {
+		if (winner === FRANCE) {
+			msg += escape_square_brackets("[FF+2 VP France]")
+		} else {
+			msg += escape_square_brackets("[FB+2 VP Britain]")
+		}
+		vp += ((winner === FRANCE) ? 2 : -2)
+	} else {
+		msg += "+0 VP - tied"
+	}
+
+	msg += "<br/>"
+
+	winner = debt_winner()
+	msg += "<br/>"
+	msg += "Debt: "
+	if ((winner !== NONE) && (debt_award() > 0)) {
+		if (winner === FRANCE) {
+			msg += escape_square_brackets("[FF+" + debt_award() + " VP France]")
+		} else {
+			msg += escape_square_brackets("[FB+" + debt_award() + " VP Britain]")
+		}
+
+		vp += ((winner === FRANCE) ? debt_award() : -debt_award())
+	} else {
+		msg += "+0 VP"
+	}
+
+	msg += "<br/>"
+
+	for (let d = 0; d < NUM_DEMANDS; d++) {
+		msg += "<br/>"
+		msg += data.demands[d].name + ": "
+		winner = demand_flag_winner(d)
+		if (winner !== NONE) {
+			if (winner === FRANCE) {
+				msg += escape_square_brackets("[FF+1 VP France]")
+			} else {
+				msg += escape_square_brackets("[FB+1 VP Britain]")
+			}
+			vp += ((winner === FRANCE) ? 1 : -1)
+		} else {
+			msg += "+0 VP"
+		}
+	}
+
+	msg += "<br/>"
+
+	let any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
+			msg += "<br/>"
+			msg += data.spaces[s].name + ": "
+			msg += escape_square_brackets("[FF+2 VP France]")
+			vp += 2
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			msg += "<br/>"
+			msg += data.spaces[s].name + ": "
+			msg += escape_square_brackets("[FB+2 VP Britain]")
+			vp -= 2
+		}
+	}
+
+	msg += "<br/>"
+	msg += "<br/>"
+	msg += "NET RESULT: "
+	if (vp > 0) {
+		msg += escape_square_brackets("[FF+" + vp + " VP France]")
+	} else if (vp < 0) {
+		msg += escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
+	} else {
+		msg += "+0 VP"
+	}
+
+	return msg
+}
+
+
+function debt_winner() {
+	if (available_debt(FRANCE) > available_debt(BRITAIN) + 1) return FRANCE
+	if (available_debt(BRITAIN) > available_debt(FRANCE) + 1) return BRITAIN
+	return NONE
+}
+
+
+function debt_delta() {
+	return Math.abs(available_debt(FRANCE) - available_debt(BRITAIN))
+}
+
+function debt_award() {
+	return Math.min(4,debt_delta() / 2)
+}
+
+
+
 function on_reply(q, params)
 {
 	if (q === "event_cards") {
 		toggle_dialog("event_card_dialog")
-		//show_card_list("event_card_dialog", params)
 	} else if (q === "french_ministry") {
 		toggle_dialog("french_ministry_dialog")
-		//show_card_list("french_ministry_dialog", params)
 	} else if (q === "british_ministry") {
 		toggle_dialog("british_ministry_dialog")
-		//show_card_list("british_ministry_dialog", params)
 	} else if (q === "scoring_summary") {
 		toggle_dialog("scoring_summary_dialog")
-		//show_card_list("scoring_summary_dialog", params)
+	} else if (q === "final_scoring_summary") {
+		toggle_dialog("final_scoring_summary_dialog")
 	}
 }
 
@@ -3300,6 +3410,8 @@ function is_observing()
 
 
 function show_card_list(id, params) {
+	console.log ("Show card list")
+
 	show_dialog(id, (body) => {
 		let dl = document.createElement("dl")
 		let append_header = (text) => {
@@ -3358,6 +3470,13 @@ function show_card_list(id, params) {
 			let p = document.createElement("dd")
 			p.className = "cardtip"
 			p.innerHTML = format_results_info()
+			dl.appendChild(p)
+		}
+
+		let append_final_scoring_results = () => {
+			let p = document.createElement("dd")
+			p.className = "cardtip"
+			p.innerHTML = format_final_scoring_results_info()
 			dl.appendChild(p)
 		}
 
@@ -3463,6 +3582,10 @@ function show_card_list(id, params) {
 
 			append_header("Projected Results")
 			append_results()
+		} else if (id === "final_scoring_summary_dialog") {
+			console.log ("Got here")
+			append_header("Final Scoring Summary")
+			append_final_scoring_results()
 		}
 
 		body.appendChild(dl)
