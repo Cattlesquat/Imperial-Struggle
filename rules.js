@@ -1600,13 +1600,13 @@ function is_damaged_fort(s) {
 	return set_has(G.damaged_forts, s)
 }
 
-function set_damaged_fort(s, damage = true)
+function set_damaged_fort(s, damage = true, bold = false)
 {
 	if (!damage) {
 		set_delete(G.damaged_forts, s)
 	} else {
 		set_add(G.damaged_forts, s)
-		log ("Fort damaged at " + say_space(s))
+		log (bold("Fort damaged at " + say_space(s), bold))
 	}
 }
 
@@ -10930,24 +10930,24 @@ P.war_theater_reveal = {
 		push_undo()
 		switch (data.spaces[s].type) {
 			case FORT:
-				log(data.flags[R].name + " uses a Damaged Fort war tile.")
-				set_damaged_fort(s, true)
+				log(data.flags[R].name + " uses Damaged Fort tile.")
+				set_damaged_fort(s, true, true)
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				log_br()
 				break
 			case NAVAL:
-				log(data.flags[R].name + " uses a Remove Fleet war tile.")
+				log(data.flags[R].name + " uses Remove Fleet tile.")
 				move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 				reflag_space(s, NONE, true)
 				G.navy_box[1-R]++
 				validate_squadrons("WAR TILE")
-				log (data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box")
+				log (bold(data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box"))
 				log_br()
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
 			case MARKET:
 			case POLITICAL:
-				log(data.flags[R].name + " uses an Unflag war tile.")
+				log(data.flags[R].name + " uses Unflag tile.")
 				reflag_space(s, NONE)
 				array_delete_item(L.wartile_choices[R], WAR_FLAG)
 				log_br()
