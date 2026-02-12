@@ -757,8 +757,8 @@ function on_init() {
 				}
 			}
 			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space("conflict-space", s.num, conflict_rect)
-			//define_layout("conflict-space", s.num, conflict_rect)
+			//define_space("conflict-space", s.num, conflict_rect)
+			define_layout("conflict-space", s.num, conflict_rect).keyword("grav-nw")
 		}
 
 		if (s.type === TERRITORY) {
