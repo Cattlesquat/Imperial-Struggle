@@ -5158,7 +5158,7 @@ P.event_calico_acts = {
 
 			validate_squadrons("CALICO")
 
-			let msg = data.flags[G.active].adj + " player moves British squadron from " + say_space(s) + " to Navy Box."
+			let msg = say_space(s) + " squadron to Navy Box."
 			log (msg)
 
 			log (say_navy_box())
@@ -5280,7 +5280,7 @@ P.do_military_spending_overruns = {
 
 			validate_squadrons("MILITARY_SPENDING_OVERRUNS")
 
-			let msg = data.flags[G.active].adj + " player removes squadron from " + say_space(s) + " to Navy Box."
+			let msg = say_space(s) + " squadron to Navy Box."
 			log (msg)
 
 			log (say_navy_box())
@@ -6010,7 +6010,7 @@ function quadruple_alliance_british_bonus()
 	G.unbuilt_squadrons[BRITAIN]--
 	G.navy_box[BRITAIN]++
 	validate_squadrons("QUADRUPLE ALLIANCE BUILD")
-	log ("British squadron constructed to Navy Box.")
+	log (bold("British squadron constructed."))
 }
 
 
@@ -6394,7 +6394,7 @@ P.event_nootka_incident = {
 		move_squadron_token(BRITAIN, s, SPACE_NAVY_BOX)
 		reflag_space(s, NONE)
 		G.navy_box[BRITAIN]++
-		log ("British squadron from " + say_space(s) + " displaced to Navy Box.")
+		log (say_space(s) + " squadron displaced.")
 		validate_squadrons("NOOTKA DISPLACE")
 
 		log (say_navy_box())
@@ -7824,7 +7824,7 @@ P.advantage_naval_bastion = {
 		validate_squadrons("QUADRUPLE NAVAL BASTION")
 
 
-		log (bold(data.flags[1-R].adj + " squadron returned from " + say_space(s) + " to Navy Box."))
+		log (bold(say_space(s) + " squadron to Navy Box."))
 
 		log (say_navy_box())
 
@@ -10941,7 +10941,8 @@ P.war_theater_reveal = {
 				reflag_space(s, NONE, true)
 				G.navy_box[1-R]++
 				validate_squadrons("WAR TILE")
-				log (bold(data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box"))
+				log (bold(say_space(s) + " squadron displaced."))
+				log (say_navy_box())
 				log_br()
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
