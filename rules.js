@@ -2457,11 +2457,11 @@ P.replace_ministry_cards = {
 			button ("undo")
 		}
 		else if (!any_hidden) {
-			V.prompt = say_action_header("MINISTRY PHASE: ") + ((L.added_jacobites && (R === FRANCE)) ? "Jacobite Uprisings added as 3rd ministry. " : "") + say_action("No ministries eligible for mid-era replacement (see 4.1.7).")
+			V.prompt = say_action_header("MINISTRY PHASE: ") + ((L.added_jacobites && (R === FRANCE)) ? say_action("Jacobite Uprisings added as 3rd ministry. ") : "") + say_action("No ministries eligible for mid-era replacement (see 4.1.7).")
 			button("confirm")
 		}
 		else {
-			V.prompt = say_action_header("MINISTRY PHASE: ") + ((L.added_jacobites && (R === FRANCE)) ? "Jacobite Uprisings added as 3rd ministry. " : "") + say_action("Select any unrevealed ministries you wish to replace, or ")
+			V.prompt = say_action_header("MINISTRY PHASE: ") + ((L.added_jacobites && (R === FRANCE)) ? say_action("Jacobite Uprisings added as 3rd ministry. ") : "") + say_action("Select any unrevealed ministries you wish to replace, or ")
 			if (!L.any_changes[R]) {
 				V.prompt += say_action("pass to keep current ones.")
 				button("pass")
