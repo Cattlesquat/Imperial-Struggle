@@ -5500,7 +5500,7 @@ P.event_interest_payments = {
 		log (bold(data.flags[1 - R].adj + " debt limit reduced by 1."))
 		if (L.penalty) {
 			G.debt[1 - R]--
-			award_vp(R, 1, false, "Britsh Debt Limit")
+			award_vp(R, 1, false, "Debt Overrun")
 		}
 		if (G.qualifies_for_bonus && (L.debt_reduction > 0)) {
 			reduce_debt(R, L.debt_reduction)
