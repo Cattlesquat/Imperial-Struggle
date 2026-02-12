@@ -1619,6 +1619,8 @@ tiles75/square/investment_reverse.png
     position: fixed;
     z-index: 1000;
 
+	margin: 6px;
+
     /* display: flex; */
     /* left: 0px; */
     /* bottom: 25px; */
@@ -1769,10 +1771,10 @@ menu li.separator {
     pointer-events: none;
     z-index: 1000;
 
-    border: 2px solid black;
+    border: 1px solid black;
 
     left: 0px;
-    bottom: 23px;
+    bottom: 25px;
 
     display: block;
     background-image: url(boards75/map.avif);
