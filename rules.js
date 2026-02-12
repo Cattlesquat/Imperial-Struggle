@@ -1582,8 +1582,8 @@ function add_conflict_marker(s, n = CONFLICT_NORMAL) {
 	update_flag_counts()
 }
 
-function remove_conflict_marker(s, silent = false) {
-	if (!silent && has_conflict_marker(s)) log ("Conflict removed at " + say_space(s))
+function remove_conflict_marker(s, silent = false, bold_it = false) {
+	if (!silent && has_conflict_marker(s)) log (bold("Conflict removed at " + say_space(s), bold_it))
 	map_delete(G.conflicts, s)
 	update_flag_counts()
 }
@@ -1600,13 +1600,13 @@ function is_damaged_fort(s) {
 	return set_has(G.damaged_forts, s)
 }
 
-function set_damaged_fort(s, damage = true, bold = false)
+function set_damaged_fort(s, damage = true, bold_it = false)
 {
 	if (!damage) {
 		set_delete(G.damaged_forts, s)
 	} else {
 		set_add(G.damaged_forts, s)
-		log (bold("Fort damaged at " + say_space(s), bold))
+		log (bold("Fort damaged at " + say_space(s), bold_it))
 	}
 }
 
