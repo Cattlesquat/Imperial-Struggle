@@ -87,6 +87,9 @@ body.Britain #events_br { grid-row: 2 }
 	height: 850px;
 }
 
+header details menu li .hotkey { float: right; width: 16px; text-align: center; color: dimgray; }
+header details menu { min-width: 200px; }
+
 /* LOG */
 
 #log .i {

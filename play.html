@@ -19,33 +19,33 @@
 <body>
 
 <div id="event_card_dialog" class="dialog">
-    <div class="dialog_header">Event Cards</div>
-    <div class="dialog_x" onclick="hide_dialog('event_card_dialog')">&#x274c;</div>
-    <div class="dialog_body"></div>
+	<div class="dialog_header">Event Cards</div>
+	<div class="dialog_x" onclick="hide_dialog('event_card_dialog')">&#x274c;</div>
+	<div class="dialog_body"></div>
 </div>
 
 <div id="french_ministry_dialog" class="dialog">
-    <div class="dialog_header">French Ministry</div>
-    <div class="dialog_x" onclick="hide_dialog('french_ministry_dialog')">&#x274c;</div>
-    <div class="dialog_body"></div>
+	<div class="dialog_header">French Ministry</div>
+	<div class="dialog_x" onclick="hide_dialog('french_ministry_dialog')">&#x274c;</div>
+	<div class="dialog_body"></div>
 </div>
 
 <div id="british_ministry_dialog" class="dialog">
-    <div class="dialog_header">British Ministry</div>
-    <div class="dialog_x" onclick="hide_dialog('british_ministry_dialog')">&#x274c;</div>
-    <div class="dialog_body"></div>
+	<div class="dialog_header">British Ministry</div>
+	<div class="dialog_x" onclick="hide_dialog('british_ministry_dialog')">&#x274c;</div>
+	<div class="dialog_body"></div>
 </div>
 
 <div id="scoring_summary_dialog" class="dialog">
-    <div class="dialog_header">Scoring Summary</div>
-    <div class="dialog_x" onclick="hide_dialog('scoring_summary_dialog')">&#x274c;</div>
-    <div class="dialog_body"></div>
+	<div class="dialog_header">Scoring Summary</div>
+	<div class="dialog_x" onclick="hide_dialog('scoring_summary_dialog')">&#x274c;</div>
+	<div class="dialog_body"></div>
 </div>
 
 <div id="final_scoring_summary_dialog" class="dialog">
-    <div class="dialog_header">Final Scoring Summary</div>
-    <div class="dialog_x" onclick="hide_dialog('final_scoring_summary_dialog')">&#x274c;</div>
-    <div class="dialog_body"></div>
+	<div class="dialog_header">Final Scoring Summary</div>
+	<div class="dialog_x" onclick="hide_dialog('final_scoring_summary_dialog')">&#x274c;</div>
+	<div class="dialog_body"></div>
 </div>
 
 <div id="tip" hidden></div>
@@ -56,89 +56,66 @@
 		<details>
 			<summary><img src="/images/cog.svg"></summary>
 			<menu>
-                <li><label><input type=checkbox name="noanims">Turn off animations (saves phone battery)</label>
-                <li><label><input type=checkbox name="noflipsies">Don't flip exhausted advantage tiles</label>
-                <li><label><input type=checkbox name="downanddirty">Show unclaimed advantages face-down</label>
-                <li><label><input type=checkbox name="tracksies">Track map changes with colored outlines</label>
-                <li><label><input type=checkbox name="tipsies">Show tooltip images in lower left</label>
-                <li class="separator">
-                <fieldset>
-                    <legend>Log & Prompt Verbosity</legend>
-                    <label for="short"><input type="radio" id="short" name="actionverbosity" value="short">Brief</label>
-                    <label for="medium"><input type="radio" id="medium" name="actionverbosity" value="medium" checked>Normal</label>
-                    <label for="long"><input type="radio" id="long" name="actionverbosity" value="long" checked>Verbose</label>
-                </fieldset>
-                <li class="separator">
-				<li><a href="info/readme.html" target="_blank">Read me & Recent Changes</a>
+				<li><label><input type=checkbox name="noanims">Turn off animations (saves phone battery)</label>
+				<li><label><input type=checkbox name="noflipsies">Don't flip exhausted advantage tiles</label>
+				<li><label><input type=checkbox name="downanddirty">Show unclaimed advantages face-down</label>
+				<li><label><input type=checkbox name="tracksies">Track map changes with colored outlines</label>
+				<li><label><input type=checkbox name="tipsies">Show tooltip images in lower left</label>
+				<li class="separator">
+		<li class="disabled">Log & Prompt Verbosity
+		<li><label for="short"><input type="radio" id="short" name="actionverbosity" value="short">Brief</label>
+		<li><label for="medium"><input type="radio" id="medium" name="actionverbosity" value="medium" checked>Normal</label>
+		<li><label for="long"><input type="radio" id="long" name="actionverbosity" value="long" checked>Verbose</label>
+				<li class="separator"><li><a href="info/readme.html" target="_blank">Read me & Recent Changes</a>
 			</menu>
 		</details>
-        <details id="info_menu">
-            <summary><img src="/images/wooden-sign.svg"></summary>
-            <menu style="min-width: 200px;">
-                <li onclick="send_query('event_cards')">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Inspect Event Cards</div>
-                        <div class="hotkey">E</div>
-                    </div>
-                <li onclick="send_query('french_ministry')">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Inspect French Ministry</div>
-                        <div class="hotkey">F</div>
-                    </div>
-                <li onclick="send_query('british_ministry')">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Inspect British Ministry</div>
-                        <div class="hotkey">B</div>
-                    </div>
-                <li class="separator">
-                <li onclick="send_query('scoring_summary')">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Scoring Summary</div>
-                        <div class="hotkey">S</div>
-                    </div>
-                <li onclick="send_query('final_scoring_summary')">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Final Scoring Summary</div>
-                        <div class="hotkey">Y</div>
-                    </div>
-                <li class="separator">
-                <li onclick="scroll_to_map()">
-                    <div style="display: flex; justify-content: space-between;">
-                            <div>Scroll to map</div>
-                            <div class="hotkey">M</div>
-                    </div>
-                <li onclick="scroll_to_cards()">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Scroll to cards</div>
-                        <div class="hotkey">C</div>
-                    </div>
-                <li onclick="scroll_to_debt()">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Scroll to debt</div>
-                        <div class="hotkey">D</div>
-                    </div>
-                <li onclick="scroll_to_war()">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Scroll to war</div>
-                        <div class="hotkey">W</div>
-                    </div>
-                <li onclick="toggle_preference('allwars'); scroll_to_war()">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div> Toggle "All Wars"</div>
-                        <div class="hotkey">A</div>
-                    </div>
-                <li class="separator">
-                <li><a href="info/Imperial Struggle 2nd Printing Rules Final Hi-Res-compressed.pdf" target="_blank">Rules</a>
-                <li><a href="info/ImpStr_Living_Playbook_7-26-20.pdf" target="_blank">Playbook</a></li>
-                <li class="separator">
-                <li><a href="info/IS_Living_Main_PAC_7-26-20.pdf" target="_blank">Player Aid Card</a></li>
-                <li><a href="info/display_2.png" target="_blank">Investment Display Mat</a></li>
-                <li><a href="info/mat_2.png" target="_blank">French Player Mat</a></li>
-                <li><a href="info/mat_1.png" target="_blank">British Player Mat</a></li>
-            </menu>
-        </details>
+		<details id="info_menu">
+			<summary><img src="/images/wooden-sign.svg"></summary>
+			<menu>
+				<li onclick="send_query('event_cards')">
+					<div class="hotkey">E</div>
+					<div>Inspect Event Cards</div>
+				<li onclick="send_query('french_ministry')">
+					<div class="hotkey">F</div>
+					<div>Inspect French Ministry</div>
+				<li onclick="send_query('british_ministry')">
+					<div class="hotkey">B</div>
+					<div>Inspect British Ministry</div>
+				<li class="separator">
+				<li onclick="send_query('scoring_summary')">
+					<div class="hotkey">S</div>
+					<div>Scoring Summary</div>
+				<li onclick="send_query('final_scoring_summary')">
+					<div class="hotkey">Y</div>
+					<div>Final Scoring Summary</div>
+				<li class="separator">
+				<li onclick="scroll_to_map()">
+					<div class="hotkey">M</div>
+					<div>Scroll to map</div>
+				<li onclick="scroll_to_cards()">
+					<div class="hotkey">C</div>
+					<div>Scroll to cards</div>
+				<li onclick="scroll_to_debt()">
+					<div class="hotkey">D</div>
+					<div>Scroll to debt</div>
+				<li onclick="scroll_to_war()">
+					<div class="hotkey">W</div>
+					<div>Scroll to war</div>
+				<li>
+					<div class="hotkey">A</div>
+					<div><label><input type=checkbox name="allwars">Show ALL war mats</label></div>
+				<li class="separator">
+				<li><a href="info/Imperial Struggle 2nd Printing Rules Final Hi-Res-compressed.pdf" target="_blank">Rules</a>
+				<li><a href="info/ImpStr_Living_Playbook_7-26-20.pdf" target="_blank">Playbook</a></li>
+				<li class="separator">
+				<li><a href="info/IS_Living_Main_PAC_7-26-20.pdf" target="_blank">Player Aid Card</a></li>
+				<li><a href="info/display_2.png" target="_blank">Investment Display Mat</a></li>
+				<li><a href="info/mat_2.png" target="_blank">French Player Mat</a></li>
+				<li><a href="info/mat_1.png" target="_blank">British Player Mat</a></li>
+			</menu>
+		</details>
 
-        <button onclick="toggle_markers()"><img src="/images/earth-africa-europe.svg"></button>
+		<button onclick="toggle_markers()"><img src="/images/earth-africa-europe.svg"></button>
 	</div>
 </header>
 
@@ -149,12 +126,12 @@
 
 <main>
 
-    <div id="top"></div>
+	<div id="top"></div>
 
 	<div id="mapwrap">
 		<div class="board" id="map">
-            <div id="demand_highlight" hidden></div>
-        </div>
+			<div id="demand_highlight" hidden></div>
+		</div>
 	</div>
 
 	<div class="panel autohide" id="all_ministries">
@@ -162,7 +139,7 @@
 		<div class="panel-body"></div>
 	</div>
 
-    <div id="panels-top"></div>
+	<div id="panels-top"></div>
 
 	<div id="panels">
 		<div class="panel" id="played">
@@ -211,14 +188,13 @@
 		</div>
 	</div>
 
-    <div id="panels-bottom"></div>
+	<div id="panels-bottom"></div>
 
-    <div id="war_checkbox" style="display:flex; justify-content:center;"><label><input type=checkbox name="allwars">Show ALL war mats</label></div> <!-- HALP! Make me nicer! Should it just sit directly left of top mat? Instead of taking up vertical space? -->
 	<div id="war_wss" class="board war war-wss"></div>
 	<div id="war_was" class="board war war-was"></div>
 	<div id="war_7yw" class="board war war-7yw"></div>
 	<div id="war_awi" class="board war war-awi"></div>
-    <div id="war"></div>
+	<div id="war"></div>
 
 </main>
 
