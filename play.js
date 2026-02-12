@@ -2418,12 +2418,11 @@ function escape_tip_class_sub_function(text, re, log_className, tip_className, n
 	)
 }
 
-
-function position_tip_image() {
+function position_tip_image_imp() {
 	let tipsies = get_preference("tipsies", true)
 	if (tipsies) {
-		world.tip.style.left = "0px"
-		world.tip.style.bottom = "25px"
+		world.tip.style.left = (4) + "px"
+		world.tip.style.bottom = (world.status.offsetHeight + 4) + "px"
 		world.tip.style.display = "flex"
 		world.tip.style.right = ""
 		world.tip.style.top = ""
@@ -2434,6 +2433,11 @@ function position_tip_image() {
 		world.tip.style.right = "240px"
 		world.tip.style.top = "60px"
 	}
+}
+
+function position_tip_image() {
+	// postpone actual positioning until browser has laid out everything else
+	setTimeout(position_tip_image_imp, 0)
 }
 
 function _tip_focus_class(name) {
