@@ -942,7 +942,7 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
-		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE))
+		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE)) ///
 		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16)).tooltip(basic_war_tooltip(i, BRITAIN))
 	}
 
@@ -1687,6 +1687,8 @@ function on_update() {
 			logline.innerHTML = log_awards(logline.innerHTML)
 		} else if (logline.innerHTML.startsWith("~d")) {
 			logline.innerHTML = log_demands(logline.innerHTML)
+		} else if (logline.innerHTML.startsWith("~w")) {
+			logline.innerHTML = log_war_tiles(logline.innerHTML)
 		}
 	}
 
@@ -2689,6 +2691,71 @@ function log_demands(codes)
 		  onmouseleave="_tip_blur_demand()"
 		  onmousedown="_tip_click_light('demand',${chit})"
         ></span>`
+	}
+	msg += "</div>"
+	return msg
+}
+
+
+function log_war_tiles(codes)
+{
+	let basic = []
+	let bonus = []
+	let index = 1 // Starts at 2, but we need a +1 at the beginning to make the loop work
+	codes += "X" // terminate with something
+
+	// Example encoding: ~wb00,B10,B20
+	do {
+		index++
+		let key = codes[index++]
+		let value = codes[index++] - '0'
+		value = value*10 + (codes[index++] - '0')
+		if (key === 'b') {
+			basic.push(value)
+		} else {
+			bonus.push(value)
+		}
+	} while (codes[index] === ',')
+
+	let msg = "<div style=\"display: flex; justify-content: center;\">"
+	let who = NONE
+	let whom = ""
+	let wrap = 0
+	for (const tile of basic) {
+		who = (tile < NUM_BASE_WAR_TILES) ? FRANCE : BRITAIN
+		whom = (who === FRANCE) ? "fr" : "br"
+		msg += `<span class="basic_war marker hex ${whom} war-basic${tile} revealed wartile-in-log" 
+				onmouseenter="_tip_focus_basic_war_tile('${tile}', '${who}')"
+				onmouseleave="_tip_blur_basic_war_tile()"
+				></span>`
+		if (++wrap >= 2) {
+			wrap = 0
+			msg += "</div>"
+			msg += "<div style=\"display: flex; justify-content: center;\">"
+		}
+	}
+	for (const tile of bonus) {
+		if (tile === ATLANTIC_DOMINANCE + who) {
+			msg += `<span class="hex-sm atlantic-dominance marker ${whom} revealed wartile-in-log" 
+				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></span>`
+		} else if (tile === BYNG) {
+			msg += `<span class="hex-sm byng marker ${whom} revealed wartile-in-log" 
+				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></span>`
+		} else {
+			msg += `<span class="bonus_war marker hex ${whom} war${tile} revealed wartile-in-log" 
+				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></span>`
+		}
+		if (++wrap >= 2) {
+			wrap = 0
+			msg += "</div>"
+			msg += "<div style=\"display: flex; justify-content: center;\">"
+		}
 	}
 	msg += "</div>"
 	return msg

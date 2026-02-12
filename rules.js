@@ -1335,7 +1335,7 @@ function reduce_debt(who, amount)
 	amount = Math.min(amount, G.debt[who])
 	if (amount > 0) {
 		G.debt[who] -= amount
-		log(say_spending(data.flags[who].adj + " Debt", who) + " reduced by " + amount + " -- more spending available.")
+		log(say_spending(data.flags[who].adj + " Debt", who) + " reduced by " + amount + ".")
 	}
 }
 
@@ -1347,14 +1347,14 @@ function increase_debt(who, amount) {
 	}
 	if (amount > 0) {
 		G.debt[who] += amount
-		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + " -- less spending available.") //+ "(Available: " + available_debt(who) + ")")
+		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + ".") //+ "(Available: " + available_debt(who) + ")")
 	}
 	if (penalty > 0) {
 		log (data.flags[who].name + " must expend " + say_spending(penalty + ((amount > 0) ? " more" : "") + " Debt", who) + " but is at its " + say_spending("Debt Limit", who) + "!")
 		if (has_active_ministry(who, JAMES_WATT)) {
 			log (say_ministry(JAMES_WATT, who) + " prevents VP penalty from Debt Limit overrun.")
 		} else {
-			award_vp(who, -penalty, false, "Debt Limit overrun")
+			award_vp(who, -penalty, false, "Debt Limit")
 		}
 	}
 }
@@ -1386,7 +1386,7 @@ function award_vp(who, amount, silent = false, reason = null)
 	G.vp += true_delta
 
 	if (!silent) {
-		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + amount + " VP"
+		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + Math.abs(amount) + " VP"
 		if (reason) msg += " " + parens(reason)
 		msg += "."
 		log (bold(msg))
@@ -5500,7 +5500,7 @@ P.event_interest_payments = {
 		log (bold(data.flags[1 - R].adj + " debt limit reduced by 1."))
 		if (L.penalty) {
 			G.debt[1 - R]--
-			award_vp(R, 1, false, "Britsh Debt Limit overrun")
+			award_vp(R, 1, false, "Britsh Debt Limit")
 		}
 		if (G.qualifies_for_bonus && (L.debt_reduction > 0)) {
 			reduce_debt(R, L.debt_reduction)
@@ -10755,16 +10755,23 @@ P.war_theater_reveal = {
 
 		// Reveal all the tiles in this theater only
 		for (let who = FRANCE; who <= BRITAIN; who++) {
+			let msg = "~w"   // The encoding here looks like ~wb03,B20,B11   for an undertermined number of B tiles
+			let any = false
 			for (let tile of G.theater_basic_war_tiles[who][G.theater]) {
 				set_add(G.basic_war_tile_revealed[who], tile)
 				do_wartile(who, data.basic_war_tiles[tile].type)
-				log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
+				if (any) msg += ","
+				any = true
+				msg += "b" + ((tile < 10) ? "0" : "") + tile
+				//log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
 			}
 			for (let tile of G.theater_bonus_war_tiles[who][G.theater]) {
 				set_add(G.bonus_war_tile_revealed[who], tile)
 				do_wartile(who, data.bonus_war_tiles[tile].type)
-				log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
+				//log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
+				msg += ",B" + ((tile < 10) ? "0" : "") + tile
 			}
+			log (msg)
 		}
 
 		// First to act is player closest to automatic victory, or if tied it's whoever went first on the last peace turn
@@ -10778,14 +10785,23 @@ P.war_theater_reveal = {
 
 		if (L.wartile_choices[G.first_war_player].length > 0) {
 			G.active = G.first_war_player
+			if (L.wartile_debt[1 - G.first_war_player] > 0) {
+				log(data.flags[G.first_war_player].name + " has revealed " + L.wartile_debt[1 - G.first_war_player] + " tile" + s(L.wartile_debt[1 - G.first_war_player]) + " with " + ((L.wartile_debt[1 - G.first_war_player] === 1) ? "a " : "") + "debt marker" + s(L.wartile_debt[1 - G.first_war_player]))
+			}
 			increase_debt(1 - G.first_war_player, L.wartile_debt[1 - G.first_war_player])
+			log_br()
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
 		} else if (L.wartile_choices[1 - G.first_war_player].length) {
 			G.active = 1 - G.first_war_player
+			if (L.wartile_debt[G.first_war_player] > 0) {
+				log(data.flags[1 - G.first_war_player].name + " has revealed " + L.wartile_debt[G.first_war_player] + " tile" + s(L.wartile_debt[G.first_war_player]) + " with " + ((L.wartile_debt[G.first_war_player] === 1) ? "a " : "") + "debt marker" + s(L.wartile_debt[G.first_war_player]))
+			}
+
 			increase_debt(G.first_war_player, L.wartile_debt[G.first_war_player])
+			log_br()
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
 				G.dirty_who = G.active
@@ -10914,21 +10930,27 @@ P.war_theater_reveal = {
 		push_undo()
 		switch (data.spaces[s].type) {
 			case FORT:
+				log(data.flags[R].name + " uses a Damaged Fort war tile.")
 				set_damaged_fort(s, true)
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
+				log_br()
 				break
 			case NAVAL:
+				log(data.flags[R].name + " uses a Remove Fleet war tile.")
 				move_squadron_token(1-R, s, SPACE_NAVY_BOX)
-				reflag_space(s, NONE)
+				reflag_space(s, NONE, true)
 				G.navy_box[1-R]++
 				validate_squadrons("WAR TILE")
 				log (data.flags[1-R].adj + " squadron displaced from " + say_space(s) + " to Navy Box")
+				log_br()
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				break
 			case MARKET:
 			case POLITICAL:
+				log(data.flags[R].name + " uses an Unflag war tile.")
 				reflag_space(s, NONE)
 				array_delete_item(L.wartile_choices[R], WAR_FLAG)
+				log_br()
 				break
 		}
 	},
@@ -10944,10 +10966,18 @@ P.war_theater_reveal = {
 		}
 
 		if (done) {
+			if (L.wartile_choices[R].length > 0) {
+				log(data.flags[R].name + " is unable to use " + L.wartile_choices[R].length + " war tile effect" + s(L.wartile_choices[R].length) + " (no eligible targets)")
+			}
+
 			L.wartile_choices[R] = []
 			if ((L.wartile_choices[1 - R].length > 0) || (G.review_step[1 - R] < G.review_index.length)) {
 				G.active = 1 - R
+				if (L.wartile_debt[R] > 0) {
+					log(data.flags[1 - R].name + " has revealed " + L.wartile_debt[R] + " tile" + s(L.wartile_debt[R]) + " with " + ((L.wartile_debt[R] === 1) ? "a " : "") + "debt marker" + s(L.wartile_debt[R]))
+				}
 				increase_debt(R, L.wartile_debt[R])
+				log_br()
 				clear_dirty()
 				G.dirty_who = G.active
 			} else {
@@ -11152,12 +11182,14 @@ P.war_theater_resolve = {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
+			log_br()
 		} else if ((L.war_winner !== NONE) && (L.war_cp || L.war_unflag || L.war_usa || L.war_atlantic)) {
 			G.active = L.war_winner
 			if (G.dirty_who !== G.active) {
 				clear_dirty()
 				G.dirty_who = G.active
 			}
+			log_br()
 		} else {
 			log_box_end()
 			G.active = [ FRANCE, BRITAIN ]
@@ -11392,7 +11424,7 @@ P.war_theater_resolve = {
 		push_undo()
 		if (L.doing_squadrons) {
 			L.war_squadrons--
-			reflag_space(s, NONE)
+			reflag_space(s, NONE, true)
 			if (current_era() === REVOLUTION_ERA) {
 				log (data.flags[G.active].name + " removes the squadron at " + say_space(s) + " from the game.")
 				move_squadron_token(G.active, s, SPACE_REMOVED_FROM_GAME)
@@ -11401,9 +11433,11 @@ P.war_theater_resolve = {
 				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
 				move_squadron_token(G.active, s, SPACE_UNBUILT)
 			}
+			log_br()
 			validate_squadrons("WAR EFFECT")
 		} else if (L.picking_squadron) {
 			conquer_from_space(s)
+			log_br()
 			let index = L.free_squadrons.indexOf(s);
 			if (index !== -1) {
 				L.free_squadrons.splice(index, 1);
@@ -11419,8 +11453,10 @@ P.war_theater_resolve = {
 					L.picking_squadron = true
 				} else if (G.navy_box[R] > 0) {
 					conquer_from_navy_box()
+					log_br()
 				} else if (L.free_squadrons.length === 1) {
 					conquer_from_space(L.free_squadrons[0])
+					log_br()
 					L.free_squadrons.shift()
 				}
 			} else if (data.spaces[s].type === TERRITORY) {
@@ -11431,6 +11467,7 @@ P.war_theater_resolve = {
  		} else if (L.war_unflag > 0) {
 			L.war_unflag--
 			reflag_space(s, NONE)
+			log_br()
 		} else if (L.war_usa) {
 			L.already_isolated = []
 			for (let s2 = 0; s2 < NUM_SPACES; s2++) {
@@ -11453,6 +11490,8 @@ P.war_theater_resolve = {
 				if (L.already_isolated.includes(s2)) continue
 				reflag_space(s, NONE)
 			}
+
+			log_br()
 		}
 	},
 	navy_box() {
@@ -11468,9 +11507,11 @@ P.war_theater_resolve = {
 				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_UNBUILT)
 				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
 			}
+			log_br()
 			validate_squadrons("WAR EFFECT NAVY BOX")
 		} else {
 			conquer_from_navy_box()
+			log_br()
 		}
 	},
 	theater(t) {
@@ -11478,17 +11519,20 @@ P.war_theater_resolve = {
 		t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
 		L.war_atlantic = false
 		G.theater_bonus_war_tiles[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
+		log (bold(data.flags[L.war_winner].name + " places Atlantic Dominance marker in theater 3 (French & Indian War)"))
+		log_br()
 	},
 	confirm() {
 		push_undo()
 		mark_dirty(L.war_space)
 		L.confirming_conquest = false
 		let cost = conquest_point_cost(L.war_space)
-		log(data.flags[L.war_winner].name + " spends " + cost + " conquest point" + s(cost) + ".")
+		log(data.flags[L.war_winner].name + " spends " + cost + " conquest point" + s(cost) + " at " + say_space(L.war_space))
 		L.war_cp -= cost
 
 		if ((G.flags[L.war_space] === NONE) || (G.war_refused[1 - L.war_winner] >= 2)) {
 			reflag_space(L.war_space, L.war_winner)
+			log_br()
 		} else {
 			L.checking_refusal = true
 			G.active = 1 - G.active
@@ -11498,6 +11542,7 @@ P.war_theater_resolve = {
 		let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3
 		log(bold(data.flags[1 - L.war_winner].name + " refuses conquest of " + data.spaces[L.war_space].name) + "!")
 		award_vp(1 - L.war_winner, -vp_cost) // Construe it as paying/losing VP by the war loser
+		log_br()
 		G.war_refused[1 - L.war_winner]++
 		G.war_refused_list.push(L.war_space) // Put it on the list of refused spaces -- conquest can't be attempted again during this war
 		L.checking_refusal = false
@@ -11506,6 +11551,7 @@ P.war_theater_resolve = {
 	accept() {
 		log(bold(data.flags[1 - L.war_winner].name + " accepts conquest of " + data.spaces[L.war_space].name) + ".")
 		reflag_space(L.war_space, L.war_winner)
+		log_br()
 		L.checking_refusal = false
 		G.active = 1 - G.active
 	},
