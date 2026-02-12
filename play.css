@@ -162,15 +162,15 @@ header details menu { min-width: 200px; }
 #log {
 	--fr-ministry: hsl(206, 85%, 90%);
 	--fr-ministry-header: hsl(206, 85%, 85%);
-	--br-ministry: hsl(18, 100%, 90%);
-	--br-ministry-header: hsl(18, 100%, 77%);
+	--br-ministry: hsl(6, 100%, 90%);
+	--br-ministry-header: hsl(6, 100%, 77%);
 	--both-ministry: hsl(0, 0%, 88%);
 	--both-ministry-header: hsl(0, 0%, 80%);
 
 	--fr-event: hsl(206, 85%, 90%);
 	--fr-event-header: hsl(206, 85%, 85%);
-	--br-event: hsl(18, 100%, 90%);
-	--br-event-header: hsl(18, 100%, 77%);
+	--br-event: hsl(6, 100%, 90%);
+	--br-event-header: hsl(6, 100%, 77%);
 	--both-event: hsl(0, 0%, 88%);
 	--both-event-header: hsl(0, 0%, 80%);
 
