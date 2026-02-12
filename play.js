@@ -350,7 +350,7 @@ function say_event_effect(label, effect, bonus) {
 
 	let text = ""
 	if (label !== "") {
-		text += escape_square_brackets(label)
+		text += bold(italic(escape_square_brackets(label)))
 		text += ": "
 	}
 	if (effect !== "") {
