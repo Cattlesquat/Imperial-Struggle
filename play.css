@@ -162,29 +162,29 @@ header details menu { min-width: 200px; }
 #log {
 	--fr-ministry: hsl(206, 85%, 90%);
 	--fr-ministry-header: hsl(206, 85%, 85%);
-	--br-ministry: hsl(355, 70%, 90%);
-	--br-ministry-header: hsl(355, 70%, 85%);
+	--br-ministry: hsl(18, 100%, 90%);
+	--br-ministry-header: hsl(18, 100%, 77%);
 	--both-ministry: hsl(0, 0%, 88%);
 	--both-ministry-header: hsl(0, 0%, 80%);
 
 	--fr-event: hsl(206, 85%, 90%);
 	--fr-event-header: hsl(206, 85%, 85%);
-	--br-event: hsl(355, 70%, 90%);
-	--br-event-header: hsl(355, 70%, 85%);
+	--br-event: hsl(18, 100%, 90%);
+	--br-event-header: hsl(18, 100%, 77%);
 	--both-event: hsl(0, 0%, 88%);
 	--both-event-header: hsl(0, 0%, 80%);
 
-	--fr-advantage: hsl(206, 85%, 80%);
-	--fr-advantage-header: hsl(206, 85%, 70%);
-	--br-advantage: hsl(355, 70%, 80%);
-	--br-advantage-header: hsl(355, 70%, 70%);
+	--fr-advantage: hsl(198, 66%, 80%);
+	--fr-advantage-header: skyblue; /* hsl(206, 85%, 70%); */
+	--br-advantage: hsl(18, 100%, 73%); /* hsl(355, 70%, 80%); */
+	--br-advantage-header: salmon;
 	--both-advantage: hsl(0, 0%, 75%);
 	--both-advantage-header: hsl(0, 0%, 65%);
 
-    --fr-misc: hsl(206, 85%, 80%);
-    --fr-misc-header: hsl(206, 85%, 70%);
-    --br-misc: hsl(355, 70%, 80%);
-    --br-misc-header: hsl(355, 70%, 70%);
+    --fr-misc: hsl(198, 66%, 80%); /* hsl(206, 85%, 80%); */
+    --fr-misc-header: skyblue; /* hsl(206, 85%, 70%); */
+    --br-misc: hsl(18, 100%, 73%);
+    --br-misc-header: salmon; /* hsl(355, 70%, 70%); */
     --both-misc: hsl(0, 0%, 88%);
     --both-misc-header: hsl(0, 0%, 80%);
 
