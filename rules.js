@@ -2610,6 +2610,22 @@ function has_active_keyword(who, k)
 }
 
 
+// True if the player has the ministry keyword on an *active* (face up) ministry
+function has_inactive_keyword(who, k)
+{
+	if (k === KEYWORD_NONE) return true
+	for (const m of G.ministry[who]) {
+		let index = G.ministry[who].indexOf(m)
+		if (G.ministry_revealed[who][index]) continue
+		for (const keyword of data.ministries[m].keywords) {
+			if (keyword === k) return true
+		}
+	}
+	return false
+}
+
+
+
 // Used to figure out which (if any) of a player's ministers he could flip to gain the specified keyword
 function get_minister_for_keyword(who, k)
 {
