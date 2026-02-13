@@ -7832,96 +7832,121 @@ P.advantage_naval_bastion = {
 	}
 }
 
+
+function set_up_conflict_advantage(a)
+{
+	switch (a) {
+		case RAIDS_AND_INCURSIONS:
+			L.adv_string = "in a market in India."
+			L.adv_market_only = true
+			L.adv_region = REGION_INDIA
+			break;
+		case SEPARATIST_WARS:
+			L.adv_string = "in a Cotton market."
+			L.adv_market_only = true
+			L.adv_market_type = COTTON
+			break;
+		case POWER_STRUGGLE:
+			L.adv_string = "in a Carnatic Coast market."
+			L.adv_region = REGION_INDIA
+			L.adv_market_only = true
+			// unique code for Carnatic Coast specifically
+			break;
+		case LETTERS_OF_MARQUE:
+		case PIRATE_HAVENS:
+			L.adv_string = "in an unprotected Caribbean market."
+			L.adv_market_only = true
+			L.adv_region = REGION_CARIBBEAN
+			// unique code for unprotected
+			break;
+		case PATRIOT_AGITATION:
+			L.adv_string = "in North America."
+			L.adv_region = REGION_NORTH_AMERICA
+			break;
+		case IROQUOIS_RAIDS:
+		case ALGONQUIN_RAIDS:
+			L.adv_string = "in a Fur Market."
+			L.adv_market_only = true
+			L.adv_market_type = FURS
+			break;
+		case MEDITERRANEAN_INTRIGUE:
+			L.adv_string = "in Spain or Austria."
+			// unique code
+			break;
+		case CENTRAL_EUROPE_CONFLICT:
+			L.adv_string = "in an alliance space in Europe."
+			L.adv_region = REGION_EUROPE
+			// unique code for alliance
+			break;
+	}
+}
+
+
+function check_advantage_targets(who, mark_action)
+{
+	let any = false
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (L.adv_market_only || (data.spaces[s].type !== POLITICAL)) {
+			if (data.spaces[s].type !== MARKET) continue
+		}
+		if ((L.adv_market_type >= 0) && (data.spaces[s].market !== L.adv_market_type)) continue
+		if ((L.adv_region >= 0) && (data.spaces[s].region !== L.adv_region)) continue
+		if (data.spaces[s].era > current_era()) continue // Some diplomatic spaces are era-locked
+		if (((s === USA_1) || (s === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
+
+		switch (G.active_advantage) {
+			case POWER_STRUGGLE:
+				if (data.spaces[s].subreg !== SUBREGION_CARNATIC_COAST) continue;
+				break;
+
+			case LETTERS_OF_MARQUE:
+			case PIRATE_HAVENS:
+				if (is_protected(s)) continue;
+				break;
+
+			case MEDITERRANEAN_INTRIGUE:
+				if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
+				break;
+
+			case CENTRAL_EUROPE_CONFLICT:
+				if (data.spaces[s].alliance === undefined) continue
+				if (data.spaces[s].alliance.length <= 0) continue
+				break;
+		}
+
+		if ((who === FRANCE) || (who === BRITAIN)) {
+			if (G.flags[s] === who) continue
+		}
+
+		if (has_conflict_marker(s)) continue
+		any = true
+		if (mark_action) action_space(s)
+	}
+	return any
+}
+
+function has_advantage_targets(who, a)
+{
+	if (![CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) return true
+	set_up_conflict_advantage(a)
+	check_advantage_targets(-1, false)
+}
+
+
 P.advantage_place_conflict = {
 	_begin() {
 		let a = G.active_advantage
 		L.adv_region = -1
 		L.adv_market_only = false
 		L.adv_market_type = -1
-		switch (a) {
-			case RAIDS_AND_INCURSIONS:
-				L.adv_string = "in a market in India."
-				L.adv_market_only = true
-				L.adv_region = REGION_INDIA
-				break;
-			case SEPARATIST_WARS:
-				L.adv_string = "in a Cotton market."
-				L.adv_market_only = true
-				L.adv_market_type = COTTON
-				break;
-			case POWER_STRUGGLE:
-				L.adv_string = "in a Carnatic Coast market."
-				L.adv_region = REGION_INDIA
-				L.adv_market_only = true
-				// unique code for Carnatic Coast specifically
-				break;
-			case LETTERS_OF_MARQUE:
-			case PIRATE_HAVENS:
-				L.adv_string = "in an unprotected Caribbean market."
-				L.adv_market_only = true
-				L.adv_region = REGION_CARIBBEAN
-				// unique code for unprotected
-				break;
-			case PATRIOT_AGITATION:
-				L.adv_string = "in North America."
-				L.adv_region = REGION_NORTH_AMERICA
-				break;
-			case IROQUOIS_RAIDS:
-			case ALGONQUIN_RAIDS:
-				L.adv_string = "in a Fur Market."
-				L.adv_market_only = true
-				L.adv_market_type = FURS
-				break;
-			case MEDITERRANEAN_INTRIGUE:
-				L.adv_string = "in Spain or Austria."
-				// unique code
-				break;
-			case CENTRAL_EUROPE_CONFLICT:
-				L.adv_string = "in an alliance space in Europe."
-				L.adv_region = REGION_EUROPE
-				// unique code for alliance
-				break;
-		}
+		set_up_conflict_advantage(a)
 	},
 	inactive() {
 		return "place a conflict with the " + data.advantages[G.active_advantage].name + " advantage"
 	},
 	prompt() {
 		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict " + L.adv_string)
-		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (L.adv_market_only || (data.spaces[s].type !== POLITICAL)) {
-				if (data.spaces[s].type !== MARKET) continue
-			}
-			if ((L.adv_market_type >= 0) && (data.spaces[s].market !== L.adv_market_type)) continue
-			if ((L.adv_region >= 0) && (data.spaces[s].region !== L.adv_region)) continue
-			if (data.spaces[s].era > current_era()) continue // Some diplomatic spaces are era-locked
-			if (((s === USA_1) || (s === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
-
-			switch (G.active_advantage) {
-				case POWER_STRUGGLE:
-					if (data.spaces[s].subreg !== SUBREGION_CARNATIC_COAST) continue;
-					break;
-
-				case LETTERS_OF_MARQUE:
-				case PIRATE_HAVENS:
-					if (is_protected(s)) continue;
-					break;
-
-				case MEDITERRANEAN_INTRIGUE:
-					if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
-					break;
-
-				case CENTRAL_EUROPE_CONFLICT:
-					if (data.spaces[s].alliance.length <= 0) continue
-					break;
-			}
-
-			if (has_conflict_marker(s)) continue
-			action_space(s)
-			any = true
-		}
-		if (!any) V.prompt += " (None eligible)"
+		if (!check_advantage_targets(NONE, true)) V.prompt += " (None eligible)"
 	},
 	space(s) {
 		push_undo()
@@ -10320,6 +10345,8 @@ P.action_round_core = {
 
 			// These are the advantages that can generally be used even after spending all one's action points
 			if (![BALTIC_TRADE, CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) continue
+
+			if (!has_advantage_targets(R, a)) continue
 
 			still_advantages = true
 			break
