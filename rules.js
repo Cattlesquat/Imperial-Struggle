@@ -576,6 +576,7 @@ function on_setup(scenario, options) {
 	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
+	validate_decks("START")
 
 	// Investments available this action round
 	G.available_investments = []
@@ -881,13 +882,15 @@ function on_setup(scenario, options) {
 }
 
 
+function report_squadrons(string)
+{
+	//console.error(string)
+	throw new Error(string)
+}
+
 function validate_squadrons(message)
 {
-	//console.log ("=======" + message)
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		//console.log ("WHO: " + who)
-		//console.log (G.squadrons[who])
-
 		let navies = 0
 		let brig = 0
 		let out_of_game = 0
@@ -899,8 +902,7 @@ function validate_squadrons(message)
 			if (s >= 0) {
 				on_map++
 				if (G.flags[s] !== who) {
-					console.log ("Wrong owner of space: expected " + who + " found " + G.flags[s] + ", squadron " + sq + " space: " + s + " " + data.spaces[s].name)
-					throw new Error (message + " Wrong owner of token " + sq + ", expected " + who + " found " + G.flags[s] + " -- " + "Wrong owner of space, squadron " + sq + " space: " + s + " " + data.spaces[s].name)
+					report_squadrons (message + " Wrong owner of token " + sq + ", expected " + who + " found " + G.flags[s] + " -- " + "Wrong owner of space, squadron " + sq + " space: " + s + " " + data.spaces[s].name)
 				}
 			} else if (s === SPACE_NAVY_BOX) {
 				navies++
@@ -914,32 +916,73 @@ function validate_squadrons(message)
 		}
 
 		if (navies === G.navy_box[who]) {
-			//console.log ("Navy box matches")
+			// ("Navy box matches")
 		} else {
-			throw new Error (message + " " + "Who:" + who + " -- " + "Wrong navy box! " + navies + " should be " + G.navy_box[who])
+			report_squadrons (message + " " + "Who:" + who + " -- " + "Wrong navy box! " + navies + " should be " + G.navy_box[who])
 		}
 
 		if (unbuilt === G.unbuilt_squadrons[who]) {
-			//console.log ("Unbuilt matches")
+			// ("Unbuilt matches")
 		} else {
-			throw new Error (message + " " + "Who:" + who + " -- " + "Wrong unbuilt box! " + unbuilt + " should be " + G.unbuilt_squadrons[who])
+			report_squadrons (message + " " + "Who:" + who + " -- " + "Wrong unbuilt box! " + unbuilt + " should be " + G.unbuilt_squadrons[who])
 		}
 
 		if (((who === BRITAIN) && (brig === G.the_brig)) || ((who === FRANCE) && (brig === 0))) {
 			//
 		} else {
 			if (who === BRITAIN) {
-				throw new Error (message + " " + "Who:" + who + " -- " + "Wrong brig box! " + brig + " should be " + G.the_brig)
+				report_squadrons (message + " " + "Who:" + who + " -- " + "Wrong brig box! " + brig + " should be " + G.the_brig)
 			} else {
-				throw new Error (message + " " + "Who:" + who + " -- " + "French in brig! " + brig + " should be 0")
+				report_squadrons (message + " " + "Who:" + who + " -- " + "French in brig! " + brig + " should be 0")
 			}
 		}
 
 		let total = on_map + navies + brig + unbuilt + out_of_game
 		if (total === NUM_SQUADRONS) {
-			//console.log ("Total squadrons matches")
+			//("Total squadrons matches")
 		} else {
-			throw new Error (message + " " + "Who:" + who + " -- " + "Total squadrons WRONG! " + total + " should be " + NUM_SQUADRONS)
+			report_squadrons (message + " " + "Who:" + who + " -- " + "Total squadrons WRONG! " + total + " should be " + NUM_SQUADRONS)
+		}
+	}
+}
+
+
+function report_decks(string)
+{
+	console.error(string)
+	//throw new Error(string)
+}
+
+function validate_decks(message)
+{
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		for (const c of G.hand[who]) {
+			if (G.deck.includes(c)) {
+				report_decks (message + " Deck includes card " + c + pad(parens(data.cards[c].name)) + " which is also in hand " + who)
+			}
+			if (G.discard_pile.includes(c)) {
+				report_decks (message + " Discard Pile includes card " + c + pad(parens(data.cards[c].name)) + " which is also in hand " + who)
+			}
+			if (G.played_events.includes(c)) {
+				report_decks (message + " Played Events includes card " + c + pad(parens(data.cards[c].name)) + " which is also in hand " + who)
+			}
+		}
+	}
+
+	for (const c of G.deck) {
+		if (G.discard_pile.includes(c)) {
+			report_decks (message + " Deck includes card " + c + pad(parens(data.cards[c].name)) + " which is also in discard pile.")
+		}
+		if (G.played_events.includes(c)) {
+			report_decks (message + " Deck includes card " + c + pad(parens(data.cards[c].name)) + " which is also in played events.")
+		}
+	}
+
+	for (const c of G.discard_pile) {
+		if (G.played_events.includes(c)) {
+			if (G.played_events.includes(c)) {
+				throw new Error (message + " Discard Pile includes card " + c + pad(parens(data.cards[c].name)) + " which is also played events.")
+			}
 		}
 	}
 }
@@ -1886,8 +1929,7 @@ function get_squadron_token(who, s)
 		if (G.squadrons[who][sq] === s) return sq
 	}
 	validate_squadrons("FOUND SQUADRON MISSING")
-	throw new Error ("No squadron found for space: " + s)
-	console.error ("No squadron found for space: " + s)
+	report_squadrons("No squadron found for space: " + s)
 	return 0
 }
 
@@ -1895,7 +1937,6 @@ function get_squadron_token(who, s)
 // The negative "off board locations" are allowed as well as space numbers
 function move_squadron_token(who, from, to)
 {
-	//console.log ("Move token who: "+ who + "  from: " + from + "  to: " + to + "  token:" + get_squadron_token(who, from))
 	G.squadrons[who][get_squadron_token(who, from)] = to
 }
 
@@ -2024,6 +2065,7 @@ P.deck_phase = function () {
 		log ("Empire Era events added to Event Deck.")
 		log ("Shuffling Event Deck.")
 		shuffle(G.deck)
+		validate_decks("DECK PHASE")
 	}
 
 	if (beginning_of_era() && current_era() === REVOLUTION_ERA) {
@@ -2048,11 +2090,12 @@ P.deck_phase = function () {
 		}
 		*/
 
-		for (var card = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
+		for (let i = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
 			G.deck.push(i);
 		log ("Revolution Era events added to Event Deck.")
 		log ("Shuffling Event Deck.")
 		shuffle(G.deck)
+		validate_decks("DECK PHASE 2")
 	}
 
 	review_push("DECK PHASE")
@@ -2201,9 +2244,11 @@ P.deal_cards_phase = function () {
 					log_dealt(dealt)
 					dealt = [0, 0]
 					log (bold("Discard Pile shuffled to form new Event Deck."))
+					validate_decks("BEFORE DEAL CARDS")
 					G.deck = G.discard_pile.slice()
-					G.discard = []
+					G.discard_pile = []
 					shuffle(G.deck)
+					validate_decks("DEAL CARDS PHASE")
 				}
 
 				// I don't think this should actually ever happen, but this is how we'd move on from that situation if it did
@@ -2826,7 +2871,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
-	//console.log ("START ACTION PHASE: " + data.turns[G.turn].name)
+	//("START ACTION PHASE: " + data.turns[G.turn].name)
 }
 
 /* 4.1.9 - ACTION PHASE */
@@ -6378,7 +6423,7 @@ P.event_nootka_incident = {
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].type !== NAVAL) continue
 				if (G.flags[s] !== BRITAIN) continue
-				action_space()
+				action_space(s)
 				any = true
 			}
 			if (!any) {
@@ -6477,11 +6522,9 @@ function neuf_soeurs_bonus()
 {
 	if (!G.qualifies_for_bonus) return
 	if (R === BRITAIN) {
-		if (G.flag_count[BRITAIN][demand] > G.flag_count[FRANCE][demand]) {
+		if (G.flag_count[BRITAIN][REGION_NORTH_AMERICA] > G.flag_count[FRANCE][REGION_NORTH_AMERICA]) {
 			award_vp(BRITAIN, 3)
 		}
-	} else {
-
 	}
 }
 
@@ -6817,7 +6860,7 @@ P.event_falklands_crisis = {
 				}
 			}
 		} else {
-			if (!done_starting) {
+			if (!L.done_starting) {
 				V.prompt = event_prompt(R, G.played_event, say_action_points(1, MIL) + " for each French flag in Spain", "remove a British squadron from the game")
 				button("done")
 			} else {
@@ -7230,6 +7273,7 @@ P.ministry_robert_walpole = {
 			G.deck = G.discard_pile.slice()
 			G.discard_pile = []
 			shuffle(G.deck)
+			validate_decks("ROBERT WALPOLE")
 		}
 
 		if (G.deck.length > 0) {
@@ -8556,6 +8600,7 @@ function do_buy_event(who) {
 		G.deck = G.discard_pile.slice()
 		G.discard_pile = []
 		shuffle(G.deck)
+		validate_decks("BUY EVENT")
 	}
 
 	if (G.deck.length > 0) {
@@ -9373,12 +9418,8 @@ P.naval_flow = script(`
     	
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
-    		//console.log ("Action Cost @ Naval Flow: " + G.action_cost)
-    		//console.log ("Contingent to use: " + L.choiseul)
-    		//console.log ("Other points available: " + G.action_points_available_now)
 			G.action_points_committed_bonus[MIL] += L.choiseul
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
-			//G.action_points_available_now += L.choiseul // If we've already manually demanded a point from Choiseul and are holding it on account  
 		}
     	
     	require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
@@ -9900,9 +9941,6 @@ function an(amount) {
 
 function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
-
-	//console.log ("Cost: " + G.action_cost)
-	//console.log ("Committed: " + G.action_points_committed_bonus[G.action_type])
 
 	G.paid_action_cost = true
 	let prev_cost = G.action_cost
