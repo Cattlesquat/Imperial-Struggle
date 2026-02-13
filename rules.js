@@ -949,8 +949,8 @@ function validate_squadrons(message)
 
 function report_decks(string)
 {
+	if (globalThis.RTT_FUZZER) throw new Error(string)
 	console.error(string)
-	//throw new Error(string)
 }
 
 function validate_decks(message)
