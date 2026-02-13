@@ -1483,6 +1483,17 @@ function has_advantage_eligible(who, a, ignore_exhaustion = false)
 	return true
 }
 
+
+function has_any_eligible_advantages(who) {
+	if (G.advantages_used_this_round >= 2) return false
+	for (let a = 0; a < NUM_ADVANTAGES; a++) {
+		if (!has_advantage_eligible(who, a)) continue
+		return true
+	}
+	return false
+}
+
+
 /* 8.0 - Advantages */
 function update_advantages(silent = false) {
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
@@ -4626,7 +4637,7 @@ P.event_war_of_jenkins_ear = {
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
 			} else {
-				V.prompt = event_prompt (R, G.played_event, say_action_points(1, DIPLO, true)) //"+1 Diplomatic action point") ////
+				V.prompt = event_prompt (R, G.played_event, say_action_points(1, DIPLO, true))
 				button ("done")
 			}
 		}
@@ -10297,14 +10308,34 @@ P.action_round_core = {
 		}
 
 		if (any) prompt += ", "
-		prompt += "Spend Action Points or activate Advantage / Ministry. "
+
+		let any_advantages = has_any_eligible_advantages(R)
+		let any_ministries = false
+		for (let r of G.ministry_revealed[R]) {
+			if (!r) any_ministries = true
+		}
+		for (let m of G.ministry[R]) {
+			if (!ministry_has_activatable_abilities(m)) continue
+			if (is_ministry_fully_exhausted(R, m)) continue
+			if (!ministry_useful_this_phase(R, G.action_round_subphase)) continue
+			any_ministries = true
+			break;
+		}
+
+		if (any_advantages && any_ministries) {
+			prompt += "Spend Action Points or activate Advantage / Ministry. "
+		} else if (any_advantages) {
+			prompt += "Spend Action Points or activate Advantage. "
+		} else if (any_ministries) {
+			prompt += "Spend Action Points or activate Ministry. "
+		} else {
+			prompt += "Spend Action Points."
+		}
 		V.prompt = say_action_header(header) + say_action(prompt) + say_action_points_left();
 
 		action_eligible_advantages()
 		action_eligible_ministries()
 		action_all_eligible_spaces()
-
-		//action_territories_debug()
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
 		if (G.action_points_eligible[DIPLO]) {
