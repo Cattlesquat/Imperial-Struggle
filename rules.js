@@ -5293,7 +5293,7 @@ P.do_military_spending_overruns = {
 		L.removals_done = 0
 		L.removals_required = 1 + (G.qualifies_for_bonus ? 1 : 0)
 	},
-	inactive: "play an Event",
+	inactive: "enjoy some tasty Military Spending Overruns",
 	prompt() {
 		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
