@@ -116,7 +116,7 @@ const war_layout = {
 
 	// 7YW - Alliances
 	war_7yw_theater_1_alliances: [518, 147, 50, 152],
-	war_7yw_theater_2_alliances: [1022, 160, 50, 152],
+	war_7yw_theater_2_alliances: [1022, 150, 50, 152],
 	war_7yw_theater_3_alliances: [533, 514, 50, 152],
 	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
 
