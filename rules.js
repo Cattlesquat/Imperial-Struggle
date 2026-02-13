@@ -11089,6 +11089,8 @@ function start_war_theater_resolution()
 	if (L.war_tier === data.wars[G.next_war].theater[G.theater].margin.length - 1) {
 		if ((G.won_all_theaters_by_maximum_level === -1) || (G.won_all_theaters_by_maximum_level === L.war_winner)) {
 			G.won_all_theaters_by_maximum_level = L.war_winner
+		} else {
+			G.won_all_theaters_by_maximum_level = NONE
 		}
 	} else {
 		G.won_all_theaters_by_maximum_level = NONE
