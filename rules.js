@@ -7691,7 +7691,7 @@ P.ministry_choiseul = {
 		push_undo()
 		log_box_ministry(R, CHOISEUL)
 		exhaust_ministry(R, CHOISEUL, 0)
-		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
+		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY, true)
 		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
@@ -9147,8 +9147,10 @@ function use_choiseul()
 
 
 P.buy_bonus_war_tile_flow = script(`
-	eval {	    
-		require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
+	eval {
+		if (action_points_eligible_major(MIL, active_rules()) > 0) {  
+			require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
+		}
 	}
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
@@ -9438,7 +9440,9 @@ P.naval_flow = script(`
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
 		}
     	
-    	require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
+    	if (action_points_eligible_major(MIL, active_rules()) > 0) {
+    		require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
+    	}
     }
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
