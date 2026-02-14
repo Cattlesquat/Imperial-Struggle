@@ -12008,7 +12008,7 @@ function log_box_begin(who, header, type = LOG_BOX_MISC) {
 
 function log_box_ministry(who, m) {
 	if (is_log_box(LOG_BOX_MINISTRY)) return
-	log_box_begin(who, "MINISTRY" + "\n" + say_ministry(m, who), LOG_BOX_MINISTRY)
+	log_box_begin(who, "MINISTRY" + "\n" + say_ministry(m, who, true), LOG_BOX_MINISTRY)
 }
 
 
