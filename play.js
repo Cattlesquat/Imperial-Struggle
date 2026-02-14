@@ -3256,7 +3256,7 @@ function format_demand_info(d)
 		leader = "+0"
 	}
 
-	return leader + " " + msg
+	return leader // + " " + msg
 }
 
 
@@ -3524,8 +3524,6 @@ function is_observing()
 
 
 function show_card_list(id, params) {
-	console.log ("Show card list")
-
 	show_dialog(id, (body) => {
 		let dl = document.createElement("dl")
 		let append_header = (text) => {
@@ -3770,9 +3768,29 @@ function show_card_list(id, params) {
 			//}
 
 			append_header ("Global Demand")
+			let era = current_era()
+			era = 0
 			for (let d = 0; d < NUM_DEMANDS; d++) {
 				if (!V.global_demand.includes(d)) continue
-				append_demand(d)
+
+				msg = `<div class=\"score-demand-line\"
+						onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+						onmouseleave="_tip_blur_award()"
+						onmousedown="_tip_click_light('award',${chit})"
+						>`
+
+                msg += `<div class = "score-demand-label d${d}"></div>`
+				msg += `<div class = "score-demand-value d${d} e${era}"></div>`
+				msg += `<div class="score-demand-delta">${format_demand_info(d)}</div>`
+
+				msg += "</div>"
+
+				p = document.createElement("dc")
+				p.className = "demand-summary"
+				p.innerHTML = msg
+				dl.appendChild(p)
+
+				//append_demand(d)
 			}
 
 			let header = document.createElement("dt")

@@ -1493,7 +1493,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 	}
 
 	if (!silent) {
-		let msg = "ADVANTAGE Used"
+		let msg = watt ? "ADVANTAGE Used" : "ADVANTAGE Exhausted"
 		msg += "\n" + say_advantage(a, G.advantages[a])
 
 		log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)

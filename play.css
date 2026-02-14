@@ -2064,9 +2064,55 @@ div[data-tooltip]:after {
 }
 
 
+.score-demand-line {
+    display: flex;
+    line-height: 22px;
+    transform scale(1.5,1.5)
+    
+}
+
+.score-demand-label {
+    border: 1px solid black;
+    display: block;
+    background-image: url(boards75/map.avif);
+    background-size: auto;
+    background-repeat: no-repeat;
+
+    background-position-x: -1109px;
+    width: 72px;
+    height: 20px;
+    margin-top: 0px;
+}
+
+.score-demand-value {
+    border: 1px solid black;
+    display: block;
+    background-image: url(boards75/map.avif);
+    background-size: auto;
+    background-repeat: no-repeat;
+
+    background-position-x: -1109px;
+    width: 77px;
+    height: 20px;
+    margin-top: 0px;
+}
 
 
+.d0 { background-position-y: -183px; }
+.d1 { background-position-y: -203px; }
+.d2 { background-position-y: -224px; }
+.d3 { background-position-y: -244px; }
+.d4 { background-position-y: -265px; }
+.d5 { background-position-y: -285px; }
 
+.e0 { background-position-x: -1180px; }
+.e1 { background-position-x: -1266px; }
+.e2 { background-position-x: -1354px; }
+
+
+.score-demand-delta {
+
+}
 
 
 @media (max-width: 800px) {
