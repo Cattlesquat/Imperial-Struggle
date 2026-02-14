@@ -3769,7 +3769,6 @@ function show_card_list(id, params) {
 
 			append_header ("Global Demand")
 			let era = current_era()
-			era = 0
 			for (let d = 0; d < NUM_DEMANDS; d++) {
 				if (!V.global_demand.includes(d)) continue
 
@@ -3781,21 +3780,25 @@ function show_card_list(id, params) {
 
                 msg += `<div class = "score-demand-label d${d}"></div>`
 				msg += `<div class = "score-demand-value d${d} e${era}"></div>`
-				msg += `<div class="score-demand-delta">${format_demand_info(d)}</div>`
+				msg += `<div class = "score-demand-delta-box"><div class="score-demand-delta">${format_demand_info(d)}</div></div>`
 
 				msg += "</div>"
 
 				p = document.createElement("dc")
-				p.className = "demand-summary"
+				p.className = "score-demand-summary"
 				p.innerHTML = msg
 				dl.appendChild(p)
 
 				//append_demand(d)
 			}
 
-			let header = document.createElement("dt")
-			header.innerHTML = "<br/>"
-			dl.appendChild(header)
+			p = document.createElement("dd")
+			p.className = "score-below-demands"
+			dl.appendChild(p)
+
+			//let header = document.createElement("dt")
+			//header.innerHTML = "<br/>"
+			//dl.appendChild(header)
 
 			append_header("Projected Results")
 			append_results()

@@ -2027,6 +2027,11 @@ div[data-tooltip]:after {
     min-height: 20px;
 }
 
+.score-below-demands {
+    min-height: 10px;
+}
+
+
 
 .score-prestige {
     border: 1px solid black;
@@ -2042,14 +2047,13 @@ div[data-tooltip]:after {
 }
 
 .prestige-in-score {
-    display: inline-block;
+    display: flex;
     pointer-events: auto !important;
     margin: 30px 20px 20px;
 }
 
 .score-prestige-label {
     display: block;
-    position: fixed;
     font-size: 16px;
     margin-top: -8px;
     margin-left: -90px;
@@ -2057,18 +2061,20 @@ div[data-tooltip]:after {
 
 .score-prestige-amount {
     display: block;
-    position: fixed;
     font-size: 16px;
     margin-top: -8px;
-    margin-left: 60px;
+    margin-left: 100px;
 }
 
 
 .score-demand-line {
     display: flex;
-    line-height: 22px;
-    transform scale(1.5,1.5)
-    
+    line-height: 2;
+    transform: scale(1.5,1.5);
+    transform-origin: left top;
+    margin-top: 10px;
+    margin-left: -2px;
+    max-width: 180px;
 }
 
 .score-demand-label {
@@ -2084,6 +2090,11 @@ div[data-tooltip]:after {
     margin-top: 0px;
 }
 
+.score-demand-summary {
+    position: relative;
+    top: -10px;
+}
+
 .score-demand-value {
     border: 1px solid black;
     display: block;
@@ -2095,6 +2106,27 @@ div[data-tooltip]:after {
     width: 77px;
     height: 20px;
     margin-top: 0px;
+}
+
+.score-demand-delta-box {
+    border: 1px solid black;
+    display: block;
+    background-image: url(boards75/map.avif);
+    background-size: auto;
+    background-repeat: no-repeat;
+
+    background-position-x: -1180px;
+    background-position-y: -265px;
+    width: 25px;
+    height: 20px;
+    margin-top: 0px;
+
+    line-height: 1;
+}
+
+.score-demand-delta {
+    transform: scale(.6666,.6666);
+    margin: 2px;
 }
 
 
@@ -2110,9 +2142,6 @@ div[data-tooltip]:after {
 .e2 { background-position-x: -1354px; }
 
 
-.score-demand-delta {
-
-}
 
 
 @media (max-width: 800px) {
