@@ -1905,7 +1905,7 @@ div[data-tooltip]:after {
     height: 480px;
     padding: 4px 8px;
     overflow-y: scroll;
-    background-color: floralwhite;
+    background-color: #F9EEDC; /* floralwhite was previous */
 }
 
 .dialog_body dl { margin: 0; }
