@@ -664,6 +664,7 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
+	init_preference_checkbox_dialog("scoresies", false)
 
 	init_preference_radio("actionverbosity", "medium")
 
@@ -2786,8 +2787,13 @@ function toggle_dialog(id)
 }
 
 
+// A preference has changed that only needs to refresh active dialogs (not the whole document)
+function on_dialog_refresh(name, value) {
+	//BR// In theory check name of what preference changed, etc, but at the moment we only have one
+	show_card_list("scoring_summary_dialog", null)
+}
+
 // Hotkeys
-// TODO take out any cheating ones :)
 window.addEventListener("keydown", function (evt) {
 	if (document.activeElement instanceof HTMLInputElement)
 		return
@@ -2801,6 +2807,14 @@ window.addEventListener("keydown", function (evt) {
 			toggle_dialog("scoring_summary_dialog")
 			evt.preventDefault()
 			break
+
+		case "T":
+		case "t":
+			toggle_preference("scoresies", false)
+			on_dialog_refresh("scoresies", get_preference("scoresies", false))
+			var input = document.querySelector(`input[name="scoresies"]`)
+			input.checked = get_preference("scoresies", false)
+			break;
 
 		case "y":
 		case "Y":
@@ -2926,6 +2940,7 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 
+		// TODO take out the below key (it's a cheat key)
 		case "x":
 		case "X":
 			send_message("action", ["cheat_cheat", null, game_cookie])
@@ -3179,7 +3194,7 @@ function format_prestige_info()
 		leader = "+0"
 	}
 
-	return leader // + " Prestige: 2 VP"
+	return leader + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
 }
 
 
@@ -3234,9 +3249,9 @@ function format_award_info(r, a)
 		leader = "+0"
 	}
 
-	//let msg = data.regions[r].name + ": " + data.awards[a].name
+	let msg = data.regions[r].name + ": " + data.awards[a].name
 
-	return leader // + " " + msg
+	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
 function format_demand_info(d)
@@ -3256,7 +3271,7 @@ function format_demand_info(d)
 		leader = "+0"
 	}
 
-	return leader // + " " + msg
+	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
 
@@ -3710,95 +3725,107 @@ function show_card_list(id, params) {
 				}
 			}
 		} else if (id === "scoring_summary_dialog") {
-			//append_prestige()
+			let do_text_only = get_preference("scoresies")
+			if (do_text_only) {
+				append_header("Prestige")
+				append_prestige()
 
-			let p = document.createElement("dd")
-			p.className = "score-top"
-			dl.appendChild(p)
-
-			let msg = "<div class=\"score-region-line\">"
-			msg += `<div class=\"score-prestige\"
-					onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
-					onmouseleave="_tip_blur_award()"
-					onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">`
-			msg += `<span class="a${V.awards[REGION_EUROPE]} prestige-in-score">`
-			msg += `<span class="score-prestige-label">Prestige</span>`
-			msg += `<span class="score-prestige-amount">${format_prestige_info()}</span>`
-			msg += "</span>"
-			msg += "</div>"
-			msg += "</div>"
-			p = document.createElement("dc")
-			p.className = "prestige-summary"
-			p.innerHTML = msg
-			dl.appendChild(p)
-
-			let wrap = 0
-			msg = "<div class=\"score-region-line\">"
-			let regions = 0
-			for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
-				var chit = V.awards[region]
-
-				msg += `<span class="a${chit} award marker black square-sm award-in-score"                  
-				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
-				onmouseleave="_tip_blur_award()"
-				onmousedown="_tip_click_light('award',${chit})"
-				><span class="score-region r${region}">${data.regions[region].name}</span>
-				<span class="score-region-delta r${region}">${format_award_info(region, chit)}</span>
-				</span>`
-				regions++
-				if (++wrap >= 2 && regions <= 2) {
-					wrap = 0
-					msg += "</div>"
-					msg += "<div class=\"score-region-line\">"
+				append_header("Regions")
+				for (let r = 0; r < NUM_REGIONS; r++) {
+					var a = V.awards[r]
+					append_region(r, a)
 				}
-			}
-			msg += "</div>"
-			p = document.createElement("dc")
-			p.className = "region-summary"
-			p.innerHTML = msg
-			dl.appendChild(p)
 
-			p = document.createElement("dd")
-			p.className = "score-below-regions"
-			dl.appendChild(p)
+				append_header("Global Demand")
+				let era = current_era()
+				for (let d = 0; d < NUM_DEMANDS; d++) {
+					if (!V.global_demand.includes(d)) continue
+					append_demand(d)
+				}
 
-			//for (let r = 0; r < NUM_REGIONS; r++) {
-			//	var a = V.awards[r]
-			//	append_region(r, a)
-			//}
+				let header = document.createElement("dt")
+				header.innerHTML = "<br/>"
+				dl.appendChild(header)
 
-			append_header ("Global Demand")
-			let era = current_era()
-			for (let d = 0; d < NUM_DEMANDS; d++) {
-				if (!V.global_demand.includes(d)) continue
+			} else {
 
-				msg = `<div class=\"score-demand-line\"
-						onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+				let p = document.createElement("dd")
+				p.className = "score-top"
+				dl.appendChild(p)
+
+				let msg = "<div class=\"score-region-line\">"
+				msg += `<div class=\"score-prestige\"
+						onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
 						onmouseleave="_tip_blur_award()"
-						onmousedown="_tip_click_light('award',${chit})"
-						>`
-
-                msg += `<div class = "score-demand-label d${d}"></div>`
-				msg += `<div class = "score-demand-value d${d} e${era}"></div>`
-				msg += `<div class = "score-demand-delta-box"><div class="score-demand-delta">${format_demand_info(d)}</div></div>`
-
+						onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">`
+				msg += `<span class="a${V.awards[REGION_EUROPE]} prestige-in-score">`
+				msg += `<span class="score-prestige-label">Prestige</span>`
+				msg += `<span class="score-prestige-amount">${format_prestige_info()}</span>`
+				msg += "</span>"
 				msg += "</div>"
-
+				msg += "</div>"
 				p = document.createElement("dc")
-				p.className = "score-demand-summary"
+				p.className = "prestige-summary"
 				p.innerHTML = msg
 				dl.appendChild(p)
 
-				//append_demand(d)
+				let wrap = 0
+				msg = "<div class=\"score-region-line\">"
+				let regions = 0
+				for (const region of [REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA]) {
+					var chit = V.awards[region]
+
+					msg += `<span class="a${chit} award marker black square-sm award-in-score"                  
+					onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+					onmouseleave="_tip_blur_award()"
+					onmousedown="_tip_click_light('award',${chit})"
+					><span class="score-region r${region}">${data.regions[region].name}</span>
+					<span class="score-region-delta r${region}">${format_award_info(region, chit)}</span>
+					</span>`
+					regions++
+					if (++wrap >= 2 && regions <= 2) {
+						wrap = 0
+						msg += "</div>"
+						msg += "<div class=\"score-region-line\">"
+					}
+				}
+				msg += "</div>"
+				p = document.createElement("dc")
+				p.className = "region-summary"
+				p.innerHTML = msg
+				dl.appendChild(p)
+
+				p = document.createElement("dd")
+				p.className = "score-below-regions"
+				dl.appendChild(p)
+
+				append_header("Global Demand")
+				let era = current_era()
+				for (let d = 0; d < NUM_DEMANDS; d++) {
+					if (!V.global_demand.includes(d)) continue
+
+					msg = `<div class=\"score-demand-line\"
+							onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+							onmouseleave="_tip_blur_award()"
+							onmousedown="_tip_click_light('award',${chit})"
+							>`
+
+					msg += `<div class = "score-demand-label d${d}"></div>`
+					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
+					msg += `<div class = "score-demand-delta-box"><div class="score-demand-delta">${format_demand_info(d)}</div></div>`
+
+					msg += "</div>"
+
+					p = document.createElement("dc")
+					p.className = "score-demand-summary"
+					p.innerHTML = msg
+					dl.appendChild(p)
+				}
+
+				p = document.createElement("dd")
+				p.className = "score-below-demands"
+				dl.appendChild(p)
 			}
-
-			p = document.createElement("dd")
-			p.className = "score-below-demands"
-			dl.appendChild(p)
-
-			//let header = document.createElement("dt")
-			//header.innerHTML = "<br/>"
-			//dl.appendChild(header)
 
 			append_header("Projected Results")
 			append_results()

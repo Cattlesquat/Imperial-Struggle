@@ -1244,16 +1244,16 @@ function get_preference(name, fallback) {
 	return fallback
 }
 
-function set_preference(name, value) {
+function set_preference(name, value, reload = true) {
 	var key = params.title_id + "/" + name
 	window.localStorage.setItem(key, JSON.stringify(value))
-	window.location.reload() //BR// Refresh page so that display preferences "take"
+	if (reload) window.location.reload() //BR// Refresh page so that display preferences "take"
 	return value
 }
 
-function toggle_preference(name)
+function toggle_preference(name, reload = true)
 {
-	set_preference(name, !get_preference(name, false))
+	set_preference(name, !get_preference(name, false), reload)
 }
 
 function init_preference_checkbox(name, initial) {
@@ -1268,10 +1268,26 @@ function init_preference_checkbox(name, initial) {
 	document.body.dataset[name] = value
 }
 
-function _update_preference_checkbox(name) {
+
+// Operates inside a dialog so don't refresh the whole view
+function init_preference_checkbox_dialog(name, initial) {
+	var input = document.querySelector(`input[name="${name}"]`)
+	var value = get_preference(name, initial)
+	input.checked = value
+	input.onchange = function () {
+		_update_preference_checkbox(name, false)
+		if (typeof on_dialog_refresh === "function") {
+			on_dialog_refresh(name, get_preference(name, initial))
+		}
+	}
+	document.body.dataset[name] = value
+}
+
+
+function _update_preference_checkbox(name, reload = true) {
 	var input = document.querySelector(`input[name="${name}"]`)
 	var value = input.checked
-	set_preference(name, value)
+	set_preference(name, value, reload)
 	document.body.dataset[name] = value
 }
 

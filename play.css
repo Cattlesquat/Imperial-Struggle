@@ -2129,6 +2129,12 @@ div[data-tooltip]:after {
     margin: 2px;
 }
 
+.score-checkbox {
+    left: 20px;
+    position: relative;
+    top: 1px;
+}
+
 
 .d0 { background-position-y: -183px; }
 .d1 { background-position-y: -203px; }
