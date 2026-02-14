@@ -9454,6 +9454,7 @@ P.naval_flow = script(`
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
 			G.action_points_committed_bonus[MIL] += L.choiseul
+			G.action_points_available_now += L.choiseul
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
 		}
     	
