@@ -6957,6 +6957,8 @@ P.event_falklands_crisis = {
 }
 
 
+// BR: 1 =econ= for every 2 squadrons you have on the map or in Navy Box. Bonus: Draw a Bonus War Tile.
+// FR: Add a squadron to the Navy Box. Bonus: Reduce your debt by 2.
 P.event_cook_and_bougainville = {
 	_begin() {
 		L.squadrons	= 0
@@ -6993,6 +6995,7 @@ P.event_cook_and_bougainville = {
 		push_undo()
 		if (R === BRITAIN) {
 			if (!L.done_award) {
+				L.done_award = true
 				add_action_points(ECON, L.econ_award)
 				if (!G.qualifies_for_bonus) end()
 				if (free_theaters(R) <= 0) {
@@ -9169,6 +9172,10 @@ P.buy_bonus_war_tile_flow = script(`
 P.bonus_war_tile_decisions = {
 	_begin() {
 		L.confirmed      = has_transient(R, TRANSIENT_COOK)
+		if (L.confirmed) {
+			L.new_tile = draw_bonus_war_tile(G.active, 0)
+			log (data.flags[G.active].name + " draws a bonus war tile.")
+		}
 		L.theater        = 0
 		L.displaced_tile = -1
 		set_transient(R, TRANSIENT_COOK, false)
