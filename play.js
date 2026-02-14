@@ -943,7 +943,7 @@ function on_init() {
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
-		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE)) ///
+		define_marker("basic_war", i + 0, "hex fr war-basic" + (i + 0)).tooltip(basic_war_tooltip(i, FRANCE))
 		define_marker("basic_war", i + 16, "hex br war-basic" + (i + 16)).tooltip(basic_war_tooltip(i, BRITAIN))
 	}
 
@@ -1491,8 +1491,17 @@ function on_update() {
 		update_keyword("advantage", a, "exhausted", is_advantage_exhausted(a) && (noflipsies || (downanddirty && V.advantages[a] === NONE)))
 	}
 
-	if (V.all_ministries)
+	if (V.all_ministries) {
 		populate_with_list("panel-all-ministries", "ministry_card", V.all_ministries)
+		let title = document.getElementById("ministries_title")
+		if (title) {
+			if (V.choosing_ministries) {
+				title.textContent = "Choose from Available Ministries"
+			} else {
+				title.textContent = "Ministries Available This Turn"
+			}
+		}
+	}
 
 	V.available_investments.sort((a, b) =>
 	{

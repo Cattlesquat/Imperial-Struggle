@@ -2299,25 +2299,28 @@ P.deal_cards_discard = {
 			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": ")
 			V.prompt += "[Click] \"Done\" to proceed to next phase."
 			button ("done")
-		} else if (G.hand[R].length > 3) {
-			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
-			for (var c of G.hand[R])
-				action_event_card(c)
 		} else {
-			V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Review newly drawn Event cards.")
-			var any = false
-			for (const c of G.hand[R]) {
-				if (any) {
-					V.prompt += ", "
-				} else {
-					V.prompt += " ("
+			if (beginning_of_era()) show_all_ministry_cards(false)
+			if (G.hand[R].length > 3) {
+				V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
+				for (var c of G.hand[R])
+					action_event_card(c)
+			} else {
+				V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Review newly drawn Event cards.")
+				var any = false
+				for (const c of G.hand[R]) {
+					if (any) {
+						V.prompt += ", "
+					} else {
+						V.prompt += " ("
+					}
+					V.prompt += say_event(c)
+					any = true
 				}
-				V.prompt += say_event(c)
-				any = true
-			}
-			if (any) V.prompt += ")"
+				if (any) V.prompt += ")"
 
-			button("confirm")
+				button("confirm")
+			}
 		}
 		if (G.review_step[R] > 0) button ("undo")
 	},
@@ -2389,16 +2392,18 @@ P.ministry_phase = function () {
 
 
 // When player has an option to pick a new minister, this shows the ministry window and actions all the eligible cards
-function show_all_ministry_cards()
+function show_all_ministry_cards(action = true)
 {
 	V.all_ministries = []
+	V.choosing_ministries = action
 	for (var m of data.ministries) {
 		if (m.side === R && !G.ministry[R].includes(m.num)) {
 			if ((m.num === JACOBITE_UPRISINGS) && G.jacobites_never) continue
 			if (m.era.includes(current_era())) {
 				V.all_ministries.push(m.num)
-				if (G.ministry[R].length < num_ministry_slots(R))
-					action_ministry_card(m.num)
+				if (G.ministry[R].length < num_ministry_slots(R)) {
+					if (action) action_ministry_card(m.num)
+				}
 			}
 		}
 	}
