@@ -6839,6 +6839,7 @@ P.event_stamp_act = {
 			} else if (L.conflicts_to_do > 1) {
 				msg += " " + parens(L.conflicts_done + "/" + L.conflicts_to_do)
 			}
+			V.prompt = event_prompt(R, G.played_event, msg)
 		}
 	},
 	space(s) {
