@@ -6577,6 +6577,8 @@ P.event_loge_des_neuf_soeurs = {
 			if (!any) {
 				msg += " (None possible)"
 				button("done")
+			} else {
+				button("pass") //BR// If we don't let people pass here, then you can end up with eligible-to-activate-but-currently-unusable advantages (e.g. discount w/ no econ points, conflict w/ no eligible targets) blocking the player from getting the bonus half of the card
 			}
 			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, DIPLO))
 		}
@@ -6599,6 +6601,9 @@ P.event_loge_des_neuf_soeurs = {
 		G.advantage_regions |= (1 << get_advantage_region(a))
 		G.advantage_already_exhausted = false
 		goto ("advantage_flow")
+	},
+	pass() {
+		this.done()
 	},
 	done() {
 		push_undo()
