@@ -11264,7 +11264,7 @@ function start_war_theater_resolution()
 		}
 
 		if ((G.next_war === WAR_AWI) && (G.theater === 3)) {
-			L.war_squadrons = Math.min(2, L.war_delta / 2)
+			L.war_squadrons = Math.min(2, Math.floor(L.war_delta / 2))
 		}
 
 		L.war_squadrons_original = L.war_squadrons
