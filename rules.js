@@ -3790,7 +3790,7 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
-function get_contingent(type, rules, require_independent)
+function get_contingent(type, rules, require_independent = false)
 {
 	let amount = 0
 	if ((rules !== undefined) && (rules !== null)) {
@@ -7703,7 +7703,7 @@ P.ministry_choiseul = {
 		push_undo()
 		log_box_ministry(R, CHOISEUL)
 		exhaust_ministry(R, CHOISEUL, 0)
-		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY)
+		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY, false)
 		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
@@ -9152,6 +9152,7 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 function use_choiseul()
 {
 	G.action_points_committed_bonus[MIL]++
+	G.action_points_available_now++
 	log_box_ministry(FRANCE, CHOISEUL)
 	log ("France receives 1 extra " + say_action_points(1, MIL) + " (usable for deploying squadrons or buying bonus war tiles.")
 	log_box_end(LOG_BOX_MINISTRY)
