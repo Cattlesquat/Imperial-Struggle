@@ -3269,6 +3269,8 @@ P.scoring_phase = function () {
 			G.won_all_scorings = NONE
 		}
 
+		log_box_end()
+
 		if (region === REGION_EUROPE) {
 			if (has_active_ministry(FRANCE, VOLTAIRE)) {
 				let multispace = 0
@@ -3281,12 +3283,13 @@ P.scoring_phase = function () {
 
 				let countries = Math.min(3, multispace)
 				if (countries) {
-					award_vp(FRANCE, countries, false, "VOLTAIRE: Controlling a prestige space in " + multispace + " multi-space countr" + ((multispace === 1) ? "y" : "ies"))
+					log_box_ministry(FRANCE, VOLTAIRE)
+					log("France controls a prestige space in " + " multi-space countr" + ((multispace === 1) ? "y" : "ies") + ".")
+					add_treaty_points(FRANCE, countries)
+					log_box_end(LOG_BOX_MINISTRY)
 				}
 			}
 		}
-
-		log_box_end()
 
 		G.scoring_region_indices.push(G.log.length - 1) // Bookmark in log how much to display when reviewing this score
 		G.scoring_region_vp.push(G.vp)
