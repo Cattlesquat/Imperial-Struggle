@@ -1879,7 +1879,7 @@ div[data-tooltip]:after {
     cursor: move;
     background-color: tan;
     border-bottom: 1px solid black;
-    padding: 4px 8px;
+    padding: 5px 8px;
 }
 
 .dialog_x {
