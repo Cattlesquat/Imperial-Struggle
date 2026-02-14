@@ -2019,7 +2019,8 @@ function start_of_peace_turn() {
 
 	G.awards = []        // Clear any award markers left over from last turn
 	G.global_demand = [] // Clear any demand markers left over from last turn
-	G.did_the_brig = false;
+	G.played_event = -1  // Clear any "played event" still showing from last turn
+	G.did_the_brig = false
 
 	review_begin()
 	review_push("START OF TURN " + data.turns[G.turn].id)
