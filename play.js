@@ -3722,7 +3722,7 @@ function show_card_list(id, params) {
 			msg += `<div class=\"score-prestige\"
 					onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
 					onmouseleave="_tip_blur_award()"
-					onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">\``
+					onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">\`
 			msg += `<span class="a${V.awards[REGION_EUROPE]} prestige-in-score">`
 			msg += `<span class="score-prestige-label">Prestige</span>`
 			msg += `<span class="score-prestige-amount">${format_prestige_info()}</span>`
