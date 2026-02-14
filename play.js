@@ -3179,7 +3179,7 @@ function format_prestige_info()
 		leader = "+0"
 	}
 
-	return leader + " Prestige: 2 VP"
+	return leader // + " Prestige: 2 VP"
 }
 
 
@@ -3234,9 +3234,9 @@ function format_award_info(r, a)
 		leader = "+0"
 	}
 
-	let msg = data.regions[r].name + ": " + data.awards[a].name
+	//let msg = data.regions[r].name + ": " + data.awards[a].name
 
-	return leader + " " + msg
+	return leader // + " " + msg
 }
 
 function format_demand_info(d)
@@ -3712,14 +3712,62 @@ function show_card_list(id, params) {
 				}
 			}
 		} else if (id === "scoring_summary_dialog") {
-			append_header ("Prestige")
-			append_prestige()
+			//append_prestige()
 
-			append_header ("Regions")
-			for (let r = 0; r < NUM_REGIONS; r++) {
-				var a = V.awards[r]
-				append_region(r, a)
+			let p = document.createElement("dd")
+			p.className = "score-top"
+			dl.appendChild(p)
+
+			let msg = "<div class=\"score-region-line\">"
+			msg += `<div class=\"score-prestige\"
+					onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
+					onmouseleave="_tip_blur_award()"
+					onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">\``
+			msg += `<span class="a${V.awards[REGION_EUROPE]} prestige-in-score">`
+			msg += `<span class="score-prestige-label">Prestige</span>`
+			msg += `<span class="score-prestige-amount">${format_prestige_info()}</span>`
+			msg += "</span>"
+			msg += "</div>"
+			msg += "</div>"
+			p = document.createElement("dc")
+			p.className = "prestige-summary"
+			p.innerHTML = msg
+			dl.appendChild(p)
+
+			let wrap = 0
+			msg = "<div class=\"score-region-line\">"
+			let regions = 0
+			for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
+				var chit = V.awards[region]
+
+				msg += `<span class="a${chit} award marker black square-sm award-in-score"                  
+				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+				onmouseleave="_tip_blur_award()"
+				onmousedown="_tip_click_light('award',${chit})"
+				><span class="score-region r${region}">${data.regions[region].name}</span>
+				<span class="score-region-delta r${region}">${format_award_info(region, chit)}</span>
+				</span>`
+				regions++
+				if (++wrap >= 2 && regions <= 2) {
+					wrap = 0
+					msg += "</div>"
+					msg += "<div class=\"score-region-line\">"
+				}
 			}
+			msg += "</div>"
+			p = document.createElement("dc")
+			p.className = "region-summary"
+			p.innerHTML = msg
+			dl.appendChild(p)
+
+			p = document.createElement("dd")
+			p.className = "score-below-regions"
+			dl.appendChild(p)
+
+			//for (let r = 0; r < NUM_REGIONS; r++) {
+			//	var a = V.awards[r]
+			//	append_region(r, a)
+			//}
 
 			append_header ("Global Demand")
 			for (let d = 0; d < NUM_DEMANDS; d++) {

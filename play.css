@@ -1965,6 +1965,108 @@ div[data-tooltip]:after {
 }
 
 
+.award-in-score {
+    display: inline-block;
+    pointer-events: auto !important;
+    margin: 30px 20px 20px;
+}
+
+.score-region {
+    display: block;
+    position: relative;
+    width: 100px;
+    margin-top: -25px;
+    font-size: 16px;
+}
+
+.score-region-line {
+    display: flex;
+    justify-content: center;
+    min-height: 60px;
+    max-height: 75px;
+}
+
+.score-region-delta {
+    display: block;
+    position: relative;
+    font-size: 16px;
+}
+
+.score-region-delta.r0, .score-region-delta.r3 {
+    margin-left: 55px;
+    margin-top: 10px;
+}
+
+.score-region-delta.r1, .score-region-delta.r2 {
+    margin-left: -30px;
+    margin-top: 10px;
+}
+
+
+.score-region.r0 { /* Europe */
+    margin-left: -3px;
+}
+
+.score-region.r1 { /* North America */
+    margin-left: -27px;
+}
+
+.score-region.r2 { /* Caribbean */
+    margin-left: -14px;
+}
+
+.score-region.r3 { /* India */
+    margin-left: 5px;
+}
+
+.score-top {
+    min-height: 12px;
+}
+
+.score-below-regions {
+    min-height: 20px;
+}
+
+
+.score-prestige {
+    border: 1px solid black;
+    display: block;
+    background-image: url(boards75/map.avif);
+    background-size: auto;
+    background-repeat: no-repeat;
+
+    background-position: -1332px -555px;
+    width: 70px;
+    height: 70px;
+    margin-top: 0px;
+}
+
+.prestige-in-score {
+    display: inline-block;
+    pointer-events: auto !important;
+    margin: 30px 20px 20px;
+}
+
+.score-prestige-label {
+    display: block;
+    position: fixed;
+    font-size: 16px;
+    margin-top: -8px;
+    margin-left: -90px;
+}
+
+.score-prestige-amount {
+    display: block;
+    position: fixed;
+    font-size: 16px;
+    margin-top: -8px;
+    margin-left: 49px;
+}
+
+
+
+
+
 
 
 @media (max-width: 800px) {
