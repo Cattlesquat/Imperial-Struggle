@@ -1470,7 +1470,7 @@ function is_advantage_exhausted(a)
 	return !!(G.advantages_exhausted & (1 << a))
 }
 
-function exhaust_advantage(a, close_box, reason = "", silent = false)
+function exhaust_advantage(a, close_box, reason = "", silent = false, watt = true)
 {
 	G.advantages_exhausted |= (1 << a)
 
@@ -1484,7 +1484,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false)
 		}
 	}
 
-	if (has_advantage(FRANCE, a) && has_active_ministry(BRITAIN, JAMES_WATT) && !is_ministry_exhausted(BRITAIN, JAMES_WATT)) {
+	if (watt && has_advantage(FRANCE, a) && has_active_ministry(BRITAIN, JAMES_WATT) && !is_ministry_exhausted(BRITAIN, JAMES_WATT)) {
 		exhaust_ministry(BRITAIN, JAMES_WATT, 0, true)
 		G.treaty_points[BRITAIN]++
 		log_box_ministry(BRITAIN, JAMES_WATT)
@@ -6666,7 +6666,7 @@ P.event_la_gabelle = {
 	},
 	advantage(a) {
 		push_undo()
-		exhaust_advantage(a)
+		exhaust_advantage(a, true, "", false, false)
 		L.advantages_done++
 		if (L.advantages_done >= 2) {
 			gabelle_bonus()
