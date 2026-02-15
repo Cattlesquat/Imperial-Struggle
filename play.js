@@ -1260,9 +1260,12 @@ function update_debt_display() {
 
 		//BR// VP display goes different places depending on platform
 		if (is_mobile()) {
+			div.className += " mobile"
 			world.toolbar.append(div)
 		} else {
-			world.actions.prepend(div)
+			world.turn_info.classList.add("desktop")
+			world.turn_info.classList.add("vp")
+			world.turn_info.innerHTML = msg
 		}
 	}
 

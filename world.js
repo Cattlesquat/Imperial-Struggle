@@ -80,6 +80,7 @@ const world = {
 	map_tip: $("#map_tip"),
 	actions: $("#actions"),
 	toolbar: $("#toolbar"),
+	turn_info: $("#turn_info"),
 	log: $("#log"),
 	parent_list: [],
 	stack_list: [],
