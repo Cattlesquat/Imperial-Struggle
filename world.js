@@ -78,6 +78,8 @@ const world = {
 	tip: $("#tip"),
 	demand_highlight: $("#demand_highlight"),
 	map_tip: $("#map_tip"),
+	actions: $("#actions"),
+	toolbar: $("#toolbar"),
 	log: $("#log"),
 	parent_list: [],
 	stack_list: [],

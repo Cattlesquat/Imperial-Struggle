@@ -1249,6 +1249,18 @@ function update_debt_display() {
 		let avail = available_debt(who)
 		roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 	}
+
+	let msg = bold("VP: " + V.vp)
+	let div = document.createElement("div")
+	div.className = "vp"
+	div.innerHTML = msg
+
+	//BR// VP display goes different places depending on platform
+	if (is_mobile()) {
+		world.toolbar.append(div)
+	} else {
+		world.actions.prepend(div)
+	}
 }
 
 function scroll_log_to_end() {
@@ -1302,8 +1314,6 @@ function on_update() {
 	} else {
 		update_favicon("favicon1.png")
 	}
-
-	update_debt_display()
 
 	let tell_vp = Math.min(36, Math.max(-7, V.vp))
 	populate("general-track", tell_vp, "victory-points")
@@ -1775,6 +1785,8 @@ function on_update() {
 
 		scroll_log_to_end()
 	}
+
+	update_debt_display()
 
 	end_update()
 }

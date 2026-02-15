@@ -1772,6 +1772,16 @@ menu li.separator {
     /* border: 2px solid springgreen; */
 }
 
+.vp {
+    float: right;
+
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+}
+
 .vp-overlay {
     font-size: 28px;
     color: #333;
