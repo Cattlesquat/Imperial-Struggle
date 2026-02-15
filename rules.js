@@ -4936,7 +4936,7 @@ P.event_austro_spanish_rivalry = {
 		log ("French bonus war tile removed from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
 
 		// Randomize the choice without disrupting owner's present tile order
-		let choices = G.theater_basic_war_tiles[1 - G.active][L.theater].slice()
+		let choices = G.theater_bonus_war_tiles[1 - G.active][L.theater].slice()
 		shuffle(choices)
 
 		L.picked_bonus_tile = choices[0]
