@@ -1865,6 +1865,26 @@ function agencement_theater_tiles(element) {
 	}
 }
 
+
+
+function theater_tier(winner, theater, delta)
+{
+	var margin;
+	if ((winner === FRANCE) && (data.wars[G.next_war].theater[theater].france_margin !== undefined)) {
+		margin = data.wars[G.next_war].theater[theater].france_margin
+	} else {
+		margin = data.wars[G.next_war].theater[theater].margin
+	}
+
+	for (let i = margin.length - 1; i >= 0; i--) {
+		if (delta >= margin[i]) return i
+	}
+
+	return -1
+}
+
+
+
 var temp = 1
 
 function update_war_display() {
@@ -1902,7 +1922,7 @@ function update_war_display() {
 					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
 
 					if (margin === temp) {
-						update_keyword(box, theater, `theater-margin ${flag_class}`) ///
+						update_keyword(box, theater, `theater-margin ${flag_class}`)
 						update_show(box, theater, true)
 
 						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
@@ -1930,11 +1950,33 @@ function update_war_display() {
 			var num_theaters = data.wars[w].theaters
 			let war_prefix = war_prefixes[w-1]
 			for (theater = 1; theater <= num_theaters; theater++) {
+
+				for (let margin = 1; margin <= 3; margin++) {
+					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
+					update_show(box, theater, false)
+					if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+						box += "-br"
+						update_show(box, theater, false)
+					}
+				}
+
 				if (V.old_war_theater_winners && (V.old_war_theater_winners[w][theater] !== -1)) {
 					let winner = V.old_war_theater_winners[w][theater]
 					let margin = V.old_war_theater_margins[w][theater]
 					let is_tie = margin === 0
 					let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
+
+					if (margin > 0) {
+						let tier = theater_tier(winner, theater, margin) + 1
+						if (tier > 0) {
+							let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
+							if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+								if (winner === BRITAIN) box += "-br"
+							}
+							update_keyword(box, theater, `theater-margin ${flag_class}`)
+							update_show(box, theater, true)
+						}
+					}
 
 					update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
 					update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="flag"></span><span>${margin}</span>`)
@@ -2009,13 +2051,35 @@ function update_war_display() {
 			update_keyword(`lout-${war_prefix}-strength-br`, theater, "theater-strength br")
 			update_text_html(`lout-${war_prefix}-strength-br`, theater, `<span class="flag"></span><span>${br_strength}</span>`)
 
+			w = G.next_war
+			for (let margin = 1; margin <= 3; margin++) {
+				let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
+				update_show(box, theater, false)
+				if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+					box += "-br"
+					update_show(box, theater, false)
+				}
+			}
+
 			// Winner
 			if (V.theater_winner && V.theater_winner[theater] !== -1) {
 				let winner = V.theater_winner[theater]
 				let margin = V.theater_margin[theater]
 				let is_tie = margin === 0
 				let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
-				
+
+				if (margin > 0) {
+					let tier = theater_tier(winner, theater, margin) + 1
+					if (tier > 0) {
+						let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
+						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+							if (winner === BRITAIN) box += "-br"
+						}
+						update_keyword(box, theater, `theater-margin ${flag_class}`)
+						update_show(box, theater, true)
+					}
+				}
+
 				update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
 				update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="flag"></span><span>${margin}</span>`)
 				update_show(`lout-${war_prefix}-winner`, theater, true)
