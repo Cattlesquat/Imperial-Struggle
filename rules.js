@@ -7519,7 +7519,10 @@ function jacobite_vp_value()
 
 function do_award_jacobite_vp()
 {
+	log_box_ministry(FRANCE, JACOBITE_UPRISINGS)
+	exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 1)
 	award_vp(FRANCE, jacobite_vp_value(), false, "Jacobite Uprisings")
+	log_box_end(LOG_BOX_MINISTRY)
 }
 
 P.jacobite_vp_flow = script (`
