@@ -1251,16 +1251,22 @@ function update_debt_display() {
 	}
 
 	let msg = bold("VP: " + V.vp)
-	let div = document.createElement("div")
-	div.className = "vp"
-	div.innerHTML = msg
 
-	//BR// VP display goes different places depending on platform
-	if (is_mobile()) {
-		world.toolbar.append(div)
-	} else {
-		world.actions.prepend(div)
+	let div = document.getElementById("vp")
+	if (div === null) {
+		div = document.createElement("div")
+		div.className = "vp"
+		div.id = "vp"
+
+		//BR// VP display goes different places depending on platform
+		if (is_mobile()) {
+			world.toolbar.append(div)
+		} else {
+			world.actions.prepend(div)
+		}
 	}
+
+	div.innerHTML = msg
 }
 
 function scroll_log_to_end() {
