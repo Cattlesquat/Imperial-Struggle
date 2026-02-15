@@ -11538,11 +11538,13 @@ P.war_theater_resolve = {
 		} else if (L.war_usa) {
 			msg += say_action("You may place USA flags in territories and unflag forts.")
 			let any = false
+			let any_territory = false
 			for (const s of [ NORTHERN_COLONIES, CAROLINAS, SAN_AGUSTIN, QUEBEC_AND_MONTREAL ]) {
 				if (G.flags[s] === USA) continue
 				if ((s === QUEBEC_AND_MONTREAL) && !L.war_canada) continue
 				action_space(s)
 				any = true
+				any_territory = true
 			}
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== REGION_NORTH_AMERICA) continue
@@ -11554,8 +11556,10 @@ P.war_theater_resolve = {
 			}
 			if (!any) {
 				button("done")
-			} else {
+			} else if (any_territory) {
 				button("confirm_pass_usa")
+			} else {
+				button("confirm_pass_usa_forts")
 			}
 		} else if (L.war_atlantic) {
 			msg += say_action("Place Atlantic Dominance marker in the French & Indian War theater box")
@@ -11632,10 +11636,10 @@ P.war_theater_resolve = {
 			// Unflag markets that became isolated as a result of this change (7.3)
 			for (let s2 = 0; s2 < NUM_SPACES; s2++) {
 				if (data.spaces[s2].type !== MARKET) continue
-				if ((data.spaces[s2].region !== REGION_CARIBBEAN) && (data.spaces[s2] !== REGION_NORTH_AMERICA)) continue
+				if ((data.spaces[s2].region !== REGION_CARIBBEAN) && (data.spaces[s2].region !== REGION_NORTH_AMERICA)) continue
 				if (!check_if_market_isolated(s2)) continue
 				if (L.already_isolated.includes(s2)) continue
-				reflag_space(s, NONE)
+				reflag_space(s2, NONE)
 			}
 
 			log_br()
@@ -11736,6 +11740,9 @@ P.war_theater_resolve = {
 		}
 	},
 	confirm_pass_usa() {
+		this.done()
+	},
+	confirm_pass_usa_forts() {
 		this.done()
 	},
 }

@@ -1701,6 +1701,7 @@ function on_update() {
 
 	confirm_action_button("confirm_pass_to_reduce_debt", is_mobile() ? "Pass" : "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
+	confirm_action_button("confirm_pass_usa_forts", "Pass", "You have not removed flags from all eligible forts. Confirm passing early?")
 
 	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
 
@@ -1888,13 +1889,13 @@ function agencement_theater_tiles(element) {
 
 
 
-function theater_tier(winner, theater, delta)
+function theater_tier(war, winner, theater, delta)
 {
 	var margin;
-	if ((winner === FRANCE) && (data.wars[G.next_war].theater[theater].france_margin !== undefined)) {
-		margin = data.wars[G.next_war].theater[theater].france_margin
+	if ((winner === FRANCE) && (data.wars[war].theater[theater].france_margin !== undefined)) {
+		margin = data.wars[war].theater[theater].france_margin
 	} else {
-		margin = data.wars[G.next_war].theater[theater].margin
+		margin = data.wars[war].theater[theater].margin
 	}
 
 	for (let i = margin.length - 1; i >= 0; i--) {
@@ -1988,7 +1989,7 @@ function update_war_display() {
 					let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
 
 					if (margin > 0) {
-						let tier = theater_tier(winner, theater, margin) + 1
+						let tier = theater_tier(w, winner, theater, margin) + 1
 						if (tier > 0) {
 							let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
 							if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
@@ -2090,7 +2091,7 @@ function update_war_display() {
 				let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
 
 				if (margin > 0) {
-					let tier = theater_tier(winner, theater, margin) + 1
+					let tier = theater_tier(G.next_war, winner, theater, margin) + 1
 					if (tier > 0) {
 						let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
 						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
