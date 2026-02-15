@@ -994,6 +994,19 @@ function on_init() {
 		define_layout("lout-wss-alliance", 2, war_layout.war_wss_theater_2_alliances)
 		define_layout("lout-wss-alliance", 3, war_layout.war_wss_theater_3_alliances)
 		define_layout("lout-wss-alliance", 4, war_layout.war_wss_theater_4_alliances)
+
+		define_layout("lout-wss-theater-1-margin-1", 1, [ 80,  304, 410, 17])
+		define_layout("lout-wss-theater-1-margin-2", 1, [ 80,  322, 410, 17])
+		define_layout("lout-wss-theater-1-margin-3", 1, [ 80,  340, 410, 17])
+		define_layout("lout-wss-theater-2-margin-1", 2, [600,  306, 412, 17])
+		define_layout("lout-wss-theater-2-margin-2", 2, [600,  324, 412, 17])
+		define_layout("lout-wss-theater-2-margin-3", 2, [600,  343, 412, 17])
+		define_layout("lout-wss-theater-3-margin-1", 3, [ 80,  680, 412, 17])
+		define_layout("lout-wss-theater-3-margin-2", 3, [ 80,  698, 412, 17])
+		define_layout("lout-wss-theater-3-margin-3", 3, [ 80,  717, 412, 30])
+		define_layout("lout-wss-theater-4-margin-1", 4, [600,  680, 412, 17])
+		define_layout("lout-wss-theater-4-margin-2", 4, [600,  698, 412, 17])
+		define_layout("lout-wss-theater-4-margin-3", 4, [600,  717, 412, 17])
 	}
 
 	define_board("#war_was", 1100, 850)
@@ -1027,6 +1040,22 @@ function on_init() {
 		define_layout("lout-was-alliance", 2, war_layout.war_was_theater_2_alliances)
 		define_layout("lout-was-alliance", 3, war_layout.war_was_theater_3_alliances)
 		define_layout("lout-was-alliance", 4, war_layout.war_was_theater_4_alliances)
+
+		define_layout("lout-was-theater-1-margin-1", 1, [102,  283, 360, 17])
+		define_layout("lout-was-theater-1-margin-2", 1, [102,  301, 360, 17])
+		define_layout("lout-was-theater-1-margin-3", 1, [102,  301, 360, 17])
+		define_layout("lout-was-theater-2-margin-1", 2, [600,  283, 412, 17])
+		define_layout("lout-was-theater-2-margin-2", 2, [600,  301, 412, 17])
+		define_layout("lout-was-theater-2-margin-3", 2, [600,  301, 412, 17])
+		define_layout("lout-was-theater-3-margin-1", 3, [ 80,  615, 412, 17])
+		define_layout("lout-was-theater-3-margin-2", 3, [ 80,  632, 412, 17])
+		define_layout("lout-was-theater-3-margin-3", 3, [ 80,  650, 412, 17])
+		define_layout("lout-was-theater-4-margin-1", 4, [578,  591, 459, 17])
+		define_layout("lout-was-theater-4-margin-2", 4, [578,  609, 459, 17])
+		define_layout("lout-was-theater-4-margin-3", 4, [578,  627, 459, 17])
+		define_layout("lout-was-theater-4-margin-1-br", 4, [578,  669, 459, 17])
+		define_layout("lout-was-theater-4-margin-2-br", 4, [578,  687, 459, 17])
+		define_layout("lout-was-theater-4-margin-3-br", 4, [578,  705, 459, 17])
 	}
 
 	define_board("#war_7yw", 1100, 850)
@@ -1060,6 +1089,19 @@ function on_init() {
 		define_layout("lout-7yw-alliance", 2, war_layout.war_7yw_theater_2_alliances)
 		define_layout("lout-7yw-alliance", 3, war_layout.war_7yw_theater_3_alliances)
 		define_layout("lout-7yw-alliance", 4, war_layout.war_7yw_theater_4_alliances)
+
+		define_layout("lout-7yw-theater-1-margin-1", 1, [ 88,  306, 396, 32])
+		define_layout("lout-7yw-theater-1-margin-2", 1, [ 88,  339, 396, 32])
+		define_layout("lout-7yw-theater-1-margin-3", 1, [ 88,  372, 396, 32])
+		define_layout("lout-7yw-theater-2-margin-1", 2, [600,  306, 412, 17])
+		define_layout("lout-7yw-theater-2-margin-2", 2, [600,  324, 412, 17])
+		define_layout("lout-7yw-theater-2-margin-3", 2, [600,  342, 412, 17])
+		define_layout("lout-7yw-theater-3-margin-1", 3, [ 80,  671, 412, 17])
+		define_layout("lout-7yw-theater-3-margin-2", 3, [ 80,  689, 412, 17])
+		define_layout("lout-7yw-theater-3-margin-3", 3, [ 80,  707, 412, 17])
+		define_layout("lout-7yw-theater-4-margin-1", 4, [600,  709, 416, 17])
+		define_layout("lout-7yw-theater-4-margin-2", 4, [600,  727, 416, 17])
+		define_layout("lout-7yw-theater-4-margin-3", 4, [600,  745, 416, 17])
 	}
 
 	define_board("#war_awi", 1100, 850)
@@ -1075,8 +1117,6 @@ function on_init() {
 		define_layout("lout-theater", 28, war_layout.war_awi_theater_2_britain)
 		define_layout("lout-theater", 29, war_layout.war_awi_theater_3_france)
 		define_layout("lout-theater", 30, war_layout.war_awi_theater_3_britain)
-		//define_layout("lout-theater", 31, war_layout.war_awi_theater_4_france)
-		//define_layout("lout-theater", 32, war_layout.war_awi_theater_4_britain)
 		define_layout("lout-awi-strength-fr", 1, war_layout.war_awi_theater_1_strength_fr)
 		define_layout("lout-awi-strength-br", 1, war_layout.war_awi_theater_1_strength_br)
 		define_layout("lout-awi-winner", 1,  war_layout.war_awi_theater_1_winner)
@@ -1089,6 +1129,19 @@ function on_init() {
 		define_layout("lout-awi-alliance", 1, war_layout.war_awi_theater_1_alliances)
 		define_layout("lout-awi-alliance", 2, war_layout.war_awi_theater_2_alliances)
 		define_layout("lout-awi-alliance", 3, war_layout.war_awi_theater_3_alliances)
+
+		define_layout("lout-awi-theater-1-margin-1", 1, [ 80,  307, 412, 17])
+		define_layout("lout-awi-theater-1-margin-2", 1, [ 80,  325, 412, 17])
+		define_layout("lout-awi-theater-1-margin-3", 1, [ 80,  343, 412, 17])
+		define_layout("lout-awi-theater-1-margin-1-br", 1, [ 80,  400, 412, 17])
+		define_layout("lout-awi-theater-1-margin-2-br", 1, [ 80,  418, 412, 17])
+		define_layout("lout-awi-theater-1-margin-3-br", 1, [ 80,  436, 412, 17])
+		define_layout("lout-awi-theater-2-margin-1", 2, [600,  306, 412, 17])
+		define_layout("lout-awi-theater-2-margin-2", 2, [600,  324, 412, 17])
+		define_layout("lout-awi-theater-2-margin-3", 2, [600,  324, 412, 17])
+		define_layout("lout-awi-theater-3-margin-1", 3, [600,  620, 412, 17])
+		define_layout("lout-awi-theater-3-margin-2", 3, [600,  638, 412, 17])
+		define_layout("lout-awi-theater-3-margin-3", 3, [600,  656, 412, 17])
 	}
 
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
@@ -1812,6 +1865,8 @@ function agencement_theater_tiles(element) {
 	}
 }
 
+var temp = 1
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -1822,6 +1877,53 @@ function update_war_display() {
 	}
 
 	const war_prefixes = ["wss", "was", "7yw", "awi"]
+
+	/*
+	// This code is for testing the positioning of theater margin-of-victory highlight bars
+	if (allwars) {
+		for (let w = 1; w <= 4; w++) {
+			var num_theaters = data.wars[w].theaters
+			let war_prefix = war_prefixes[w - 1]
+			for (theater = 1; theater <= num_theaters; theater++) {
+				for (let margin = 1; margin <= 3; margin++) {
+					let flag_class = "fr"
+					switch (margin) {
+						case 1:
+							flag_class = "fr";
+							break
+						case 2:
+							flag_class = "br";
+							break
+						case 3:
+							flag_class = "fr";
+							break
+					}
+
+					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
+
+					if (margin === temp) {
+						update_keyword(box, theater, `theater-margin ${flag_class}`) ///
+						update_show(box, theater, true)
+
+						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+							box += "-br"
+							update_keyword(box, theater, `theater-margin ${flag_class}`)
+							update_show(box, theater, true)
+						}
+
+					} else {
+						update_show(box, theater, false)
+
+						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+							box += "-br"
+							update_show(box, theater, false)
+						}
+					}
+				}
+			}
+		}
+	}
+	*/
 
 	if (allwars) {
 		for (let w = 1; w < G.next_war; w++) {
@@ -2940,11 +3042,18 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 
-		// TODO take out the below key (it's a cheat key)
+		// TODO take out the below (cheat/debug keys)
 		case "x":
 		case "X":
 			send_message("action", ["cheat_cheat", null, game_cookie])
 			evt.preventDefault()
+			break;
+
+		case "1":
+		case "2":
+			temp = temp + 1
+			if (temp > 3) temp = 1
+			console.log(temp)
 			break;
 	}
 })
