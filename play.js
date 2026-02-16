@@ -3953,10 +3953,16 @@ function show_card_list(id, params) {
 						onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
 						onmouseleave="_tip_blur_award()"
 						onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">`
-				msg += `<span class="a${V.awards[REGION_EUROPE]} prestige-in-score">`
-				msg += `<span class="score-prestige-label">Prestige</span>`
-				msg += `<span class="score-prestige-amount">${format_prestige_info()}</span>`
-				msg += "</span>"
+				msg += `<div class="prestige-in-score">`
+				msg += `<div class="score-prestige-label">Prestige</div>`
+				msg += `<div class="score-prestige-amount">${format_prestige_info()}`
+				let who = prestige_winner()
+				let flag = (who === FRANCE) ? "fr" : "br"
+				if (who !== NONE) {
+					msg += `<div class="score-flag ${flag}"></div>`
+				}
+				msg += `</div>`
+				msg += "</div>"
 				msg += "</div>"
 				msg += "</div>"
 				p = document.createElement("dc")
@@ -4007,8 +4013,17 @@ function show_card_list(id, params) {
 
 					msg += `<div class = "score-demand-label d${d}"></div>`
 					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
-					msg += `<div class = "score-demand-delta-box"><div class="score-demand-delta">${format_demand_info(d)}</div></div>`
+					msg += `<div class = "score-demand-delta-box">`
+					msg += `<div class="score-demand-delta">${format_demand_info(d)}>`
 
+					let who = demand_flag_winner(d)
+					let flag = (who === FRANCE) ? "fr" : "br"
+					if (who !== NONE) {
+						msg += `<div class="score-flag ${flag}"></div>`
+					}
+
+					msg += `</div>`
+					msg += `</div>`
 					msg += "</div>"
 
 					p = document.createElement("dc")
@@ -4020,6 +4035,44 @@ function show_card_list(id, params) {
 				p = document.createElement("dd")
 				p.className = "score-below-demands"
 				dl.appendChild(p)
+
+				/*
+				append_header("Global Demand")
+				let era = current_era()
+				for (let d = 0; d < NUM_DEMANDS; d++) {
+					if (!V.global_demand.includes(d)) continue
+
+					msg = `<div class=\"score-demand-line\"
+							onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+							onmouseleave="_tip_blur_award()"
+							onmousedown="_tip_click_light('award',${chit})"
+							>`
+
+					msg += `<div class = "score-demand-label d${d}"></div>`
+					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
+					msg += `<div class = "score-demand-delta-box">`
+					msg += `<div class="score-demand-delta">${format_demand_info(d)}>`
+
+					let who = demand_flag_winner(d)
+					let flag = (who === FRANCE) ? "fr" : "br"
+					if (who !== NONE) {
+						msg += `<div class="score-flag ${flag}"></div>`
+					}
+
+					msg += `</div>`
+					msg += `</div>`
+					msg += "</div>"
+
+					p = document.createElement("dc")
+					p.className = "score-demand-summary"
+					p.innerHTML = msg
+					dl.appendChild(p)
+				}
+
+				p = document.createElement("dd")
+				p.className = "score-below-demands"
+				dl.appendChild(p)
+				*/
 			}
 
 			append_header("Projected Results")
