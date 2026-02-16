@@ -1340,14 +1340,14 @@ function on_update() {
 
 	if (V.the_brig > 0) {
 		for (let i = 0; i < V.the_brig; i++) {
-			let turn = (V.did_the_brig ? next_peace_turn(V.turn) : V.turn)
+			let turn = (is_bit(DID_THE_BRIG) ? next_peace_turn(V.turn) : V.turn)
 			if (turn < GAME_OVER) populate("turn-track", turn, "squadron-br", get_squadron_token(BRITAIN, SPACE_THE_BRIG, i))
 		}
 	}
 
-	if (V.jacobite_victory_wss) populate("turn-track", WAR_TURN_WSS, "jacobite-victory", 2)
-	if (V.jacobite_victory_was) populate("turn-track", WAR_TURN_WAS, "jacobite-victory", 3)
-	if (V.jacobite_defeat) populate("turn-track", WAR_TURN_WAS, "jacobite-defeat", 1)
+	if (is_bit(JACOBITE_VICTORY_WSS)) populate("turn-track", WAR_TURN_WSS, "jacobite-victory", 2)
+	if (is_bit(JACOBITE_VICTORY_WAS)) populate("turn-track", WAR_TURN_WAS, "jacobite-victory", 3)
+	if (is_bit(JACOBITE_DEFEAT)) populate("turn-track", WAR_TURN_WAS, "jacobite-defeat", 1)
 
 	populate("turn-track", V.turn, "game-turn", 0)
 	populate("lout-initiative", "initiative", V.initiative)
@@ -1472,7 +1472,7 @@ function on_update() {
 		update_text_html("demand-winner", i, html)
 	}
 
-	let jacobite_count = V.jacobite_victory + (V.jacobite_defeat > 0 ? 1 : 0)
+	let jacobite_count = V.jacobite_victory + (is_bit(JACOBITE_DEFEAT) ? 1 : 0)
 
 	if (jacobite_count > 0) {
 		let offset = (jacobite_count - 1) * 2.5
@@ -1481,7 +1481,7 @@ function on_update() {
 		for (let i = 0; i < V.jacobite_victory; i++) {
 			populate("lout-jacobite", "jacobite-victory", i)
 		}
-		if (V.jacobite_defeat > 0) {
+		if (is_bit(JACOBITE_DEFEAT)) {
 			populate("lout-jacobite", "jacobite-defeat", 0)
 		}
 	}
@@ -2434,6 +2434,19 @@ function is_digit(c) {
 // Returns true if we're playing this on a mobile platform e.g. phone
 function is_mobile() {
 	return ("ontouchstart" in window)
+}
+
+
+function is_bit(b) {
+	return !!bit_get(V.bitflags ?? [ 0 ], b)
+}
+
+
+function bit_get(bits, index)
+{
+	var w = index >> 5
+	var b = index & 31
+	return ((bits[w] >> b) & 1) > 0
 }
 
 
@@ -3870,7 +3883,7 @@ function show_card_list(id, params) {
 			for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 				if (data.ministries[m].side !== who) continue
 				if (!data.ministries[m].era.includes(current_era())) continue
-				if ((m === JACOBITE_UPRISINGS) && V.jacobites_never) continue
+				if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
 				append_ministry(m)
 			}
 
@@ -3895,7 +3908,7 @@ function show_card_list(id, params) {
 				}
 			}
 
-			if (V.jacobites_never && (who === FRANCE)) {
+			if (is_bit(JACOBITES_NEVER) && (who === FRANCE)) {
 				append_header("Removed From Game")
 				append_ministry(JACOBITE_UPRISINGS)
 			}
@@ -3917,7 +3930,7 @@ function show_card_list(id, params) {
 					if (data.ministries[m].era.includes(current_era())) continue
 					if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
 					if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
-					if ((m === JACOBITE_UPRISINGS) && V.jacobites_never) continue
+					if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
 					append_ministry(m)
 				}
 			}

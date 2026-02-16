@@ -391,6 +391,35 @@ const BEFORE_SPENDING_ACTION_POINTS = 4
 const ACTION_POINTS_ALREADY_SPENT   = 5
 const NOT_ACTION_PHASE				= 6
 
+// Generic persistent bitflags
+const NUM_BITFLAGS                = 32
+const FLAG_MILITARY_UPGRADE	      = 0
+const BUYING_WAR_TILE             = 1
+const JACOBITES_ALWAYS            = 2
+const JACOBITES_NEVER             = 3
+const JACOBITE_DEFEAT             = 4
+const ACTION_MINOR                = 5
+const ELIGIBLE_MINOR              = 6
+const ACTION_COST_ADJUSTED        = 7
+const MINISTRY_ALREADY_REVEALED   = 8
+const MINISTRY_OPTIONAL           = 9
+const MINISTRY_PROMPT_TO_EXHAUST  = 10
+const PAID_ACTION_COST            = 11
+const USED_REQUIRED_ADVANTAGE     = 12
+const MINISTRY_MANUALLY_CLICKED   = 13
+const CARD_HAS_BONUS              = 14
+const QUALIFIES_FOR_BONUS         = 15
+const ADVANTAGE_ALREADY_EXHAUSTED = 16
+const NAVY_FROM_NAVY_BOX          = 17
+const NAVY_DISPLACE               = 18
+const DID_THE_BRIG                = 19
+const JACOBITE_VICTORY_WSS        = 20
+const JACOBITE_VICTORY_WAS        = 21
+const ADVANTAGE_OPTIONAL          = 22
+const LEAVE_LOG_BOX_OPEN          = 23
+const STARTED_MINISTRY_BOX        = 24
+const ELIGIBLE_FOR_HUGUENOTS      = 25
+
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
 const NUM_TRANSIENT_BITFLAGS = 32
 const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
