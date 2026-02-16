@@ -74,7 +74,7 @@ const war_layout = {
 	war_wss_theater_1_alliances: [500, 142, 50, 152],
 	war_wss_theater_2_alliances: [1022, 160, 50, 152],
 	war_wss_theater_3_alliances: [500, 527, 50, 152],
-	war_wss_theater_4_alliances: [1022, 510, 50, 152],
+	war_wss_theater_4_alliances: [1022, 519, 50, 152],
 
 	// WAS - Strength
 	war_was_theater_1_strength_fr: [42, 360, 50, 25],
@@ -96,7 +96,7 @@ const war_layout = {
 	war_was_theater_1_alliances: [500, 122, 50, 152],
 	war_was_theater_2_alliances: [1022, 142, 50, 152],
 	war_was_theater_3_alliances: [500, 471, 50, 152],
-	war_was_theater_4_alliances: [1022, 445, 50, 152], 
+	war_was_theater_4_alliances: [1022, 454, 50, 152], 
 
 	// 7YW - Strength
 	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
