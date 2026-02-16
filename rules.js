@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 15
+const GAME_STATE_VERSION = 16
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -615,19 +615,19 @@ function on_setup(scenario, options) {
 	validate_decks("START")
 
 	// Investments available this action round
-	G.available_investments = []
+	G.inv_avail = []
 
 	// Investments that have already been claimed this action round
-	G.played_investments = []
+	G.inv_played = []
 
 	// Used investments from previous turns
-	G.used_investments = []
+	G.inv_used = []
 
-	// Shuffled face-down stack of investment tiles, from which G.available_investments is dealt each turn
-	G.investment_tile_stack = []
+	// Shuffled face-down stack of investment tiles, from which G.inv_avail is dealt each turn
+	G.inv_stack = []
 	for (i = 0; i < NUM_INVESTMENT_TILES; i++)
-		G.investment_tile_stack.push(i)
-	shuffle(G.investment_tile_stack)
+		G.inv_stack.push(i)
+	shuffle(G.inv_stack)
 
 	// These are the face-down stocks of war tiles the players draw from
 	// <br><b>
@@ -641,23 +641,23 @@ function on_setup(scenario, options) {
 
 	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
 	// <br><b>
-	// G.theater_basic_war_tiles[player][theater][0-n]
-	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
+	// G.theater_basic[player][theater][0-n]
+	G.theater_basic = [[[], [], [], [], []], [[], [], [], [], []]]
 
 	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
 	// <br><b>
-	// G.theater_bonus_war_tiles[player][theater][0-n]
-	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
+	// G.theater_bonus[player][theater][0-n]
+	G.theater_bonus = [[[], [], [], [], []], [[], [], [], [], []]]
 
 	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile id.
 	// <br><b>
-	// set_has(G.basic_war_tile_revealed[who], tile)
-	G.basic_war_tile_revealed = [[], []]
+	// set_has(G.basic_revealed[who], tile)
+	G.basic_revealed = [[], []]
 
 	// "Sets" -- keeps track of which individual basic war tiles have been revealed to the opponent, by tile id.
 	// <br><b>
-	// set_has(G.bonus_war_tile_revealed[who], tile)
-	G.bonus_war_tile_revealed = [[], []]
+	// set_has(G.bonus_revealed[who], tile)
+	G.bonus_revealed = [[], []]
 
 	// Limit of 2 bonus war tiles may be *purchased* per action round (can get more with events, etc)
 	G.bonuswar_bought = 0
@@ -694,23 +694,23 @@ function on_setup(scenario, options) {
 
 	// Simple bitflag, set if advantage has changed hands this turn
 	// <br><b>
-	// G.advantages_newly_acquired & (1<<a)
-	G.advantages_newly_acquired  = 0
+	// G.adv_new & (1<<a)
+	G.adv_new  = 0
 
 	// Simple bitflag, set if advantage presently exhausted
 	// <br><b>
 	// is_advantage_exhausted(who,a)
 	// <br>
-	// G.advantages_exhausted & (1<<a)
+	// G.adv_exhaust & (1<<a)
 	// <br>
-	// G.advantages_exhausted |= (1<<a)
-	G.advantages_exhausted       = 0
+	// G.adv_exhaust |= (1<<a)
+	G.adv_exhaust = 0
 
 	// Integer: the number of advantages the G.active player has already used this turn
-	G.advantages_used_this_round  = 0
+	G.adv_used = 0
 
 	// Bitflags = which regions has the G.active player already used an advantage in this turn
-	G.advantage_regions           = 0
+	G.adv_regions = 0
 
 	// All the flags on the map by space: G.flags[space]
 	// <br><b>
@@ -881,7 +881,7 @@ function on_setup(scenario, options) {
 	// BEFORE_SPENDING_ACTION_POINTS	<br>
 	// ACTION_POINTS_ALREADY_SPENT		<br>
 	// NOT_ACTION_PHASE					<br>
-	G.action_round_subphase = NOT_ACTION_PHASE
+	G.subphase = NOT_ACTION_PHASE
 
 	// When asking player about whether to flip ministers, expend advantages and abilities, etc, this header
 	// can be populated with a reminder of what the main action the player is trying to do (e.g. "UNFLAG IRELAND: ")
@@ -903,13 +903,13 @@ function on_setup(scenario, options) {
 
 	// For completed wars, the player who won each theater, or NONE for ties. -1 means not yet happened
 	// <br/>
-	// G.old_war_theater_winner[WAR_WSS][3] -> the winner of theater 3 in WAR_WSS
-	G.old_war_theater_winners = [ [], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [ -1, -1, -1, -1, -1] ]
+	// G.old_winners[WAR_WSS][3] -> the winner of theater 3 in WAR_WSS
+	G.old_winners = [ [], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1], [ -1, -1, -1, -1, -1] ]
 
 	// For completed wars, the margin by which each theater was won
 	// <br/>
-	// G.old_war_theater_margin[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
-	G.old_war_theater_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
+	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
+	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
 
 	call("main")
 }
@@ -1065,8 +1065,8 @@ function on_load()
 		upconvert (14, upconvert_patch_bitflags)
 	}
 
-	if (G.game_state_version < 15) {
-		upconvert (15, upconvert_shorter_names)
+	if (G.game_state_version < 16) {
+		upconvert (16, upconvert_shorter_names)
 	}
 
 	G.game_state_version = GAME_STATE_VERSION
@@ -1102,11 +1102,44 @@ function upconvert_patch_bitflags(state)
 }
 
 
-function upconvert_shorter_names(state) ///
+function upconvert_shorter_names(state)
 {
-	state.bonuswar_bought = state.bonus_war_tiles_bought_this_round
+	if (state.bonuswar_bought === undefined) {
+		state.bonuswar_bought = state.bonus_war_tiles_bought_this_round
+	}
+
+	state.adv_used       = state.advantages_used_this_round
+	state.adv_new        = state.advantages_newly_acquired
+	state.adv_regions    = state.advantage_regions
+	state.adv_exhaust    = state.advantages_exhausted
+	state.subphase       = state.action_round_subphase
+	state.bonus_revealed = state.bonus_war_tile_revealed
+	state.basic_revealed = state.basic_war_tile_revealed
+	state.theater_basic  = state.theater_basic_war_tiles
+	state.theater_bonus  = state.theater_bonus_war_tiles
+	state.inv_stack      = state.investment_tile_stack
+	state.inv_avail      = state.available_investments
+	state.inv_played     = state.played_investments
+	state.inv_used       = state.used_investments
+	state.old_winners    = state.old_war_theater_winners
+	state.old_margins    = state.old_war_theater_margins
 
 	delete state.bonus_war_tiles_bought_this_round
+	delete state.advantages_used_this_round
+	delete state.advantages_newly_acquired
+	delete state.advantage_regions
+	delete state.advantages_exhausted
+	delete state.action_round_subphase
+	delete state.bonus_war_tile_revealed
+	delete state.basic_war_tile_revealed
+	delete state.theater_basic_war_tiles
+	delete state.theater_bonus_war_tiles
+	delete state.investment_tile_stack
+	delete state.available_investments
+	delete state.played_investments
+	delete state.used_investments
+	delete state.old_war_theater_winners
+	delete state.old_war_theater_margins
 }
 
 function upconvert_bitflags(state)
@@ -1319,10 +1352,10 @@ function on_view(RR = undefined) {
 
 	// Current available investments, and used investment pile, are public.
 	// Shuffled investment deck is not.
-	V.available_investments = G.available_investments
-	V.played_investments = G.played_investments
-	V.used_investments = G.used_investments
-	V.investment_tile_stack = G.investment_tile_stack
+	V.inv_avail = G.inv_avail
+	V.inv_played = G.inv_played
+	V.inv_used = G.inv_used
+	V.inv_stack = G.inv_stack
 
 	// Flags on the board are always visible
 	V.flags = G.flags
@@ -1343,9 +1376,10 @@ function on_view(RR = undefined) {
 
 	// Advantage tiles
 	V.advantages = G.advantages
-	V.advantages_exhausted = G.advantages_exhausted
-	V.advantage_regions = G.advantage_regions
-	V.advantages_newly_acquired = G.advantages_newly_acquired
+	V.adv_exhaust = G.adv_exhaust
+	V.adv_used = G.adv_used
+	V.adv_regions = G.adv_regions
+	V.adv_new = G.adv_new
 
 	V.navy_box = G.navy_box
 	V.unbuilt_squadrons = G.unbuilt_squadrons
@@ -1414,27 +1448,27 @@ function on_view(RR = undefined) {
 	V.ministry_revealed = G.ministry_revealed
 
 	V.next_war = G.next_war
-	V.theater_basic_war_tiles = [ [], [] ] // [player][theater][0-n]
-	V.theater_bonus_war_tiles = [ [], [] ] // [player][theater][0-n]
+	V.theater_basic = [ [], [] ] // [player][theater][0-n]
+	V.theater_bonus = [ [], [] ] // [player][theater][0-n]
 
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
 			// -1 means opponent hasn't seen the tile yet
-			V.theater_basic_war_tiles[who][theater] = G.theater_basic_war_tiles[who][theater].map(tile =>
-				((who === RR) || set_has(G.basic_war_tile_revealed[who], tile)) ? tile : -1
+			V.theater_basic[who][theater] = G.theater_basic[who][theater].map(tile =>
+				((who === RR) || set_has(G.basic_revealed[who], tile)) ? tile : -1
 			)
-			V.theater_bonus_war_tiles[who][theater] = G.theater_bonus_war_tiles[who][theater].map(tile =>
-				((who === RR) || set_has(G.bonus_war_tile_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
+			V.theater_bonus[who][theater] = G.theater_bonus[who][theater].map(tile =>
+				((who === RR) || set_has(G.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
 			)
 		}
 	}
 
-	V.basic_war_tile_revealed = G.basic_war_tile_revealed
-	V.bonus_war_tile_revealed = G.bonus_war_tile_revealed
+	V.basic_revealed = G.basic_revealed
+	V.bonus_revealed = G.bonus_revealed
 
 	V.byng = G.byng ?? 0
 
-	if (V.byng > 0) V.theater_bonus_war_tiles[BRITAIN][V.byng].push(BYNG)
+	if (V.byng > 0) V.theater_bonus[BRITAIN][V.byng].push(BYNG)
 
 	// War viewing totals exist in their own right; they are mostly not analogs to G members
 	V.theater_strength = [ [], [] ]
@@ -1467,12 +1501,12 @@ function on_view(RR = undefined) {
 	V.action_points_eligible_major = G.action_points_eligible_major
 	V.action_points_committed_bonus = G.action_points_committed_bonus
 	V.action_points_contingent = G.action_points_contingent
-	V.action_round_subphase = G.action_round_subphase
+	V.subphase = G.subphase
 
 	V.townshend_acts = G.townshend_acts
 
-	V.old_war_theater_winners = G.old_war_theater_winners
-	V.old_war_theater_margins = G.old_war_theater_margins
+	V.old_winners = G.old_winners
+	V.old_margins = G.old_margins
 }
 
 
@@ -1601,12 +1635,12 @@ function is_advantage_conflicted(a)
 
 function is_advantage_exhausted(a)
 {
-	return !!(G.advantages_exhausted & (1 << a))
+	return !!(G.adv_exhaust & (1 << a))
 }
 
 function exhaust_advantage(a, close_box, reason = "", silent = false, watt = true)
 {
-	G.advantages_exhausted |= (1 << a)
+	G.adv_exhaust |= (1 << a)
 
 	if (get_advantage_region(a) === REGION_EUROPE) {
 		if (has_advantage(FRANCE, a) && has_active_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
@@ -1638,7 +1672,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 
 function refresh_advantage(a)
 {
-	G.advantages_exhausted &= ~(1 << a)
+	G.adv_exhaust &= ~(1 << a)
 
 	let msg = "ADVANTAGE Refreshed"
 	msg += "\n" + say_advantage(a, G.advantages[a])
@@ -1652,17 +1686,17 @@ function refresh_advantage(a)
 function has_advantage_eligible(who, a, ignore_exhaustion = false)
 {
 	if (!has_advantage(who, a)) return false				                     // 8.1 - control all the connected spaces
-	if (G.advantages_newly_acquired & (1 << a)) return false                     // 8.0 - Can only be used the round *after* control is gained
-	if ((G.advantages_exhausted & (1 << a)) && !ignore_exhaustion) return false	 // 8.1 - Exhausted when used
+	if (G.adv_new & (1 << a)) return false                                       // 8.0 - Can only be used the round *after* control is gained
+	if ((G.adv_exhaust & (1 << a)) && !ignore_exhaustion) return false	         // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		                         // 8.1 - can't be used if any conflict markers, but remains "controlled"
-	if (G.advantages_used_this_round >= 2) return false                          // 8.2 - Can only use 2 advantages per action round
-	if (G.advantage_regions & (1 << get_advantage_region(a))) return false       // 8.2 - Can only use 1 advantage in a region per action round
+	if (G.adv_used >= 2) return false                                            // 8.2 - Can only use 2 advantages per action round
+	if (G.adv_regions & (1 << get_advantage_region(a))) return false             // 8.2 - Can only use 1 advantage in a region per action round
 	return true
 }
 
 
 function has_any_eligible_advantages(who) {
-	if (G.advantages_used_this_round >= 2) return false
+	if (G.adv_used >= 2) return false
 	for (let a = 0; a < NUM_ADVANTAGES; a++) {
 		if (!has_advantage_eligible(who, a)) continue
 		return true
@@ -1678,7 +1712,7 @@ function update_advantages(silent = false) {
 		G.advantages[a] = whose_advantage(a)
 
 		if (old !== G.advantages[a]) {
-			G.advantages_newly_acquired |= (1 << a)
+			G.adv_new |= (1 << a)
 			if (!silent) {
 				if (G.advantages[a] !== NONE) {
 					let msg = "ADVANTAGE Gained"
@@ -1700,7 +1734,7 @@ function update_advantages(silent = false) {
 
 function advantages_acquired_last_round_now_available() // a sort of awkward name, but otherwise hard to distinguish from "exhausted"/refreshed advantage state
 {
-	G.advantages_newly_acquired = 0
+	G.adv_new = 0
 }
 
 
@@ -1726,7 +1760,7 @@ function add_next_war_bonus_tiles() {
 	shuffle(G.bonus_war_tiles[BRITAIN])
 
 	// None in any theaters
-	G.theater_bonus_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
+	G.theater_bonus = [[[], [], [], [], []], [[], [], [], [], []]]
 }
 
 
@@ -1734,7 +1768,7 @@ function draw_basic_war_tile(who, theater) {
 	if (G.basic_war_tiles[who].length < 1) return -1
 	shuffle(G.basic_war_tiles[who])
 	let tile = G.basic_war_tiles[who].pop()
-	G.theater_basic_war_tiles[who][theater].push(tile)
+	G.theater_basic[who][theater].push(tile)
 	return tile
 }
 
@@ -1742,7 +1776,7 @@ function draw_bonus_war_tile(who, theater) {
 	if (G.bonus_war_tiles[who].length < 1) return -1
 	shuffle(G.bonus_war_tiles[who])
 	let tile = G.bonus_war_tiles[who].pop()
-	G.theater_bonus_war_tiles[who][theater].push(tile)
+	G.theater_bonus[who][theater].push(tile)
 	return tile
 }
 
@@ -2312,7 +2346,7 @@ P.reset_phase = function () {
 	}
 
 	// remove exhausted from advantage and ministry cards
-	G.advantages_exhausted = 0 // Bitflags
+	G.adv_exhaust = 0 // Bitflags
 
 	// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
 	// <br><b>
@@ -2320,10 +2354,10 @@ P.reset_phase = function () {
 	G.ministry_exhausted   = [ [], [] ]
 
 	// move investments to used
-	for (var i of G.available_investments)
-		G.used_investments.push(i)
-	G.available_investments = []
-	G.played_investments = []
+	for (var i of G.inv_avail)
+		G.inv_used.push(i)
+	G.inv_avail = []
+	G.inv_played = []
 
 	G.played_tiles = [ [], [] ]
 
@@ -2359,14 +2393,14 @@ function log_dealt(dealt) {
 P.deal_cards_phase = function () {
 	log("=Deal Cards Phase")
 
-	while (G.available_investments.length < 9) {
-		if (G.investment_tile_stack.length === 0) {
+	while (G.inv_avail.length < 9) {
+		if (G.inv_stack.length === 0) {
 			log("Reshuffled investment tiles.")
-			G.investment_tile_stack = G.used_investments
-			G.used_investments = []
-			shuffle(G.investment_tile_stack)
+			G.inv_stack = G.inv_used
+			G.inv_used = []
+			shuffle(G.inv_stack)
 		}
-		G.available_investments.push(G.investment_tile_stack.pop())
+		G.inv_avail.push(G.inv_stack.pop())
 	}
 
 	// Deal 3 event cards to each player. If we run out of cards, reshuffle any discards. Show # cards dealt in a way that documents who got "reshuffles" if anyone
@@ -2828,8 +2862,8 @@ P.confirm_use_advantage = {
 	},
 	use_advantage() {
 		push_undo()
-		G.advantages_used_this_round++
-		G.advantage_regions |= (1 << get_advantage_region(G.advantage))
+		G.adv_used++
+		G.adv_regions |= (1 << get_advantage_region(G.advantage))
 		exhaust_advantage(G.advantage, true, G.advantage_required_because)
 		end()
 	},
@@ -3659,7 +3693,7 @@ P.action_round = script (`
 `)
 
 function start_action_round() {
-	G.action_round_subphase = BEFORE_PICKING_TILE
+	G.subphase = BEFORE_PICKING_TILE
 
 	// Certain effects care if we controlled particular spaces from beginning of action round
 	// <br><b>
@@ -3675,8 +3709,8 @@ function start_action_round() {
 	// Advantages we acquired last round now "age in" and are available to be used. Any we acquire *after* this point won't be available until the following round
 	update_advantages()
 	advantages_acquired_last_round_now_available()
-	G.advantages_used_this_round = 0
-	G.advantage_regions = 0
+	G.adv_used = 0
+	G.adv_regions = 0
 
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
 	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
@@ -3766,7 +3800,7 @@ function find_isolated_markets()
 
 function is_action_phase()
 {
-	return G.action_round_subphase !== NOT_ACTION_PHASE
+	return G.subphase !== NOT_ACTION_PHASE
 }
 
 
@@ -4073,7 +4107,7 @@ function selected_a_tile(tile)
 
 	G.played_event = -1 // Haven't played an event so far
 
-	G.played_investments.push(tile)             //BR// We leave it in available_investments but mark it played
+	G.inv_played.push(tile)             //BR// We leave it in G.inv_avail but mark it played
 	G.played_tiles[G.active][G.round-1] = tile  //BR// Mark the tile we played, the round we played it
 	G.played_tile = tile
 	set_bit(FLAG_MILITARY_UPGRADE, major <= 2)  // We get a military upgrade if we picked a tile w/ major action strength 2
@@ -4167,14 +4201,14 @@ P.select_investment_tile = {
 		log_box_end()
 	},
 	inactive() {
-		if (G.theater_bonus_war_tiles[((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN][0].length) {
+		if (G.theater_bonus[((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN][0].length) {
 			return "place Austrian Succession bonus war tiles"
 		} else {
 			return "select an investment tile"
 		}
 	},
 	prompt() {
-		if (G.theater_bonus_war_tiles[R][0].length) {
+		if (G.theater_bonus[R][0].length) {
 			if (L.tile_to_move >= 0) {
 				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + say_action("Select theater in which to place " + say_bonus_war_tile(L.tile_to_move, false))
 				for (const theater of free_theaters(R)) {
@@ -4182,14 +4216,14 @@ P.select_investment_tile = {
 				}
 			} else {
 				V.prompt = say_action_header("AUSTRIAN SUCCESSION BONUS: ") + (L.moved_any_tiles ? say_action ("Select next bonus war tile to place") : say_action("Scroll down to War board and select a bonus war tile to place.") + say_scroll_to_war())
-				for (const tile of G.theater_bonus_war_tiles[R][0]) {
+				for (const tile of G.theater_bonus[R][0]) {
 					action_bonus_war_tile(tile)
 				}
 			}
 		} else {
 			V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Select an investment tile or activate a minister.")
-			for (var tile of G.available_investments) {
-				if (G.played_investments.includes(tile)) continue
+			for (var tile of G.inv_avail) {
+				if (G.inv_played.includes(tile)) continue
 				action_investment(tile)
 			}
 			action_eligible_ministries()
@@ -4202,10 +4236,10 @@ P.select_investment_tile = {
 		if (L.theaters === undefined) L.theaters = []
 
 		L.theaters.push(theater)
-		G.theater_bonus_war_tiles[R][theater].push(L.tile_to_move)
-		array_delete_item(G.theater_bonus_war_tiles[R][0], L.tile_to_move)
+		G.theater_bonus[R][theater].push(L.tile_to_move)
+		array_delete_item(G.theater_bonus[R][0], L.tile_to_move)
 		L.tile_to_move = -1
-		if (!G.theater_bonus_war_tiles[R][0].length) {
+		if (!G.theater_bonus[R][0].length) {
 			let msg = bold("Austrian Succession: ") + data.flags[R].name + " places free bonus war tiles in theaters: "
 			let any = false
 			for (const th of L.theaters) {
@@ -4346,7 +4380,7 @@ function check_event_bonus_requirements(who) {
 			var tiles = [ 0, 0 ]
 			for (let whom = FRANCE; whom <= BRITAIN; whom++) {
 				for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { //NB intentionally from 1 to theaters, inclusive
-					tiles[whom] += G.theater_bonus_war_tiles[whom][theater].length
+					tiles[whom] += G.theater_bonus[whom][theater].length
 				}
 			}
 
@@ -4945,8 +4979,8 @@ P.event_native_american_alliances = {
 	advantage(a) {
 		push_undo()
 		G.active_advantage = a
-		G.advantages_used_this_round++
-		G.advantage_regions |= (1 << get_advantage_region(a))
+		G.adv_used++
+		G.adv_regions |= (1 << get_advantage_region(a))
 		clear_bit(ADVANTAGE_ALREADY_EXHAUSTED)
 		goto ("advantage_flow")
 	},
@@ -5007,7 +5041,7 @@ P.event_austro_spanish_rivalry = {
 				msg  = "Remove a French bonus war tile from the next war, returning it to their pool"
 				let any= false
 				for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 through theaters inclusive is correct
-					if (G.theater_bonus_war_tiles[FRANCE][theater].length < 1) continue
+					if (G.theater_bonus[FRANCE][theater].length < 1) continue
 					any = true
 					action_theater(theater)
 				}
@@ -5067,11 +5101,11 @@ P.event_austro_spanish_rivalry = {
 		log ("French bonus war tile removed from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
 
 		// Randomize the choice without disrupting owner's present tile order
-		let choices = G.theater_bonus_war_tiles[1 - G.active][L.theater].slice()
+		let choices = G.theater_bonus[1 - G.active][L.theater].slice()
 		shuffle(choices)
 
 		L.picked_bonus_tile = choices[0]
-		array_delete_item(G.theater_bonus_war_tiles[1 - G.active][L.theater], L.picked_bonus_tile)
+		array_delete_item(G.theater_bonus[1 - G.active][L.theater], L.picked_bonus_tile)
 		G.bonus_war_tiles[1 - G.active].push(L.picked_bonus_tile)
 		shuffle(G.bonus_war_tiles[1 - G.active])
 		end()
@@ -5461,7 +5495,7 @@ P.do_military_spending_overruns = {
 			}
 		}
 		for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 to theaters, inclusive
-			for (let t of G.theater_bonus_war_tiles[G.active][theater]) {
+			for (let t of G.theater_bonus[G.active][theater]) {
 				any = true
 				action_bonus_war_tile(t)
 			}
@@ -5503,7 +5537,7 @@ P.do_military_spending_overruns = {
 		push_undo()
 		L.removals_done++
 		let theater = get_theater_from_bonus_war_tile(G.active, t)
-		array_delete_item(G.theater_bonus_war_tiles[G.active][theater], t)
+		array_delete_item(G.theater_bonus[G.active][theater], t)
 		G.bonus_war_tiles[G.active].push(t)
 		//shuffle(G.bonus_war_tiles[G.active])
 		log(data.flags[G.active].name + " returns a bonus war tile from theater " + theater + ": " + data.wars[G.next_war].theater_names[theater])
@@ -5627,9 +5661,9 @@ P.event_famine_in_ireland = {
 				V.prompt = event_prompt(R, G.played_event, msg)
 			} else {
 				if (!L.placing_displaced_tile) {
-					for (let index = 0; index < G.theater_bonus_war_tiles[R][4].length; index++) {
+					for (let index = 0; index < G.theater_bonus[R][4].length; index++) {
 						if ((L.displaced_a_new_one || (L.tiles_to_displace === 1)) && (index >= 2)) continue // If we only drew one tile, don't displace that one. If we displaced a new one the first time, we can't do it on a second time.
-						action_bonus_war_tile(G.theater_bonus_war_tiles[R][4][index])
+						action_bonus_war_tile(G.theater_bonus[R][4][index])
 					}
 					V.prompt = event_prompt(R, G.played_event, "Theater has more than 2 bonus war tiles. Select a tile to displace to a different theater")
 				} else {
@@ -5650,16 +5684,16 @@ P.event_famine_in_ireland = {
 		push_undo()
 		L.placing_displaced_tile = true
 		L.displaced_tile = t
-		if (G.theater_bonus_war_tiles[FRANCE][4].indexOf(t) >= 2) L.displaced_a_new_one = true
+		if (G.theater_bonus[FRANCE][4].indexOf(t) >= 2) L.displaced_a_new_one = true
 	},
 	theater(theater) {
 		push_undo()
 		theater = display_to_theater(theater)
-		array_delete_item(G.theater_bonus_war_tiles[FRANCE][4], L.displaced_tile)
-		G.theater_bonus_war_tiles[FRANCE][theater].push(L.displaced_tile)
+		array_delete_item(G.theater_bonus[FRANCE][4], L.displaced_tile)
+		G.theater_bonus[FRANCE][theater].push(L.displaced_tile)
 		let msg = "France displaces a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
 
-		if (G.theater_bonus_war_tiles[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
+		if (G.theater_bonus[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
 			end()
 		} else {
 			L.placing_displaced_tile = false // Loop back for another displacement if we need to
@@ -5679,10 +5713,10 @@ P.event_famine_in_ireland = {
 		}
 		L.drawn_tiles = true
 
-		if (G.theater_bonus_war_tiles[R][4].length <= 2) {
+		if (G.theater_bonus[R][4].length <= 2) {
 			end()
 		} else {
-			L.tiles_to_displace = G.theater_bonus_war_tiles[R][4].length - 2
+			L.tiles_to_displace = G.theater_bonus[R][4].length - 2
 			L.displaced_a_new_one = false
 			L.placing_displaced_tile = false
 		}
@@ -6737,8 +6771,8 @@ P.event_loge_des_neuf_soeurs = {
 		}
 
 		G.active_advantage = a
-		G.advantages_used_this_round++
-		G.advantage_regions |= (1 << get_advantage_region(a))
+		G.adv_used++
+		G.adv_regions |= (1 << get_advantage_region(a))
 		clear_bit(ADVANTAGE_ALREADY_EXHAUSTED)
 		goto ("advantage_flow")
 	},
@@ -7196,7 +7230,7 @@ P.ministry_flow = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
         eval { clear_bit(STARTED_MINISTRY_BOX) }
     	call confirm_reveal_ministry
-    	if (is_bit(MINISTRY_MANUALLY_CLICKED) && !ministry_useful_this_phase(G.ministry_id, G.action_round_subphase)) {
+    	if (is_bit(MINISTRY_MANUALLY_CLICKED) && !ministry_useful_this_phase(G.ministry_id, G.subphase)) {
     		return // If we manually revealed the minister, but he can't do anything right now, don't proceed into the you-can't-use-him-right-now part
     	}
     }
@@ -7255,10 +7289,10 @@ function ministry_prompt(who, m, string1, string2 = "") {
 	var header = data.ministries[m].name.toUpperCase() + ": "
 
 	var prompt = ""
-	if ((G.action_round_subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
+	if ((G.subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.subphase)) {
 		prompt += "You must pick an investment tile before you can use this ministry's abilities."
 	}
-	else if ((G.action_round_subphase > OPTION_TO_PLAY_EVENT) && !ministry_useful_this_phase(m, G.action_round_subphase)) {
+	else if ((G.subphase > OPTION_TO_PLAY_EVENT) && !ministry_useful_this_phase(m, G.subphase)) {
 		prompt += "This ministry can only be activated at the beginning of your action round."
 	}
 	else if (is_ministry_fully_exhausted(who, m) || (is_ministry_partially_exhausted(who, m) && ((string1 == null) || (string2 == null)))) {
@@ -7301,7 +7335,7 @@ function reveal_ministry(who, index) {
 	}
 
 	if (m === EDMUND_BURKE) {
-		if ((G.action_round_subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
+		if ((G.subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 			exhaust_ministry(who, m)
 		}
@@ -7337,7 +7371,7 @@ P.confirm_reveal_ministry = {
 		}
 		if ((G.ministry_required_because !== undefined) && (G.ministry_required_because !== "")) V.prompt += say_action(" (" + G.ministry_required_because + ")")
 
-		if (is_bit(MINISTRY_MANUALLY_CLICKED) && !ministry_useful_this_phase(G.ministry_id, G.action_round_subphase)) {
+		if (is_bit(MINISTRY_MANUALLY_CLICKED) && !ministry_useful_this_phase(G.ministry_id, G.subphase)) {
 			V.prompt += say_action(" (NOTE: abilities cannot activate yet -- e.g. must pick investment tile, or must be beginning of round, or similar reason)")
 		}
 
@@ -7469,10 +7503,10 @@ P.ministry_bank_of_england = {
 	prompt() {
 		if (!L.picking_event) {
 			V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "You may increase your debt limit by one", "you may play an economic event even if your selected investment tile does not have an economic major action (it must still have the event symbol)") + say_action_points_left()
-			if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.action_round_subphase)) {
+			if (ministry_useful_this_phase(BANK_OF_ENGLAND, G.subphase)) {
 				button("increase_debt_limit", !is_ministry_exhausted(R, BANK_OF_ENGLAND, 0))
 			}
-			button("play_event", ((G.action_round_subphase <= OPTION_TO_PLAY_EVENT) && (G.action_round_subphase > BEFORE_PICKING_TILE)) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))
+			button("play_event", ((G.subphase <= OPTION_TO_PLAY_EVENT) && (G.subphase > BEFORE_PICKING_TILE)) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1))
 		} else {
 			V.prompt = ministry_prompt(R, BANK_OF_ENGLAND, "Select an economic event to play")
 			for (const e of G.hand[R]) {
@@ -7515,7 +7549,7 @@ P.ministry_edmond_halley = {
 	inactive: "activate Edmond Halley",
 	prompt() {
 		V.prompt = ministry_prompt(R, EDMOND_HALLEY, "Build discounted squadron", "discard an event to gain 1 Treaty Point") + say_action_points_left()
-		if (ministry_useful_this_phase(EDMOND_HALLEY, G.action_round_subphase)) {
+		if (ministry_useful_this_phase(EDMOND_HALLEY, G.subphase)) {
 			if (!is_ministry_exhausted(R, EDMOND_HALLEY, 1)) {
 				for (var card of G.hand[R]) {
 					action_event_card(card)
@@ -7523,7 +7557,7 @@ P.ministry_edmond_halley = {
 				L.any = true
 			}
 
-			button("build_squadron", !is_ministry_exhausted(R, EDMOND_HALLEY, 0) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
+			button("build_squadron", !is_ministry_exhausted(R, EDMOND_HALLEY, 0) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
 		}
 		button("pass")
 	},
@@ -7583,8 +7617,8 @@ P.ministry_cardinal_ministers = {
 	prompt() {
 		V.prompt = ministry_prompt(R, THE_CARDINAL_MINISTERS, "Confirm use of ministry to gain " + say_action_points(cardinal_ministers_value(), DIPLO)) + "(You presently have " + say_action_points_left() + ")"
 		if (cardinal_ministers_value() < 1) V.prompt = say_ministry_header() + say_action("You do not control any of the necessary spaces to gain a bonus.")
-		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && !G.action_points_eligible[DIPLO]) V.prompt = say_ministry_header() + say_action("Your investment tile does not confer any " + say_action_points(0, DIPLO, false, false) + ".")
-		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.action_round_subphase) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && !G.action_points_eligible[DIPLO]) V.prompt = say_ministry_header() + say_action("Your investment tile does not confer any " + say_action_points(0, DIPLO, false, false) + ".")
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
 			button("confirm")
 		}
 		button ("pass")
@@ -7704,7 +7738,7 @@ P.ministry_jacobite_uprisings = {
 	inactive: "activate Jacobite Uprisings",
 	prompt() {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with " + say_action_points(0, MIL, false, false), "score " + jacobite_vp_value() + " VP for " + say_action_points(3, MIL)) + say_action_points_left()
-		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.action_round_subphase)) {
+		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.subphase)) {
 			if (G.action_points_eligible[MIL]) {
 				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, JACOBITES_USED_2)) {
 					for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
@@ -7759,13 +7793,13 @@ P.ministry_pitt_the_elder = {
 	inactive: "activate Pitt the Elder",
 	prompt() {
 		V.prompt = ministry_prompt(R, PITT_THE_ELDER, "Gain 1 diplomatic action usable for shifting non-prestige spaces", "build discounted squadron") + say_action_points_left()
-		if (ministry_useful_this_phase(PITT_THE_ELDER, G.action_round_subphase) && !is_ministry_fully_exhausted(R, PITT_THE_ELDER)) {
+		if (ministry_useful_this_phase(PITT_THE_ELDER, G.subphase) && !is_ministry_fully_exhausted(R, PITT_THE_ELDER)) {
 
 			if (!is_ministry_exhausted(R, PITT_THE_ELDER, 0)) {
 				button ("diplomatic_point", !is_ministry_exhausted(R, PITT_THE_ELDER, 0) && G.action_points_eligible[DIPLO])
 			}
 
-			button("build_squadron", !is_ministry_exhausted(R, PITT_THE_ELDER, 1) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
+			button("build_squadron", !is_ministry_exhausted(R, PITT_THE_ELDER, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
 		}
 		button ("pass")
 	},
@@ -7797,7 +7831,7 @@ P.ministry_charles_hanbury_williams = {
 	inactive: "activate Charles Hanbury Williams",
 	prompt() {
 		V.prompt = ministry_prompt(R, CHARLES_HANBURY_WILLIAMS, "Reduce cost to unflag FR spaces in Prussia, German States, and Russia by 1 [@1]") + say_action_points_left()
-		if (ministry_useful_this_phase(CHARLES_HANBURY_WILLIAMS, G.action_round_subphase)) {
+		if (ministry_useful_this_phase(CHARLES_HANBURY_WILLIAMS, G.subphase)) {
 			if (!is_ministry_exhausted(R, CHARLES_HANBURY_WILLIAMS)) {
 				button ("unflag_discount", G.action_points_eligible_major[DIPLO])
 			}
@@ -7822,9 +7856,9 @@ P.ministry_charles_hanbury_williams = {
 P.ministry_choiseul = {
 	prompt() {
 		V.prompt = ministry_prompt(R, CHOISEUL, "Gain an extra " + say_action(1, MIL) + " usable for Bonus War Tiles or deplying squadrons only", "build discounted a squadron") + say_action_points_left()
-		if (ministry_useful_this_phase(CHOISEUL, G.action_round_subphase)) {
+		if (ministry_useful_this_phase(CHOISEUL, G.subphase)) {
 			button ("military_point", G.action_points_eligible[MIL] && !is_ministry_exhausted(R, CHOISEUL, 0))
-			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.action_round_subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
+			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
 		}
 		button ("pass")
 	},
@@ -7856,7 +7890,7 @@ P.ministry_papacy_hanover_negotiations = {
 	inactive: "activate Papacy Hanover Negotiations",
 	prompt() {
 		let msg = ""
-		if (ministry_useful_this_phase(PAPACY_HANOVER_NEGOTIATIONS, G.action_round_subphase) && !is_ministry_exhausted(R, PAPACY_HANOVER_NEGOTIATIONS)) {
+		if (ministry_useful_this_phase(PAPACY_HANOVER_NEGOTIATIONS, G.subphase) && !is_ministry_exhausted(R, PAPACY_HANOVER_NEGOTIATIONS)) {
 			if (!action_points_eligible(R, active_rules())) {
 				msg = "You don't have any diplomatic actions this round."
 				button("pass")
@@ -7885,7 +7919,7 @@ P.ministry_townshend_acts = {
 	inactive: "activate the Townshend Acts",
 	prompt() {
 		V.prompt = ministry_prompt(R, TOWNSHEND_ACTS, "Select a Global Demand to which to apply the Townshend Acts")
-		if (ministry_useful_this_phase(TOWNSHEND_ACTS, G.action_round_subphase) && !is_ministry_exhausted(R, TOWNSHEND_ACTS)) {
+		if (ministry_useful_this_phase(TOWNSHEND_ACTS, G.subphase) && !is_ministry_exhausted(R, TOWNSHEND_ACTS)) {
 			for (const d of G.global_demand) {
 				action_demand(d)
 			}
@@ -7920,7 +7954,7 @@ function advantage_prompt(who, a, string1 = "") {
 	var header = say_advantage(a, -1, true) + ": "
 
 	var prompt = ""
-	if (G.action_round_subphase === BEFORE_PICKING_TILE) {
+	if (G.subphase === BEFORE_PICKING_TILE) {
 		prompt += "You must pick an investment tile before you can activate advantages."
 	}
 	else if (is_bit(ADVANTAGE_ALREADY_EXHAUSTED)) {
@@ -7936,8 +7970,8 @@ function advantage_prompt(who, a, string1 = "") {
 function handle_advantage_click(a)
 {
 	G.active_advantage = a
-	G.advantages_used_this_round++
-	G.advantage_regions |= (1 << get_advantage_region(a))
+	G.adv_used++
+	G.adv_regions |= (1 << get_advantage_region(a))
 	set_bit(ADVANTAGE_ALREADY_EXHAUSTED, is_advantage_exhausted(a))
 	call ("advantage_flow")
 }
@@ -8555,7 +8589,7 @@ function action_eligible_advantages() {
 		}
 	}
 
-	if (G.advantages_used_this_round >= 2) return
+	if (G.adv_used >= 2) return
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
 		if (has_advantage_eligible(R, a)) action_advantage(a)
 	}
@@ -9162,7 +9196,7 @@ function handle_military_upgrade(t)
 
 function get_theater_from_basic_war_tile(who, tile) {
 	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
-		if (G.theater_basic_war_tiles[who][theater].includes(tile)) return theater
+		if (G.theater_basic[who][theater].includes(tile)) return theater
 	}
 	let msg = "Could not find theater for basic war tile. Who: " + who + "  Tile: " + tile
 	console.error (msg)
@@ -9174,7 +9208,7 @@ function get_theater_from_basic_war_tile(who, tile) {
 
 function get_theater_from_bonus_war_tile(who, tile) {
 	for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through theaters is intentional
-		if (G.theater_bonus_war_tiles[who][theater].includes(tile)) return theater
+		if (G.theater_bonus[who][theater].includes(tile)) return theater
 	}
 	let msg = "Could not find theater for bonus war tile. Who: " + who + "  Tile: " + tile
 	console.error (msg)
@@ -9225,7 +9259,7 @@ P.military_upgrade_decisions = {
 	basic_war(t) {
 		push_undo()
 		L.get_rid_of_tile = (t === G.upgrading_basic_tile) ? L.new_tile : G.upgrading_basic_tile
-		array_delete_item(G.theater_basic_war_tiles[G.active][L.theater], L.get_rid_of_tile)
+		array_delete_item(G.theater_basic[G.active][L.theater], L.get_rid_of_tile)
         L.picked_one_to_keep = true
 	},
 	return_to_pool() {
@@ -9253,7 +9287,7 @@ P.military_upgrade_decisions = {
 function free_theaters(who) {
 	let theaters = []
 	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
-		if (G.theater_bonus_war_tiles[who][theater].length >= 2) continue
+		if (G.theater_bonus[who][theater].length >= 2) continue
 		theaters.push(theater)
 	}
 	return theaters
@@ -9264,7 +9298,7 @@ function free_theaters(who) {
 function num_bonus_tiles_in_play(who) {
     let num = 0
 	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
-		num += G.theater_bonus_war_tiles[who][theater].length
+		num += G.theater_bonus[who][theater].length
 	}
 	return num
 }
@@ -9384,7 +9418,7 @@ P.bonus_war_tile_decisions = {
 			action_all_theaters()
 		} else if (L.displaced_tile < 0) {
 			msg += "Theater had two bonus tiles already. Select a bonus tile to displace."
-			for (const t of G.theater_bonus_war_tiles[G.active][L.theater]) {
+			for (const t of G.theater_bonus[G.active][L.theater]) {
 				if (t === L.new_tile) continue
 				action_bonus_war_tile(t)
 			}
@@ -9408,16 +9442,16 @@ P.bonus_war_tile_decisions = {
 		push_undo()
 		if (L.theater <= 0) {
 			L.theater = t
-			G.theater_bonus_war_tiles[G.active][L.theater].push(L.new_tile)
-			array_delete_item(G.theater_bonus_war_tiles[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
+			G.theater_bonus[G.active][L.theater].push(L.new_tile)
+			array_delete_item(G.theater_bonus[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
 			G.bonuswar_bought++
 			log(bold(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
 			log_br()
-			if (G.theater_bonus_war_tiles[G.active][L.theater].length <= 2) {
+			if (G.theater_bonus[G.active][L.theater].length <= 2) {
 				end() // If we don't need to displace another tile, we're done
 			}
 		} else {
-			G.theater_bonus_war_tiles[G.active][t].push(L.displaced_tile)
+			G.theater_bonus[G.active][t].push(L.displaced_tile)
 			log(bold(data.flags[G.active].name + " moves a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t] + "."))
 			log_br()
 			end()
@@ -9426,7 +9460,7 @@ P.bonus_war_tile_decisions = {
 	bonus_war(t) {
 		push_undo()
 		L.displaced_tile = t
-		array_delete_item(G.theater_bonus_war_tiles[G.active][L.theater], t)
+		array_delete_item(G.theater_bonus[G.active][L.theater], t)
 	},
 }
 
@@ -9748,9 +9782,9 @@ function eligible_to_play_event()
 
 function advance_action_round_subphase(subphase)
 {
-	if (G.action_round_subphase >= subphase) return
-    let prior_phase = G.action_round_subphase
-	G.action_round_subphase = subphase
+	if (G.subphase >= subphase) return
+    let prior_phase = G.subphase
+	G.subphase = subphase
 
 	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
 		log_box_begin(G.active, "NO EVENT PLAYED", LOG_BOX_EVENT)
@@ -9937,7 +9971,7 @@ P.space_flow = script(`
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_round < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -9955,7 +9989,7 @@ P.space_flow = script(`
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.advantages_used_this_round < 2)) {
+    	if ((G.action_cost_adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -10224,7 +10258,7 @@ function pay_action_cost() {
 function tell_action_points(space = true, brackets = true) {
 
 	if (!is_action_phase()) return ""
-	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
+	if (G.subphase < PICKED_TILE_OPTION_TO_PASS) return ""
 
 	let verbose = "medium"
 	let names = []
@@ -10485,7 +10519,7 @@ P.action_round_core = {
 	},
 	inactive() {
 		let whom = ((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN
-		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
+		if (G.subphase <= OPTION_TO_PLAY_EVENT) {
 			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(whom, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(whom, MARQUIS_DE_CONDORCET))) {
 				return "play an event or begin spending action points and using abilities"
 			} else {
@@ -10501,7 +10535,7 @@ P.action_round_core = {
 
 		let any = false
 
-		if (G.action_round_subphase <= OPTION_TO_PLAY_EVENT) {
+		if (G.subphase <= OPTION_TO_PLAY_EVENT) {
 			if ((data.investments[G.played_tile].majorval <= 3) || (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET))) { // Eligible for event if our tiles major base value was <= 3
 				if (any) prompt += ", "
 				prompt += "Play Event"
@@ -10543,7 +10577,7 @@ P.action_round_core = {
 		for (let m of G.ministry[R]) {
 			if (!ministry_has_activatable_abilities(m)) continue
 			if (is_ministry_fully_exhausted(R, m)) continue
-			if (!ministry_useful_this_phase(R, G.action_round_subphase)) continue
+			if (!ministry_useful_this_phase(R, G.subphase)) continue
 			any_ministries = true
 			break;
 		}
@@ -10589,7 +10623,7 @@ P.action_round_core = {
 		if (is_bit(FLAG_MILITARY_UPGRADE)) {
 			if (!left) button("military_upgrade") // Only show special button if we're out of anything else to do
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
-				for (var t of G.theater_basic_war_tiles[G.active][theater]) {
+				for (var t of G.theater_basic[G.active][theater]) {
 					action_basic_war_tile(t)
 				}
 			}
@@ -10614,7 +10648,7 @@ P.action_round_core = {
 		let still_walpole = (G.round === 4) && has_ministry(R, ROBERT_WALPOLE) && !is_ministry_exhausted(R, ROBERT_WALPOLE) && (G.hand[R].length > 0)
 		let still_huguenots = (G.round === 4) && has_ministry(R, NEW_WORLD_HUGUENOTS) && !is_ministry_exhausted(R, NEW_WORLD_HUGUENOTS)
 
-		if (G.action_round_subphase === PICKED_TILE_OPTION_TO_PASS) {
+		if (G.subphase === PICKED_TILE_OPTION_TO_PASS) {
 			button("confirm_pass_to_reduce_debt")
 		} else {
 			button((left > 0)              ? "confirm_end_action_round" :
@@ -10754,8 +10788,8 @@ P.action_round_core = {
 		push_undo()
 		debug_log("Advantages Refreshed")
 		advantages_acquired_last_round_now_available()
-		G.advantages_used_this_round = 0
-		G.advantage_regions = 0
+		G.adv_used = 0
+		G.adv_regions = 0
 	},
 	cheat_huguenots() {
 		push_undo()
@@ -10807,7 +10841,7 @@ var cheat_damage_flag = false
 
 
 P.before_end_of_action_round = script(`
-	eval { G.action_round_subphase = NOT_ACTION_PHASE }
+	eval { G.subphase = NOT_ACTION_PHASE }
 		
 	if ((G.round === 1) && has_inactive_ministry(R, JAMES_WATT)) {
 		eval { require_ministry(R, JAMES_WATT, "Must be active before opponent's turn to receive a bonus when opponent activates an advantage.", true) }
@@ -10964,12 +10998,12 @@ function theater_strength(who, theater)
 		if (has_active_keyword(who, data.wars[G.next_war].theater[theater].keyword)) score++
 	}
 
-	for (const t of G.theater_basic_war_tiles[who][theater]) {
-		if (set_has(G.basic_war_tile_revealed[who], t)) score += data.basic_war_tiles[t].val
+	for (const t of G.theater_basic[who][theater]) {
+		if (set_has(G.basic_revealed[who], t)) score += data.basic_war_tiles[t].val
 	}
 
-	for (const t of G.theater_bonus_war_tiles[who][theater]) {
-		if (set_has(G.bonus_war_tile_revealed[who], t) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
+	for (const t of G.theater_bonus[who][theater]) {
+		if (set_has(G.bonus_revealed[who], t) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
 	}
 
 	if ((who === BRITAIN) && (G.byng === theater)) score += 2
@@ -11042,16 +11076,16 @@ P.war_theater_reveal = {
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			let msg = "~w"   // The encoding here looks like ~wb03,B20,B11   for an undertermined number of B tiles
 			let any = false
-			for (let tile of G.theater_basic_war_tiles[who][G.theater]) {
-				set_add(G.basic_war_tile_revealed[who], tile)
+			for (let tile of G.theater_basic[who][G.theater]) {
+				set_add(G.basic_revealed[who], tile)
 				do_wartile(who, data.basic_war_tiles[tile].type)
 				if (any) msg += ","
 				any = true
 				msg += "b" + ((tile < 10) ? "0" : "") + tile
 				//log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
 			}
-			for (let tile of G.theater_bonus_war_tiles[who][G.theater]) {
-				set_add(G.bonus_war_tile_revealed[who], tile)
+			for (let tile of G.theater_bonus[who][G.theater]) {
+				set_add(G.bonus_revealed[who], tile)
 				do_wartile(who, data.bonus_war_tiles[tile].type)
 				//log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
 				msg += ",B" + ((tile < 10) ? "0" : "") + tile
@@ -11309,8 +11343,8 @@ function start_war_theater_resolution()
 
 	G.war_winner[G.theater] = L.war_winner
 
-	G.old_war_theater_winners[G.next_war][G.theater] = L.war_winner
-	G.old_war_theater_margins[G.next_war][G.theater] = L.war_delta
+	G.old_winners[G.next_war][G.theater] = L.war_winner
+	G.old_margins[G.next_war][G.theater] = L.war_delta
 
 	if (L.war_tier === data.wars[G.next_war].theater[G.theater].margin.length - 1) {
 		if ((G.won_all_theaters_by_maximum_level === -1) || (G.won_all_theaters_by_maximum_level === L.war_winner)) {
@@ -11810,7 +11844,7 @@ P.war_theater_resolve = {
 		push_undo()
 		t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
 		L.war_atlantic = false
-		G.theater_bonus_war_tiles[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
+		G.theater_bonus[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
 		log (bold(data.flags[L.war_winner].name + " places Atlantic Dominance marker in theater 3: French & Indian War."))
 		log_br()
 	},
@@ -11977,7 +12011,7 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters inclusive is intentional
-				for (const t of G.theater_basic_war_tiles[who][theater]) {
+				for (const t of G.theater_basic[who][theater]) {
 					G.basic_war_tiles[who].push(t)
 				}
 			}
@@ -11987,11 +12021,11 @@ function war_layout_reshuffle_basic_war_tiles(new_game) {
 	shuffle(G.basic_war_tiles[BRITAIN])
 
 	// Turn them all back face down
-	G.bonus_war_tile_revealed = [ [], [] ]
-	G.basic_war_tile_revealed = [ [], [] ]
+	G.bonus_revealed = [ [], [] ]
+	G.basic_revealed = [ [], [] ]
 
 	// None in any theaters
-	G.theater_basic_war_tiles = [[[], [], [], [], []], [[], [], [], [], []]]
+	G.theater_basic = [[[], [], [], [], []], [[], [], [], [], []]]
 }
 
 
@@ -12012,8 +12046,8 @@ P.war_layout_phase = function () {
 	let current_war_bonus_tiles = [ 0, 0 ]
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
-			current_war_bonus_tiles[who] += G.theater_bonus_war_tiles[who][theater].length
-			G.theater_bonus_war_tiles[who][theater] = [] // We just delete the old bonus war tiles, because we're getting a whole new set for the next war
+			current_war_bonus_tiles[who] += G.theater_bonus[who][theater].length
+			G.theater_bonus[who][theater] = [] // We just delete the old bonus war tiles, because we're getting a whole new set for the next war
 		}
 	}
 

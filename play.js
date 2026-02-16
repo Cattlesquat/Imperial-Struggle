@@ -419,14 +419,14 @@ function advantage_tooltip(a) {
 		msg += bold(" EXHAUSTED")
 	} else if (is_advantage_conflicted(a)) {
 		msg += bold(" CONFLICT MARKER - cannot use advantage.")
-	} else if ((whose_advantage(a) === V.active) && (V.action_round_subphase !== NOT_ACTION_PHASE)) {
-		if (V.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) {
+	} else if ((whose_advantage(a) === V.active) && (V.subphase !== NOT_ACTION_PHASE)) {
+		if (V.subphase < PICKED_TILE_OPTION_TO_PASS) {
 			msg += bold(" Must pick investment tile before using advantages.")
-		} else if (V.advantages_used_this_round >= 2) {
+		} else if (V.adv_used >= 2) {
 			msg += bold(" You have already used two advantages this round (see 8.2)")
-		} else if (V.advantage_regions & (1 << get_advantage_region(a))) {
+		} else if (V.adv_regions & (1 << get_advantage_region(a))) {
 			msg += bold(" You have already used an advantage in the same region this round (see 8.2)")
-		} else if (V.advantages_newly_acquired & (1 << a)) {
+		} else if (V.adv_new & (1 << a)) {
 			msg += bold(" Cannot use an advantage you just acquired (see 8.0)")
 		}
 	}
@@ -437,7 +437,7 @@ function advantage_tooltip(a) {
 function investment_tooltip(i)
 {
 	let msg = bold("Investment Tile: ") + data.investments[i].name
-	if (V.used_investments.includes(i)) {
+	if (V.inv_used.includes(i)) {
 		msg += " (Used on previous turn)"
 	} else {
 		let avail = true
@@ -1190,7 +1190,7 @@ function is_ministry_exhausted(who, m, ability = 0) {
 }
 
 function is_advantage_exhausted(a) {
-	return !!(V.advantages_exhausted & (1 << a))
+	return !!(V.adv_exhaust & (1 << a))
 }
 
 function get_advantage_region(a) {
@@ -1369,8 +1369,8 @@ function on_update() {
 		}
 	}
 
-	if (V.investment_tile_stack) {
-		for (const i of V.investment_tile_stack) {
+	if (V.inv_stack) {
+		for (const i of V.inv_stack) {
 			populate("stack-deal", undefined, "investment", i)
 		}
 	}
@@ -1576,22 +1576,22 @@ function on_update() {
 		}
 	}
 
-	V.available_investments.sort((a, b) =>
+	V.inv_avail.sort((a, b) =>
 	{
 		let aa = data.investments[a].majortype * 100 + (5 - data.investments[a].majorval) * 10 + data.investments[a].minortype
 		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
 		return aa - bb
 	})
 
-	V.used_investments.sort((a, b) =>
+	V.inv_used.sort((a, b) =>
 	{
 		let aa = data.investments[a].majortype * 100 + (5 - data.investments[a].majorval) * 10 + data.investments[a].minortype
 		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
 		return aa - bb
 	})
 
-	populate_with_list("panel-available-investments", "investment", V.available_investments)
-	populate_with_list("panel-used-investments", "investment", V.used_investments)
+	populate_with_list("panel-available-investments", "investment", V.inv_avail)
+	populate_with_list("panel-used-investments", "investment", V.inv_used)
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		if (!V.ministry) continue
@@ -1982,9 +1982,9 @@ function update_war_display() {
 					}
 				}
 
-				if (V.old_war_theater_winners && (V.old_war_theater_winners[w][theater] !== -1)) {
-					let winner = V.old_war_theater_winners[w][theater]
-					let margin = V.old_war_theater_margins[w][theater]
+				if (V.old_winners && (V.old_winners[w][theater] !== -1)) {
+					let winner = V.old_winners[w][theater]
+					let margin = V.old_margins[w][theater]
 					let is_tie = margin === 0
 					let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
 
@@ -2011,23 +2011,23 @@ function update_war_display() {
 	}
 
 	if (war < NUM_WARS) {
-		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[FRANCE][0], "marker hex war-basic fr"), basic_war_tooltip(-1, FRANCE))
-		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic_war_tiles[BRITAIN][0], "marker hex war-basic br"), basic_war_tooltip(-1, BRITAIN))
-		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[FRANCE][0], war_reverse[FRANCE][war]), bonus_war_tooltip(-1, FRANCE))
-		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus_war_tiles[BRITAIN][0], war_reverse[BRITAIN][war]), bonus_war_tooltip(-1, BRITAIN))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic[FRANCE][0], "marker hex war-basic fr"), basic_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "basic_war", V.theater_basic[BRITAIN][0], "marker hex war-basic br"), basic_war_tooltip(-1, BRITAIN))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus[FRANCE][0], war_reverse[FRANCE][war]), bonus_war_tooltip(-1, FRANCE))
+		set_fallback_tips(populate_with_list("lout-theater-drawn", war, "bonus_war", V.theater_bonus[BRITAIN][0], war_reverse[BRITAIN][war]), bonus_war_tooltip(-1, BRITAIN))
 
 		offset = war * 8 + 1
 		for (theater = 1; theater <= data.wars[G.next_war].theaters; ++theater) {
 			for (player = FRANCE; player <= BRITAIN; ++player) {
 				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
-					"basic_war", V.theater_basic_war_tiles[player][theater],
+					"basic_war", V.theater_basic[player][theater],
 					(player === FRANCE) ? "marker hex war-basic fr" : "marker hex war-basic br"
 				), basic_war_tooltip(-1, player))
 
 				set_fallback_tips(populate_with_list(
 					"lout-theater", offset,
-					"bonus_war", V.theater_bonus_war_tiles[player][theater],
+					"bonus_war", V.theater_bonus[player][theater],
 					war_reverse[player][war]
 				), bonus_war_tooltip(-1, player))
 
@@ -2045,12 +2045,12 @@ function update_war_display() {
 
 			let unrevealed = 0
 			if ((R === FRANCE) || (R === BRITAIN)) {
-				for (const t of G.theater_basic_war_tiles[R][theater]) {
-					if (!set_has(G.basic_war_tile_revealed[R], t)) unrevealed += data.basic_war_tiles[t].val
+				for (const t of G.theater_basic[R][theater]) {
+					if (!set_has(G.basic_revealed[R], t)) unrevealed += data.basic_war_tiles[t].val
 				}
 
-				for (const t of G.theater_bonus_war_tiles[R][theater]) {
-					if (!set_has(G.bonus_war_tile_revealed[R], t)) unrevealed += data.bonus_war_tiles[t].val
+				for (const t of G.theater_bonus[R][theater]) {
+					if (!set_has(G.bonus_revealed[R], t)) unrevealed += data.bonus_war_tiles[t].val
 				}
 			}
 
@@ -2114,14 +2114,14 @@ function update_war_display() {
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) {
-			for (let tile of V.theater_bonus_war_tiles[who][theater]) {
+			for (let tile of V.theater_bonus[who][theater]) {
 				if (tile >= 0) {
-					update_keyword("bonus_war", tile, (set_has(V.bonus_war_tile_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE))  ? "revealed" : "hidden")
+					update_keyword("bonus_war", tile, (set_has(V.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE))  ? "revealed" : "hidden")
 				}
 			}
-			for (let tile of V.theater_basic_war_tiles[who][theater]) {
+			for (let tile of V.theater_basic[who][theater]) {
 				if (tile >= 0) {
-					update_keyword("basic_war", tile, set_has(V.basic_war_tile_revealed[who], tile) ? "revealed" : "hidden")
+					update_keyword("basic_war", tile, set_has(V.basic_revealed[who], tile) ? "revealed" : "hidden")
 				}
 			}
 		}
@@ -3261,14 +3261,14 @@ function active_rules_list() {
 function is_action_phase()
 {
 	if (V === undefined) return false
-	return V.action_round_subphase !== NOT_ACTION_PHASE
+	return V.subphase !== NOT_ACTION_PHASE
 }
 
 
 function say_action_points(space = true, brackets = true) {
 
 	if (!is_action_phase()) return ""
-	if (G.action_round_subphase < PICKED_TILE_OPTION_TO_PASS) return ""
+	if (G.subphase < PICKED_TILE_OPTION_TO_PASS) return ""
 
 	let verbose = get_preference("actionverbosity", "medium")
 	let names = []
