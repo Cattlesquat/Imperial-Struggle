@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 14
+const GAME_STATE_VERSION = 15
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -409,7 +409,7 @@ const MINISTRY_ALREADY_REVEALED   = 8
 const MINISTRY_OPTIONAL           = 9
 const MINISTRY_PROMPT_TO_EXHAUST  = 10
 const PAID_ACTION_COST            = 11
-const USED_REQUIRED_ADVANTAGE     = 12 ///
+const USED_REQUIRED_ADVANTAGE     = 12
 const MINISTRY_MANUALLY_CLICKED   = 13
 const CARD_HAS_BONUS              = 14
 const QUALIFIES_FOR_BONUS         = 15
@@ -433,7 +433,7 @@ const TRANSIENT_JACOBITES_USED_2            = 2 // Shift spaces with military ac
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
-const TRANSIENT_NORTH_AMERICAN_TRADE	     = 6
+const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
 const TRANSIENT_BANK_OF_ENGLAND             = 9
@@ -587,7 +587,7 @@ function on_setup(scenario, options) {
 	}
 
 	// General persistent bitflags
-	G.bitflags = bit_init (NUM_BITFLAGS)
+	G.bitflags = bit_init(NUM_BITFLAGS)
 
 	// Transient flags for tracking events, advantages, etc that are always reset at end of action round
 	// <br><b>
@@ -660,7 +660,7 @@ function on_setup(scenario, options) {
 	G.bonus_war_tile_revealed = [[], []]
 
 	// Limit of 2 bonus war tiles may be *purchased* per action round (can get more with events, etc)
-	G.bonus_war_tiles_bought_this_round = 0
+	G.bonuswar_bought = 0
 
 	war_layout_reshuffle_basic_war_tiles(true)
 	add_next_war_bonus_tiles()
@@ -860,6 +860,8 @@ function on_setup(scenario, options) {
 	clear_bit(JACOBITE_DEFEAT)  // Have Jacobites been defeated
 	clear_bit(JACOBITES_ALWAYS) // Has France qualified for "perma-Jacobite" status?
 	clear_bit(JACOBITES_NEVER)  // Has Jacobite Uprisings ministry been removed from the game
+	clear_bit(JACOBITE_VICTORY_WSS)
+	clear_bit(JACOBITE_VICTORY_WAS)
 
 	update_advantages(true)
 	advantages_acquired_last_round_now_available()
@@ -1059,6 +1061,14 @@ function on_load()
 		upconvert (14, upconvert_bitflags)
 	}
 
+	if ((G.game_state_created_with <= 14) && (G.game_state_version < 15)) {
+		upconvert (14, upconvert_patch_bitflags)
+	}
+
+	if (G.game_state_version < 15) {
+		upconvert (15, upconvert_shorter_names)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -1076,36 +1086,58 @@ function upconvert(version, converter) {
 }
 
 
-function upconvert_bitflags(state) ///
+function upconvert_patch_bitflags(state)
+{
+	if (state.turn === PEACE_TURN_1) {
+		set_bit2(state, JACOBITE_VICTORY_WSS, false)
+	} else {
+		set_bit2(state, JACOBITE_VICTORY_WSS, (state.old_war_theater_winners[WAR_WSS][4] === FRANCE) && G.old_war_theater_margins[WAR_WSS][4] >= 3)
+	}
+
+	if (state.turn <= PEACE_TURN_3) {
+		set_bit2(state, JACOBITE_VICTORY_WAS, false)
+	} else {
+		set_bit2(state, JACOBITE_VICTORY_WAS, (state.old_war_theater_winners[WAR_WAS][4] === FRANCE))
+	}
+}
+
+
+function upconvert_shorter_names(state) ///
+{
+	state.bonuswar_bought = state.bonus_war_tiles_bought_this_round
+
+	delete state.bonus_war_tiles_bought_this_round
+}
+
+function upconvert_bitflags(state)
 {
 	state.bitflags = bit_init (NUM_BITFLAGS)
-	console.log(state.bitflags)
 
-	set_bit(FLAG_MILITARY_UPGRADE, state.military_upgrade)
-	set_bit(BUYING_WAR_TILE, state.buying_war_tile)
-	set_bit(JACOBITES_ALWAYS, state.jacobites_always)
-	set_bit(JACOBITES_NEVER, state.jacobites_never)
-	set_bit(JACOBITE_DEFEAT, state.jacobite_defeat)
-	set_bit(ACTION_MINOR, state.action_minor)
-	set_bit(ELIGIBLE_MINOR, state.eligible_minor)
-	set_bit(ACTION_COST_ADJUSTED, state.action_cost_adjusted)
-	set_bit(MINISTRY_ALREADY_REVEALED, state.ministry_already_revealed)
-	set_bit(MINISTRY_PROMPT_TO_EXHAUST, state.ministry_prompt_to_exhaust)
-	set_bit(PAID_ACTION_COST, state.paid_action_cost)
-	set_bit(USED_REQUIRED_ADVANTAGE, state.used_required_advantage)
-	set_bit(MINISTRY_MANUALLY_CLICKED, state.ministry_manually_clicked)
-	set_bit(CARD_HAS_BONUS, state.card_has_bonus)
-	set_bit(QUALIFIES_FOR_BONUS, state.qualifies_for_bonus)
-	set_bit(ADVANTAGE_ALREADY_EXHAUSTED, state.advantage_already_exhausted)
-	set_bit(NAVY_FROM_NAVY_BOX, state.navy_from_navy_box)
-	set_bit(NAVY_DISPLACE, state.navy_displace)
-	set_bit(DID_THE_BRIG, state.did_the_brig)
-	set_bit(JACOBITE_VICTORY_WSS, state.jacobite_victory_wss)
-	set_bit(JACOBITE_VICTORY_WAS, state.jacobite_victory_was)
-	set_bit(ADVANTAGE_OPTIONAL, state.advantage_optional)
-	set_bit(LEAVE_LOG_BOX_OPEN, state.leave_log_box_open)
-	set_bit(STARTED_MINISTRY_BOX, state.started_ministry_box)
-	set_bit(ELIGIBLE_FOR_HUGUENOTS, state.eligible_for_huguenots)
+	set_bit2(state, FLAG_MILITARY_UPGRADE, state.military_upgrade ?? false)
+	set_bit2(state, BUYING_WAR_TILE, state.buying_war_tile ?? false)
+	set_bit2(state, JACOBITES_ALWAYS, state.jacobites_always ?? false)
+	set_bit2(state, JACOBITES_NEVER, state.jacobites_never ?? false)
+	set_bit2(state, JACOBITE_DEFEAT, state.jacobite_defeat ?? false)
+	set_bit2(state, ACTION_MINOR, state.action_minor ?? false)
+	set_bit2(state, ELIGIBLE_MINOR, state.eligible_minor ?? false)
+	set_bit2(state, ACTION_COST_ADJUSTED, state.action_cost_adjusted ?? false)
+	set_bit2(state, MINISTRY_ALREADY_REVEALED, state.ministry_already_revealed ?? false)
+	set_bit2(state, MINISTRY_PROMPT_TO_EXHAUST, state.ministry_prompt_to_exhaust ?? false)
+	set_bit2(state, PAID_ACTION_COST, state.paid_action_cost ?? false)
+	set_bit2(state, USED_REQUIRED_ADVANTAGE, state.used_required_advantage ?? false)
+	set_bit2(state, MINISTRY_MANUALLY_CLICKED, state.ministry_manually_clicked ?? false)
+	set_bit2(state, CARD_HAS_BONUS, state.card_has_bonus ?? false)
+	set_bit2(state, QUALIFIES_FOR_BONUS, state.qualifies_for_bonus ?? false)
+	set_bit2(state, ADVANTAGE_ALREADY_EXHAUSTED, state.advantage_already_exhausted ?? false)
+	set_bit2(state, NAVY_FROM_NAVY_BOX, state.navy_from_navy_box ?? false)
+	set_bit2(state, NAVY_DISPLACE, state.navy_displace ?? false)
+	set_bit2(state, DID_THE_BRIG, state.did_the_brig ?? false)
+	set_bit2(state, JACOBITE_VICTORY_WSS, state.jacobite_victory_wss ?? false)
+	set_bit2(state, JACOBITE_VICTORY_WAS, state.jacobite_victory_was ?? false)
+	set_bit2(state, ADVANTAGE_OPTIONAL, state.advantage_optional ?? false)
+	set_bit2(state, LEAVE_LOG_BOX_OPEN, state.leave_log_box_open ?? false)
+	set_bit2(state, STARTED_MINISTRY_BOX, state.started_ministry_box ?? false)
+	set_bit2(state, ELIGIBLE_FOR_HUGUENOTS, state.eligible_for_huguenots ?? false)
 
 	// These were converted to bitflags, so they can be deleted from the state now
 	delete state.military_upgrade
@@ -3649,7 +3681,7 @@ function start_action_round() {
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
 	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
 
-	G.bonus_war_tiles_bought_this_round = 0
+	G.bonuswar_bought = 0
 
 	// Clear all the transient ability flags
 	for (let ab = 0; ab < NUM_TRANSIENT_BITFLAGS; ab++) {
@@ -8583,6 +8615,19 @@ function clear_bit(b) {
 }
 
 
+function set_bit2(state, b, on = true) {
+	bit_set(state.bitflags, b, on)
+}
+
+function clear_bit2(state, b) {
+	bit_set(state, state.bitflags, b, false)
+}
+
+function is_bit2(state, b) {
+	return !!bit_get(state.bitflags, b)
+}
+
+
 
 
 function has_transient(who, t) {
@@ -9242,7 +9287,7 @@ function handle_buy_bonus_war_tile()
 
 	if (free_theaters(G.active).length < 1) {
 		call ("no_room_at_the_inn")
-	} else if (G.bonus_war_tiles_bought_this_round >= 2) {
+	} else if (G.bonuswar_bought >= 2) {
 		call ("no_time_for_love_dr_jones")
 	} else {
 		call ("buy_bonus_war_tile_flow")
@@ -9365,7 +9410,7 @@ P.bonus_war_tile_decisions = {
 			L.theater = t
 			G.theater_bonus_war_tiles[G.active][L.theater].push(L.new_tile)
 			array_delete_item(G.theater_bonus_war_tiles[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
-			G.bonus_war_tiles_bought_this_round++
+			G.bonuswar_bought++
 			log(bold(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
 			log_br()
 			if (G.theater_bonus_war_tiles[G.active][L.theater].length <= 2) {
