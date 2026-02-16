@@ -9,6 +9,9 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 const GAME_STATE_VERSION = 12
 
+const TRUE  = 1 // JSON size optimization
+const FALSE = 0
+
 // TURNS
 const PEACE_TURN_1 = 0
 const WAR_TURN_WSS = 1
@@ -3892,8 +3895,8 @@ function add_action_points(type, amount)
 	}
 
 	G.action_points_major[type] += amount
-	G.action_points_eligible[type] = true
-	G.action_points_eligible_major[type] = true
+	G.action_points_eligible[type] = TRUE
+	G.action_points_eligible_major[type] = TRUE
 	log ("+" + say_action_points(amount, type) + (nat ? " (North American Trade increased award)" : ""))
 	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + (nat ? " (North American Trade increased award)" : ""))
 }
@@ -3985,8 +3988,8 @@ function selected_a_tile(tile)
 	// if (G.action_points_eligible_major[ECON]) ...
 	G.action_points_eligible_major = []
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-		G.action_points_eligible[i]       = (G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)
-		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0)
+		G.action_points_eligible[i]       = ((G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)) ? TRUE : FALSE
+		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0) ? TRUE : FALSE
 	}
 
 	// For each flavor of action points (though we only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
@@ -8545,8 +8548,8 @@ P.buy_diplomatic_flow = script(`
 function do_buy_diplomatic(who)
 {
 	G.action_points_major[DIPLO]++
-	G.action_points_eligible[DIPLO] = true
-	G.action_points_eligible_major[DIPLO] = true
+	G.action_points_eligible[DIPLO] = TRUE
+	G.action_points_eligible_major[DIPLO] = TRUE
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " buys " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
 }
@@ -8578,8 +8581,8 @@ P.buy_economic_flow = script(`
 function do_buy_economic(who)
 {
 	G.action_points_major[ECON]++
-	G.action_points_eligible[ECON] = true
-	G.action_points_eligible_major[ECON] = true
+	G.action_points_eligible[ECON] = TRUE
+	G.action_points_eligible_major[ECON] = TRUE
 	G.bought_action_points = ECON
 	log (bold(data.flags[who].name + " buys " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
 }
