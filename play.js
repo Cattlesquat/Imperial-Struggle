@@ -3948,8 +3948,8 @@ function show_card_list(id, params) {
 				p.className = "score-top"
 				dl.appendChild(p)
 
-				let msg = "<div class=\"score-region-line\">"
-				msg += `<div class=\"score-prestige\"
+				let msg = `<div class="score-region-line">`
+				msg += `<div class="score-prestige"
 						onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
 						onmouseleave="_tip_blur_award()"
 						onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">`
@@ -3971,23 +3971,31 @@ function show_card_list(id, params) {
 				dl.appendChild(p)
 
 				let wrap = 0
-				msg = "<div class=\"score-region-line\">"
+				msg = `<div class="score-region-line">`
 				let regions = 0
 				for (const region of [REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA]) {
 					var chit = V.awards[region]
 
-					msg += `<span class="a${chit} award marker black square-sm award-in-score"                  
+					let who = region_flag_winner(region)
+					let flag = (who === FRANCE) ? "fr" : "br"
+					let flagdiv = ""
+					if (who !== NONE) {
+						flagdiv = `<div class="score-flag ${flag}"></div>`
+					}
+
+					msg += `<div class="a${chit} award marker black square-sm award-in-score"                  
 					onmouseenter="_tip_focus_award(${chit}, ${NONE})"
 					onmouseleave="_tip_blur_award()"
 					onmousedown="_tip_click_light('award',${chit})"
-					><span class="score-region r${region}">${data.regions[region].name}</span>
-					<span class="score-region-delta r${region}">${format_award_info(region, chit)}</span>
-					</span>`
+					><div class="score-region r${region}">${data.regions[region].name}</div>
+					<div class="score-region-delta r${region}">${format_award_info(region, chit)}${flagdiv}
+					</div>
+					</div>`
 					regions++
 					if (++wrap >= 2 && regions <= 2) {
 						wrap = 0
 						msg += "</div>"
-						msg += "<div class=\"score-region-line\">"
+						msg += `<div class="score-region-line">`
 					}
 				}
 				msg += "</div>"
@@ -4005,16 +4013,20 @@ function show_card_list(id, params) {
 				for (let d = 0; d < NUM_DEMANDS; d++) {
 					if (!V.global_demand.includes(d)) continue
 
-					msg = `<div class=\"score-demand-line\"
+					msg = `<div class="score-demand"
 							onmouseenter="_tip_focus_award(${chit}, ${NONE})"
 							onmouseleave="_tip_blur_award()"
 							onmousedown="_tip_click_light('award',${chit})"
 							>`
 
+					msg += `<div class="score-demand-line">`
 					msg += `<div class = "score-demand-label d${d}"></div>`
 					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
 					msg += `<div class = "score-demand-delta-box">`
-					msg += `<div class="score-demand-delta">${format_demand_info(d)}>`
+					msg += `</div>`
+					msg += `</div>`
+
+					msg += `<div class="score-demand-delta">${format_demand_info(d)}`
 
 					let who = demand_flag_winner(d)
 					let flag = (who === FRANCE) ? "fr" : "br"
@@ -4022,8 +4034,7 @@ function show_card_list(id, params) {
 						msg += `<div class="score-flag ${flag}"></div>`
 					}
 
-					msg += `</div>`
-					msg += `</div>`
+					msg += "</div>"
 					msg += "</div>"
 
 					p = document.createElement("dc")
@@ -4035,44 +4046,6 @@ function show_card_list(id, params) {
 				p = document.createElement("dd")
 				p.className = "score-below-demands"
 				dl.appendChild(p)
-
-				/*
-				append_header("Global Demand")
-				let era = current_era()
-				for (let d = 0; d < NUM_DEMANDS; d++) {
-					if (!V.global_demand.includes(d)) continue
-
-					msg = `<div class=\"score-demand-line\"
-							onmouseenter="_tip_focus_award(${chit}, ${NONE})"
-							onmouseleave="_tip_blur_award()"
-							onmousedown="_tip_click_light('award',${chit})"
-							>`
-
-					msg += `<div class = "score-demand-label d${d}"></div>`
-					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
-					msg += `<div class = "score-demand-delta-box">`
-					msg += `<div class="score-demand-delta">${format_demand_info(d)}>`
-
-					let who = demand_flag_winner(d)
-					let flag = (who === FRANCE) ? "fr" : "br"
-					if (who !== NONE) {
-						msg += `<div class="score-flag ${flag}"></div>`
-					}
-
-					msg += `</div>`
-					msg += `</div>`
-					msg += "</div>"
-
-					p = document.createElement("dc")
-					p.className = "score-demand-summary"
-					p.innerHTML = msg
-					dl.appendChild(p)
-				}
-
-				p = document.createElement("dd")
-				p.className = "score-below-demands"
-				dl.appendChild(p)
-				*/
 			}
 
 			append_header("Projected Results")
