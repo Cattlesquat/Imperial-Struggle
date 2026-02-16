@@ -7479,13 +7479,15 @@ P.ministry_new_world_huguenots = {
 	prompt() {
 		let msg = "Place Huguenots marker in a French-flagged territory in North America or the Caribbean"
 		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].type !== TERRITORY) continue
-			if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) continue
-			if (G.flags[s] !== FRANCE) continue
-			if (has_huguenots(s)) continue
-			action_space(s)
-			any = true
+		if (!is_ministry_exhausted(R, NEW_WORLD_HUGUENOTS)) {
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].type !== TERRITORY) continue
+				if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) continue
+				if (G.flags[s] !== FRANCE) continue
+				if (has_huguenots(s)) continue
+				action_space(s)
+				any = true
+			}
 		}
 		if (!any) {
 			msg += " (None possible)"
