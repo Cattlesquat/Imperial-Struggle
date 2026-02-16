@@ -2236,14 +2236,13 @@ function update_war_display() {
 			}
 		}
 		if (war_number === WAR_7YW && theater === 3) {
+			if (!alliances["_Spain"]) {
+				alliances["_Spain"] = { fr: [], br: [], type: TERRITORY }
+			}
 			for (let s of [ SPAIN_1, SPAIN_3]) {
 				let flag = V.flags[s]
 				if (flag !== FRANCE && flag !== BRITAIN) continue
-				
-				if (!alliances["_Spain"]) {
-					alliances["_Spain"] = { fr: [], br: [], type: TERRITORY }
-				}
-				
+
 				if (flag === FRANCE && !alliances["_Spain"].fr.includes(s)) alliances["_Spain"].fr.push(s)
 				if (flag === BRITAIN && !alliances["_Spain"].br.includes(s)) alliances["_Spain"].br.push(s)
 			}
@@ -2252,6 +2251,9 @@ function update_war_display() {
 		// Build HTML
 		let flag_html = ""
 
+		if (theater_data.conflicts && !conflicts["_Conflicts"]) {
+			conflicts["_Conflicts"] = { fr: [], br: [] }
+		}
 		if (conflicts["_Conflicts"]) {
 			alliances["_Conflicts"] = { fr: conflicts["_Conflicts"].fr, br: conflicts["_Conflicts"].br, type: -1 }
 		}
