@@ -7168,7 +7168,7 @@ P.event_cook_and_bougainville = {
 		}
 	},
 	confirm() {
-		push_undo()
+		clear_undo()
 		set_transient(R, TRANSIENT_COOK)
 		goto ("bonus_war_tile_decisions")
 	},
