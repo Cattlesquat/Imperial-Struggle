@@ -910,7 +910,7 @@ function on_setup(scenario, options) {
 	// <br/>
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
-
+	
 	call("main")
 }
 
@@ -2152,7 +2152,6 @@ function move_squadron_token(who, from, to)
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
-	call preliminaries
 	for G.turn in 0 to 9 {
 		if (data.turns[G.turn].war) {
 			call war_turn
