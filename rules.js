@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 16
+const GAME_STATE_VERSION = 17
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -631,13 +631,13 @@ function on_setup(scenario, options) {
 
 	// These are the face-down stocks of war tiles the players draw from
 	// <br><b>
-	// if (G.basic_war_tiles[who].length < 1) return
-	G.basic_war_tiles = [ [], [] ]
+	// if (G.basic_war[who].length < 1) return
+	G.basic_war = [ [], [] ]
 
 	// These are the face-down stocks of war tiles the players draw from
 	// <br><b>
-	// if (G.bonus_war_tiles[who].length < 1) return
-	G.bonus_war_tiles = [ [], [] ]
+	// if (G.bonus_war[who].length < 1) return
+	G.bonus_war = [ [], [] ]
 
 	// These are the war tiles sent to the current war. There are 4 theaters (1-4), and 0 means tile has been drawn but not yet assigned a theater (display on upper row of war mat)
 	// <br><b>
@@ -1069,6 +1069,10 @@ function on_load()
 		upconvert (16, upconvert_shorter_names)
 	}
 
+	if (G.game_state_version < 17) {
+		upconvert (17, upconvert_shorter_names_2)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -1099,6 +1103,38 @@ function upconvert_patch_bitflags(state)
 	} else {
 		set_bit2(state, JACOBITE_VICTORY_WAS, (state.old_war_theater_winners[WAR_WAS][4] === FRANCE))
 	}
+}
+
+
+function upconvert_shorter_names_2(state) ///
+{
+	state.controlled     = state.controlled_start_of_round
+	state.major          = state.action_points_major
+	state.minor          = state.action_points_minor
+	state.committed      = state.action_points_committed_bonus
+	state.contingent     = state.action_points_contingent
+	state.eligible       = state.action_points_eligible
+	state.eligible_major = state.action_points_eligible_major
+	state.breakdown      = state.action_cost_breakdown
+	state.adjustable     = state.action_cost_adjustable
+	state.modifiers      = state.action_cost_modifiers
+	state.mod_types      = state.action_cost_modifier_types
+	state.basic_war      = state.basic_war_tiles
+	state.bonus_war      = state.bonus_war_tiles
+
+	delete state.controlled_start_of_round
+	delete state.action_points_major
+	delete state.action_points_minor
+	delete state.action_points_committed_bonus
+	delete state.action_points_contingent
+	delete state.action_points_eligible
+	delete state.action_points_eligible_major
+	delete state.action_cost_breakdown
+	delete state.action_cost_adjustable
+	delete state.action_cost_modifiers
+	delete state.action_cost_modifier_types
+	delete state.basic_war_tiles
+	delete state.bonus_war_tiles
 }
 
 
@@ -1141,6 +1177,7 @@ function upconvert_shorter_names(state)
 	delete state.old_war_theater_winners
 	delete state.old_war_theater_margins
 }
+
 
 function upconvert_bitflags(state)
 {
@@ -1495,12 +1532,12 @@ function on_view(RR = undefined) {
 
 	V.jacobite_victory = G.jacobite_victory
 
-	V.action_points_major = G.action_points_major
-	V.action_points_minor = G.action_points_minor
-	V.action_points_eligible = G.action_points_eligible
-	V.action_points_eligible_major = G.action_points_eligible_major
-	V.action_points_committed_bonus = G.action_points_committed_bonus
-	V.action_points_contingent = G.action_points_contingent
+	V.major = G.major
+	V.minor = G.minor
+	V.eligible = G.eligible
+	V.eligible_major = G.eligible_major
+	V.committed = G.committed
+	V.contingent = G.contingent
 	V.subphase = G.subphase
 
 	V.townshend_acts = G.townshend_acts
@@ -1750,14 +1787,14 @@ function current_era() {
 
 /* 7.6 and Setup - BONUS WAR TILE LAYOUT */
 function add_next_war_bonus_tiles() {
-	G.bonus_war_tiles = [ [], [] ]
+	G.bonus_war = [ [], [] ]
 	let base = (G.next_war - 1) * (NUM_BONUS_WAR_TILES * 2)
 	for (var i = 0; i < NUM_BONUS_WAR_TILES; i++) {
-		G.bonus_war_tiles[FRANCE].push(base + i)
-		G.bonus_war_tiles[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
+		G.bonus_war[FRANCE].push(base + i)
+		G.bonus_war[BRITAIN].push(base + i + NUM_BONUS_WAR_TILES)
 	}
-	shuffle(G.bonus_war_tiles[FRANCE])
-	shuffle(G.bonus_war_tiles[BRITAIN])
+	shuffle(G.bonus_war[FRANCE])
+	shuffle(G.bonus_war[BRITAIN])
 
 	// None in any theaters
 	G.theater_bonus = [[[], [], [], [], []], [[], [], [], [], []]]
@@ -1765,17 +1802,17 @@ function add_next_war_bonus_tiles() {
 
 
 function draw_basic_war_tile(who, theater) {
-	if (G.basic_war_tiles[who].length < 1) return -1
-	shuffle(G.basic_war_tiles[who])
-	let tile = G.basic_war_tiles[who].pop()
+	if (G.basic_war[who].length < 1) return -1
+	shuffle(G.basic_war[who])
+	let tile = G.basic_war[who].pop()
 	G.theater_basic[who][theater].push(tile)
 	return tile
 }
 
 function draw_bonus_war_tile(who, theater) {
-	if (G.bonus_war_tiles[who].length < 1) return -1
-	shuffle(G.bonus_war_tiles[who])
-	let tile = G.bonus_war_tiles[who].pop()
+	if (G.bonus_war[who].length < 1) return -1
+	shuffle(G.bonus_war[who])
+	let tile = G.bonus_war[who].pop()
 	G.theater_bonus[who][theater].push(tile)
 	return tile
 }
@@ -3698,11 +3735,11 @@ function start_action_round() {
 
 	// Certain effects care if we controlled particular spaces from beginning of action round
 	// <br><b>
-	// set_has(G.controlled_start_of_round, space)
-	G.controlled_start_of_round = []
+	// set_has(G.controlled, space)
+	G.controlled = []
 	for (var s = 0; s < NUM_SPACES; s++) {
 		if (G.flags[s] !== G.active) continue
-		set_add(G.controlled_start_of_round, s)
+		set_add(G.controlled, s)
 	}
 
 	find_isolated_markets() // Markets are isolated for the whole action around if-and-only-if they're isolated at the beginning of the round
@@ -3925,7 +3962,7 @@ function space_rules(s, type)
 // Returns a list of all presently-active contingent action point rules
 function active_rules() {
 	let rules = []
-	for (const contingency of G.action_points_contingent) {
+	for (const contingency of G.contingent) {
 		rules.push(contingency.rule)
 	}
 	return rules
@@ -3934,7 +3971,7 @@ function active_rules() {
 
 function active_rules_list() {
 	let rules = []
-	for (const contingency of G.action_points_contingent) {
+	for (const contingency of G.contingent) {
 		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
 	}
 	return rules
@@ -3957,7 +3994,7 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 	contingent.rule = rule
 	contingent.short = short
 	contingent.not_independent = not_independent
-	G.action_points_contingent.push(structuredClone(contingent))
+	G.contingent.push(structuredClone(contingent))
 	log ("+" + say_action_points(amount, type) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
@@ -3968,27 +4005,27 @@ function get_contingent(type, rules, require_independent = false)
 	let amount = 0
 	if ((rules !== undefined) && (rules !== null)) {
 		if ((typeof rules !== "string") && (rules.constructor === Array)) {
-			for (let i = 0; i < G.action_points_contingent.length; i++) {
-				if (G.action_points_contingent[i].type !== type) continue
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
 				let any = false
 				for (const rule of rules) {
-					if (G.action_points_contingent[i].rule !== rule) continue
+					if (G.contingent[i].rule !== rule) continue
 					any = true
 				}
 				if (!any) continue
 				if (require_independent) {
-					if (G.action_points_contingent[i].not_independent) continue
+					if (G.contingent[i].not_independent) continue
 				}
-				amount += G.action_points_contingent[i].amount
+				amount += G.contingent[i].amount
 			}
 		} else {
-			for (let i = 0; i < G.action_points_contingent.length; i++) {
-				if (G.action_points_contingent[i].type !== type) continue
-				if (G.action_points_contingent[i].rule !== rules) continue
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
 				if (require_independent) {
-					if (G.action_points_contingent[i].not_independent) continue
+					if (G.contingent[i].not_independent) continue
 				}
-				amount += G.action_points_contingent[i].amount
+				amount += G.contingent[i].amount
 			}
 		}
 	}
@@ -4000,21 +4037,21 @@ function any_contingent(type, rules, require_independent) {
 	if ((rules !== undefined) && (rules !== null)) {
 		if (rules.constructor === Array) {
 			for (let rule of rules) {
-				for (let i = 0; i < G.action_points_contingent.length; i++) {
-					if (G.action_points_contingent[i].type !== type) continue
-					if (G.action_points_contingent[i].rule !== rule) continue
+				for (let i = 0; i < G.contingent.length; i++) {
+					if (G.contingent[i].type !== type) continue
+					if (G.contingent[i].rule !== rule) continue
 					if (require_independent) {
-						if (G.action_points_contingent[i].not_independent) continue
+						if (G.contingent[i].not_independent) continue
 					}
 					return true
 				}
 			}
 		} else {
-			for (let i = 0; i < G.action_points_contingent.length; i++) {
-				if (G.action_points_contingent[i].type !== type) continue
-				if (G.action_points_contingent[i].rule !== rules) continue
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
 				if (require_independent) {
-					if (G.action_points_contingent[i].not_independent) continue
+					if (G.contingent[i].not_independent) continue
 				}
 				return true
 			}
@@ -4026,13 +4063,13 @@ function any_contingent(type, rules, require_independent) {
 // Use up contingent action points matching a specific rule, to the extent available. Returns amount that wasn't satisfied from contingent points (still to be paid)
 function use_contingent(amount, type, rule)
 {
-	for (let i = 0; i < G.action_points_contingent.length; i++) {
-		if (G.action_points_contingent[i].type !== type) continue
-		if (G.action_points_contingent[i].rule !== rule) continue
-		if (G.action_points_contingent[i].amount <= 0) continue
-		while ((amount > 0) && (G.action_points_contingent[i].amount > 0)) {
+	for (let i = 0; i < G.contingent.length; i++) {
+		if (G.contingent[i].type !== type) continue
+		if (G.contingent[i].rule !== rule) continue
+		if (G.contingent[i].amount <= 0) continue
+		while ((amount > 0) && (G.contingent[i].amount > 0)) {
 			amount--
-			G.action_points_contingent[i].amount--
+			G.contingent[i].amount--
 		}
 	}
 	return amount
@@ -4041,11 +4078,11 @@ function use_contingent(amount, type, rule)
 
 // When we've done a minor action of a type and aren't eligible for any major actions of the type, we drain any "non-independent" contingent points that would otherwise look like we could perform a second action of that type
 function drain_non_independent(type, rule) {
-	for (let i = 0; i < G.action_points_contingent.length; i++) {
-		if (G.action_points_contingent[i].type !== type) continue
-		if (G.action_points_contingent[i].rule !== rule) continue
-		if (!G.action_points_contingent[i].not_independent) continue
-		G.action_points_contingent[i].amount = 0
+	for (let i = 0; i < G.contingent.length; i++) {
+		if (G.contingent[i].type !== type) continue
+		if (G.contingent[i].rule !== rule) continue
+		if (!G.contingent[i].not_independent) continue
+		G.contingent[i].amount = 0
 	}
 }
 
@@ -4058,9 +4095,9 @@ function add_action_points(type, amount)
 		nat = true
 	}
 
-	G.action_points_major[type] += amount
-	G.action_points_eligible[type] = TRUE
-	G.action_points_eligible_major[type] = TRUE
+	G.major[type] += amount
+	G.eligible[type] = TRUE
+	G.eligible_major[type] = TRUE
 	log ("+" + say_action_points(amount, type) + (nat ? " (North American Trade increased award)" : ""))
 	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + (nat ? " (North American Trade increased award)" : ""))
 }
@@ -4120,19 +4157,19 @@ function selected_a_tile(tile)
 	}
 
 	// Major action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
-	G.action_points_major = [ 0, 0, 0 ]
+	G.major = [ 0, 0, 0 ]
 
 	// Minor action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
-	G.action_points_minor = [ 0, 0, 0 ]
+	G.minor = [ 0, 0, 0 ]
 
-	G.action_points_major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
-	G.action_points_minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
+	G.major[data.investments[G.played_tile].majortype] = data.investments[G.played_tile].majorval
+	G.minor[data.investments[G.played_tile].minortype] = data.investments[G.played_tile].minorval
 
 	// Bonus points (ECON, DIPLO, MIL) committed during the current specific action (e.g. a bonus military point for Choiseul)
-	G.action_points_committed_bonus = [ 0, 0, 0 ]
+	G.committed = [ 0, 0, 0 ]
 
 	// Contingent action points (e.g. restricted to an area)
-	G.action_points_contingent = []
+	G.contingent = []
 
 	// Type of action points we've bought on turn 6, if any
 	G.bought_action_points = -1
@@ -4143,16 +4180,16 @@ function selected_a_tile(tile)
 	// This controls whether we're allowed to use this category at all.
 	// Initially set to what our tile gives us, but event cards could add other categories
 	// <br><b>
-	// if (G.action_points_eligible[DIPLO]) ...
-	G.action_points_eligible       = []
+	// if (G.eligible[DIPLO]) ...
+	G.eligible = []
 
 	// We're eligible for major action in an action point class if we had at least 1 point of major, either from our investment tile or from an event/ministry
 	// <br><b>
-	// if (G.action_points_eligible_major[ECON]) ...
-	G.action_points_eligible_major = []
+	// if (G.eligible_major[ECON]) ...
+	G.eligible_major = []
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-		G.action_points_eligible[i]       = ((G.action_points_major[i] > 0) || (G.action_points_minor[i] > 0)) ? TRUE : FALSE
-		G.action_points_eligible_major[i] = (G.action_points_major[i] > 0) ? TRUE : FALSE
+		G.eligible[i]       = ((G.major[i] > 0) || (G.minor[i] > 0)) ? TRUE : FALSE
+		G.eligible_major[i] = (G.major[i] > 0) ? TRUE : FALSE
 	}
 
 	// For each flavor of action points (though we only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
@@ -4178,9 +4215,9 @@ function selected_a_tile(tile)
 	if (has_active_ministry(G.active, NORTH_AMERICAN_TRADE)) {
 		if (G.demand_flag_count[FRANCE][FURS] + G.demand_flag_count[FRANCE][FISH] > G.demand_flag_count[BRITAIN][FURS] + G.demand_flag_count[BRITAIN][FISH]) {
 			set_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)
-			if (G.action_points_major[ECON]) G.action_points_major[ECON]++
-			if (G.action_points_minor[ECON]) G.action_points_minor[ECON]++
-			if (G.action_points_major[ECON] || G.action_points_minor[ECON]) {
+			if (G.major[ECON]) G.major[ECON]++
+			if (G.minor[ECON]) G.minor[ECON]++
+			if (G.major[ECON] || G.minor[ECON]) {
 				log("North American Trade adds " + say_action_points(1, ECON) + " (France controls more combined Fur and Fish markets).")
 				//log("North American Trade adds 1 Economic action point (France controls more combined Fur and Fish markets).")
 			}
@@ -4268,7 +4305,7 @@ P.select_investment_tile = {
 
 
 P.after_selecting_tile = script(`
-	if ((R === FRANCE) && has_ministry(R, THE_CARDINAL_MINISTERS) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO]) {
+	if ((R === FRANCE) && has_ministry(R, THE_CARDINAL_MINISTERS) && (cardinal_ministers_value() > 0) && G.eligible[DIPLO]) {
 		eval { require_ministry_unexhausted(R, THE_CARDINAL_MINISTERS, "To gain " + say_action_points(cardinal_ministers_value(), DIPLO), 0, true, true) }
 		if (G.has_required_ministry) {
 			eval { use_cardinal_ministers() }
@@ -4332,8 +4369,8 @@ function end_event_play(c)
 	log_box_end(LOG_BOX_EVENT)
 
 	if (is_bit(QUALIFIES_FOR_BONUS) && has_active_ministry(G.active, LAVOISIER)) {
-		G.action_points_major[data.investments[G.played_tile].majortype]++
-		G.action_points_minor[data.investments[G.played_tile].minortype]++
+		G.major[data.investments[G.played_tile].majortype]++
+		G.minor[data.investments[G.played_tile].minortype]++
 
 		log_box_begin(G.active, say_ministry(LAVOISIER + "\n" + "Event Bonus Received", G.active), LOG_BOX_MINISTRY)
 		log ("+" + say_action_points(1, data.investments[G.played_tile].majortype) + " (Major)")
@@ -5107,8 +5144,8 @@ P.event_austro_spanish_rivalry = {
 
 		L.picked_bonus_tile = choices[0]
 		array_delete_item(G.theater_bonus[1 - G.active][L.theater], L.picked_bonus_tile)
-		G.bonus_war_tiles[1 - G.active].push(L.picked_bonus_tile)
-		shuffle(G.bonus_war_tiles[1 - G.active])
+		G.bonus_war[1 - G.active].push(L.picked_bonus_tile)
+		shuffle(G.bonus_war[1 - G.active])
 		end()
 	},
 	diplomatic2() {
@@ -5539,8 +5576,8 @@ P.do_military_spending_overruns = {
 		L.removals_done++
 		let theater = get_theater_from_bonus_war_tile(G.active, t)
 		array_delete_item(G.theater_bonus[G.active][theater], t)
-		G.bonus_war_tiles[G.active].push(t)
-		//shuffle(G.bonus_war_tiles[G.active])
+		G.bonus_war[G.active].push(t)
+		//shuffle(G.bonus_war[G.active])
 		log(data.flags[G.active].name + " returns a bonus war tile from theater " + theater + ": " + data.wars[G.next_war].theater_names[theater])
 	},
 	confirm() {
@@ -7564,7 +7601,7 @@ P.ministry_edmond_halley = {
 				L.any = true
 			}
 
-			button("build_squadron", !is_ministry_exhausted(R, EDMOND_HALLEY, 0) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
+			button("build_squadron", !is_ministry_exhausted(R, EDMOND_HALLEY, 0) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.eligible[MIL])
 		}
 		button("pass")
 	},
@@ -7609,12 +7646,12 @@ function use_cardinal_ministers() {
 	log_box_ministry(R, THE_CARDINAL_MINISTERS)
 	exhaust_ministry(R, THE_CARDINAL_MINISTERS)
 
-	if (G.action_points_major[DIPLO] > 0) {
-		G.action_points_major[DIPLO] += cardinal_ministers_value()
+	if (G.major[DIPLO] > 0) {
+		G.major[DIPLO] += cardinal_ministers_value()
 	} else {
-		G.action_points_minor[DIPLO] += cardinal_ministers_value()
+		G.minor[DIPLO] += cardinal_ministers_value()
 	}
-	log (bold(data.flags[FRANCE].name + " gains " + say_action_points(cardinal_ministers_value(), DIPLO) + ((G.action_points_major[DIPLO] <= 0) ? " (Minor)" : "") + "."))
+	log (bold(data.flags[FRANCE].name + " gains " + say_action_points(cardinal_ministers_value(), DIPLO) + ((G.major[DIPLO] <= 0) ? " (Minor)" : "") + "."))
 	log_box_end(LOG_BOX_MINISTRY)
 }
 
@@ -7624,8 +7661,8 @@ P.ministry_cardinal_ministers = {
 	prompt() {
 		V.prompt = ministry_prompt(R, THE_CARDINAL_MINISTERS, "Confirm use of ministry to gain " + say_action_points(cardinal_ministers_value(), DIPLO)) + "(You presently have " + say_action_points_left() + ")"
 		if (cardinal_ministers_value() < 1) V.prompt = say_ministry_header() + say_action("You do not control any of the necessary spaces to gain a bonus.")
-		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && !G.action_points_eligible[DIPLO]) V.prompt = say_ministry_header() + say_action("Your investment tile does not confer any " + say_action_points(0, DIPLO, false, false) + ".")
-		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && (cardinal_ministers_value() > 0) && G.action_points_eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && !G.eligible[DIPLO]) V.prompt = say_ministry_header() + say_action("Your investment tile does not confer any " + say_action_points(0, DIPLO, false, false) + ".")
+		if (ministry_useful_this_phase(THE_CARDINAL_MINISTERS, G.subphase) && (cardinal_ministers_value() > 0) && G.eligible[DIPLO] && !is_ministry_exhausted(R, THE_CARDINAL_MINISTERS)) {
 			button("confirm")
 		}
 		button ("pass")
@@ -7746,7 +7783,7 @@ P.ministry_jacobite_uprisings = {
 	prompt() {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with " + say_action_points(0, MIL, false, false), "score " + jacobite_vp_value() + " VP for " + say_action_points(3, MIL)) + say_action_points_left()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.subphase)) {
-			if (G.action_points_eligible[MIL]) {
+			if (G.eligible[MIL]) {
 				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, JACOBITES_USED_2)) {
 					for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 						if (G.flags[s] !== FRANCE) {
@@ -7803,10 +7840,10 @@ P.ministry_pitt_the_elder = {
 		if (ministry_useful_this_phase(PITT_THE_ELDER, G.subphase) && !is_ministry_fully_exhausted(R, PITT_THE_ELDER)) {
 
 			if (!is_ministry_exhausted(R, PITT_THE_ELDER, 0)) {
-				button ("diplomatic_point", !is_ministry_exhausted(R, PITT_THE_ELDER, 0) && G.action_points_eligible[DIPLO])
+				button ("diplomatic_point", !is_ministry_exhausted(R, PITT_THE_ELDER, 0) && G.eligible[DIPLO])
 			}
 
-			button("build_squadron", !is_ministry_exhausted(R, PITT_THE_ELDER, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL])
+			button("build_squadron", !is_ministry_exhausted(R, PITT_THE_ELDER, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.eligible[MIL])
 		}
 		button ("pass")
 	},
@@ -7840,7 +7877,7 @@ P.ministry_charles_hanbury_williams = {
 		V.prompt = ministry_prompt(R, CHARLES_HANBURY_WILLIAMS, "Reduce cost to unflag FR spaces in Prussia, German States, and Russia by 1 [@1]") + say_action_points_left()
 		if (ministry_useful_this_phase(CHARLES_HANBURY_WILLIAMS, G.subphase)) {
 			if (!is_ministry_exhausted(R, CHARLES_HANBURY_WILLIAMS)) {
-				button ("unflag_discount", G.action_points_eligible_major[DIPLO])
+				button ("unflag_discount", G.eligible_major[DIPLO])
 			}
 		}
 		button ("pass")
@@ -7864,8 +7901,8 @@ P.ministry_choiseul = {
 	prompt() {
 		V.prompt = ministry_prompt(R, CHOISEUL, "Gain an extra " + say_action(1, MIL) + " usable for Bonus War Tiles or deplying squadrons only", "build discounted a squadron") + say_action_points_left()
 		if (ministry_useful_this_phase(CHOISEUL, G.subphase)) {
-			button ("military_point", G.action_points_eligible[MIL] && !is_ministry_exhausted(R, CHOISEUL, 0))
-			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.action_points_eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
+			button ("military_point", G.eligible[MIL] && !is_ministry_exhausted(R, CHOISEUL, 0))
+			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
 		}
 		button ("pass")
 	},
@@ -8060,7 +8097,7 @@ P.advantage_naval_bastion = {
 	},
 	inactive: "activate Naval Bastion",
 	prompt() {
-		if (!G.action_points_eligible[MIL]) {
+		if (!G.eligible[MIL]) {
 			V.prompt = advantage_prompt(R, G.active_advantage, "You need an available Military action to use this advantage.")
 		} else {
 			let any = false;
@@ -8282,7 +8319,7 @@ P.advantage_unflag_discount = {
 		let type = L.adv_market ? ECON : DIPLO
 		let msg = "Pick a " + L.adv_string + " to unflag " + (L.adv_for_one ? "for " + say_action_points(1, type) + "." : "for one fewer [@" + type + "].")
 		let space_type = L.adv_market ? MARKET : POLITICAL
-		if (!G.action_points_eligible[type] ) {
+		if (!G.eligible[type] ) {
 			if (type === ECON) {
 				msg = "You must have an Economic action available to unflag markets."
 			} else {
@@ -8306,7 +8343,7 @@ P.advantage_unflag_discount = {
 			}
 			if (!any_flagged) {
 				msg = "There are no enemy-flagged " + L.adv_plural + " right now."
-			} else if (any_non_conflict && G.action_points_minor[type] > 0) {
+			} else if (any_non_conflict && G.minor[type] > 0) {
 				msg = "With a minor action you can only unflag spaces that have a conflict marker."
 			} else if (!any) {
 				msg = "You do not have eligible connections to any " + L.adv_plural + "."
@@ -8335,9 +8372,9 @@ function allowed_to_shift_market(s, who)
 		if (G.flags[link] !== who) continue
 		if ([ FORT, NAVAL, TERRITORY ].includes(data.spaces[link].type)) return true // Can always shift if adjacent to friendly fort/navy/territory
 		if (data.spaces[link].type === MARKET) {
-			if (has_conflict_marker(link)) continue						// Not if conflict
-			if (is_isolated_market(link)) continue						// Not if isolated
-			if (!set_has(G.controlled_start_of_round, link)) continue   // Can't "daisy chain" from market we shifted THIS round
+			if (has_conflict_marker(link)) continue       // Not if conflict
+			if (is_isolated_market(link)) continue        // Not if isolated
+			if (!set_has(G.controlled, link)) continue    // Can't "daisy chain" from market we shifted THIS round
 			return true
 		}
 	}
@@ -8372,19 +8409,19 @@ function eligible_for_minor_action(s, who)
 
 // Returns true if eligible for an action of this type (minor or major), checking the optional list of rules for potential contingent points
 function action_points_eligible(type, rules = []) {
-	return G.action_points_eligible[type] || any_contingent(type, rules, true)
+	return G.eligible[type] || any_contingent(type, rules, true)
 }
 
 
 // Returns true if eligible for a major action of this type, checking the optional list of rules for potential contingent points
 function action_points_eligible_major(type, rules = []) {
-	return G.action_points_eligible_major[type] || any_contingent(type, rules, true)
+	return G.eligible_major[type] || any_contingent(type, rules, true)
 }
 
 
 // Returns the number of major action points available of the type, checking the optional list of rules for potential contingent points
 function action_points_major(type, rules = [], allow_minor = false) {
-	return G.action_points_major[type] + get_contingent(type, rules, !action_points_eligible_major(type, rules) && !allow_minor)
+	return G.major[type] + get_contingent(type, rules, !action_points_eligible_major(type, rules) && !allow_minor)
 }
 
 
@@ -8399,7 +8436,7 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 		// If we have already spent "Edmund Burke major-action-must-be-all-in-europe" points, then we can't do diplomatic actions *outside* of europe unless we have a minor action
 		if (has_transient(who, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
 			if (!eligible_minor) return 0
-			return G.action_points_minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + action_points_major(type, rules, eligible_minor)
+			return G.minor[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + action_points_major(type, rules, eligible_minor)
 		}
 
 		if (eligible_minor) {
@@ -8407,14 +8444,14 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 			if (burke > 0) {
 				// Don't combine Edmund Burke diplo-major points with minor actions
 				return Math.max(
-					action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0),
-					action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] - burke : 0)
+					action_points_major(type, rules, eligible_minor) + G.committed[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0),
+					action_points_major(type, rules, eligible_minor) + G.committed[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.minor[type] - burke : 0)
 				)
 			}
 		}
 	}
 
-	return action_points_major(type, rules, eligible_minor) + G.action_points_committed_bonus[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.action_points_minor[type] : 0)
+	return action_points_major(type, rules, eligible_minor) + G.committed[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.minor[type] : 0)
 }
 
 // True if we're legally allowed to shift the space (includes minor action rules).
@@ -8444,7 +8481,7 @@ function action_eligible_spaces_econ(region)
 		if (G.flags[space.num] === R) continue // can't shift our own spaces
 		if (!allowed_to_shift_market(space.num, R)) continue // the connected-market rules, etc.
 		if (!action_points_eligible_major(ECON, space_rules(space.num, ECON))) { // We either need eligibility for major action *at this space*, or else we need to have non-zero minor action points remaining
-			if (!G.action_points_minor[ECON]) continue
+			if (!G.minor[ECON]) continue
 		}
 		if (!action_points_eligible(ECON, space_rules(space.num, ECON))) continue
 		if (!is_shift_allowed(space.num, R, true, space_rules(space.num, ECON))) continue
@@ -8462,11 +8499,11 @@ function action_eligible_spaces_diplo(region)
 		if (data.spaces[space.num].era > current_era()) continue // Some diplomatic spaces are era-locked
 		if (((space.num === USA_1) || (space.num === USA_2)) && !G.usa_flags) continue // USA flags only if USA exists
 		if (!action_points_eligible_major(DIPLO, space_rules(space.num, DIPLO))) { // We either need eligibility for major action *at this space*, or else we need to have non-zero minor action points remaining
-			if (!G.action_points_minor[DIPLO]) continue
+			if (!G.minor[DIPLO]) continue
 		}
 		if (!is_shift_allowed(space.num, R, true, space_rules(space.num, DIPLO))) continue
 		if (has_transient(R, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (space.region !== REGION_EUROPE)) {
-			if (!G.action_points_minor[DIPLO]) continue
+			if (!G.minor[DIPLO]) continue
 		}
 		action_space(space.num, INCLUDE_CONFLICT)
 	}
@@ -8495,7 +8532,7 @@ function action_eligible_spaces_mil(region)
 					for (const link of space.connects) {
 						if (G.flags[link] !== R) continue
 						if (![ TERRITORY, NAVAL, MARKET ].includes(data.spaces[link].type)) continue // Need a friendly fort, territory, or market
-						if (!set_has(G.controlled_start_of_round, link)) continue                    // Need it since start of action round
+						if (!set_has(G.controlled, link)) continue                                   // Need it since start of action round
 						allowed_to_build_fort = true
 						break
 					}
@@ -8550,7 +8587,7 @@ function action_territories_debug() {
 
 function action_eligible_spaces(type, region)
 {
-	if (!action_points_eligible_major(type, active_rules()) && (G.action_points_minor[type] <= 0)) return
+	if (!action_points_eligible_major(type, active_rules()) && (G.minor[type] <= 0)) return
 	switch (type) {
 		case ECON:
 			action_eligible_spaces_econ(region)
@@ -8740,9 +8777,9 @@ P.buy_diplomatic_flow = script(`
 
 function do_buy_diplomatic(who)
 {
-	G.action_points_major[DIPLO]++
-	G.action_points_eligible[DIPLO] = TRUE
-	G.action_points_eligible_major[DIPLO] = TRUE
+	G.major[DIPLO]++
+	G.eligible[DIPLO] = TRUE
+	G.eligible_major[DIPLO] = TRUE
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " buys " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
 }
@@ -8773,9 +8810,9 @@ P.buy_economic_flow = script(`
 
 function do_buy_economic(who)
 {
-	G.action_points_major[ECON]++
-	G.action_points_eligible[ECON] = TRUE
-	G.action_points_eligible_major[ECON] = TRUE
+	G.major[ECON]++
+	G.eligible[ECON] = TRUE
+	G.eligible_major[ECON] = TRUE
 	G.bought_action_points = ECON
 	log (bold(data.flags[who].name + " buys " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
 }
@@ -8888,7 +8925,7 @@ P.construct_squadron_flow = script(`
     	L.min_cost = cost_to_build_squadron(G.active, true, L.info)
     	L.flipped_something = false
     }        
-    if (!G.action_points_eligible[MIL]) {
+    if (!G.eligible[MIL]) {
     	call no_military_action_squadron
     	return
     }
@@ -8996,8 +9033,8 @@ const MODIFY_SET_TO_1  = 0
 // Modifier types. 0 = Advantage, 1 = Ministry, 2 = Huguenots
 function action_point_cost_modify(amount, type)
 {
-	G.action_cost_modifiers.push(amount)
-	G.action_cost_modifier_types.push(type)
+	G.modifiers.push(amount)
+	G.mod_types.push(type)
 	G.action_cost = action_point_cost(G.active, G.active_space, G.action_type)
 }
 
@@ -9029,8 +9066,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	var cost = data.spaces[s].cost
 
 	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
-	G.action_cost_breakdown = "Space: " + cost + "."
-	G.action_cost_adjustable = cost
+	G.breakdown  = "Space: " + cost + "."
+	G.adjustable = cost
 	clear_bit(ACTION_COST_ADJUSTED)
 
 	// General Rule: Apply all reductions before any increases (5.4.2, 5.5.2)
@@ -9039,25 +9076,25 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		if ((data.spaces[s].type === FORT) && is_damaged_fort()) {
 			if (G.flags[s] === G.active) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player? For now I *think* the latter.
 				cost -= 1 // Repairing friendly fort costs one less than strength
-				G.action_cost_breakdown += " -1 friendly fort."
+				G.breakdown += " -1 friendly fort."
 				set_bit(ACTION_COST_ADJUSTED)
 			} else if (G.flags[s] === G.active - 1) {
 				cost += 1 // Seizing enemy fort costs one more than strength
-				G.action_cost_breakdown += " +1 enemy fort."
+				G.breakdown += " +1 enemy fort."
 				set_bit(ACTION_COST_ADJUSTED)
 			}
 		}
 
 		if (has_conflict_marker(s)) {
 			cost = get_conflict_marker() + 1 // Either 2 for basic conflict or 3 for Haitians
-			G.action_cost_breakdown = "Remove Conflict: 2."
+			G.breakdown = "Remove Conflict: 2."
 			if (cost > 2) {
-				G.action_cost_breakdown += " +1 Haitian Revolution."
+				G.breakdown += " +1 Haitian Revolution."
 				set_bit(ACTION_COST_ADJUSTED)
 			}
 			if (is_protected(s)) {
 				cost--
-				G.action_cost_breakdown += " -1 protected."
+				G.breakdown += " -1 protected."
 				set_bit(ACTION_COST_ADJUSTED)
 			}
 		}
@@ -9065,8 +9102,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		// Both political costs & market flagging costs are reduced to 1 by a conflict marker (5.4.2, 5.5.2)
 		if (has_conflict_marker(s)) {
 			cost = 1
-			G.action_cost_breakdown = "Conflict = 1."
-			G.action_cost_adjustable = 1
+			G.breakdown  = "Conflict = 1."
+			G.adjustable = 1
 			set_bit(ACTION_COST_ADJUSTED)
 		}
 
@@ -9074,35 +9111,35 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 			// Isolated markets cost 1 to shift
 			if (is_isolated_market(s)) {
 				cost = 1
-				G.action_cost_breakdown = "Isolated = 1."
-				G.action_cost_adjustable = 1
+				G.breakdown  = "Isolated = 1."
+				G.adjustable = 1
 				set_bit(ACTION_COST_ADJUSTED)
 			}
 		}
 
 		// First any modifiers that set it to 1
-		for (let i = 0; i < G.action_cost_modifiers.length; i++) {
-			let modifier = G.action_cost_modifiers[i]
-			let reason   = G.action_cost_modifier_types[i]
+		for (let i = 0; i < G.modifiers.length; i++) {
+			let modifier = G.modifiers[i]
+			let reason   = G.mod_types[i]
 
 			if (modifier === MODIFY_SET_TO_1) {
 				cost = 1
 				set_bit(ACTION_COST_ADJUSTED)
-				G.action_cost_adjustable = 1
-				G.action_cost_breakdown = "Set to 1 by " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
+				G.adjustable = 1
+				G.breakdown  = "Set to 1 by " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
 			}
 		}
 
 		// And then any modifiers which reduce it (these could negate a potential +1 from another modifier)
-		for (let i = 0; i < G.action_cost_modifiers.length; i++) {
-			let modifier = G.action_cost_modifiers[i]
-			let reason   = G.action_cost_modifier_types[i]
+		for (let i = 0; i < G.modifiers.length; i++) {
+			let modifier = G.modifiers[i]
+			let reason   = G.mod_types[i]
 
 			if (modifier !== MODIFY_SET_TO_1) {
 				cost += modifier
 				set_bit(ACTION_COST_ADJUSTED)
-				G.action_cost_adjustable += modifier
-				G.action_cost_breakdown += " " + modifier + " " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
+				G.adjustable += modifier
+				G.breakdown  += " " + modifier + " " + ((reason === MODIFY_ADVANTAGE) ? "Advantage" : "Ministry") + "."
 			}
 		}
 
@@ -9112,8 +9149,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 					if (G.flags[s] === NONE) {                                    // Jonathan Swift discount only works for *flagging* spaces, not unflagging
 						cost -= 1
 						set_bit(ACTION_COST_ADJUSTED)
-						G.action_cost_breakdown += " -1 Jonathan Swift."
-						G.action_cost_adjustable--
+						G.breakdown += " -1 Jonathan Swift."
+						G.adjustable--
 					}
 				}
 			}
@@ -9122,8 +9159,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				if ([ SONS_OF_LIBERTY, USA_1, USA_2 ].includes(s)) {
 					cost -= 1
 					set_bit(ACTION_COST_ADJUSTED)
-					G.action_cost_breakdown += " -1 Edmund Burke."
-					G.action_cost_adjustable--
+					G.breakdown += " -1 Edmund Burke."
+					G.adjustable--
 				}
 			}
 
@@ -9131,8 +9168,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				if (G.flags[s] === FRANCE) {
 					cost--
 					set_bit(ACTION_COST_ADJUSTED)
-					G.action_cost_breakdown += " -1 Charles Hanbury Williams."
-					G.action_cost_adjustable--
+					G.breakdown += " -1 Charles Hanbury Williams."
+					G.adjustable--
 				}
 			}
 
@@ -9141,8 +9178,8 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 					if (is_spain(s) || is_austria(s)) {
 						cost--
 						set_bit(ACTION_COST_ADJUSTED)
-						G.action_cost_breakdown += " -1 Pacte de Famille."
-						G.action_cost_adjustable--
+						G.breakdown += " -1 Pacte de Famille."
+						G.adjustable--
 					}
 				}
 			}
@@ -9153,7 +9190,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 			if (is_protected(s)) {
 				cost++
 				set_bit(ACTION_COST_ADJUSTED)
-				G.action_cost_breakdown += " +1 Protected."
+				G.breakdown += " +1 Protected."
 			}
 		}
 
@@ -9161,13 +9198,13 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		if (!ignore_region_switching && charge_region_switching_penalty(type, data.spaces[s].region)) {
 			cost++
 			set_bit(ACTION_COST_ADJUSTED)
-			G.action_cost_breakdown += " +1 Extra Region."
+			G.breakdown += " +1 Extra Region."
 		}
 
 		if (cost < 1) {
 			cost = 1 // Can't be reduced below 1 (5.4.2)
 			set_bit(ACTION_COST_ADJUSTED)
-			G.action_cost_breakdown += " Minimum: 1."
+			G.breakdown += " Minimum: 1."
 		}
 	}
 
@@ -9237,7 +9274,7 @@ P.military_upgrade_decisions = {
 
 		if (!L.confirmed) {
 			//TODO - optional rule would allow choice of swap or draw
-			if (G.basic_war_tiles[G.active].length < 1) {
+			if (G.basic_war[G.active].length < 1) {
 				msg += say_action("You do not have any war tiles left to draw an upgrade from.")
 				button ("done")
 			} else {
@@ -9271,7 +9308,7 @@ P.military_upgrade_decisions = {
 	},
 	return_to_pool() {
 		push_undo()
-		G.basic_war_tiles[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
+		G.basic_war[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
 		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
 		log_br()
 		end()
@@ -9358,7 +9395,7 @@ P.no_time_for_love_dr_jones = { // Player required to click "undo"
 
 function use_choiseul()
 {
-	G.action_points_committed_bonus[MIL]++
+	G.committed[MIL]++
 	G.action_points_available_now++
 	log_box_ministry(FRANCE, CHOISEUL)
 	log ("France receives 1 extra " + say_action_points(1, MIL) + " (usable for deploying squadrons or buying bonus war tiles.")
@@ -9412,7 +9449,7 @@ P.bonus_war_tile_decisions = {
 		let msg = say_action_header()
 
 		if (!L.confirmed) {
-			if (G.bonus_war_tiles[G.active].length < 1) {
+			if (G.bonus_war[G.active].length < 1) {
 				msg += say_action("You do not have any bonus war tiles left to draw from.")
 				button ("done")
 			} else {
@@ -9661,7 +9698,7 @@ P.naval_flow = script(`
     	
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
-			G.action_points_committed_bonus[MIL] += L.choiseul
+			G.committed[MIL] += L.choiseul
 			// G.action_points_available_now += L.choiseul // NB - No! They already got added in as part of contingent
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
 		}
@@ -9745,7 +9782,7 @@ function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
-		set_delete(G.controlled_start_of_round, s) // 5.4.1 - change in control means we can't chain from here later in the round even if we get it back during the round
+		set_delete(G.controlled, s) // 5.4.1 - change in control means we can't chain from here later in the round even if we get it back during the round
 		if (!silent) {
 			let msg = say_space(s) + " "
 			if (who === NONE) {
@@ -9814,7 +9851,7 @@ function action_cost_setup(s, t) {
 	clear_bit(ACTION_MINOR)
 
 	// Is this action eligible to be a minor one (e.g. not removing enemy flag, and we have minor action points available)
-	set_bit(ELIGIBLE_MINOR, eligible_for_minor_action(s, G.active) && (G.action_points_minor[G.action_type] > 0))
+	set_bit(ELIGIBLE_MINOR, eligible_for_minor_action(s, G.active) && (G.minor[G.action_type] > 0))
 
 	let committed = 0
 	if ((t === MIL) && is_bit(BUYING_WAR_TILE)) {
@@ -9846,19 +9883,19 @@ function action_cost_setup(s, t) {
 	clear_bit(ELIGIBLE_FOR_HUGUENOTS)
 
 	// We sometimes generate a "cost breakdown" so that we don't get unending "bug" reports about complex cost formulas
-	G.action_cost_breakdown = ""
+	G.breakdown = ""
 
 	// This gets set true if ad-hoc adjustments to the cost make it seem worth displaying a cost breakdown
 	clear_bit(ACTION_COST_ADJUSTED)
 
 	// Will be set to the base cost of the space, minus any downward adjustments (used to tell if there's any point in e.g. triggerig another advantage)
-	G.action_cost_adjustable = 1
+	G.adjustable = 1
 
 	// Array of modifier types. 0 = Advantage, 1 = Ministry
-	G.action_cost_modifier_types = []
+	G.mod_types = []
 
 	// Array of modifier amounts. 0 = "set to 1", otherwise the -1/+1 value of advantage
-	G.action_cost_modifiers = []
+	G.modifiers = []
 }
 
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
@@ -9952,7 +9989,7 @@ P.space_flow = script(`
     }
         
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
     	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
     	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
     		eval {
@@ -9962,7 +9999,7 @@ P.space_flow = script(`
     }
     
     // These advantages reduce the cost of unflagging a *market* in *north america* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
     	eval { require_advantage(R, WHEAT, "To reduce action cost by 1", true) }
     	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
     		eval {
@@ -9972,14 +10009,14 @@ P.space_flow = script(`
     }
     
     // These advantages reduce the cost of unflagging a *market* in *india* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
     	eval { require_advantage(R, TEXTILES, "To reduce action cost by 1", true) }
     	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
     		eval {
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.adv_used < 2)) {
+    	if ((G.adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -9990,14 +10027,14 @@ P.space_flow = script(`
     }
     
     // These advantages reduce the cost of unflagging a *market* in *the caribbean* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
+    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
     	eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
     	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
     		eval {
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
     		}
     	}
-    	if ((G.action_cost_adjustable > 1) && (G.adv_used < 2)) {
+    	if ((G.adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -10008,7 +10045,7 @@ P.space_flow = script(`
     }
     
     // European reduce-cost-to-1 unflagging advantages
-    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.action_cost_adjustable > 1)) {
+    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
     	if ((G.active_space === RUSSIA) || (G.active_space === SWEDEN) || (G.active_space === BAVARIA)) {
     	    eval { require_advantage(R, GERMAN_DIPLOMACY, "To reduce action cost to 1", true) }
     		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
@@ -10017,7 +10054,7 @@ P.space_flow = script(`
 				}
     		}
     	} else {
-			if ((((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) && (G.action_cost_adjustable > 1)) {
+			if ((((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) && (G.adjustable > 1)) {
 				eval { require_advantage(R, SILESIA_NEGOTIATIONS, "To reduce action cost to 1", true) }
 				if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 					eval {
@@ -10025,7 +10062,7 @@ P.space_flow = script(`
 					}
 				}
 			} else {
-				if ((((G.active_space >= SPAIN_1) && (G.active_space <= SPAIN_4)) || ((G.active_space >= AUSTRIA_1) && (G.active_space <= AUSTRIA_4))) && (G.action_cost_adjustable > 1)) {
+				if ((((G.active_space >= SPAIN_1) && (G.active_space <= SPAIN_4)) || ((G.active_space >= AUSTRIA_1) && (G.active_space <= AUSTRIA_4))) && (G.adjustable > 1)) {
 					eval { require_advantage(R, ITALY_INFLUENCE, "To reduce action cost to 1", true) }
 					if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 						eval {
@@ -10071,8 +10108,8 @@ P.space_flow = script(`
     			exhaust_ministry(R, EDMUND_BURKE)
     			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
     			G.action_points_available_now += potential_burke_points(G.active)
-    			if (G.action_points_minor[DIPLO] > 0) {
-    			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.action_points_minor[DIPLO]) // Burke points don't combine with minor action points
+    			if (G.minor[DIPLO] > 0) {
+    			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.minor[DIPLO]) // Burke points don't combine with minor action points
     			}
     			log_box_end(LOG_BOX_MINISTRY)
     		}
@@ -10084,7 +10121,7 @@ P.space_flow = script(`
     }
     
     eval {
-    	set_bit(ELIGIBLE_FOR_HUGUENOTS, (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.action_cost_adjustable > 1))
+    	set_bit(ELIGIBLE_FOR_HUGUENOTS, (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.adjustable > 1))
     }
     
     if (is_bit(ELIGIBLE_FOR_HUGUENOTS)) {
@@ -10127,8 +10164,8 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     	eval {
     		if (!is_bit(ACTION_MINOR)) {
     			clear_bit(ACTION_MINOR)
-    			G.action_points_available_debt -= G.action_points_minor[G.action_type]
-    			G.action_points_available_now  -= G.action_points_minor[G.action_type]
+    			G.action_points_available_debt -= G.minor[G.action_type]
+    			G.action_points_available_now  -= G.minor[G.action_type]
     		}
     	}  	
     }
@@ -10173,28 +10210,28 @@ function pay_action_cost() {
 
 	let msg = say_action_points(G.action_cost, G.action_type) + " spent."
 	//let msg = G.action_cost + " " + data.action_points[G.action_type].name + " action point" + s(G.action_cost) + " spent."
-	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.action_points_minor[G.action_type] > 0) {
+	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.minor[G.action_type] > 0) {
 		if (is_bit(ACTION_MINOR)) {
 			msg += " (Minor action)"
 		} else {
 			msg += " (Major action)"
 		}
 	}
-	if (is_bit(ACTION_COST_ADJUSTED)) msg += " Cost: " + G.action_cost_breakdown
-	G.action_cost_breakdown = "" // Get unneeded string back out of our game state blob
+	if (is_bit(ACTION_COST_ADJUSTED)) msg += " Cost: " + G.breakdown
+	G.breakdown = "" // Get unneeded string back out of our game state blob
 	log(italic(msg))
 
-	G.action_cost -= G.action_points_committed_bonus[G.action_type] // Spend any committed bonus points first
+	G.action_cost -= G.committed[G.action_type] // Spend any committed bonus points first
 	if (G.action_cost !== prev_cost) {
 		cost_string += " ComBonus: " + (prev_cost - G.action_cost)
 		prev_cost = G.action_cost
 	}
-	G.action_points_committed_bonus[G.action_type] = 0
+	G.committed[G.action_type] = 0
 
 	if (is_bit(ACTION_MINOR)) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
-		G.action_cost = Math.max(0, G.action_cost - G.action_points_minor[G.action_type])
-		G.action_points_minor[G.action_type] = 0
+		G.action_cost = Math.max(0, G.action_cost - G.minor[G.action_type])
+		G.minor[G.action_type] = 0
 
 		if (G.action_cost !== prev_cost) {
 			cost_string += "  MinorDrain: " + (prev_cost - G.action_cost)
@@ -10214,7 +10251,7 @@ function pay_action_cost() {
 		}
 
 		// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
-		if (is_bit(ACTION_MINOR) && !G.action_points_eligible_major[G.action_type]) {
+		if (is_bit(ACTION_MINOR) && !G.eligible_major[G.action_type]) {
 			drain_non_independent(G.action_type, rule)
 		}
 	}
@@ -10233,7 +10270,7 @@ function pay_action_cost() {
 			}
 
 			// Drain non-independent contingent points from e.g. Pitt the Elder if we're only allowed minor actions in this type
-			if (is_bit(ACTION_MINOR) && !G.action_points_eligible_major[G.action_type]) {
+			if (is_bit(ACTION_MINOR) && !G.eligible_major[G.action_type]) {
 				drain_non_independent(G.action_type, rule)
 			}
 		}
@@ -10251,13 +10288,13 @@ function pay_action_cost() {
 		}
 	}
 
-	if (G.action_points_major[G.action_type] >= G.action_cost) {
-		G.action_points_major[G.action_type] -= G.action_cost
+	if (G.major[G.action_type] >= G.action_cost) {
+		G.major[G.action_type] -= G.action_cost
 		G.action_cost = 0
 	}
 	else {
-		throw new Error("Reached paying action costs without enough action points (" + G.action_points_major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (is_bit(ACTION_MINOR) ? " (Was minor action)" : "") + " Space:" + G.active_space + "  Type: "+ G.action_type + "   Last:" + G.debug + "  Actions:" + tell_action_points() + "  Cost: " + cost_string)
-		//G.action_points_major[G.action_type] = 0
+		throw new Error("Reached paying action costs without enough action points (" + G.major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (is_bit(ACTION_MINOR) ? " (Was minor action)" : "") + " Space:" + G.active_space + "  Type: "+ G.action_type + "   Last:" + G.debug + "  Actions:" + tell_action_points() + "  Cost: " + cost_string)
+		//G.major[G.action_type] = 0
 		//G.action_cost = 0
 	}
 }
@@ -10287,9 +10324,9 @@ function tell_action_points(space = true, brackets = true) {
 	var tell = ""
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			if (G.action_points_eligible === undefined) continue
+			if (G.eligible === undefined) continue
 			if (action_points_eligible(i, active_rules())) {
-				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
+				if ((level === MAJOR) && G.eligible_major[i]) {
 
 					if (need_comma) {
 						tell += ", "
@@ -10297,15 +10334,15 @@ function tell_action_points(space = true, brackets = true) {
 					tell += names[i] + (shortest ? "" : ": ")
 					need_comma = true;
 
-					tell += G.action_points_major[i] //+ " major"
-					if (G.action_points_minor[i]) {
+					tell += G.major[i] //+ " major"
+					if (G.minor[i]) {
 						tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
 						early[i] = true
 					}
 				}
 
 				if ((level === MAJOR) === early[i]) {
-					if ((G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+					if ((G.minor[i] || !G.eligible_major[i])) {
 						if (level === MINOR) {
 							if (need_comma) {
 								tell += ", "
@@ -10313,15 +10350,15 @@ function tell_action_points(space = true, brackets = true) {
 							tell += names[i] + (shortest ? "" : ": ")
 						}
 
-						tell += G.action_points_minor[i] + (shortest ? "m" : " Minor")
+						tell += G.minor[i] + (shortest ? "m" : " Minor")
 						need_comma = true;
 					}
 
-					if (G.action_points_committed_bonus[i] > 0) {
+					if (G.committed[i] > 0) {
 						if (need_comma) {
 							tell += ", "
 						}
-						tell += G.action_points_committed_bonus[i] + " Bonus"
+						tell += G.committed[i] + " Bonus"
 						need_comma = true;
 					}
 
@@ -10400,9 +10437,9 @@ function add_action_point()
 {
 	G.action_points_available_now++
 	if (is_bit(ACTION_MINOR)) {
-		G.action_points_minor[G.action_type]++
+		G.minor[G.action_type]++
 	} else {
-		G.action_points_major[G.action_type]++
+		G.major[G.action_type]++
 	}
 }
 
@@ -10416,7 +10453,7 @@ function can_merchant_bank()
 P.confirm_spend_debt_or_trps = {
 	inactive: "spend debt and/or TRPs",
 	prompt() {
-		if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && (G.action_points_minor[G.action_type] <= 0)) {
+		if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && (G.minor[G.action_type] <= 0)) {
 			V.prompt = say_action_header()
 			if (G.action_type === data.investments[G.played_tile].minortype) {
 				V.prompt += say_action("You cannot conduct another action using " + data.action_points[G.action_type].name + " points, as you have already conducted a minor action. ")
@@ -10429,7 +10466,7 @@ P.confirm_spend_debt_or_trps = {
 			V.prompt = say_action_header()
 			V.prompt += say_action(("Pay remaining action point costs (" + G.action_points_available_now + "/" + G.action_cost + " [@" + G.action_type + "])" + ((G.action_string !== "") ? " " + G.action_string : ""))) + "."
 			if (is_bit(ACTION_COST_ADJUSTED)) {
-				V.prompt += " " + say_action(parens("Cost Breakdown: " + G.action_cost_breakdown))
+				V.prompt += " " + say_action(parens("Cost Breakdown: " + G.breakdown))
 			}
 			V.prompt += " (Available Debt: " + available_debt(R) + ((G.treaty_points[R] > 0) ? " / Treaty Points: " + G.treaty_points[R] : "") + ")"
 			V.prompt += say_action_points_left()
@@ -10608,11 +10645,11 @@ P.action_round_core = {
 		action_all_eligible_spaces()
 
 		// We probably won't show a face down event deck, nor unbuilt fleets, so special buttons for them
-		if (G.action_points_eligible[DIPLO]) {
+		if (G.eligible[DIPLO]) {
 			button ("draw_event", (G.deck.length || G.discard_pile.length) && !(globalThis.RTT_FUZZER && G.fail !== undefined && G.fail[DIPLO]))
 		}
 
-		if (G.action_points_eligible[MIL] && !(globalThis.RTT_FUZZER && G.fail !== undefined  && G.fail[MIL])) {
+		if (G.eligible[MIL] && !(globalThis.RTT_FUZZER && G.fail !== undefined  && G.fail[MIL])) {
 			if (G.navy_box[G.active] > 0) action_navy_box()
 			button ("construct_squadron", (G.unbuilt_squadrons[R] > 0) && (action_points_available(G.active, -1, MIL, true) >= cost_to_build_squadron(R, true)))
 
@@ -10626,7 +10663,7 @@ P.action_round_core = {
 
 		var left = 0
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			left += G.action_points_major[i] + G.action_points_minor[i]
+			left += G.major[i] + G.minor[i]
 		}
 
 		// If we've spent all our action points but still haven't taken an eligible military upgrade, add the top-row button as a hint
@@ -10750,7 +10787,7 @@ P.action_round_core = {
 	conflict(s) {
 		// Usually clicking conflict just resolves as clicking the space, but if we have military points available *and* the other type for this space then clicking the conflict is explicitly to remove the conflict and clicking the space is to take the regular flag action for the space (w/ conflict discount)
 		G.debug = "Conflict Click"
-		if (!G.action_points_eligible[MIL] || !has_conflict_marker(s)) {
+		if (!G.eligible[MIL] || !has_conflict_marker(s)) {
 			this.space(s)
 		} else {
 			push_undo()
@@ -12012,23 +12049,23 @@ P.war_reset_phase = function () {
 function war_layout_reshuffle_basic_war_tiles(new_game) {
 	if (new_game) {
 		// For a new game we shuffle all the war tiles together
-		G.basic_war_tiles = [[], []]
+		G.basic_war = [[], []]
 		for (var i = 0; i < NUM_BASE_WAR_TILES; i++) {
-			G.basic_war_tiles[FRANCE].push(i)
-			G.basic_war_tiles[BRITAIN].push(i + NUM_BASE_WAR_TILES)
+			G.basic_war[FRANCE].push(i)
+			G.basic_war[BRITAIN].push(i + NUM_BASE_WAR_TILES)
 		}
 	} else {
 		// When moving to next war, we return the basic tiles left from the last war to the stock. We *don't* remake the stock from scratch because player may have removed some from the game with military upgrades.
 		for (let who = FRANCE; who <= BRITAIN; who++) {
 			for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB 0 through <= theaters inclusive is intentional
 				for (const t of G.theater_basic[who][theater]) {
-					G.basic_war_tiles[who].push(t)
+					G.basic_war[who].push(t)
 				}
 			}
 		}
 	}
-	shuffle(G.basic_war_tiles[FRANCE])
-	shuffle(G.basic_war_tiles[BRITAIN])
+	shuffle(G.basic_war[FRANCE])
+	shuffle(G.basic_war[BRITAIN])
 
 	// Turn them all back face down
 	G.bonus_revealed = [ [], [] ]

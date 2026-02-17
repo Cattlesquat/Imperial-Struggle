@@ -3192,16 +3192,16 @@ function any_contingent(type, rules) {
 	if ((rules !== undefined) && (rules !== null)) {
 		if (rules.constructor === Array) {
 			for (let rule of rules) {
-				for (let i = 0; i < G.action_points_contingent.length; i++) {
-					if (G.action_points_contingent[i].type !== type) continue
-					if (G.action_points_contingent[i].rule !== rule) continue
+				for (let i = 0; i < G.contingent.length; i++) {
+					if (G.contingent[i].type !== type) continue
+					if (G.contingent[i].rule !== rule) continue
 					return true
 				}
 			}
 		} else {
-			for (let i = 0; i < G.action_points_contingent.length; i++) {
-				if (G.action_points_contingent[i].type !== type) continue
-				if (G.action_points_contingent[i].rule !== rules) continue
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
 				return true
 			}
 		}
@@ -3217,17 +3217,17 @@ function get_contingent(type, rules)
 	if ((rules !== undefined) && (rules !== null)) {
 		if (rules.constructor === Array) {
 			for (let rule of rules) {
-				for (let i = 0; i < G.action_points_contingent.length; i++) {
-					if (G.action_points_contingent[i].type !== type) continue
-					if (G.action_points_contingent[i].rule !== rule) continue
-					amount += G.action_points_contingent[i].amount
+				for (let i = 0; i < G.contingent.length; i++) {
+					if (G.contingent[i].type !== type) continue
+					if (G.contingent[i].rule !== rule) continue
+					amount += G.contingent[i].amount
 				}
 			}
 		} else {
-			for (let i = 0; i < G.action_points_contingent.length; i++) {
-				if (G.action_points_contingent[i].type !== type) continue
-				if (G.action_points_contingent[i].rule !== rules) continue
-				amount += G.action_points_contingent[i].amount
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
+				amount += G.contingent[i].amount
 			}
 		}
 	}
@@ -3236,13 +3236,13 @@ function get_contingent(type, rules)
 
 
 function action_points_eligible(type, rules = []) {
-	return G.action_points_eligible[type] || any_contingent(type, rules)
+	return G.eligible[type] || any_contingent(type, rules)
 }
 
 // Returns a list of all presently-active contingent action point rules
 function active_rules() {
 	let rules = []
-	for (const contingency of G.action_points_contingent) {
+	for (const contingency of G.contingent) {
 		rules.push(contingency.rule)
 	}
 	return rules
@@ -3251,7 +3251,7 @@ function active_rules() {
 
 function active_rules_list() {
 	let rules = []
-	for (const contingency of G.action_points_contingent) {
+	for (const contingency of G.contingent) {
 		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
 	}
 	return rules
@@ -3292,9 +3292,9 @@ function say_action_points(space = true, brackets = true) {
 	var told_name = [ false, false, false ]
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			if (G.action_points_eligible === undefined) continue
+			if (G.eligible === undefined) continue
 			if (action_points_eligible(i, active_rules())) {
-				if ((level === MAJOR) && G.action_points_eligible_major[i]) {
+				if ((level === MAJOR) && G.eligible_major[i]) {
 
 					if (need_comma) {
 						tell += ", "
@@ -3303,15 +3303,15 @@ function say_action_points(space = true, brackets = true) {
 					told_name[i] = true
 					need_comma = true;
 
-					tell += G.action_points_major[i] //+ " major"
-					if (G.action_points_minor[i]) {
+					tell += G.major[i] //+ " major"
+					if (G.minor[i]) {
 						tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
 						early[i] = true
 					}
 				}
 
 				if ((level === MAJOR) === early[i]) {
-					if (data.investments[V.played_tile].minortype === i) { // (G.action_points_minor[i] || !G.action_points_eligible_major[i])) {
+					if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
 						if (level === MINOR) {
 							if (need_comma) {
 								tell += ", "
@@ -3320,11 +3320,11 @@ function say_action_points(space = true, brackets = true) {
 							told_name[i] = true
 						}
 
-						tell += G.action_points_minor[i] + (shortest ? "m" : " Minor")
+						tell += G.minor[i] + (shortest ? "m" : " Minor")
 						need_comma = true;
 					}
 
-					if (G.action_points_committed_bonus[i] > 0) {
+					if (G.committed[i] > 0) {
 						if (need_comma) {
 							tell += ", "
 						}
@@ -3334,7 +3334,7 @@ function say_action_points(space = true, brackets = true) {
 							told_name[i] = true
 						}
 
-						tell += G.action_points_committed_bonus[i] + " Bonus"
+						tell += G.committed[i] + " Bonus"
 						need_comma = true;
 					}
 
