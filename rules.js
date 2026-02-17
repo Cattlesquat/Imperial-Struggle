@@ -7,7 +7,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 17
+const GAME_STATE_VERSION = 18
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -1062,7 +1062,7 @@ function on_load()
 	}
 
 	if ((G.game_state_created_with <= 14) && (G.game_state_version < 15)) {
-		upconvert (14, upconvert_patch_bitflags)
+		upconvert (15, upconvert_patch_bitflags)
 	}
 
 	if (G.game_state_version < 16) {
@@ -1350,9 +1350,9 @@ function on_save()
 
 // Items that we keep current even when we're in "review mode" looking at an old view
 function absolute_view() {
-	V.active         = G.active
-	V.log_hide_after = G.log_hide_after
-	V.log_length     = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
+	V.active              = G.active
+	V.log_hide_after      = G.log_hide_after
+	V.log_length          = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 }
 
 function on_view(RR = undefined) {
@@ -1361,7 +1361,7 @@ function on_view(RR = undefined) {
 	}
 
 	if (G.temp_view) {
-		if (G.temp_view[R]) {
+		if (G.temp_view[R] && (G.temp_view[R].game_state_version && (G.temp_view[R].game_state_version >= 17))) {
 			V = G.temp_view[R]
 			absolute_view()
 			return
@@ -1371,6 +1371,8 @@ function on_view(RR = undefined) {
 	if ((RR === undefined) || (RR === null)) RR = R // Pirate's favorite letter
 
 	absolute_view()
+
+	V.game_state_version = G.game_state_version
 
 	V.turn = G.turn
 	V.vp = G.temp_vp ?? G.vp
