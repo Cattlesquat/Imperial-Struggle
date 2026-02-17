@@ -7876,7 +7876,7 @@ P.ministry_choiseul = {
 		push_undo()
 		log_box_ministry(R, CHOISEUL)
 		exhaust_ministry(R, CHOISEUL, 0)
-		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY, false)
+		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY, true)
 		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
