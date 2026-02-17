@@ -3368,6 +3368,7 @@ P.scoring_review = {
 			if (G.active.length === 0) {
 				G.log_hide_after = [-1, -1] // Stop hiding any part of the log
 				clear_dirty()
+				end_of_scoring_phase()
 				end()
 			}
 		}
@@ -3391,6 +3392,21 @@ P.scoring_review = {
 			adjust_scoring_view_prestige()
 		}
 	}
+}
+
+
+function end_of_scoring_phase()
+{
+	delete G.scoring_demand_debt
+	delete G.scoring_demand_trp
+	delete G.scoring_demand_vp
+	delete G.scoring_region_trp
+	delete G.scoring_region_vp
+	delete G.scoring_demand_indices
+	delete G.scoring_region_indices
+	delete G.scoring_start_trp
+	delete G.scoring_start_vp
+	delete G.scoring_start_index
 }
 
 /* 4.1.12 - SCORING PHASE */
@@ -3581,6 +3597,7 @@ P.victory_check_phase = function () {
 		finish(FRANCE, msg)
 	} else {
 		log ("No automatic victory.")
+		delete G.won_all_scorings
 		end()
 	}
 }
@@ -3602,7 +3619,6 @@ P.final_scoring_phase = {
 			award_vp(winner, 2)
 		} else {
 			log_box_begin(NONE, "Final Scoring: PRESTIGE " + "\n" + "TIE! No score.")
-			G.won_all_scorings = NONE
 		}
 		log_box_end()
 		review_push ("Review Final Prestige Scoring")
@@ -9308,6 +9324,7 @@ P.military_upgrade_decisions = {
 	},
 	return_to_pool() {
 		push_undo()
+		delete G.upgrading_basic_tile
 		G.basic_war[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
 		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
 		log_br()
@@ -9315,6 +9332,7 @@ P.military_upgrade_decisions = {
 	},
 	remove_from_game() {
 		push_undo()
+		delete G.upgrading_basic_tile
 		log(data.flags[G.active].name + " removes a basic war tile from the game: " + say_basic_war_tile(L.get_rid_of_tile) + ".")
 		log_br()
 		end()
@@ -11371,6 +11389,8 @@ function remove_jacobites()
 
 function start_war_theater_resolution()
 {
+	delete G.first_war_player
+
 	L.war_winner          = theater_winner(G.theater)
 	L.war_delta           = theater_delta(G.theater)
 	L.war_tier            = theater_tier(G.theater)
@@ -11996,15 +12016,20 @@ P.war_victory_check_phase = function() {
 	if ((G.won_all_theaters_by_maximum_level !== NONE) && (G.won_all_theaters_by_maximum_level >= 0)) {
 		let msg = bold(data.flags[G.won_all_theaters_by_maximum_level].name + " wins the game by winning all theaters with the maximum possible spoils of war!")
 		finish (G.won_all_theaters_by_maximum_level, msg)
-	} else if (G.vp <= 0) {
-		let msg = bold("Britain wins the game: VP 0 or fewer!")
-		finish(BRITAIN, msg)
-	} else if (G.vp >= 30) {
-		let msg = bold("France wins the game: VP 30 or greater!")
-		finish(FRANCE, msg)
 	} else {
-		log ("No automatic victory.")
-		end()
+		delete G.won_all_theaters_by_maximum_level
+		delete G.war_refused
+		delete G.war_refused_list
+		if (G.vp <= 0) {
+			let msg = bold("Britain wins the game: VP 0 or fewer!")
+			finish(BRITAIN, msg)
+		} else if (G.vp >= 30) {
+			let msg = bold("France wins the game: VP 30 or greater!")
+			finish(FRANCE, msg)
+		} else {
+			log ("No automatic victory.")
+			end()
+		}
 	}
 }
 
