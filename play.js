@@ -1690,6 +1690,13 @@ function on_update() {
 	action_button("france", "France")
 	action_button("britain", "Britain")
 
+	action_button("zero", "0")
+	action_button("one", "1")
+	action_button("two", "2")
+	action_button("three", "3")
+	action_button("four", "4")
+	action_button("five", "5")
+
 	action_button("paydebt", is_mobile() ? "1 Debt" : "Add 1 Debt")
 	action_button("paytrp", is_mobile() ? "1 TRP" : "Spend 1 Treaty Point")
 

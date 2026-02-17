@@ -2148,9 +2148,11 @@ function move_squadron_token(who, from, to)
 }
 
 
+
 /* 4.0 - GAME SEQUENCE */
 
 P.main = script (`
+	call preliminaries
 	for G.turn in 0 to 9 {
 		if (data.turns[G.turn].war) {
 			call war_turn
@@ -2159,6 +2161,150 @@ P.main = script (`
 		}
 	}
 `)
+
+
+function rules_bidding_for_sides()
+{
+	return false
+}
+
+function rules_preset_handicap()
+{
+	return false
+}
+
+
+P.preliminaries = script(`
+    if (rules_preset_handicap()) {
+		eval { preset_handicap() }    
+    } else {
+		if (rules_bidding_for_sides()) {
+			call bid_for_sides
+		}
+	}
+`)
+
+
+function preset_handicap()
+{
+	if ((G.bid > 0) && ((G.handicap_side === FRANCE) || (G.handicap_side === BRITAIN))) {
+		log("=Setup")
+		let msg = data.flags[G.handicap_side].name + " receives +" + G.bid + " treaty point" + s(G.bid) + "."
+		G.treaty_points[G.handicap_side] += bid
+	}
+}
+
+
+P.bid_for_sides = {
+	_begin() {
+		G.active = FRANCE // For the bidding, this is just "first player"
+		L.current_bid = -1
+		L.current_bidder = NONE
+		L.bid_for_side = NONE
+		L.final_confirmation = false
+		log ("=Bid for Sides")
+		log ("Player " + G.active + " will bid first.")
+	},
+	prompt() {
+		if (L.final_confirmation) {
+			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[L.bid_for_side].name + "?")
+			button("confirm")
+		} else if (L.bid_for_side === NONE) {
+			V.prompt = bold("BIDDING FOR SIDES: Which side would you prefer to play?")
+			button("france")
+			button("britain")
+		} else if (L.current_bidder === NONE) {
+			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid in order to play " + data.flags[L.bid_for_side].name + "?")
+			button("zero")
+			button("one")
+			button("two")
+			button("three")
+			button("four")
+			button("five")
+		} else if (L.current_bidder !== R) {
+			V.prompt = bold("BIDDING FOR SIDES: Your opponent bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + ". Accept or bid higher?")
+			button ("accept")
+			if (L.current_bid < 1) button("one")
+			if (L.current_bid < 2) button("two")
+			if (L.current_bid < 3) button("three")
+			if (L.current_bid < 4) button("four")
+			if (L.current_bid < 5) button("five")
+		} else {
+			V.prompt = bold("BIDDING_FOR_SIDES: Confirm bidding " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "?")
+			button("confirm")
+		}
+	},
+	accept() {
+		push_undo()
+		L.final_confirmation = true
+	},
+	confirm() {
+		if (!L.final_confirmation) {
+			log(bold("Player " + G.active + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "."))
+			G.active = 1 - G.active
+		} else {
+			let msg = "Player " + G.active + " accepts the bid and will play as " + data.flags[L.bid_for_side].name
+			if (L.current_bid > 0) {
+				msg += " with a handicap of " + L.current_bid + " extra treaty points at start."
+			}
+			log (bold(msg))
+			if (L.current_bid > 0) {
+				G.bid = L.current_bid
+				G.handicap_side = 1 - L.bid_for_side
+				G.treaty_points[G.handicap_side] += L.current_bid
+			} else {
+				G.bid = 0
+				G.handicap_side = NONE
+			}
+			if (L.current_bidder !== L.bid_for_side) {
+				log (italic("Color-swapping players to assigned sides."))
+				G.$swap = 1
+			} else {
+				log (italic("Players keep their current colors."))
+			}
+			end()
+		}
+	},
+	zero() {
+		push_undo()
+		L.current_bid = 0
+		L.current_bidder = G.active
+	},
+	one() {
+		push_undo()
+		L.current_bid = 1
+		L.current_bidder = G.active
+	},
+	two() {
+		push_undo()
+		L.current_bid = 2
+		L.current_bidder = G.active
+	},
+	three() {
+		push_undo()
+		L.current_bid = 3
+		L.current_bidder = G.active
+	},
+	four() {
+		push_undo()
+		L.current_bid = 4
+		L.current_bidder = G.active
+	},
+	five() {
+		push_undo()
+		L.current_bid = 5
+		L.current_bidder = G.active
+	},
+	france() {
+		push_undo()
+		L.bid_for_side = FRANCE
+	},
+	britain() {
+		push_undo()
+		L.bid_for_side = BRITAIN
+	},
+}
+
 
 
 // Start a beginning-of-turn log-review stack. Each push point saves a copy of the view & an index into the log, so that players can review changes in game state step-by-step (and in parallel with each other), but without having to stop and wait for each other
