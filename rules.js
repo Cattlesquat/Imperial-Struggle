@@ -7106,11 +7106,17 @@ P.event_falklands_crisis = {
 	},
 	done() {
 		push_undo()
+
+		if (L.done_starting) {
+			end()
+			return
+		}
+
 		L.done_starting = true
 
 		if (R === BRITAIN) {
 			let any = false
-			for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
+			for (const s of [SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4]) {
 				if (G.flags[s] !== BRITAIN) continue
 				any = true
 				break
@@ -7118,7 +7124,7 @@ P.event_falklands_crisis = {
 			if (any) {
 				award_vp(BRITAIN, 1)
 			} else {
-				log ("No VP award - no British-flagged spaces in Spain.")
+				log("No VP award - no British-flagged spaces in Spain.")
 			}
 		} else {
 			let spain = 0
