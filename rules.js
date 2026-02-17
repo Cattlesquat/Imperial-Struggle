@@ -910,8 +910,8 @@ function on_setup(scenario, options) {
 	// <br/>
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
-	
-	call("main")
+
+	goto("preliminaries")
 }
 
 
@@ -2181,6 +2181,7 @@ P.preliminaries = script(`
 			call bid_for_sides
 		}
 	}
+	call main
 `)
 
 
