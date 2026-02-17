@@ -2180,6 +2180,7 @@ function review_end() {
 	if (G.temp_view) delete G.temp_view  // Clear any temporary view
 	G.review_view = []                   // Clear any stored views
 	G.review_index = []					 // Clear the indices: since we often detect whether a review is in progress by the length of it.
+	G.review_phase = []                  // Clear the strings from the game state
 }
 
 function start_of_peace_turn() {
@@ -2542,11 +2543,11 @@ P.ministry_phase = function () {
 		// For each player, a flag whether the ministry in the specific ministry slot has been revealed
 		// <br><b>
 		// G.ministry_revealed[FRANCE][0] </b> is true if the ministry in France's first slot has been revealed
-		G.ministry_revealed  = [ [ false, false, false ], [ false, false] ]
+		G.ministry_revealed  = [ [ FALSE, FALSE, FALSE ], [ FALSE, FALSE ] ]
 
 		if (is_bit(JACOBITES_ALWAYS) && !is_bit(JACOBITE_DEFEAT)) {
 			G.ministry[FRANCE].push(JACOBITE_UPRISINGS)
-			G.ministry_revealed[FRANCE][0] = true
+			G.ministry_revealed[FRANCE][0] = TRUE
 		}
 
 		// Tracks exhaustion markers for ministries. Some ministries have more than one exhaustible sub-ability, indexed 0, 1
@@ -2610,7 +2611,7 @@ P.choose_ministry_cards = {
 	},
 	ministry_card(c) {
 		G.ministry[R].push(c)
-		G.ministry_revealed[R].push(false)
+		G.ministry_revealed[R].push(FALSE)
 	},
 	undo() {
 		G.ministry[R].pop()
@@ -2651,7 +2652,7 @@ P.replace_ministry_cards = {
 		if (is_bit(JACOBITES_ALWAYS) && !is_bit(JACOBITE_DEFEAT)) {
 			if (!G.ministry[FRANCE].includes(JACOBITE_UPRISINGS)) {
 				G.ministry[FRANCE].unshift(JACOBITE_UPRISINGS)
-				G.ministry_revealed[FRANCE].unshift(true)
+				G.ministry_revealed[FRANCE].unshift(TRUE)
 				L.added_jacobites = true
 			}
 		}
@@ -2717,7 +2718,7 @@ P.replace_ministry_cards = {
 		} else {
 			L.replacing[R]--
 			G.ministry[R].push(m)
-			G.ministry_revealed[R].push(false)
+			G.ministry_revealed[R].push(FALSE)
 		}
 	},
 	undo() {
@@ -7321,7 +7322,7 @@ function reveal_ministry(who, index) {
 	if (index < 0) return
 
 	let m = G.ministry[who][index]
-	G.ministry_revealed[who][index] = true
+	G.ministry_revealed[who][index] = TRUE
 	let msg = "Ministry Revealed"
 	if (!is_log_box(LOG_BOX_MINISTRY)) {
 		msg += ": \n" + say_ministry(m, who, false)
@@ -10510,12 +10511,14 @@ P.action_round_core = {
 		clear_bit(BUYING_WAR_TILE)
 		delete G.ministry_required_because
 		delete G.advantage_required_because
+		delete G.action_string
 	},
 	_end() {
 		clear_bit(BUYING_WAR_TILE)
 		L.clicked_upgrade = false
 		delete G.ministry_required_because
 		delete G.advantage_required_because
+		delete G.action_string
 	},
 	inactive() {
 		let whom = ((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN
