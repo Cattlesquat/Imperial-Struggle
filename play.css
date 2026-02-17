@@ -1699,7 +1699,7 @@ menu li.separator {
 
 .theater-margin {
     pointer-events: none;
-    z-index: 1000;
+    z-index: 150;
 
     background-size: 100px 100px;
     border-width: 4px;
