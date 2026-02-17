@@ -687,6 +687,9 @@ function on_setup(scenario, options) {
 	}
 	shuffle(G.award_chits)
 
+	// Current global demand (one demand entry for each demand)
+	G.global_demand = []
+
 	// For each advantage, tells which player owns it
 	// <br><b>
 	// G.advantage[a] === who
@@ -911,7 +914,9 @@ function on_setup(scenario, options) {
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
 
-	goto("preliminaries")
+	on_view()
+
+	call("preliminaries")
 }
 
 
@@ -1475,6 +1480,7 @@ function on_view(RR = undefined) {
 		V.deck = G.deck.concat(G.hand[BRITAIN]) // Deck + both hands
 		V.deck = V.deck.concat(G.hand[FRANCE])
 	}
+	if (!V.deck) V.deck = []
 	V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 
 

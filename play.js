@@ -1353,9 +1353,11 @@ function on_update() {
 	populate("lout-initiative", "initiative", V.initiative)
 
 	var global_demand_chits = []
-	for (var i = 0; i < NUM_DEMANDS; i++) {
-		if (V.global_demand.includes(i)) continue
-		global_demand_chits.push(i)
+	if (V.global_demand) {
+		for (var i = 0; i < NUM_DEMANDS; i++) {
+			if (V.global_demand.includes(i)) continue
+			global_demand_chits.push(i)
+		}
 	}
 
 	// These keep a hidden stack of all the not-presently-in-play demands, awards, and investment tiles, to provide the better visuals of tiles "being dealt out" and "cleared away"
@@ -1453,23 +1455,25 @@ function on_update() {
 		populate("stack-deal", undefined, "townshend-acts")
 	}
 
-	for (let i = 0; i < V.global_demand.length; i++) {
-		populate("lout-demand-winner", 0, "demand-winner", i)
-		
-		let demand = V.global_demand[i]
-		let winner = demand_flag_winner(demand)
-		let delta = demand_flag_delta(demand)
-		let fr_count = V.demand_flag_count[FRANCE][demand]
-		let br_count = V.demand_flag_count[BRITAIN][demand]
-		
-		let html = ""
-		if (winner !== NONE) {
-			let flag_class = winner === FRANCE ? "fr" : "br"
-			html += `<span class="demand-flag ${flag_class}"></span>`
-			html += `<span class="demand-count"><span style="background-color:#e5c28a">+${delta}</span></span>`
+	if (V.global_demand) {
+		for (let i = 0; i < V.global_demand.length; i++) {
+			populate("lout-demand-winner", 0, "demand-winner", i)
+
+			let demand = V.global_demand[i]
+			let winner = demand_flag_winner(demand)
+			let delta = demand_flag_delta(demand)
+			let fr_count = V.demand_flag_count[FRANCE][demand]
+			let br_count = V.demand_flag_count[BRITAIN][demand]
+
+			let html = ""
+			if (winner !== NONE) {
+				let flag_class = winner === FRANCE ? "fr" : "br"
+				html += `<span class="demand-flag ${flag_class}"></span>`
+				html += `<span class="demand-count"><span style="background-color:#e5c28a">+${delta}</span></span>`
+			}
+
+			update_text_html("demand-winner", i, html)
 		}
-		
-		update_text_html("demand-winner", i, html)
 	}
 
 	let jacobite_count = V.jacobite_victory + (is_bit(JACOBITE_DEFEAT) ? 1 : 0)
