@@ -9648,6 +9648,7 @@ function get_naval_cost()
 	return is_bit(NAVY_FROM_NAVY_BOX) ? 3 : 2
 }
 
+
 P.naval_flow = script(`
     eval {
     	G.action_cost = get_naval_cost()
@@ -9655,7 +9656,7 @@ P.naval_flow = script(`
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
 			G.action_points_committed_bonus[MIL] += L.choiseul
-			G.action_points_available_now += L.choiseul
+			// G.action_points_available_now += L.choiseul // NB - No! They already got added in as part of contingent
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
 		}
     	
