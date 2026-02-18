@@ -630,9 +630,6 @@ function an(amount) {
 
 
 function set_available_debt_tooltips() {
-
-	if (V && V.bidding_for_sides) return
-
 	var id = roles[FRANCE].stat.my_id
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(FRANCE)

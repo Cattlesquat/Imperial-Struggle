@@ -2290,6 +2290,7 @@ P.bid_for_sides = {
 			} else {
 				log (italic("Players keep their current colors."))
 			}
+			V.bidding_for_sides = false
 			end()
 		}
 	},
