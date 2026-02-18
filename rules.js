@@ -2215,7 +2215,7 @@ function preset_handicap(scenario)
 	if (scenario !== "Standard") {
 		var { side, bid } = HANDICAP_TABLE[scenario]
 		log("=Setup")
-		log(ROLES[side] + " received " + bid + " treaty point" + s(bid) + ".")
+		log(say_nation(ROLES[side], side) + " received " + bid + " treaty point" + s(bid) + ".")
 		G.treaty_points[side] += bid
 	}
 }
