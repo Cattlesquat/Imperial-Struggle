@@ -630,6 +630,9 @@ function an(amount) {
 
 
 function set_available_debt_tooltips() {
+
+	if (V && V.bidding_for_sides) return
+
 	var id = roles[FRANCE].stat.my_id
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(FRANCE)
@@ -1243,12 +1246,31 @@ function available_debt_plus_trps(who) {
 	return available_debt(who) + G.treaty_points[who]
 }
 
+
+var was_bidding_for_sides = false
+
 function update_debt_display() {
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		//let avail = available_debt_plus_trps(who)
+		if (V && V.bidding_for_sides) {
+			roles[who].stat.innerHTML = ""
+
+			let hud = document.getElementById("role_" + data.flags[who].name)
+			if (hud) {
+				hud.innerHTML = hud.innerHTML.replace(data.flags[who].name, "Player " + (who + 1))
+			}
+			was_bidding_for_sides = true
+			continue
+		} else if (was_bidding_for_sides) {
+			let hud = document.getElementById("role_" + data.flags[who].name)
+			if (hud) {
+				hud.innerHTML = hud.innerHTML.replace("Player " + (who + 1), data.flags[who].name)
+			}
+		}
 		let avail = available_debt(who)
 		roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 	}
+
+	if (!V || !V.bidding_for_sides) was_bidding_for_sides = false
 
 	let msg = bold("VP: " + V.vp)
 
