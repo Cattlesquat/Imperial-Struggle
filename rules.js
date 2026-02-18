@@ -2352,14 +2352,14 @@ function review_push(phase)
 		let views = []
 		if ((R === FRANCE) || (R === BRITAIN)) {
 			on_view(1-R)
-			views[1-R] = structuredClone(V)
+			views[1-R] = object_copy(V)
 			on_view(R)
-			views[R] = structuredClone(V)
+			views[R] = object_copy(V)
 		} else { // Sometimes R is null or whatever especially when starting up
 			on_view(FRANCE)
-			views[FRANCE] = structuredClone(V)
+			views[FRANCE] = object_copy(V)
 			on_view(BRITAIN)
-			views[BRITAIN] = structuredClone(V)
+			views[BRITAIN] = object_copy(V)
 		}
 		G.review_view.push(views)
 	}
@@ -4179,7 +4179,7 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 	contingent.rule = rule
 	contingent.short = short
 	contingent.not_independent = not_independent
-	G.contingent.push(structuredClone(contingent))
+	G.contingent.push(object_copy(contingent))
 	log ("+" + say_action_points(amount, type) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
