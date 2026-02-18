@@ -1256,24 +1256,18 @@ function update_debt_display() {
 				hud.innerHTML = hud.innerHTML.replace(data.flags[who].name, "Player " + (who + 1))
 			}
 			was_bidding_for_sides = true
-		} else {
-			if (was_bidding_for_sides) {
-				let hud = document.getElementById("role_" + data.flags[who].name)
-				if (hud) {
-					hud.innerHTML = hud.innerHTML.replace("Player " + (who + 1), data.flags[who].name)
-				}
+			continue
+		} else if (was_bidding_for_sides) {
+			let hud = document.getElementById("role_" + data.flags[who].name)
+			if (hud) {
+				hud.innerHTML = hud.innerHTML.replace("Player " + (who + 1), data.flags[who].name)
 			}
-			let avail = available_debt(who)
-			roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 		}
+		let avail = available_debt(who)
+		roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 	}
 
-	if (!V || !V.bidding_for_sides) {
-		if (was_bidding_for_sides) {
-			window.location.reload() // Temporary expedient to force the debt stuff to restore itself when the people change
-		}
-		was_bidding_for_sides = false
-	}
+	if (!V || !V.bidding_for_sides) was_bidding_for_sides = false
 
 	let msg = bold("VP: " + V.vp)
 
