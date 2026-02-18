@@ -10638,8 +10638,26 @@ function can_merchant_bank()
 }
 
 
+function log_spending()
+{
+	if (G.debt_spent > 0) {
+		log (data.flags[R].name + " spends " + say_spending(G.debt_spent + " debt.", R))
+	}
+	if (G.treaty_points_spent > 0) {
+		log (data.flags[R].name + " spends " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
+	}
+}
+
+
 // Player needs to spend debt or action points to do the thing he wants to do. See if that's okay with him
 P.confirm_spend_debt_or_trps = {
+	_begin() {
+		//BR// No more separate confirmation step
+		if (G.action_points_available_now >= G.action_cost) {
+			log_spending()
+			end()
+		}
+	},
 	inactive: "spend debt and/or TRPs",
 	prompt() {
 		if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && (G.minor[G.action_type] <= 0)) {
@@ -10704,21 +10722,28 @@ P.confirm_spend_debt_or_trps = {
 		G.debt_spent++
 		set_transient(R, TRANSIENT_FIRST_DEBT_TAKEN)
 		add_action_point()
+
+		//BR// No more separate confirmation step
+		if (G.action_points_available_now >= G.action_cost) {
+			log_spending()
+			end()
+		}
 	},
 	paytrp() {
 		push_undo()
 		pay_treaty_points(R, 1)
 		G.treaty_points_spent++
 		add_action_point()
+
+		//BR// No more separate confirmation step
+		if (G.action_points_available_now >= G.action_cost) {
+			log_spending()
+			end()
+		}
 	},
 	confirm() {
 		push_undo()
-		if (G.debt_spent > 0) {
-			log (data.flags[R].name + " spends " + say_spending(G.debt_spent + " debt.", R))
-		}
-		if (G.treaty_points_spent > 0) {
-			log (data.flags[R].name + " spends " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
-		}
+		log_spending()
 		end()
 	},
 	fail() {
