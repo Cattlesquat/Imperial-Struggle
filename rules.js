@@ -914,8 +914,6 @@ function on_setup(scenario, options) {
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
 
-	on_view()
-
 	call("preliminaries")
 }
 
