@@ -924,7 +924,7 @@ function on_setup(scenario, options) {
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
 
-	call("preliminaries", { scenario })
+	call("preliminaries", { scenario, options })
 }
 
 
@@ -2184,7 +2184,7 @@ P.main = script (`
 
 P.preliminaries = script(`
 	if (L.scenario === "Bid for sides") {
-		call bid_for_sides
+		call bid_for_sides { options: L.options }
 	} else {
 		eval { preset_handicap(L.scenario) }
 	}
@@ -2216,7 +2216,10 @@ function preset_handicap(scenario)
 
 P.bid_for_sides = {
 	_begin() {
-		G.active = FRANCE // For the bidding, this is just "first player"
+		if (L.options.tournament)
+			G.active = FRANCE // For the bidding, this is just "first player"
+		else
+			G.active = random(1)
 		L.current_bid = -1
 		L.current_bidder = NONE
 		L.bid_for_side = NONE
