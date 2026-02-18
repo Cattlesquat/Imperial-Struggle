@@ -2518,10 +2518,12 @@ function escape_square_brackets(text) {
 			// W - [WF001] - Award tile
 			// S - [SF001] - Space name
 			// V - [V] - scroll down to war mat
+			// Y - [YF] - Player name colored by team color (team color indexes which player name is used)
 			// $ - [$Fstring] - Display string, link to spending
 
 			let tooltip_text = ""
 			let className = ""
+			let whom = ""
 			switch (type) {
 				case "a":
 					let verbose = get_preference("actionverbosity", "medium")
@@ -2601,6 +2603,14 @@ function escape_square_brackets(text) {
 				case "V":
 					tooltip_text = `${escape_typography(msg)}`
 					scroll_to_war()
+					break
+				case "Y":
+					className = "flag-string"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+					whom = ((who === FRANCE) || (who === BRITAIN)) ? roles[who].user_name : "Observer"
+					tooltip_text = `<span 
+						class="${className}"
+						>${escape_typography(whom)}</span>`
 					break
 				case "$":
 				default:

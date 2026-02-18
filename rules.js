@@ -2028,10 +2028,16 @@ function encode_who(who) {
 	return (((who >= 0) && (who !== NONE)) ? ((who === FRANCE) ? "F" : "B") : "X")
 }
 
-
+// Emits a string in team color
 function say_nation(msg, who = -1)
 {
 	return "[F" + encode_who(who) + msg + "]"
+}
+
+
+// Emits a player's own name in team color
+function say_player(who = -1) {
+	return "[Y" + encode_who(who) + "]"
 }
 
 
@@ -2230,7 +2236,7 @@ P.bid_for_sides = {
 		//console.log (roles)
 
 		log ("=Bid for Sides")
-		log (say_nation("Player " + (G.active + 1), G.active) + " will bid first.")
+		log (say_player(G.active) + " will bid first.")
 	},
 	prompt() {
 		V.bidding_for_sides = true // for client voodoo
@@ -2261,10 +2267,10 @@ P.bid_for_sides = {
 	},
 	confirm() {
 		if (!L.final_confirmation) {
-			log(bold(say_nation("Player " + (G.active + 1), G.active) + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
+			log(bold(say_player(G.active) + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			let msg = say_nation("Player " + (G.active + 1), G.active) + " accepts the bid and will play as " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
+			let msg = say_player(G.active) + " accepts the bid and will play as " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
 				msg += " with a handicap of " + L.current_bid + " extra treaty points at start."
 			}
