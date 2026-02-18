@@ -2021,6 +2021,12 @@ function encode_who(who) {
 }
 
 
+function say_nation(msg, who = -1)
+{
+	return "[F" + encode_who(who) + msg + "]"
+}
+
+
 function say_spending(msg, who = -1) {
 	return "[$" + encode_who(who) + msg + "]"
 }
@@ -2204,16 +2210,22 @@ function preset_handicap()
 P.bid_for_sides = {
 	_begin() {
 		G.active = FRANCE // For the bidding, this is just "first player"
+		G.bidding_for_sides = true
 		L.current_bid = -1
 		L.current_bidder = NONE
 		L.bid_for_side = NONE
 		L.final_confirmation = false
+
+		//roles[FRANCE].innerHTML.replace("France", "Player 1")
+		//roles[BRITAIN].innerHTML.replace("Britain", "Player 2")
+		//console.log (roles)
+
 		log ("=Bid for Sides")
-		log ("Player " + G.active + " will bid first.")
+		log (say_nation("Player " + (G.active + 1), G.active) + " will bid first.")
 	},
 	prompt() {
 		if (L.final_confirmation) {
-			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[L.bid_for_side].name + "?")
+			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[1 - L.bid_for_side].name + "?")
 			button("confirm")
 		} else if (L.bid_for_side === NONE) {
 			V.prompt = bold("BIDDING FOR SIDES: Which side would you prefer to play?")
@@ -2236,7 +2248,7 @@ P.bid_for_sides = {
 			if (L.current_bid < 4) button("four")
 			if (L.current_bid < 5) button("five")
 		} else {
-			V.prompt = bold("BIDDING_FOR_SIDES: Confirm bidding " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "?")
+			V.prompt = bold("BIDDING FOR SIDES: Confirm bidding " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "?")
 			button("confirm")
 		}
 	},
@@ -2246,10 +2258,10 @@ P.bid_for_sides = {
 	},
 	confirm() {
 		if (!L.final_confirmation) {
-			log(bold("Player " + G.active + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "."))
+			log(bold(say_nation("Player " + (G.active + 1), G.active) + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			let msg = "Player " + G.active + " accepts the bid and will play as " + data.flags[L.bid_for_side].name
+			let msg = say_nation("Player " + (G.active + 1), G.active) + " accepts the bid and will play as " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
 				msg += " with a handicap of " + L.current_bid + " extra treaty points at start."
 			}
@@ -2262,12 +2274,17 @@ P.bid_for_sides = {
 				G.bid = 0
 				G.handicap_side = NONE
 			}
+
+			//roles[FRANCE].innerHTML.replace("Player 1", "France")
+			//roles[BRITAIN].innerHTML.replace("Player 2", "Britain")
+
 			if (L.current_bidder !== L.bid_for_side) {
 				log (italic("Color-swapping players to assigned sides."))
 				G.$swap = 1
 			} else {
 				log (italic("Players keep their current colors."))
 			}
+			G.bidding_for_sides = false
 			end()
 		}
 	},
