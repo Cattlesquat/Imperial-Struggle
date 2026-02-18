@@ -1368,6 +1368,11 @@ function absolute_view() {
 	V.log_length          = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 
 	V.bidding_for_sides   = L.bidding_for_sides ?? false
+
+	console.log (L)
+	console.log (L.L.bidding_for_sides)
+	console.log (L.bidding_for_sides)
+	console.log (V.bidding_for_sides)
 }
 
 function on_view(RR = undefined) {
@@ -2232,12 +2237,12 @@ P.bid_for_sides = {
 		L.current_bidder = NONE
 		L.bid_for_side = NONE
 		L.final_confirmation = false
+		L.bidding_for_sides = true // for client voodoo
 
 		log ("=Bid for Sides")
 		log (say_player(G.active) + " will bid first.")
 	},
 	prompt() {
-		L.bidding_for_sides = true // for client voodoo
 		if (L.final_confirmation) {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[1 - L.bid_for_side].name + "?")
 			button("confirm")
