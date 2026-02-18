@@ -2229,10 +2229,12 @@ function preset_handicap(scenario)
 
 P.bid_for_sides = {
 	_begin() {
-		if (L.options.tournament)
-			G.active = FRANCE // For the bidding, this is just "first player"
-		else
-			G.active = random(1)
+		if (L.options.tournament) {
+			G.active = 0                // In tournaments whoever gets the top slot bids first (this ensures an even number of "first bids" for each player in the tournament)
+		} else {
+			G.active = random(2)  // In pickup games it's random who bids first
+		}
+
 		L.current_bid = -1
 		L.current_bidder = NONE
 		L.bid_for_side = NONE
@@ -2297,6 +2299,7 @@ P.bid_for_sides = {
 			} else {
 				log (italic("Players keep their current colors."))
 			}
+			L.bidding_for_sides = false
 			end()
 		}
 	},
