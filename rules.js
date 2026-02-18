@@ -1366,6 +1366,8 @@ function absolute_view() {
 	V.active              = G.active
 	V.log_hide_after      = G.log_hide_after
 	V.log_length          = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
+
+	V.bidding_for_sides   = L.bidding_for_sides ?? false
 }
 
 function on_view(RR = undefined) {
@@ -2235,7 +2237,7 @@ P.bid_for_sides = {
 		log (say_player(G.active) + " will bid first.")
 	},
 	prompt() {
-		V.bidding_for_sides = true // for client voodoo
+		L.bidding_for_sides = true // for client voodoo
 		if (L.final_confirmation) {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[1 - L.bid_for_side].name + "?")
 			button("confirm")
@@ -2290,7 +2292,6 @@ P.bid_for_sides = {
 			} else {
 				log (italic("Players keep their current colors."))
 			}
-			V.bidding_for_sides = false
 			end()
 		}
 	},
