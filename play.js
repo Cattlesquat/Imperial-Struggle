@@ -1155,6 +1155,10 @@ function on_init() {
 		define_marker("huguenots", s, "marker square-sm huguenots").tooltip(bold("Huguenots") + ": increases conquest cost of space by 1. Can be flipped once per game to reduce the economic action cost of a market in the same region by 1.")
 		define_marker("huguenots_spent", s, "marker square-sm huguenots_spent").tooltip(bold("Huguenots (Spent)") + ": increases conquest cost of space by 1. Can be refreshed once per game by North American Trade ministry in Revolutionary Era.")
 	}
+
+	var vp = document.createElement("div")
+	vp.id = "vp_mobile"
+	document.querySelector("#toolbar").append(vp)
 }
 
 
@@ -1243,52 +1247,20 @@ function available_debt_plus_trps(who) {
 	return available_debt(who) + G.treaty_points[who]
 }
 
-
-var was_bidding_for_sides = false
-
 function update_debt_display() {
 	for (let who = FRANCE; who <= BRITAIN; who++) {
-		if (V && V.bidding_for_sides) {
-			roles[who].stat.innerHTML = ""
-
-			let hud = document.getElementById("role_" + data.flags[who].name)
-			if (hud) {
-				hud.innerHTML = hud.innerHTML.replace(data.flags[who].name, "Player " + (who + 1))
-			}
-			was_bidding_for_sides = true
-			continue
-		} else if (was_bidding_for_sides) {
-			let hud = document.getElementById("role_" + data.flags[who].name)
-			if (hud) {
-				hud.innerHTML = hud.innerHTML.replace("Player " + (who + 1), data.flags[who].name)
-			}
+		if (V.bidding_for_sides) {
+			roles[who].name.textContent = "Player " + (who+1)
+			roles[who].stat.textContent = ""
+		} else {
+			roles[who].name.textContent = data.flags[who].name
+			roles[who].stat.innerHTML = available_debt(who) + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 		}
-		let avail = available_debt(who)
-		roles[who].stat.innerHTML = avail + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
 	}
-
-	if (!V || !V.bidding_for_sides) was_bidding_for_sides = false
 
 	let msg = bold("VP: " + V.vp)
-
-	let div = document.getElementById("vp")
-	if (div === null) {
-		div = document.createElement("div")
-		div.className = "vp"
-		div.id = "vp"
-
-		//BR// VP display goes different places depending on platform
-		if (is_mobile()) {
-			div.className += " mobile"
-			world.toolbar.append(div)
-		} else {
-			world.turn_info.classList.add("desktop")
-			world.turn_info.classList.add("vp")
-			world.turn_info.innerHTML = msg
-		}
-	}
-
-	div.innerHTML = msg
+	document.getElementById("vp_mobile").innerHTML = msg
+	document.getElementById("vp_desktop").innerHTML = msg
 }
 
 function scroll_log_to_end() {

@@ -1777,29 +1777,28 @@ menu li.separator {
     /* border: 2px solid springgreen; */
 }
 
-.turn-info {
-    border: 1px black solid;
-    background-color: cornsilk;
+#vp_mobile {
+	display: none;
+	/* same as #prompt in client.css */
+	font-size: 18px;
+	line-height: 22px;
+	margin-top: 11px;
+	margin-bottom: 5px;
+	padding: 0 8px;
 }
 
-.vp.mobile {
-
+#vp_desktop {
+	font-size: 18px;
+	line-height: 22px;
+	text-align: center;
+	padding: 4px;
+	background-color: cornsilk;
+	border-bottom: 1px solid black;
 }
 
-.vp.desktop {
-    display: flex !important;  /* Important because #turn_info is in client.css and otherwise overrides everything, or if I put a separate div inside then it's hard to center the text. */
-    line-height: 24px !important;
-    font-size: 24px !important;
-    justify-content: center !important;
-}
-
-.vp {
-    float: right;
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    flex-direction: row-reverse;
-    flex-wrap: wrap;
+@media (max-width: 400px) {
+	#vp_mobile { display: block }
+	#vp_desktop { display: none }
 }
 
 .vp-overlay {
@@ -2202,9 +2201,6 @@ div[data-tooltip]:after {
 .e0 { background-position-x: -1180px; }
 .e1 { background-position-x: -1266px; }
 .e2 { background-position-x: -1354px; }
-
-
-
 
 @media (max-width: 800px) {
     /* Other modules had this, but it was wrecking the IS side-by-side panels
