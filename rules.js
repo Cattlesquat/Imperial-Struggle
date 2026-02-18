@@ -2,6 +2,16 @@
 const data = require("./data.js")
 
 const ROLES = [ "France", "Britain" ]
+const SCENARIOS = [
+	"Standard",
+	"Bid for sides",
+	"Britain +3 TRP",
+	"Britain +2 TRP",
+	"Britain +1 TRP",
+	"France +3 TRP",
+	"France +2 TRP",
+	"France +1 TRP",
+]
 
 var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player, L = Local, P = Procedures
 
@@ -914,7 +924,7 @@ function on_setup(scenario, options) {
 	// G.old_margins[WAR_AWI][1] -> the margin of victory in first theater of WAR_AWI
 	G.old_margins = [ [], [ 0,  0,  0,  0, 0 ], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0], [ 0,  0,  0,  0,  0] ]
 
-	call("preliminaries")
+	call("preliminaries", { scenario })
 }
 
 
@@ -2172,43 +2182,41 @@ P.main = script (`
 `)
 
 
-function rules_bidding_for_sides()
-{
-	return false
-}
-
-function rules_preset_handicap()
-{
-	return false
-}
-
-
 P.preliminaries = script(`
-    if (rules_preset_handicap()) {
-		eval { preset_handicap() }    
-    } else {
-		if (rules_bidding_for_sides()) {
-			call bid_for_sides
-		}
+	if (L.scenario === "Bid for sides") {
+		call bid_for_sides
+	} else {
+		eval { preset_handicap(L.scenario) }
 	}
-	call main
+	goto main
 `)
 
-
-function preset_handicap()
-{
-	if ((G.bid > 0) && ((G.handicap_side === FRANCE) || (G.handicap_side === BRITAIN))) {
-		log("=Setup")
-		let msg = data.flags[G.handicap_side].name + " receives +" + G.bid + " treaty point" + s(G.bid) + "."
-		G.treaty_points[G.handicap_side] += bid
-	}
+const HANDICAP_TABLE = {
+	"Britain +1 TRP": { side: BRITAIN, bid: 1 },
+	"Britain +2 TRP": { side: BRITAIN, bid: 2 },
+	"Britain +3 TRP": { side: BRITAIN, bid: 3 },
+	"Britain +4 TRP": { side: BRITAIN, bid: 4 },
+	"Britain +5 TRP": { side: BRITAIN, bid: 5 },
+	"France +1 TRP": { side: FRANCE, bid: 1 },
+	"France +2 TRP": { side: FRANCE, bid: 2 },
+	"France +3 TRP": { side: FRANCE, bid: 3 },
+	"France +4 TRP": { side: FRANCE, bid: 4 },
+	"France +5 TRP": { side: FRANCE, bid: 5 },
 }
 
+function preset_handicap(scenario)
+{
+	if (scenario !== "Standard") {
+		var { side, bid } = HANDICAP_TABLE[scenario]
+		log("=Setup")
+		log(ROLES[side] + " received " + bid + " treaty point" + s(bid) + ".")
+		G.treaty_points[side] += bid
+	}
+}
 
 P.bid_for_sides = {
 	_begin() {
 		G.active = FRANCE // For the bidding, this is just "first player"
-		G.bidding_for_sides = true
 		L.current_bid = -1
 		L.current_bidder = NONE
 		L.bid_for_side = NONE
@@ -2222,6 +2230,7 @@ P.bid_for_sides = {
 		log (say_nation("Player " + (G.active + 1), G.active) + " will bid first.")
 	},
 	prompt() {
+		V.bidding_for_sides = true // for client voodoo
 		if (L.final_confirmation) {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[1 - L.bid_for_side].name + "?")
 			button("confirm")
@@ -2231,20 +2240,13 @@ P.bid_for_sides = {
 			button("britain")
 		} else if (L.current_bidder === NONE) {
 			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid in order to play " + data.flags[L.bid_for_side].name + "?")
-			button("zero")
-			button("one")
-			button("two")
-			button("three")
-			button("four")
-			button("five")
+			for (var i = 0; i <= 5; ++i)
+				action("bid", i)
 		} else if (L.current_bidder !== R) {
 			V.prompt = bold("BIDDING FOR SIDES: Your opponent bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + ". Accept or bid higher?")
 			button ("accept")
-			if (L.current_bid < 1) button("one")
-			if (L.current_bid < 2) button("two")
-			if (L.current_bid < 3) button("three")
-			if (L.current_bid < 4) button("four")
-			if (L.current_bid < 5) button("five")
+			for (var i = L.current_bid + 1; i < 5; ++i)
+				action("bid", i)
 		} else {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm bidding " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "?")
 			button("confirm")
@@ -2278,42 +2280,16 @@ P.bid_for_sides = {
 
 			if (L.current_bidder !== L.bid_for_side) {
 				log (italic("Color-swapping players to assigned sides."))
-				G.$swap = 1
+				G.$pie = 1
 			} else {
 				log (italic("Players keep their current colors."))
 			}
-			G.bidding_for_sides = false
 			end()
 		}
 	},
-	zero() {
+	bid(n) {
 		push_undo()
-		L.current_bid = 0
-		L.current_bidder = G.active
-	},
-	one() {
-		push_undo()
-		L.current_bid = 1
-		L.current_bidder = G.active
-	},
-	two() {
-		push_undo()
-		L.current_bid = 2
-		L.current_bidder = G.active
-	},
-	three() {
-		push_undo()
-		L.current_bid = 3
-		L.current_bidder = G.active
-	},
-	four() {
-		push_undo()
-		L.current_bid = 4
-		L.current_bidder = G.active
-	},
-	five() {
-		push_undo()
-		L.current_bid = 5
+		L.current_bid = n
 		L.current_bidder = G.active
 	},
 	france() {
