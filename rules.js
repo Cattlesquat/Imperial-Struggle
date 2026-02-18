@@ -2231,10 +2231,6 @@ P.bid_for_sides = {
 		L.bid_for_side = NONE
 		L.final_confirmation = false
 
-		//roles[FRANCE].innerHTML.replace("France", "Player 1")
-		//roles[BRITAIN].innerHTML.replace("Britain", "Player 2")
-		//console.log (roles)
-
 		log ("=Bid for Sides")
 		log (say_player(G.active) + " will bid first.")
 	},
@@ -2248,7 +2244,7 @@ P.bid_for_sides = {
 			button("france")
 			button("britain")
 		} else if (L.current_bidder === NONE) {
-			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid in order to play " + data.flags[L.bid_for_side].name + "?")
+			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid to play " + data.flags[L.bid_for_side].name + "?")
 			for (var i = 0; i <= 5; ++i)
 				action("bid", i)
 		} else if (L.current_bidder !== R) {
@@ -2267,12 +2263,16 @@ P.bid_for_sides = {
 	},
 	confirm() {
 		if (!L.final_confirmation) {
-			log(bold(say_player(G.active) + " bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
+			log(bold(say_player(G.active) + " bids +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			let msg = say_player(G.active) + " accepts the bid and will play as " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
+			log (bold(say_player(G.active) + " accepts the bid."))
+
+			let msg = say_player(G.active) + " will play " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
-				msg += " with a handicap of " + L.current_bid + " extra treaty points at start."
+				msg += " with +" + L.current_bid + " TRP at start."
+			} else {
+				msg += "."
 			}
 			log (bold(msg))
 			if (L.current_bid > 0) {
@@ -2284,11 +2284,8 @@ P.bid_for_sides = {
 				G.handicap_side = NONE
 			}
 
-			//roles[FRANCE].innerHTML.replace("Player 1", "France")
-			//roles[BRITAIN].innerHTML.replace("Player 2", "Britain")
-
 			if (L.current_bidder !== L.bid_for_side) {
-				log (italic("Color-swapping players to assigned sides."))
+				log (italic("Player colors swapped."))
 				G.$pie = 1
 			} else {
 				log (italic("Players keep their current colors."))
