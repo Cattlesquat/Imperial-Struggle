@@ -664,9 +664,12 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox_dialog("scoresies", false)
+	init_preference_checkbox("scoresies", false)
 
-	init_preference_radio("actionverbosity", "medium")
+	init_preference_radio("actionverbosity", "medium", function () {
+		// WARNING: we reach into client.js innards here to reformat the log messages!
+		update_log(0, game_log.length)
+	})
 
 	console.log(escape_curly_brackets("{0}"))
 	console.log(escape_curly_brackets("{1}"))
@@ -2566,7 +2569,7 @@ function escape_square_brackets(text) {
 			switch (type) {
 				case "a":
 					let verbose = get_preference("actionverbosity", "medium")
-                    if (verbose === "long") {
+					if (verbose === "long") {
 						tooltip_text = " " + data.action_points[value].name + " action point" + escape_typography(msg)
 					} else {
 						tooltip_text = ""
@@ -3069,7 +3072,7 @@ window.addEventListener("keydown", function (evt) {
 
 		case "T":
 		case "t":
-			toggle_preference("scoresies", false)
+			set_preference_checkbox("scoresies", false)
 			on_dialog_refresh("scoresies", get_preference("scoresies", false))
 			var input = document.querySelector(`input[name="scoresies"]`)
 			input.checked = get_preference("scoresies", false)
@@ -3146,7 +3149,7 @@ window.addEventListener("keydown", function (evt) {
 
 		case "a":
 		case "A":
-			toggle_preference("allwars")
+			toggle_preference_checkbox("allwars")
 			scroll_to_war()
 			evt.preventDefault()
 			break
@@ -3167,7 +3170,7 @@ window.addEventListener("keydown", function (evt) {
 			} else {
 				verbose = "short"
 			}
-			set_preference("actionverbosity", verbose)
+			set_preference_radio("actionverbosity", verbose)
 			evt.preventDefault()
 			break
 
@@ -3184,7 +3187,7 @@ window.addEventListener("keydown", function (evt) {
 			hide_dialog("event_card_dialog")
 			document.querySelector("aside").hidden = false // Show the log
 			document.body.classList.remove("hide-markers")
-			set_preference("allwars", false)
+			set_preference_checkbox("allwars", false)
 			hide_notepad()
 			update_zoom()
 			evt.preventDefault()

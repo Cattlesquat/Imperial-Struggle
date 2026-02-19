@@ -107,6 +107,7 @@ const world = {
 	last_focus: null,
 	generic_unused: {},
 	generic_used: {},
+	prefs: {},
 	parent: $("#map"),
 	parent_w: 1920,
 	parent_h: 1080,
@@ -1143,7 +1144,6 @@ function escape_icon(text, re, icons) {
 	return text.replace(re, (m) => icons[m] ?? m)
 }
 
-/*
 function _tip_focus_class(name) {
 	world.tip.setAttribute("class", name)
 	world.tip.hidden = false
@@ -1153,8 +1153,6 @@ function _tip_blur_class(action, id) {
 	world.tip.removeAttribute("class")
 	world.tip.hidden = true
 }
-*/
-
 
 function _tip_focus_clone(action, id) {
 	var thing = lookup_thing(action, id)
@@ -1275,77 +1273,49 @@ function get_preference(name, fallback) {
 	return fallback
 }
 
-function set_preference(name, value, reload = true) {
+function _set_preference(name, value, onchange) {
 	var key = params.title_id + "/" + name
 	window.localStorage.setItem(key, JSON.stringify(value))
-	if (reload) window.location.reload() //BR// Refresh page so that display preferences "take"
-	return value
+	document.body.dataset[name] = value
+	close_toolbar_menus()
+	if (typeof onchange === "function")
+		onchange()
+	on_update()
 }
 
-function toggle_preference(name, reload = true)
-{
-	set_preference(name, !get_preference(name, false), reload)
+function toggle_preference_checkbox(name, value) {
+	world.prefs[name].checked = !world.prefs[name].checked
+	world.prefs[name].dispatchEvent(new Event("change"))
 }
 
-function init_preference_checkbox(name, initial) {
-	var input = document.querySelector(`input[name="${name}"]`)
+function set_preference_checkbox(name, value) {
+	world.prefs[name].checked = value
+	world.prefs[name].dispatchEvent(new Event("change"))
+}
+
+function set_preference_radio(name, value) {
+	world.prefs[name][value].checked = true
+	world.prefs[name][value].dispatchEvent(new Event("change"))
+}
+
+function init_preference_checkbox(name, initial, onchange) {
 	var value = get_preference(name, initial)
+	var input = document.querySelector(`input[name="${name}"]`)
+	world.prefs[name] = input
 	input.checked = value
-	input.onchange = function () {
-		_update_preference_checkbox(name)
-		close_toolbar_menus()
-		on_update()
-	}
+	input.onchange = () => _set_preference(name, input.value, onchange)
 	document.body.dataset[name] = value
 }
 
-
-// Operates inside a dialog so don't refresh the whole view
-function init_preference_checkbox_dialog(name, initial) {
-	var input = document.querySelector(`input[name="${name}"]`)
+function init_preference_radio(name, initial, onchange) {
 	var value = get_preference(name, initial)
-	input.checked = value
-	input.onchange = function () {
-		_update_preference_checkbox(name, false)
-		if (typeof on_dialog_refresh === "function") {
-			on_dialog_refresh(name, get_preference(name, initial))
-		}
-	}
+	world.prefs[name] = {}
+	document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+		world.prefs[name][input.value] = input
+		input.checked = (value === input.value)
+		input.onchange = () => _set_preference(name, input.value, onchange)
+	})
 	document.body.dataset[name] = value
-}
-
-
-function _update_preference_checkbox(name, reload = true) {
-	var input = document.querySelector(`input[name="${name}"]`)
-	var value = input.checked
-	set_preference(name, value, reload)
-	document.body.dataset[name] = value
-}
-
-function init_preference_radio(name, initial) {
-	var value = get_preference(name, initial)
-	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
-		if (value === input.value) {
-			input.checked = true
-			document.body.dataset[name] = value
-		} else {
-			input.checked = false
-		}
-		input.onchange = function () {
-			_update_preference_radio(name)
-			close_toolbar_menus()
-			on_update()
-		}
-	}
-}
-
-function _update_preference_radio(name) {
-	for (var input of document.querySelectorAll(`input[name="${name}"]`)) {
-		if (input.checked) {
-			set_preference(name, input.value)
-			document.body.dataset[name] = input.value
-		}
-	}
 }
 
 /* LIBRARY */
