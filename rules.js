@@ -8405,7 +8405,7 @@ function has_advantage_targets(who, a)
 {
 	if (![CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) return true
 	set_up_conflict_advantage(a)
-	check_advantage_targets(-1, false)
+	return check_advantage_targets(-1, false)
 }
 
 
