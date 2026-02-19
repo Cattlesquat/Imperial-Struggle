@@ -1364,15 +1364,11 @@ function on_save()
 // Items that we keep current even when we're in "review mode" looking at an old view
 function absolute_view() {
 	V.active              = G.active
+	V.log                 = G.log
 	V.log_hide_after      = G.log_hide_after
 	V.log_length          = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 
 	V.bidding_for_sides   = L.bidding_for_sides ?? false
-
-	console.log (L)
-	console.log (L.L.bidding_for_sides)
-	console.log (L.bidding_for_sides)
-	console.log (V.bidding_for_sides)
 }
 
 function on_view(RR = undefined) {
@@ -2345,13 +2341,17 @@ function review_push(phase)
 		if ((R === FRANCE) || (R === BRITAIN)) {
 			on_view(1-R)
 			views[1-R] = object_copy(V)
+			delete views[1-R].log
 			on_view(R)
 			views[R] = object_copy(V)
+			delete views[R].log
 		} else { // Sometimes R is null or whatever especially when starting up
 			on_view(FRANCE)
 			views[FRANCE] = object_copy(V)
+			delete views[FRANCE].log
 			on_view(BRITAIN)
 			views[BRITAIN] = object_copy(V)
+			delete views[BRITAIN].log
 		}
 		G.review_view.push(views)
 	}
