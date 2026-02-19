@@ -10,7 +10,13 @@ function assert(exp, msg) {
 }
 
 function $(x) {
-	return x instanceof Element ? x : document.querySelector(x)
+	if (typeof x === "object") {
+		if (x instanceof Element)
+			return x
+		if (x.element instanceof Element)
+			return x.element
+	}
+	return document.querySelector(x)
 }
 
 function toggle_pieces() {
@@ -35,15 +41,21 @@ function toggle_markers_and_pieces() {
 	}
 }
 
+function is_disabled_button(action, id) {
+	if (id === undefined && V.actions && V.actions[action] === 0)
+		return true
+	return false
+}
+
 function is_action(action, id) {
-	if (view.actions) {
+	if (V.actions) {
 		if (id === undefined)
-			return view.actions[action] === 1
-		if (view.actions[action] === undefined)
+			return V.actions[action] === 1
+		if (V.actions[action] === undefined)
 			return false
-		if (!Array.isArray(view.actions[action]))
+		if (!Array.isArray(V.actions[action]))
 			throw new Error("action is not a list: " + action)
-		return view.actions[action].includes(id)
+		return V.actions[action].includes(id)
 	}
 	return false
 }
@@ -85,6 +97,7 @@ const world = {
 	parent_list: [],
 	stack_list: [],
 	action_list: [],
+	button_list: [],
 	animate_list: [],
 	keyword_list: [],
 	text_list: [],
@@ -130,6 +143,15 @@ class Thing {
 			this.is_action = true
 			this.element.addEventListener("mousedown", _on_click_thing)
 			world.action_list.push(this)
+		}
+		return this
+	}
+
+	button() {
+		if (!this.is_action) {
+			this.is_action = true
+			this.element.addEventListener("mousedown", _on_click_thing)
+			world.button_list.push(this)
 		}
 		return this
 	}
@@ -301,6 +323,10 @@ class Thing {
 		return this
 	}
 
+	static_child(parent) {
+		$(parent).appendChild(this.element)
+		return this
+	}
 
 	keyword(keywords, on = true) {
 		if (keywords && on) {
@@ -323,6 +349,16 @@ class Thing {
 			for (var key in dict_or_key)
 				this.element.style.setProperty(key, styles[key])
 		}
+		return this
+	}
+
+	text(s) {
+		this.element.textContent = s
+		return this
+	}
+
+	text_html(s) {
+		this.element.innerHTML = s
 		return this
 	}
 }
@@ -378,9 +414,8 @@ function define_board(selector, w, h, padding=[0,0,0,0]) {
 	assert(world.parent, "board not found: " + selector)
 	world.parent.classList.add("board")
 	if (!w || !h) {
-		var rect = world.parent.getBoundingClientRect()
-		w = rect.width
-		h = rect.height
+		w = world.parent.offsetWidth
+		h = world.parent.offsetHeight
 	}
 	world.parent_w = w
 	world.parent_h = h
@@ -479,6 +514,13 @@ function define_layout_grid(action, order, cols, rows, layout, gapx, gapy, keywo
 		}
 		y += cell_h + gapy
 	}
+}
+
+function define_button(action, id, text) {
+	var element = document.createElement("button")
+	element.innerHTML = text
+	return define_html_thing(element, action, id)
+		.button()
 }
 
 function define_html_space(selector, action, id) {
@@ -661,13 +703,8 @@ function update_rotation(action, id, angle) {
 function update_keyword(action, id, keyword, on = true) {
 	var thing = lookup_thing(action, id)
 	thing.ensure_keyword()
-	if (on) {
-		if (thing.my_dynamic_keywords.indexOf(keyword) < 0) {
-			thing.my_dynamic_keywords.push(keyword)
-		}
-	} else {
-		array_delete_item(thing.my_dynamic_keywords, keyword)
-	}
+	if (on)
+		thing.my_dynamic_keywords.push(keyword)
 }
 
 function update_text(action, id, text) {
@@ -821,11 +858,12 @@ function _remember_position(thing) {
 	var e = thing.element
 	if (e.offsetParent) {
 		var prect = e.offsetParent.getBoundingClientRect()
+		var rect = e.getBoundingClientRect()
 		e.my_parent = e.offsetParent
 		e.my_px = prect.x
 		e.my_py = prect.y
-		e.my_x = prect.x + e.offsetLeft
-		e.my_y = prect.y + e.offsetTop
+		e.my_x = rect.x
+		e.my_y = rect.y
 		if (thing.is_rotate)
 			thing.my_old_angle = thing.my_new_angle
 	} else {
@@ -840,15 +878,18 @@ function _animate_position(thing, inv_scale, max_duration) {
 	var e = thing.element
 	if (e.offsetParent && e.my_parent) {
 		var prect = e.offsetParent.getBoundingClientRect()
-		var new_x = prect.x + e.offsetLeft
-		var new_y = prect.y + e.offsetTop
+		var rect = e.getBoundingClientRect()
+		var new_parent = e.offsetParent
+		var new_px = prect.x
+		var new_py = prect.y
+		var new_x = rect.x
+		var new_y = rect.y
 		var dx, dy, da
 		var duration = Math.min(thing.my_time, max_duration)
-		// TODO: fix dx,dy calculation with nested transform
-		if (e.offsetParent === e.my_parent) {
-			// animate pieces on pieces
-			dx = (e.my_x - e.my_px) - (new_x - prect.x)
-			dy = (e.my_y - e.my_py) - (new_y - prect.y)
+		if (new_parent === e.my_parent) {
+			// animate piece relative to parent in case parent is also moving
+			dx = (e.my_x - e.my_px) - (new_x - new_px)
+			dy = (e.my_y - e.my_py) - (new_y - new_py)
 		} else {
 			dx = e.my_x - new_x
 			dy = e.my_y - new_y
@@ -931,6 +972,19 @@ function end_update() {
 
 	for (var thing of world.action_list) {
 		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
+	}
+
+	for (var thing of world.button_list) {
+		if (is_action(thing.my_action, thing.my_id)) {
+			thing.element.disabled = false
+			thing.element.hidden = false
+		} else if (is_disabled_button(thing.my_action, thing.my_id)) {
+			thing.element.disabled = true
+			thing.element.hidden = false
+		} else {
+			thing.element.disabled = true
+			thing.element.hidden = true
+		}
 	}
 
 	_animate_end()
@@ -1365,10 +1419,6 @@ function map_for_each(map, f) {
 		f(map[i], map[i+1])
 }
 
-
-function array_delete_item(array, item) {
-	var i, n = array.length
-	for (i = 0; i < n; ++i)
-		if (array[i] === item)
-			return array_delete(array, i)
+function q(obj) {
+	console.log(JSON.stringify(obj, 0, 4))
 }
