@@ -3041,7 +3041,7 @@ function require_advantage(who, a, why, optional = false)
 P.advantage_is_required = script (`
     call confirm_use_advantage
     eval {
-    	G.used_required_advantage = !has_advantage_eligible(R, G.advantage)
+    	set_bit(USED_REQUIRED_ADVANTAGE, !has_advantage_eligible(R, G.advantage)) 
     }
 `)
 
