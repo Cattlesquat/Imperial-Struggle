@@ -810,7 +810,7 @@ function on_init() {
 	}
 
 	for (s of data.turns) {
-		define_stack_centered("turn-track", s.num, find_layout_node(s.layout), 8, -8, 0, -50)
+		define_stack("turn-track", s.num, find_layout_node(s.layout), 8, -8, 0, -50)
 	}
 
 	for (s of data.bizarro_spaces) {
@@ -936,13 +936,15 @@ function on_init() {
 	}
 
 	for (i = 1; i <= NUM_EVENT_CARDS; ++i) {
-		define_card_animated ("event_card", i)
+		define_card("event_card", i)
+			.animate()
 			.keyword("c" + i)
 			.tooltip(event_tooltip)
 	}
 
 	for (i = 1; i <= 26; ++i) {
-		define_card_animated("ministry_card", i)
+		define_card("ministry_card", i)
+			.animate()
 			.keyword("c" + i)
 			.tooltip(ministry_tooltip(i))
 	}
