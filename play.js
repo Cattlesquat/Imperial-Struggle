@@ -671,10 +671,6 @@ function on_init() {
 		update_log(0, game_log.length)
 	})
 
-	console.log(escape_curly_brackets("{0}"))
-	console.log(escape_curly_brackets("{1}"))
-	console.log(escape_curly_brackets("{2}"))
-
 	set_available_debt_tooltips()
 
 	//BR// get_preference("noanims", false) (second argument is the "default" value if it's not set or has been deleted)
