@@ -216,10 +216,11 @@ class Thing {
 	tooltip(tip) {
 		var id = this.my_id
 		this.element.addEventListener("mouseenter", function () {
-			if (typeof tip === "function")
-				world.status.innerHTML = tip(id)
-			else
-				world.status.innerHTML = tip
+			try {
+				world.status.innerHTML = (typeof tip === "function") ? tip(id) : tip
+			} catch (err) {
+				world.status.textContent = err.toString()
+			}
 		})
 		this.element.addEventListener("mouseleave", function () {
 			world.status.innerHTML = ""
