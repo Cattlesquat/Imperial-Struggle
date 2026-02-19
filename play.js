@@ -668,6 +668,10 @@ function on_init() {
 
 	init_preference_radio("actionverbosity", "medium")
 
+	console.log(escape_curly_brackets("{0}"))
+	console.log(escape_curly_brackets("{1}"))
+	console.log(escape_curly_brackets("{2}"))
+
 	set_available_debt_tooltips()
 
 	//BR// get_preference("noanims", false) (second argument is the "default" value if it's not set or has been deleted)
@@ -2342,6 +2346,7 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
 	text = escape_square_brackets(text)
+	text = escape_curly_brackets(text)
 
 	return escape_typography(text)
 }
@@ -2445,6 +2450,49 @@ function bit_get(bits, index)
 	var w = index >> 5
 	var b = index & 31
 	return ((bits[w] >> b) & 1) > 0
+}
+
+
+var Strings = [
+	"Bid for Sides",
+	" will bid first.",
+	" accepts the bid.",
+	" TRP at start.",
+	"Player colors swapped.",
+	"Players keep their current colors.", //5
+]
+
+
+// Curly brackets for using string tables in the log.
+// {0} emits Strings[0] from above, etc.
+function escape_curly_brackets(text) {
+	let runaway = 0
+	let match = ""
+	let value = 0
+	do {
+		match = text.match(/\{.*?}/) // Get the whole expression including the brackets
+		let msg = ""
+		if (match) {
+			let inside = match[0].match(/\{(.*?)}/) // Get the inside-the-brackets bit.
+			let msg    = inside[1]
+			for (let index = 0; index < 4; index++) {
+				if (is_digit(msg[0])) {
+					value = value * 10 + (msg[0] - '0')
+					msg = msg.substring(1)
+				} else {
+					break
+				}
+			}
+		}
+		let result = (Strings[value] ?? value) + msg
+		text = text.replace(/\{.*?}/, result)
+
+		if (++runaway > 500) {
+			throw new Error("Runaway Curly Brackets escape sequence: " + text.slice(0, 40))
+		}
+	} while (match)
+
+	return text
 }
 
 
