@@ -8919,6 +8919,8 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
     if (has_advantage_eligible(who, SLAVING_CONTRACTS) && check_minimum) {
 		cost = 2
 		info.advantage = SLAVING_CONTRACTS
+	} else if (G.prepicked_advantage === SLAVING_CONTRACTS) {
+		cost = 2
 	}
 
 	if (has_transient(who, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)) {
