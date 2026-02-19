@@ -1858,13 +1858,11 @@ const war_reverse = [
 
 
 function set_fallback_tips(fallbacks, tip) {
+	var menter = function () { world.status.innerHTML = tip }
+	var mleave = function () { world.status.innerHTML = "" }
 	for (const f of fallbacks) {
-		f.addEventListener("mouseenter", function () {
-			world.status.innerHTML = tip
-		})
-		f.addEventListener("mouseleave", function () {
-			world.status.innerHTML = ""
-		})
+		f.onmouseenter = menter
+		f.onmouseleave = mleave
 	}
 }
 
