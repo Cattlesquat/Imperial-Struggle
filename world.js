@@ -1239,11 +1239,7 @@ function update_log_boxes(ix) {
 			box.close = -1
 	}
 	// remove boxes that are popped out of existence
-	world.log_boxes = world.log_boxes.filter(box => {
-		if (box.open < 0 && box.close < 0) return false
-		if (box.close >= 0 && ix > box.close) return false
-		return true
-	})
+	world.log_boxes = world.log_boxes.filter(box => box.open >= 0)
 }
 
 function open_log_box(ix, keyword) {
@@ -1251,8 +1247,12 @@ function open_log_box(ix, keyword) {
 }
 
 function close_log_box(ix) {
-	if (world.log_boxes.length > 0)
-		world.log_boxes[world.log_boxes.length-1].close = ix
+	for (var i = world.log_boxes.length - 1; i >= 0; --i) {
+		if (world.log_boxes[i].close < 0) {
+			world.log_boxes[i].close = ix
+			return
+		}
+	}
 }
 
 function apply_log_boxes(ix, div, common) {
