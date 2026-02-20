@@ -2237,8 +2237,8 @@ P.bid_for_sides = {
 		L.final_confirmation = false
 		L.bidding_for_sides = true // for client voodoo
 
-		log ("={0}") //"=Bid for Sides")
-		log (say_player(G.active) + "{1}") //" will bid first.")
+		log ("=Bid for Sides")
+		log (say_player(G.active) + " will bid first.")
 	},
 	prompt() {
 		if (L.final_confirmation) {
@@ -2271,11 +2271,11 @@ P.bid_for_sides = {
 			log(bold(say_player(G.active) + " bids +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			log (bold(say_player(G.active) + "{2})")) //" accepts the bid."))
+			log (bold(say_player(G.active) + " accepts the bid."))
 
 			let msg = say_player(G.active) + " will play " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
-				msg += " with +" + L.current_bid + "{3}" //" TRP at start."
+				msg += " with +" + L.current_bid + " TRP at start."
 			} else {
 				msg += "."
 			}
@@ -2290,10 +2290,10 @@ P.bid_for_sides = {
 			}
 
 			if (L.current_bidder !== L.bid_for_side) {
-				log (italic("{4}")) //"Player colors swapped."))
+				log (italic("Player colors swapped."))
 				G.$pie = 1
 			} else {
-				log (italic("{5}")) //"Players keep their current colors."))
+				log (italic("Players keep their current colors."))
 			}
 			L.bidding_for_sides = false
 			end()

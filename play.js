@@ -664,7 +664,7 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox("scoresies", false)
+	init_preference_checkbox_dialog("scoresies", false)
 
 	init_preference_radio("actionverbosity", "medium", function () {
 		// WARNING: we reach into client.js innards here to reformat the log messages!
@@ -2345,7 +2345,6 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
 	text = escape_square_brackets(text)
-	text = escape_curly_brackets(text)
 
 	return escape_typography(text)
 }
@@ -2452,49 +2451,6 @@ function bit_get(bits, index)
 }
 
 
-var Strings = [
-	"Bid for Sides",
-	" will bid first.",
-	" accepts the bid.",
-	" TRP at start.",
-	"Player colors swapped.",
-	"Players keep their current colors.", //5
-]
-
-
-// Curly brackets for using string tables in the log.
-// {0} emits Strings[0] from above, etc.
-function escape_curly_brackets(text) {
-	let runaway = 0
-	let match = ""
-	let value = 0
-	do {
-		match = text.match(/\{.*?}/) // Get the whole expression including the brackets
-		let msg = ""
-		if (match) {
-			let inside = match[0].match(/\{(.*?)}/) // Get the inside-the-brackets bit.
-			let msg    = inside[1]
-			for (let index = 0; index < 4; index++) {
-				if (is_digit(msg[0])) {
-					value = value * 10 + (msg[0] - '0')
-					msg = msg.substring(1)
-				} else {
-					break
-				}
-			}
-		}
-		let result = (Strings[value] ?? value) + msg
-		text = text.replace(/\{.*?}/, result)
-
-		if (++runaway > 500) {
-			throw new Error("Runaway Curly Brackets escape sequence: " + text.slice(0, 40))
-		}
-	} while (match)
-
-	return text
-}
-
-
 function escape_square_brackets(text) {
 	let runaway = 0
 	let match = ""
@@ -2565,7 +2521,7 @@ function escape_square_brackets(text) {
 			switch (type) {
 				case "a":
 					let verbose = get_preference("actionverbosity", "medium")
-					if (verbose === "long") {
+                    if (verbose === "long") {
 						tooltip_text = " " + data.action_points[value].name + " action point" + escape_typography(msg)
 					} else {
 						tooltip_text = ""
