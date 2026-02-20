@@ -2331,7 +2331,7 @@ function review_begin()
 // Push another phase name onto the beginning of turn log-review stack (but only if something happened in the log that phase)
 function review_push(phase)
 {
-	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
+	if ((G.review_index.length === 0) || G.review_index.at(-1)) {
 		G.review_index.push(G.log.length - 1)
 		G.review_phase.push(phase)
 		if (G.temp_view) delete G.temp_view
