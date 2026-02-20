@@ -1384,7 +1384,7 @@ function on_view(RR = undefined) {
 		}
 	}
 
-	if ((RR === undefined) || (RR === null)) RR = R // Pirate's favorite letter
+	RR ??= R // Pirate's favorite letter
 
 	absolute_view()
 
