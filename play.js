@@ -3156,7 +3156,7 @@ window.addEventListener("keydown", function (evt) {
 			hide_dialog("french_ministry_dialog")
 			hide_dialog("british_ministry_dialog")
 			hide_dialog("event_card_dialog")
-			document.querySelector("aside").hidden = false // Show the log
+			document.querySelector("aside").hidden = is_mobile() // Show the log (unless mobile, in which case hide it)
 			document.body.classList.remove("hide-markers")
 			set_preference_checkbox("allwars", false)
 			hide_notepad()
