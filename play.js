@@ -4207,4 +4207,10 @@ function init_preference_checkbox_dialog(name, initial) {
 	document.body.dataset[name] = value
 }
 
+function _update_preference_checkbox(name, reload = true) {
+	var input = document.querySelector(`input[name="${name}"]`)
+	var value = input.checked
+	_set_preference(name, value)
+	document.body.dataset[name] = value
+}
 
