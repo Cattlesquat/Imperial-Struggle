@@ -90,6 +90,7 @@ const world = {
 	tip: $("#tip"),
 	demand_highlight: $("#demand_highlight"),
 	map_tip: $("#map_tip"),
+	mobile_tip: $("#mobile_tip"),
 	actions: $("#actions"),
 	toolbar: $("#toolbar"),
 	turn_info: $("#turn_info"),

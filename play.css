@@ -2199,6 +2199,17 @@ div[data-tooltip]:after {
 .e2 { background-position-x: -1354px; }
 
 
+#mobile_tip {
+    position: fixed;
+    z-index: 500;
+    top: 50px;
+    left: 50px;
+    inset: 0;
+    margin: auto;
+}
+
+
+
 @media (max-width: 400px) {
     #vp_mobile { display: block }
     #vp_desktop { display: none }

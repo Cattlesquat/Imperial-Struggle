@@ -2665,6 +2665,7 @@ function position_tip_image() {
 	setTimeout(position_tip_image_imp, 0)
 }
 
+
 function _tip_focus_class(name) {
 	world.tip.setAttribute("class", name)
 	position_tip_image()
@@ -2715,6 +2716,24 @@ function _tip_blur_event(action, id) {
 	world.tip.hidden = true
 	world.status.innerHTML = ""
 }
+
+
+function _tip_focus_event_mobile(who, c, name) {
+	world.mobile_tip.setAttribute("class", name)
+	world.mobile_tip.hidden = !is_mobile()
+}
+
+function _tip_focus_ministry_mobile(who, m, name) {
+	world.mobile_tip.setAttribute("class", name)
+	world.mobile_tip.hidden = !is_mobile()
+}
+
+function _tip_blur_mobile_tip() {
+	world.mobile_tip.removeAttribute("class")
+	world.mobile_tip.hidden = true
+}
+
+
 
 function escape_event(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
@@ -3771,8 +3790,9 @@ function show_card_list(id, params) {
 			let p = document.createElement("dd")
 			p.className = "cardtip"
 			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
-			p.onmouseenter = () => _tip_focus_event(NONE, c, data.cards[c].name)
+			p.onmouseenter = () => _tip_focus_event(NONE, c, "card event_card c" + c)
 			p.onmouseleave = () => _tip_blur_event()
+			p.onmousedown = () => _tip_focus_event_mobile(NONE, c, "card event_card c" + c)
 			p.innerHTML = format_card_info(c)
 			dl.appendChild(p)
 		}
@@ -3781,8 +3801,9 @@ function show_card_list(id, params) {
 			let p = document.createElement("dd")
 			p.className = "cardtip"
 			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
-			p.onmouseenter = () => _tip_focus_ministry(NONE, m, data.ministries[m].name)
+			p.onmouseenter = () => _tip_focus_ministry(NONE, m, "card ministry_card c" + m)
 			p.onmouseleave = () => _tip_blur_ministry()
+			p.onmousedown = () => _tip_focus_ministry_mobile(NONE, m, "card ministry_card c" + m)
 			p.innerHTML = format_ministry_info(m)
 			dl.appendChild(p)
 		}
