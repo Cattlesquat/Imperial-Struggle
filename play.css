@@ -2199,6 +2199,12 @@ div[data-tooltip]:after {
 .e2 { background-position-x: -1354px; }
 
 
+.remind-player-order {
+    font-size: 18px;
+    color: ghostwhite;
+}
+
+
 #mobile_tip {
     position: fixed;
     z-index: 500;

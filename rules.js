@@ -1393,6 +1393,7 @@ function on_view(RR = undefined) {
 	V.turn = G.turn
 	V.vp = G.temp_vp ?? G.vp
 	V.initiative = G.initiative
+	V.first_player = G.first_player
 
 	// Player debts/TRPs always visible
 	V.debt = G.temp_debt ?? G.debt
