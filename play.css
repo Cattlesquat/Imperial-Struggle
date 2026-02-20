@@ -2213,6 +2213,10 @@ div[data-tooltip]:after {
     }
     */
 
+    #vp_mobile { display: block }
+    #vp_desktop { display: none }
+    #status, #tip, #map_tip { display: none }
+
     #tip {
         top: 0;
         left: 0;
