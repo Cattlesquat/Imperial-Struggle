@@ -2338,21 +2338,10 @@ function review_push(phase)
 
 		// Get latest view for each player, and store it
 		let views = []
-		if ((R === FRANCE) || (R === BRITAIN)) {
-			on_view(1-R)
-			views[1-R] = object_copy(V)
-			delete views[1-R].log
-			on_view(R)
-			views[R] = object_copy(V)
-			delete views[R].log
-		} else { // Sometimes R is null or whatever especially when starting up
-			on_view(FRANCE)
-			views[FRANCE] = object_copy(V)
-			delete views[FRANCE].log
-			on_view(BRITAIN)
-			views[BRITAIN] = object_copy(V)
-			delete views[BRITAIN].log
-		}
+		on_view(FRANCE)
+		views[FRANCE] = copy_view_without_log(V)
+		on_view(BRITAIN)
+		views[BRITAIN] = copy_view_without_log(V)
 		G.review_view.push(views)
 	}
 }
@@ -13008,6 +12997,19 @@ function script(text) {
 })()
 
 /* LIBRARY */
+
+function copy_view_without_log(original) {
+	var copy, k, v
+	copy = {}
+	for (k in original) {
+		v = original[k]
+		if (k === "log")
+			continue
+		else if (typeof v === "object" && v !== null)
+			v = object_copy(v)
+		copy[k] = v
+	}
+}
 
 function clear_undo() {
 	if (G.undo) {
