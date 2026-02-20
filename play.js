@@ -4199,6 +4199,7 @@ function dragElement(e) {
 
 function hide_dialog(id) {
 	document.getElementById(id).classList.remove("show")
+	_tip_blur_mobile_tip()
 }
 
 function toggle_dialog_collapse(id) {
