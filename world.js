@@ -1280,7 +1280,7 @@ function _set_preference(name, value, onchange) {
 	document.body.dataset[name] = value
 	close_toolbar_menus()
 	if (typeof onchange === "function")
-		onchange()
+		onchange(name, value)
 	on_update()
 }
 
