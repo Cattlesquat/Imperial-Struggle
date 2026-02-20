@@ -1304,7 +1304,7 @@ function init_preference_checkbox(name, initial, onchange) {
 	var input = document.querySelector(`input[name="${name}"]`)
 	world.prefs[name] = input
 	input.checked = value
-	input.onchange = () => _set_preference(name, input.value, onchange)
+	input.onchange = () => _set_preference(name, input.checked, onchange)
 	document.body.dataset[name] = value
 }
 
