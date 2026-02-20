@@ -664,7 +664,7 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox("scoresies", false)
+	init_preference_checkbox_dialog("scoresies", false)
 
 	init_preference_radio("actionverbosity", "medium", function () {
 		// WARNING: we reach into client.js innards here to reformat the log messages!
@@ -4190,6 +4190,21 @@ function toggle_dialog_collapse(id) {
 		dialog_body.classList.add("hide")
 		dialog_x.textContent = "V"
 	}
+}
+
+
+// Operates inside a dialog -- refresh the dialog (only)
+function init_preference_checkbox_dialog(name, initial) {
+	var input = document.querySelector(`input[name="${name}"]`)
+	var value = get_preference(name, initial)
+	input.checked = value
+	input.onchange = function () {
+		_update_preference_checkbox(name, false)
+		if (typeof on_dialog_refresh === "function") {
+			on_dialog_refresh(name, get_preference(name, initial))
+		}
+	}
+	document.body.dataset[name] = value
 }
 
 
