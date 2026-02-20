@@ -1796,10 +1796,6 @@ menu li.separator {
 	border-bottom: 1px solid black;
 }
 
-@media (max-width: 400px) {
-	#vp_mobile { display: block }
-	#vp_desktop { display: none }
-}
 
 .vp-overlay {
     font-size: 28px;
@@ -2201,6 +2197,14 @@ div[data-tooltip]:after {
 .e0 { background-position-x: -1180px; }
 .e1 { background-position-x: -1266px; }
 .e2 { background-position-x: -1354px; }
+
+
+@media (max-width: 400px) {
+    #vp_mobile { display: block }
+    #vp_desktop { display: none }
+    #status, #tip, #map_tip { display: none }
+}
+
 
 @media (max-width: 800px) {
     /* Other modules had this, but it was wrecking the IS side-by-side panels
