@@ -664,7 +664,7 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox_dialog("scoresies", false)
+	init_preference_checkbox("scoresies", false)
 
 	init_preference_radio("actionverbosity", "medium", function () {
 		// WARNING: we reach into client.js innards here to reformat the log messages!
