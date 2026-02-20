@@ -13003,6 +13003,7 @@ function copy_view_without_log(original) {
 			v = object_copy(v)
 		copy[k] = v
 	}
+	return copy
 }
 
 function clear_undo() {
