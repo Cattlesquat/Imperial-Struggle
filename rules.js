@@ -4154,13 +4154,7 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 		nat = true
 	}
 
-	let contingent = {}
-	contingent.type = type
-	contingent.amount = amount
-	contingent.rule = rule
-	contingent.short = short
-	contingent.not_independent = not_independent
-	G.contingent.push(object_copy(contingent))
+	G.contingent.push({ type, amount, rule, short, not_independent })
 	log ("+" + say_action_points(amount, type) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
