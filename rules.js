@@ -6380,7 +6380,7 @@ P.event_corsican_crisis = {
 
 function score_european_panic(who)
 {
-	award_vp(who, L.vp_award, false, (L.vp_award > 0) ? "More available debt than opponent" : "Has at least as much absolute debt as opponent")
+	award_vp(who, L.vp_award, false, (L.vp_award > 0) ? "Less debt than opponent" : "As much debt as opponent")
 }
 
 
@@ -6395,7 +6395,7 @@ P.event_european_panic = {
 	},
 	inactive: "play an Event",
 	prompt() {
-		let msg = "For each Debt your opponent has in excess of yours (up to 4), score 1 VP"
+		let msg = "For each Debt (NOT Available Debt) your opponent has in excess of yours (up to 4), score 1 VP"
 		let msg2 = "unflag an opposing Political space in Europe"
 		let any = false
 		if (is_bit(QUALIFIES_FOR_BONUS)) {
