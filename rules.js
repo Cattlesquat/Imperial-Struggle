@@ -9640,6 +9640,7 @@ function handle_naval_space(s)
 {
 	clear_bit(NAVY_FROM_NAVY_BOX)
 	clear_bit(NAVY_DISPLACE)
+	mark_dirty(s)
 
 	if (G.flags[s] === G.active) {
 		G.navy_from = s
@@ -9783,6 +9784,7 @@ P.naval_decisions = {
 	},
 	space(s) {
 		push_undo()
+		mark_dirty(s)
 		if (G.navy_to >= 0) {
 			G.navy_from = s
 		} else {
