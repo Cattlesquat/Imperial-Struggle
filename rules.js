@@ -7755,7 +7755,7 @@ P.ministry_edmond_halley = {
 	prompt() {
 		V.prompt = ministry_prompt(R, EDMOND_HALLEY, "Build discounted squadron", "discard an event to gain 1 Treaty Point") + say_action_points_left()
 		if (ministry_useful_this_phase(EDMOND_HALLEY, G.subphase)) {
-			if (!is_ministry_exhausted(R, EDMOND_HALLEY, 1)) {
+			if (!is_ministry_exhausted(R, EDMOND_HALLEY, 1) && ((G.flags[BISCAY] === BRITAIN) || (G.flags[BALEARIC] === BRITAIN))) {
 				for (var card of G.hand[R]) {
 					action_event_card(card)
 				}
