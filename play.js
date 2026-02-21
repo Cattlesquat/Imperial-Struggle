@@ -1699,7 +1699,9 @@ function on_update() {
 			populate_generic("lout-award", r, "marker square-sm black award reverse")
 	}
 
-	update_war_display()
+	if (!V.bidding_for_sides) {
+		update_war_display()
+	}
 
 	// Hide hotkey shortcuts on mobile
 	if (is_mobile()) {
