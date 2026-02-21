@@ -3776,7 +3776,7 @@ function debt_delta() {
 }
 
 function debt_award() {
-	return Math.min(4,debt_delta() / 2)
+	return Math.min(4, Math.floor(debt_delta() / 2))
 }
 
 
