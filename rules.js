@@ -9570,6 +9570,7 @@ function use_choiseul()
 
 P.buy_bonus_war_tile_flow = script(`
 	eval {
+		G.has_required_ministry = false
 		if (action_points_eligible_major(MIL, active_rules()) > 0) {  
 			require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
 		}
@@ -9860,6 +9861,7 @@ function get_naval_cost()
 P.naval_flow = script(`
     eval {
     	G.action_cost = get_naval_cost()
+    	G.has_required_ministry = false
     	
     	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
     	if (L.choiseul > 0) {	
