@@ -1457,8 +1457,6 @@ function on_view(RR = undefined) {
 	if (!V.deck) V.deck = []
 	V.deck.sort((a, b) => a - b) // Sort to avoid info leak
 
-
-
 	V.ministry_exhausted = G.ministry_exhausted
 	if ((G.ministry_exhausted === undefined) || !Array.isArray(G.ministry_exhausted[0])) {
 		V.ministry_exhausted = [ [], [] ]
@@ -1470,15 +1468,17 @@ function on_view(RR = undefined) {
 	V.theater_basic = [ [], [] ] // [player][theater][0-n]
 	V.theater_bonus = [ [], [] ] // [player][theater][0-n]
 
-	for (var who = FRANCE; who <= BRITAIN; who++) {
-		for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
-			// -1 means opponent hasn't seen the tile yet
-			V.theater_basic[who][theater] = G.theater_basic[who][theater].map(tile =>
-				((who === RR) || set_has(G.basic_revealed[who], tile)) ? tile : -1
-			)
-			V.theater_bonus[who][theater] = G.theater_bonus[who][theater].map(tile =>
-				((who === RR) || set_has(G.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
-			)
+	if (!V.bidding_for_sides) {
+		for (var who = FRANCE; who <= BRITAIN; who++) {
+			for (var theater = 0; theater <= data.wars[G.next_war].theaters; theater++) { //NB: intentionally start at 0 (no-theater-yet) and then also theaters 1-X
+				// -1 means opponent hasn't seen the tile yet
+				V.theater_basic[who][theater] = G.theater_basic[who][theater].map(tile =>
+					((who === RR) || set_has(G.basic_revealed[who], tile)) ? tile : -1
+				)
+				V.theater_bonus[who][theater] = G.theater_bonus[who][theater].map(tile =>
+					((who === RR) || set_has(G.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
+				)
+			}
 		}
 	}
 
