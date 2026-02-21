@@ -1699,9 +1699,7 @@ function on_update() {
 			populate_generic("lout-award", r, "marker square-sm black award reverse")
 	}
 
-	if (!V.bidding_for_sides) {
-		update_war_display()
-	}
+	update_war_display()
 
 	// Hide hotkey shortcuts on mobile
 	if (is_mobile()) {
@@ -1944,6 +1942,8 @@ function update_war_display() {
 	for (var w = 0; w < NUM_WARS; w++) {
 		war_display[w].hidden = allwars ? false : (war !== w)
 	}
+
+	if (V.bidding_for_sides) return // Don't reveal any war stuff during bidding for sides
 
 	const war_prefixes = ["wss", "was", "7yw", "awi"]
 
