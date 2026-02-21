@@ -78,7 +78,7 @@ const WAR_FLAG = 3 // Diplomatic attack
 
 // Eras
 const SUCCESSION_ERA = 0
-const EMPIRE_ERA = 1
+const EMPIRE_ERA     = 1
 const REVOLUTION_ERA = 2
 
 // Wars
@@ -224,10 +224,10 @@ const TERRITORY = 3
 const FORT      = 4
 
 // SPACES PER REGION
-const NUM_SPACES_EUROPE = 30
+const NUM_SPACES_EUROPE         = 30
 const NUM_SPACES_NORTH_AMERICA  = 30
 const NUM_SPACES_CARIBBEAN      = 30
-const NUM_SPACES_INDIA = 22
+const NUM_SPACES_INDIA          = 22
 
 // SPACES
 const SPACE_NAVY_BOX = -1	// The negative numbers are for keeping track of squadron "token" locations for animation purposes
@@ -353,44 +353,6 @@ const AWARD_EUROPE = 1
 const AWARD_NORTH_AMERICA = 2
 const AWARD_CARIBBEAN = 3
 const AWARD_INDIA = 4
-const GLOBAL_DEMAND_SPACE = 5
-const INITIATIVE_SPACE = 6
-const TURN_1_SPACE = 7
-const WAR_WSS_SPACE = 8
-const TURN_2_SPACE = 9
-const TURN_3_SPACE = 10
-const WAR_WAS_SPACE = 11
-const TURN_4_SPACE = 12
-const WAR_7YW_SPACE = 13
-const TURN_5_SPACE = 14
-const WAR_AWI_SPACE = 15
-const TURN_6_SPACE = 16
-const GENERAL_RECORDS_NEGATIVE_7 = 17
-const GENERAL_RECORDS_0 = 24
-const FRANCE_ADVANTAGES = 61
-const FRANCE_MINISTRIES = 62
-const FRANCE_SQUADRONS = 63
-const FRANCE_BASIC_WAR_TILES = 64
-const FRANCE_BONUS_WAR_TILES = 65
-const BRITAIN_ADVANTAGES = 66
-const BRITAIN_MINISTRIES = 67
-const BRITAIN_SQUADRONS = 68
-const BRITAIN_BASIC_WAR_TILES = 69
-const BRITAIN_BONUS_WAR_TILES = 70
-const AVAILABLE_INVESTMENT_1 = 71
-const AVAILABLE_INVESTMENT_2 = 72
-const AVAILABLE_INVESTMENT_3 = 73
-const AVAILABLE_INVESTMENT_4 = 74
-const AVAILABLE_INVESTMENT_5 = 75
-const AVAILABLE_INVESTMENT_6 = 76
-const AVAILABLE_INVESTMENT_7 = 77
-const AVAILABLE_INVESTMENT_8 = 78
-const AVAILABLE_INVESTMENT_9 = 79
-const INVESTMENT_TILE_STACK = 80
-const USED_INVESTMENT_TILES = 81
-const DRAW_PILE = 82
-const DISCARD_PILE = 83
-const PLAYED_EVENTS = 84
 
 const ATLANTIC_DOMINANCE = 96 // Index to end of bonus war tiles list
 const BYNG = 98
