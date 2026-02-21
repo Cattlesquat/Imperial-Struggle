@@ -2109,9 +2109,9 @@ function update_war_display() {
 			}
 
 			// Winner
-			if (V.theater_winner && V.theater_winner[theater] !== -1) {
-				let winner = V.theater_winner[theater]
-				let margin = V.theater_margin[theater]
+			if ((V.theater_winner && V.theater_winner[theater] !== -1) || (V.old_winners && (V.old_winners[G.next_war][theater] !== -1))) {
+				let winner = (V.old_winners && (V.old_winners[G.next_war][theater] !== -1)) ? V.old_winners[G.next_war][theater] : V.theater_winner[theater]
+				let margin = (V.old_winners && (V.old_winners[G.next_war][theater] !== -1)) ? V.old_margins[G.next_war][theater] : V.theater_margin[theater]
 				let is_tie = margin === 0
 				let flag_class = is_tie ? "tie" : (winner === FRANCE ? "fr" : "br")
 
