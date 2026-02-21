@@ -9445,7 +9445,7 @@ P.military_upgrade_decisions = {
 				button("confirm")
 			}
 		} else if (!L.picked_one_to_keep) {
-			msg += say_action("Choose which tile to keep")
+			msg += say_action("Choose which tile to remove")
 			action_basic_war_tile(L.new_tile)
 			action_basic_war_tile(G.upgrading_basic_tile)
 		} else {
@@ -9465,7 +9465,7 @@ P.military_upgrade_decisions = {
 	},
 	basic_war(t) {
 		push_undo()
-		L.get_rid_of_tile = (t === G.upgrading_basic_tile) ? L.new_tile : G.upgrading_basic_tile
+		L.get_rid_of_tile = t
 		array_delete_item(G.theater_basic[G.active][L.theater], L.get_rid_of_tile)
         L.picked_one_to_keep = true
 	},
