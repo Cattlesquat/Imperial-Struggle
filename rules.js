@@ -1719,7 +1719,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 
 	if (!silent) {
 		let msg = watt ? "ADVANTAGE Used" : "ADVANTAGE Exhausted"
-		msg += "\n" + say_advantage(a, G.advantages[a])
+		msg += "\n" + say_advantage(a, G.advantages[a], true)
 
 		log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
 		if (reason !== "") log(reason)
@@ -1732,7 +1732,7 @@ function refresh_advantage(a)
 	G.adv_exhaust &= ~(1 << a)
 
 	let msg = "ADVANTAGE Refreshed"
-	msg += "\n" + say_advantage(a, G.advantages[a])
+	msg += "\n" + say_advantage(a, G.advantages[a], true)
 
 	log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
 	log_box_end(LOG_BOX_ADVANTAGE)
@@ -1774,13 +1774,13 @@ function update_advantages(silent = false) {
 				if (G.advantages[a] !== NONE) {
 					let msg = "ADVANTAGE Gained"
 					msg += "\n" + say_advantage(a, G.advantages[a])
-					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE, true)
 					//log(data.flags[G.advantages[a]].name + " GAINS " + data.advantages[a].name + " Advantage")
 					log_box_end(LOG_BOX_ADVANTAGE)
 				} else {
 					let msg = "ADVANTAGE Lost"
 					msg += "\n" + say_advantage(a, G.advantages[a])
-					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE)
+					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE, true)
 					log(data.flags[old].name + " loses Advantage.")
 					log_box_end(LOG_BOX_ADVANTAGE)
 				}
@@ -8190,7 +8190,7 @@ P.advantage_flow = script (`
 	if (!is_bit(ADVANTAGE_ALREADY_EXHAUSTED)) {
 		eval { exhaust_advantage(G.active_advantage, false) } //NB: This also begins a log box with LOG_BOX_ADVANTAGE
 	} else {
-		eval { log_box_begin(R, say_advantage(G.active_advantage, R), LOG_BOX_ADVANTAGE) }
+		eval { log_box_begin(R, say_advantage(G.active_advantage, R, true), LOG_BOX_ADVANTAGE) }
 	} 
 
 	if (data.advantages[G.active_advantage].proc !== undefined) {
