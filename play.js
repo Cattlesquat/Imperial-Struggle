@@ -1592,26 +1592,28 @@ function on_update() {
 
 	populate_with_list("panel-available-investments", "investment", V.inv_avail)
 
-	let p = document.createElement("div")
-	p.className = "remind-player-order"
-	if (V.first_player === FRANCE) {
-		if (R === FRANCE) {
-			p.innerHTML = "You move first; opponent moves last."
-		} else if (R === BRITAIN) {
-			p.innerHTML = "Opponent moves first; you move last."
-		} else {
-			p.innerHTML = "France moves first; Britain moves last."
+	if (V.subphase !== NOT_ACTION_PHASE) {
+		let p = document.createElement("div")
+		p.className = "remind-player-order"
+		if (V.first_player === FRANCE) {
+			if (R === FRANCE) {
+				p.innerHTML = "You move first; opponent moves last."
+			} else if (R === BRITAIN) {
+				p.innerHTML = "Opponent moves first; you move last."
+			} else {
+				p.innerHTML = "France moves first; Britain moves last."
+			}
+		} else if (V.first_player === BRITAIN) {
+			if (R === BRITAIN) {
+				p.innerHTML = "You move first; opponent moves last."
+			} else if (R === FRANCE) {
+				p.innerHTML = "Opponent moves first; you move last."
+			} else {
+				p.innerHTML = "Britain moves first; France moves last."
+			}
 		}
-	} else if (V.first_player === BRITAIN) {
-		if (R === BRITAIN) {
-			p.innerHTML = "You move first; opponent moves last."
-		} else if (R === FRANCE) {
-			p.innerHTML = "Opponent moves first; you move last."
-		} else {
-			p.innerHTML = "Britain moves first; France moves last."
-		}
+		document.querySelector("#available_investment_tiles").lastElementChild.appendChild(p)
 	}
-	document.querySelector("#available_investment_tiles").lastElementChild.appendChild(p)
 
 	populate_with_list("panel-used-investments", "investment", V.inv_used)
 
