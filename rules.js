@@ -4119,7 +4119,6 @@ function add_contingent(type, amount, rule, short, not_independent = false) {
 
 	G.contingent.push({ type, amount, rule, short, not_independent })
 	log ("+" + say_action_points(amount, type) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
-	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
 }
 
 // Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
@@ -4222,7 +4221,6 @@ function add_action_points(type, amount)
 	G.eligible[type] = TRUE
 	G.eligible_major[type] = TRUE
 	log ("+" + say_action_points(amount, type) + (nat ? " (North American Trade increased award)" : ""))
-	//log ("+" + amount + " " + data.action_points[type].name + " action point" + s(amount) + (nat ? " (North American Trade increased award)" : ""))
 }
 
 
@@ -4252,7 +4250,6 @@ function selected_a_tile(tile)
 	log (data.flags[G.active].name + " selects investment tile: ");
 	log (say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype) + " " +
 	    parens(say_investment_tile(data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name, tile)))
-		//parens(say_investment_tile(data.investments[tile].majorval + " " + data.action_points[data.investments[tile].majortype].name + ", " + data.investments[tile].minorval + " " + data.action_points[data.investments[tile].minortype].name, tile)))
 
 	var major = data.investments[tile].majorval
 
@@ -4445,7 +4442,7 @@ function handle_event_card_click(c) {
 	if (data.cards[c].action !== WILD) {
 		if (data.cards[c].action !== data.investments[G.played_tile].majortype) {
 			if (has_ministry(R, BANK_OF_ENGLAND) && (data.cards[c].action === ECON) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) {
-				//exhaust_ministry(R, BANK_OF_ENGLAND, 1) //NB: these get exhausted later
+				//NB: this gets exhausted later in the process
 			} else {
 				let msg = "Mismatched event play allowed without use of Bank of England ministry: " + data.cards[c].name
 				console.error(msg)
@@ -4456,7 +4453,7 @@ function handle_event_card_click(c) {
 
 	if (data.investments[G.played_tile].majorval > 3) {
 		if (has_ministry(R, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(R, MARQUIS_DE_CONDORCET)) {
-			//exhaust_ministry(R, MARQUIS_DE_CONDORCET) //NB: these get exhausted later
+			//NB: this gets exhausted later in the process
 		} else {
 			let msg = "Allowed play of event without an event symbol on investment tile: " + data.cards[c].name
 			console.error(msg)
@@ -4498,8 +4495,6 @@ function end_event_play(c)
 		log_box_begin(G.active, say_ministry(LAVOISIER + "\n" + "Event Bonus Received", G.active), LOG_BOX_MINISTRY)
 		log ("+" + say_action_points(1, data.investments[G.played_tile].majortype) + " (Major)")
 		log ("+" + say_action_points(1, data.investments[G.played_tile].minortype) + " (Minor)")
-		//log ("+1 " + data.action_points[data.investments[G.played_tile].majortype].name + " Major action points")
-		//log ("+1 " + data.action_points[data.investments[G.played_tile].minortype].name + " Minor action points")
 		log_box_end(LOG_BOX_MINISTRY)
 	}
 }
@@ -4800,7 +4795,6 @@ P.event_carnatic_war = {
 P.event_acts_of_union = {
 	_begin() {
 		if (R === BRITAIN) {
-			//log ("+1 Diplomatic point (unflagging in Europe only)")
 			add_contingent(DIPLO, 1, RULE_UNFLAG_EUROPE, SHORT_UNFLAG_EUROPE)
 			if (is_bit(QUALIFIES_FOR_BONUS)) {
 				award_vp(BRITAIN, 2, false, "Event Bonus")
@@ -5233,7 +5227,6 @@ P.event_austro_spanish_rivalry = {
 				}
 			} else {
 				msg = "Choose " + say_action_points(2, DIPLO, true) + " or " + say_action_points(2, ECON, true) + " in India"
-				//msg = "Choose +2 Diplomatic or +2 Economic action points in India"
 				button ("diplomatic2")
 				button ("economic2")
 			}
@@ -5313,7 +5306,6 @@ P.event_tax_reform = {
 		let msg = ""
 		if (L.reduction_amount === 0) {
 			msg = "Confirm award of " + say_action_points(L.economic_points, ECON, true) + " in lieu of debt reduction"
-			//msg = "Confirm award of +" + L.economic_points + " Economic action points in lieu of debt reduction"
 		} else if (L.economic_points === 0) {
 			msg = "Confirm debt reduction of " + L.reduction_amount
 		} else {
@@ -5512,7 +5504,6 @@ P.event_calico_acts = {
 		if (R === BRITAIN) {
 			if (!L.unflagged_markets) {
 				msg += say_action_points(2, ECON) + "; must be used to unflag markets"
-				//msg = "+2 Economic action points; must be used to unflag markets"
 				button("done")
 			} else {
 				msg = "You may score Cotton (as if in Global Demand)"
@@ -5575,8 +5566,6 @@ P.event_calico_acts = {
 	},
 	scorecotton() {
 		push_undo()
-
-		//TODO possibly have a function for this, once the rest of scoring is more solidified
 		log ("Scoring: COTTON")
 		let winner = demand_flag_winner(COTTON)
 		if (winner !== NONE) {
@@ -9963,7 +9952,6 @@ function advance_action_round_subphase(subphase)
 	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
 		log_box_begin(G.active, "NO EVENT PLAYED", LOG_BOX_EVENT)
 		log_box_end(LOG_BOX_EVENT)
-		//log ("\nNo Event played.")
 	}
 }
 
@@ -10338,7 +10326,6 @@ function pay_action_cost() {
 	let cost_string = " Cost: "	+ G.action_cost
 
 	let msg = say_action_points(G.action_cost, G.action_type) + " spent."
-	//let msg = G.action_cost + " " + data.action_points[G.action_type].name + " action point" + s(G.action_cost) + " spent."
 	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.minor[G.action_type] > 0) {
 		if (is_bit(ACTION_MINOR)) {
 			msg += " (Minor action)"
@@ -10423,8 +10410,6 @@ function pay_action_cost() {
 	}
 	else {
 		throw new Error("Reached paying action costs without enough action points (" + G.major[G.action_type] + ") to repay the remaining cost (" + G.action_cost + ")!" + (is_bit(ACTION_MINOR) ? " (Was minor action)" : "") + " Space:" + G.active_space + "  Type: "+ G.action_type + "   Last:" + G.debug + "  Actions:" + tell_action_points() + "  Cost: " + cost_string)
-		//G.major[G.action_type] = 0
-		//G.action_cost = 0
 	}
 }
 
@@ -13442,7 +13427,6 @@ function strike (s, condition = true )
 {
 	if (!condition) return s
 	return "<s>" + s + "</s>"
-	//return "<span style=\"text-decoration: line-through;\">" + s + "</span>"
 }
 
 
