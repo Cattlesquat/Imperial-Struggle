@@ -70,7 +70,8 @@ body.Britain header.your_turn { background-color: salmon }
 #events_fr .panel-body, #events_br .panel-body { width: 780px }
 
 #played .panel-body { width: 252px }
-#available_investment_tiles .panel-body { width: 516px }
+#available_investment_tiles .panel-body { width: 492px; min-height: 328px; }
+/* #available_investment_tiles .panel-body { width: 516px } */
 #used_investment_tiles .panel-body { width: 780px }
 
 body.Britain #advantage_br,
@@ -2202,6 +2203,8 @@ div[data-tooltip]:after {
 .remind-player-order {
     font-size: 18px;
     color: ghostwhite;
+    min-width: 500px;
+    text-align: center;
 }
 
 
