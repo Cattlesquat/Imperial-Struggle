@@ -1735,13 +1735,13 @@ function update_advantages(silent = false) {
 			if (!silent) {
 				if (G.advantages[a] !== NONE) {
 					let msg = "ADVANTAGE Gained"
-					msg += "\n" + say_advantage(a, G.advantages[a])
+					msg += "\n" + say_advantage(a, G.advantages[a], true)
 					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE, true)
 					//log(data.flags[G.advantages[a]].name + " GAINS " + data.advantages[a].name + " Advantage")
 					log_box_end(LOG_BOX_ADVANTAGE)
 				} else {
 					let msg = "ADVANTAGE Lost"
-					msg += "\n" + say_advantage(a, G.advantages[a])
+					msg += "\n" + say_advantage(a, G.advantages[a], true)
 					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE, true)
 					log(data.flags[old].name + " loses Advantage.")
 					log_box_end(LOG_BOX_ADVANTAGE)
