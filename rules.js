@@ -11316,12 +11316,10 @@ P.war_theater_reveal = {
 				if (any) msg += ","
 				any = true
 				msg += "b" + ((tile < 10) ? "0" : "") + tile
-				//log (data.flags[who].name + " reveals basic war tile: " + say_basic_war_tile(tile))
 			}
 			for (let tile of G.theater_bonus[who][G.theater]) {
 				set_add(G.bonus_revealed[who], tile)
 				do_wartile(who, data.bonus_war_tiles[tile].type)
-				//log (data.flags[who].name + " reveals bonus war tile: " + say_bonus_war_tile(tile))
 				msg += ",B" + ((tile < 10) ? "0" : "") + tile
 			}
 			log (msg)
@@ -11468,6 +11466,7 @@ P.war_theater_reveal = {
 		review_step(++G.review_step[R], R)
 		if (Array.isArray(G.active)) {
 			set_delete(G.active, R)
+			review_step(100, R)
 			if (G.active.length === 0) {
 				review_end()
 				end()
