@@ -11635,9 +11635,9 @@ function start_war_theater_resolution()
 			log("France may form USA!")
 		}
 
-		if ((G.next_war === WAR_7YW) && (G.theater === 1) && (L.war_tier > 0)) {
+		if ((G.next_war === WAR_7YW) && (G.theater === 1)) {
 			L.war_atlantic = true
-			L.war_squadrons = L.war_tier
+			if (L.war_tier > 0) L.war_squadrons = L.war_tier
 		}
 
 		if ((G.next_war === WAR_AWI) && (G.theater === 3)) {
