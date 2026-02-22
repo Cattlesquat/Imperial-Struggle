@@ -3026,7 +3026,7 @@ P.confirm_use_advantage = {
 
 
 P.ask_about_huguenots = {
-	inactive: "decide whether to flip Huguenots",
+	inactive: "contemplate Huguenots",
 	prompt() {
 		V.prompt = say_action_header() + say_action("Flip a Huguenot in same region to reduce action cost by 1, or pass.") + say_action_points_left()
 		let region = data.spaces[G.active_space].region
