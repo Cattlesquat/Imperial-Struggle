@@ -11769,7 +11769,7 @@ P.war_theater_resolve = {
 				msg += "(Done)"
 			}
 
-			if (L.war_squadrons || !any_left) button ("done")
+			if (!L.war_squadrons || !any_left) button ("done")
 
 		} else if (Array.isArray(G.active) || L.opponent_confirm) {
 			msg += say_action(L.result_string)
@@ -12087,6 +12087,9 @@ P.war_theater_resolve = {
 		push_undo()
 		if (L.doing_squadrons) {
 			L.doing_squadrons = false
+			if (L.war_squadrons > 0) {
+				log(italic("No more squadrons left to remove."))
+			}
 			L.war_squadrons = 0
 			G.active = L.war_winner
 			if (G.dirty_who !== G.active) {
