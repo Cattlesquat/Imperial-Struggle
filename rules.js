@@ -9733,7 +9733,7 @@ function action_naval_destinations()
 
 P.naval_decisions = {
 	_begin() {
-		action_cost_setup(-1, MIL)
+		action_cost_setup(G.navy_to, MIL)
 	},
 	inactive() {
 		if (is_bit(NAVY_DISPLACE)) {
@@ -9792,6 +9792,8 @@ P.naval_decisions = {
 			G.navy_from = s
 		} else {
 			G.navy_to = s
+			action_cost_setup(G.navy_to, MIL)
+
 			if (G.flags[s] !== NONE) {
 				set_bit(NAVY_DISPLACE)
 			}
