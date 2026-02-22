@@ -1081,7 +1081,7 @@ function upconvert_patch_bitflags(state)
 }
 
 
-function upconvert_shorter_names_2(state) ///
+function upconvert_shorter_names_2(state)
 {
 	state.controlled     = state.controlled_start_of_round
 	state.major          = state.action_points_major
@@ -8753,9 +8753,43 @@ function action_eligible_advantages() {
 
 	if (G.adv_used >= 2) return
 	for (var a = 0; a < NUM_ADVANTAGES; a++) {
-		if (has_advantage_eligible(R, a)) action_advantage(a)
+		if (!has_advantage_eligible(R, a)) continue
+		if ([WHEAT, FUR_TRADE, RUM, FRUIT, TEXTILES, SILK].includes(a)) {
+			if (!action_points_eligible(ECON, active_rules())) continue
+		}
+		if ([NAVAL_BASTION, SLAVING_CONTRACTS].includes(a)) {
+			if (!action_points_eligible(MIL, active_rules())) continue
+		}
+		if ([GERMAN_DIPLOMACY, SILESIA_NEGOTIATIONS, ITALY_INFLUENCE].includes(a)) {
+			if (!action_points_eligible(DIPLO, active_rules())) continue
+		}
+		action_advantage(a)
 	}
 }
+
+
+data.advantages[BALTIC_TRADE].proc = "advantage_baltic_trade"
+data.advantages[ALGONQUIN_RAIDS].proc = "advantage_place_conflict"
+data.advantages[IROQUOIS_RAIDS].proc = "advantage_place_conflict"
+data.advantages[PATRIOT_AGITATION].proc = "advantage_place_conflict"
+data.advantages[WHEAT].proc = "advantage_unflag_discount"
+data.advantages[FUR_TRADE].proc = "advantage_unflag_discount"
+data.advantages[RAIDS_AND_INCURSIONS].proc = "advantage_place_conflict"
+data.advantages[SEPARATIST_WARS].proc = "advantage_place_conflict"
+data.advantages[POWER_STRUGGLE].proc = "advantage_place_conflict"
+data.advantages[LETTERS_OF_MARQUE].proc = "advantage_place_conflict"
+data.advantages[PIRATE_HAVENS].proc = "advantage_place_conflict"
+data.advantages[MEDITERRANEAN_INTRIGUE].proc = "advantage_place_conflict"
+data.advantages[CENTRAL_EUROPE_CONFLICT].proc = "advantage_place_conflict"
+data.advantages[RUM].proc = "advantage_unflag_discount"
+data.advantages[FRUIT].proc = "advantage_unflag_discount"
+data.advantages[TEXTILES].proc = "advantage_unflag_discount"
+data.advantages[SILK].proc = "advantage_unflag_discount"
+data.advantages[GERMAN_DIPLOMACY].proc = "advantage_unflag_discount"
+data.advantages[SILESIA_NEGOTIATIONS].proc = "advantage_unflag_discount"
+data.advantages[ITALY_INFLUENCE].proc = "advantage_unflag_discount"
+data.advantages[NAVAL_BASTION].proc = "advantage_naval_bastion"
+data.advantages[SLAVING_CONTRACTS].proc = "advantage_slaving_contracts"
 
 
 function space_action_type(s) {
