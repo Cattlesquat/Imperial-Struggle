@@ -5694,6 +5694,9 @@ P.do_military_spending_overruns = {
 	},
 	confirm() {
 		push_undo()  // Probably just gets cleared?
+		if (L.removals_done < L.removals_required) {
+			log(italic("No further legal targets available."))
+		}
 		G.active = 1 - G.active
 		end()
 	}
