@@ -2754,8 +2754,11 @@ P.choose_ministry_cards = {
 			V.prompt += say_action(list)
 		}
 		show_all_ministry_cards()
-		if (G.ministry[R].length > 0)
-			button("undo")
+		if (G.ministry[R].length > 0) {
+			if ((G.ministry[R].length > 1) || !G.ministry_revealed[R][0]) { // Don't let FR player "undo" perma-Jacobites at beginning of Turn 5
+				button("undo")
+			}
+		}
 		if (G.ministry[R].length === num_ministry_slots(R))
 			button("confirm")
 	},
