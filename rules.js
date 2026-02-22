@@ -10348,6 +10348,10 @@ function pay_action_cost() {
 
 	if (is_bit(ACTION_MINOR)) {
 		// Minor actions always zero out the minor action points (even if the cost was less)
+		let excess = G.minor[G.action_type] - G.action_cost
+		if (excess > 0) {
+			log(italic("Minor action: " + excess + " excess action point" + s(excess) + " forfeited."))
+		}
 		G.action_cost = Math.max(0, G.action_cost - G.minor[G.action_type])
 		G.minor[G.action_type] = 0
 
