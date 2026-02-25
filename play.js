@@ -659,6 +659,7 @@ function on_pie()
 	// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
 	update_log(0, game_log.length)
 	update_header()
+	window.location.reload()
 }
 
 
