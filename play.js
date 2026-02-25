@@ -3673,7 +3673,7 @@ function preview_scoring_results() {
 
 				let countries = Math.min(3, multispace)
 				if (countries) {
-					vp += countries
+					trp[FRANCE] += countries
 					ministries.push(VOLTAIRE)
 				}
 			}
