@@ -6852,7 +6852,7 @@ P.event_haitian_revolution = {
 		push_undo()
 		L.conflicts_done++
 		add_conflict_marker(s, CONFLICT_PLUS_ONE)
-		if (L.conflict_done >= L.conflicts_to_do) {
+		if (L.conflicts_done >= L.conflicts_to_do) {
 			end()
 		}
 	},
