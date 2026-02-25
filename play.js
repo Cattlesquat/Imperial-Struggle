@@ -653,6 +653,15 @@ function set_available_debt_tooltips() {
 
 var Whole //BR// Hack to let me scroll to this specific element
 
+// When player roles are swapped
+function on_pie()
+{
+	// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
+	update_log(0, game_log.length)
+	update_header()
+}
+
+
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 

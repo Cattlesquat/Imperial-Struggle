@@ -2272,6 +2272,7 @@ P.bid_for_sides = {
 				for (let ix = 0; ix < G.log.length; ix++) {
 					G.log[ix] = swap_sides(G.log[ix])
 				}
+				V.log = G.log
 				G.$pie = 1
 			} else {
 				log (italic("Players keep their current colors."))
