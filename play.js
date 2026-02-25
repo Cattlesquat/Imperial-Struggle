@@ -1806,17 +1806,15 @@ function on_update() {
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
 		log_partially_hidden = true
 		for (let ix = 0; ix < V.log_length; ix++) {
-			//let logline = document.getElementById(ix)
 			let logline = world.log.children[ix]
 			if (logline) logline.style.display = (ix > V.log_hide_after[R]) ? "none" : "block"
 		}
 
 		scroll_log_to_end()
 	} else if (log_partially_hidden) { // We don't have to unhide everything every time -- only if we know some part of it was hidden before
-
 		log_partially_hidden = false
 		for (let ix = 0; ix < V.log_length; ix++) {
-			let logline = document.getElementById(ix)
+			let logline = world.log.children[ix]
 			if (logline) logline.style.display = "block"
 		}
 
