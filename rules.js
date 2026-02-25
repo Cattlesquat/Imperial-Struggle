@@ -1580,9 +1580,9 @@ function increase_debt(who, amount) {
 		log (say_spending(data.flags[who].adj + " Debt", who) +  " increased by " + amount + ".")
 	}
 	if (penalty > 0) {
-		log (data.flags[who].name + " must expend " + say_spending(penalty + ((amount > 0) ? " more" : "") + " Debt", who) + " but is at its " + say_spending("Debt Limit", who) + "!")
+		log (data.flags[who].name + " incurred " + say_spending(penalty + ((amount > 0) ? " more" : "") + " Debt", who) + " while at its " + say_spending("Debt Limit", who) + "!")
 		if (has_active_ministry(who, JAMES_WATT)) {
-			log (say_ministry(JAMES_WATT, who) + " prevents VP penalty from Debt Limit overrun.")
+			log (say_ministry(JAMES_WATT, who) + " prevented VP penalty from Debt Limit overrun.")
 		} else {
 			award_vp(who, -penalty, false, "Debt Limit")
 		}
@@ -1604,7 +1604,7 @@ function add_treaty_points(who, amount)
 {
 	G.treaty_points[who] += amount
 	if (amount > 0) {
-		log (data.flags[who].name + " gains " + say_spending(amount + " Treaty Point" + s(amount), who) + ".")
+		log (data.flags[who].name + " gained " + say_spending(amount + " Treaty Point" + s(amount), who) + ".")
 	}
 }
 
@@ -1616,7 +1616,7 @@ function award_vp(who, amount, silent = false, reason = null)
 	G.vp += true_delta
 
 	if (!silent) {
-		let msg = data.flags[who].name + ((amount >= 0) ? " gains " : " loses ") + Math.abs(amount) + " VP"
+		let msg = data.flags[who].name + ((amount >= 0) ? " gained " : " lost ") + Math.abs(amount) + " VP"
 		if (reason) msg += " " + parens(reason)
 		msg += "."
 		log (bold(msg))
@@ -1666,7 +1666,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
 			log_box_ministry(FRANCE, POMPADOUR_AND_DU_BARRY)
-			log ("France gains " + say_spending("one treaty point", FRANCE) + ".")
+			log ("France gained " + say_spending("one treaty point", FRANCE) + ".")
 			log_box_end(LOG_BOX_MINISTRY)
 		}
 	}
@@ -1675,7 +1675,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 		exhaust_ministry(BRITAIN, JAMES_WATT, 0, true)
 		G.treaty_points[BRITAIN]++
 		log_box_ministry(BRITAIN, JAMES_WATT)
-		log ("Britain gaines " + say_spending("one treaty point", BRITAIN) + ".")
+		log ("Britain gained " + say_spending("one treaty point", BRITAIN) + ".")
 		log_box_end(LOG_BOX_MINISTRY)
 	}
 
@@ -1743,7 +1743,7 @@ function update_advantages(silent = false) {
 					let msg = "ADVANTAGE Lost"
 					msg += "\n" + say_advantage(a, G.advantages[a], true)
 					log_box_begin(G.advantages[a], msg, LOG_BOX_ADVANTAGE, true)
-					log(data.flags[old].name + " loses Advantage.")
+					log(data.flags[old].name + " lost Advantage.")
 					log_box_end(LOG_BOX_ADVANTAGE)
 				}
 			}
@@ -2216,7 +2216,7 @@ P.bid_for_sides = {
 		L.bidding_for_sides = true // for client voodoo
 
 		log ("=Bid for Sides")
-		log (say_player(G.active) + " will bid first.")
+		log ("First bidder: " +say_player(G.active) + ".")
 	},
 	prompt() {
 		if (L.final_confirmation) {
@@ -2246,10 +2246,10 @@ P.bid_for_sides = {
 	},
 	confirm() {
 		if (!L.final_confirmation) {
-			log(bold(say_player(G.active) + " bids +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
+			log(bold(say_player(G.active) + " bid +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			log (bold(say_player(G.active) + " accepts the bid."))
+			log (bold(say_player(G.active) + " has accepted the bid."))
 
 			let msg = say_player(G.active) + " will play " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
@@ -2273,8 +2273,6 @@ P.bid_for_sides = {
 					G.log[ix] = swap_sides(G.log[ix])
 				}
 				G.$pie = 1
-			} else {
-				log (italic("Players keep their current colors."))
 			}
 			L.bidding_for_sides = false
 			end()
@@ -2401,7 +2399,7 @@ P.deck_phase = function () {
 			G.deck.push(i);
 		log("=Deck Phase")
 		log ("Empire Era events added to Event Deck.")
-		log ("Shuffling Event Deck.")
+		log ("Shuffled Event Deck.")
 		shuffle(G.deck)
 		validate_decks("DECK PHASE")
 	}
@@ -2431,7 +2429,7 @@ P.deck_phase = function () {
 		for (let i = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
 			G.deck.push(i);
 		log ("Revolution Era events added to Event Deck.")
-		log ("Shuffling Event Deck.")
+		log ("Shuffled Event Deck.")
 		shuffle(G.deck)
 		validate_decks("DECK PHASE 2")
 	}
@@ -2537,7 +2535,7 @@ P.reset_phase = function () {
 			G.squadrons[BRITAIN][sq] = SPACE_NAVY_BOX
 		}
 		G.navy_box[BRITAIN] += G.the_brig
-		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " return" + s(1 - G.the_brig) + " to the Navy Box."))
+		log (bold(G.the_brig + " British Squadron" + s(G.the_brig) + " returned to the Navy Box."))
 		log (say_navy_box())
 	}
 	G.the_brig = 0
@@ -2592,7 +2590,7 @@ P.deal_cards_phase = function () {
 				// I don't think this should actually ever happen, but this is how we'd move on from that situation if it did
 				if (G.deck.length === 0) {
 					log_dealt(dealt)
-					log (bold("Event deck is EMPTY."))
+					log (bold("Event deck EMPTY."))
 					G.active = [ FRANCE, BRITAIN ]
 					goto ("deal_cards_discard")
 					return
@@ -2808,7 +2806,7 @@ function announce_ministry_changes()
 
 		if (num_changed) {
 			if (!any) log ("=Ministry Phase")
-			log (data.flags[who].name+ " replaces " + num_changed + " Minister" + s(num_changed) + ".")
+			log (data.flags[who].name+ " replaced " + num_changed + " Minister" + s(num_changed) + ".")
 			any = true
 		}
 	}
@@ -3061,7 +3059,7 @@ P.ask_about_huguenots = {
 	space(s) {
 		push_undo()
 		expend_huguenots(s)
-		log (italic("France flips Huguenots at " + say_space(s) + " to reduce cost to flag " + say_space(G.active_space) + " by 1."))
+		log (italic("France flipped Huguenots at " + say_space(s) + " to reduce cost to flag " + say_space(G.active_space) + " by 1."))
 		end()
 	},
 	pass() {
@@ -3214,17 +3212,17 @@ function refresh_ministry (who, m, ability = 0)
 P.initiative_phase = function () {
 	log("=Initiative Phase")
 	if ((G.vp < 15) || (G.turn === PEACE_TURN_1)) {
-		log("France has the initiative.")
+		log("Initiative to France.")
 		G.initiative = FRANCE
 	} else if (G.vp > 15) {
-		log("Britain has the initiative.")
+		log("Initiative to Britain.")
 		G.initiative = BRITAIN
 	} else {
 		if (G.initiative === FRANCE) {
-			log("France retains the initiative.")
+			log("France retained the initiative.")
 		}
 		else {
-			log ("Britain retains the initiative.")
+			log ("Britain retained the initiative.")
 		}
 	}
 	end()
@@ -3595,21 +3593,21 @@ P.scoring_phase = function () {
 			let trp = data.awards[award].trp
 			if (region === REGION_EUROPE) {
 				if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + " increases VP value of Europe award by +1.")
+					log(say_ministry(COURT_OF_THE_SUN_KING, winner) + " increased VP value of Europe award by +1.")
 					vp++
 				}
 				if (has_active_ministry(winner, SAMUEL_JOHNSON)) {
-					log(say_ministry(SAMUEL_JOHNSON, winner) + " increases VP value of Europe award by +1.")
+					log(say_ministry(SAMUEL_JOHNSON, winner) + " increased VP value of Europe award by +1.")
 					vp++
 				} else if (has_active_ministry(1 - winner, SAMUEL_JOHNSON)) {
 					if (vp > 0) {
 						vp--
-						log(say_ministry(SAMUEL_JOHNSON, winner) + " decreases VP value of Europe award by 1.")
+						log(say_ministry(SAMUEL_JOHNSON, winner) + " decreased VP value of Europe award by 1.")
 					}
 				}
 			} else if (region === REGION_INDIA) {
 				if (has_active_ministry(winner, DUPLEIX)) {
-					log (say_ministry(DUPLEIX, winner) + " adds an extra treaty point for India.")
+					log (say_ministry(DUPLEIX, winner) + " added an extra treaty point for India.")
 					trp++
 				}
 			}
@@ -3644,7 +3642,7 @@ P.scoring_phase = function () {
 				let countries = Math.min(3, multispace)
 				if (countries) {
 					log_box_ministry(FRANCE, VOLTAIRE)
-					log("France controls a prestige space in " + " multi-space countr" + ((multispace === 1) ? "y" : "ies") + ".")
+					log("French prestige space in " + " multi-space countr" + ((multispace === 1) ? "y" : "ies") + ".")
 					add_treaty_points(FRANCE, countries)
 					log_box_end(LOG_BOX_MINISTRY)
 				}
@@ -3666,7 +3664,7 @@ P.scoring_phase = function () {
 
 			if ((d === COTTON) || (d === SPICE)) {
 				if (has_active_ministry(winner, DUPLEIX)) {
-					log (say_ministry(DUPLEIX, winner) + " adds an extra treaty point for " + data.demands[d].name + ".")
+					log (say_ministry(DUPLEIX, winner) + " added an extra treaty point for " + data.demands[d].name + ".")
 					trp++
 				}
 			}
@@ -4268,7 +4266,7 @@ function selected_a_tile(tile)
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
 	log (((G.active === FRANCE ? "=fr" : "=br") + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
-	log (data.flags[G.active].name + " selects investment tile: ");
+	log (data.flags[G.active].name + " investment tile: ");
 	log (say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype) + " " +
 	    parens(say_investment_tile(data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name, tile)))
 
@@ -4293,7 +4291,7 @@ function selected_a_tile(tile)
 
 	if (is_bit(FLAG_MILITARY_UPGRADE) && (G.turn === PEACE_TURN_6)) {
 		clear_bit(FLAG_MILITARY_UPGRADE)
-		log (data.flags[G.active].name + " gains " + say_spending("1 Treaty Point", G.active) + " for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
+		log (data.flags[G.active].name + " gained " + say_spending("1 Treaty Point", G.active) + " for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
 		add_treaty_points(G.active, 1)
 	}
 
@@ -4359,7 +4357,7 @@ function selected_a_tile(tile)
 			if (G.major[ECON]) G.major[ECON]++
 			if (G.minor[ECON]) G.minor[ECON]++
 			if (G.major[ECON] || G.minor[ECON]) {
-				log("North American Trade adds " + say_action_points(1, ECON) + " (France controls more combined Fur and Fish markets).")
+				log("North American Trade added " + say_action_points(1, ECON) + " (France more combined Fur and Fish markets).")
 				//log("North American Trade adds 1 Economic action point (France controls more combined Fur and Fish markets).")
 			}
 		}
@@ -4419,7 +4417,7 @@ P.select_investment_tile = {
 		array_delete_item(G.theater_bonus[R][0], L.tile_to_move)
 		L.tile_to_move = -1
 		if (!G.theater_bonus[R][0].length) {
-			let msg = bold("Austrian Succession: ") + data.flags[R].name + " places free bonus war tiles in theaters: "
+			let msg = bold("Austrian Succession: ") + data.flags[R].name + " received free bonus war tiles in theaters: "
 			let any = false
 			for (const th of L.theaters) {
 				if (any) msg += ", "
@@ -5629,7 +5627,7 @@ P.event_calico_acts = {
 	},
 	pass() {
 		push_undo()
-		log("British player decides NOT to score Cotton.")
+		log("British player opted NOT to score Cotton.")
 		end()
 	}
 }
@@ -5711,7 +5709,7 @@ P.do_military_spending_overruns = {
 		array_delete_item(G.theater_bonus[G.active][theater], t)
 		G.bonus_war[G.active].push(t)
 		//shuffle(G.bonus_war[G.active])
-		log(data.flags[G.active].name + " returns a bonus war tile from theater " + theater + ": " + data.wars[G.next_war].theater_names[theater])
+		log(data.flags[G.active].name + " returned a bonus war tile from theater " + theater + ": " + data.wars[G.next_war].theater_names[theater])
 	},
 	confirm() {
 		push_undo()  // Probably just gets cleared?
@@ -5775,9 +5773,9 @@ P.event_alberonis_ambition = {
 				if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 			}
 			if (L.savoy_sardinia) {
-				award_vp(FRANCE, 3, false, "France has flags in both Savoy and Sardinia")
+				award_vp(FRANCE, 3, false, "French in both Savoy and Sardinia")
 			} else {
-				log ("No VP Bonus: France does not have flags in both Savoy and Sardinia.")
+				log ("No VP Bonus: France did not have flags in both Savoy and Sardinia.")
 			}
 		}
 		end()
@@ -5865,7 +5863,7 @@ P.event_famine_in_ireland = {
 		theater = display_to_theater(theater)
 		array_delete_item(G.theater_bonus[FRANCE][4], L.displaced_tile)
 		G.theater_bonus[FRANCE][theater].push(L.displaced_tile)
-		let msg = "France displaces a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
+		let msg = "France displaced a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
 
 		if (G.theater_bonus[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
 			end()
@@ -5877,7 +5875,7 @@ P.event_famine_in_ireland = {
 		clear_undo()
 		let oops = (L.tiles_to_draw === 2) && ((L.already >= (data.wars[G.next_war].theaters * 2) - 1))
 		if (oops) L.tiles_to_draw = 1
-		let msg = "France draws " + L.tiles_to_draw + " bonus war tile" + s(L.tiles_to_draw) + " to Jacobite Rebellion theater"
+		let msg = "France added " + L.tiles_to_draw + " bonus war tile" + s(L.tiles_to_draw) + " to Jacobite Rebellion theater"
 		if (oops) msg += " (theaters only had room for 1 more tile)"
 		msg += "."
 		log (msg)
@@ -6280,7 +6278,7 @@ function score_corsican_crisis(who)
 			}
 		}
 		if (!any) {
-			award_vp(BRITAIN, 1, false, "France has no squadrons in Europe")
+			award_vp(BRITAIN, 1, false, "No French squadrons in Europe")
 		}
 	} else {
 		let any = false
@@ -6291,7 +6289,7 @@ function score_corsican_crisis(who)
 			}
 		}
 		if (!any) {
-			award_vp(FRANCE, 1, false, "Britain has no flags in Spain")
+			award_vp(FRANCE, 1, false, "No British flags in Spain")
 		}
 	}
 }
@@ -6522,7 +6520,7 @@ P.event_war_of_the_quadruple_alliance = {
 	paytrp() {
 		push_undo()
 		pay_treaty_points(BRITAIN, 1)
-		log ("Britain spends " + say_spending("1 treaty point", BRITAIN) + ".")
+		log ("Britain spent " + say_spending("1 treaty point", BRITAIN) + ".")
 		end()
 	},
 	done() {
@@ -7144,7 +7142,7 @@ P.event_east_asia_piracy = {
 		if (me > you) {
 			award_vp(R, 3)
 		} else {
-			log ("No VP award (you have " + me + " combined squadrons, forts, and alliances; your opponent has " + you + ").")
+			log ("No VP award (" + me + " combined squadrons, forts, and alliances, vs. opponent's " + you + ").")
 		}
 		end()
 	}
@@ -7654,9 +7652,9 @@ P.ministry_robert_walpole = {
 		if (G.deck.length > 0) {
 			G.hand[R].push(G.deck.pop())
 			L.drawn_extra = true
-			log (data.flags[R].name + " draws new event card.")
+			log (data.flags[R].name + " drew new event card.")
 		} else {
-			log ("Event deck is EMPTY. Cannot an draw event card.")
+			log ("Event deck EMPTY. Could not an draw event card.")
 			end()
 		}
 	},
@@ -7758,10 +7756,10 @@ P.ministry_edmond_halley = {
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
 		G.discard_pile.push(c);
-		log (data.flags[R].name + " discards event: E" + c)
+		log (data.flags[R].name + " discarded event: E" + c)
 
 		G.treaty_points[R]++
-		log (data.flags[R].name + " gains " + say_spending("1 Treaty Point", R) + ".")
+		log (data.flags[R].name + " gained " + say_spending("1 Treaty Point", R) + ".")
 		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
@@ -7787,7 +7785,7 @@ function use_cardinal_ministers() {
 	} else {
 		G.minor[DIPLO] += cardinal_ministers_value()
 	}
-	log (bold(data.flags[FRANCE].name + " gains " + say_action_points(cardinal_ministers_value(), DIPLO) + ((G.major[DIPLO] <= 0) ? " (Minor)" : "") + "."))
+	log (bold(data.flags[FRANCE].name + " gained " + say_action_points(cardinal_ministers_value(), DIPLO) + ((G.major[DIPLO] <= 0) ? " (Minor)" : "") + "."))
 	log_box_end(LOG_BOX_MINISTRY)
 }
 
@@ -8023,7 +8021,7 @@ P.ministry_charles_hanbury_williams = {
 		log_box_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		exhaust_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		set_transient(R, TRANSIENT_CHARLES_HANBURY_WILLIAMS)
-		log (say_ministry(CHARLES_HANBURY_WILLIAMS) + " reduces the cost to unflag French-flagged spaces in Prussia, German States, and Russia for the rest of the action round.")
+		log (say_ministry(CHARLES_HANBURY_WILLIAMS) + " will reduce the cost to unflag French-flagged spaces in Prussia, German States, and Russia for the rest of the action round.")
 		log_box_end(LOG_BOX_MINISTRY)
 		end()
 	},
@@ -8118,7 +8116,7 @@ function apply_townshend_acts(d)
 	log_box_ministry(BRITAIN, TOWNSHEND_ACTS)
 	exhaust_ministry(BRITAIN, TOWNSHEND_ACTS)
 	G.townshend_acts = d
-	log ("Britain applies " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
+	log ("Britain applied " + say_ministry(TOWNSHEND_ACTS, BRITAIN) + " to " + say_demand(d) + ". British Minor actions may be used to unflag " + say_demand(d) + " this turn.")
 	log_box_end(LOG_BOX_MINISTRY)
 }
 
@@ -8257,7 +8255,6 @@ P.advantage_naval_bastion = {
 		G.navy_box[1 - R]++
 		reflag_space(s, NONE, true)
 		validate_squadrons("QUADRUPLE NAVAL BASTION")
-
 
 		log (bold(say_space(s) + " squadron to Navy Box."))
 
@@ -8953,7 +8950,7 @@ function do_buy_diplomatic(who)
 	G.eligible[DIPLO] = TRUE
 	G.eligible_major[DIPLO] = TRUE
 	G.bought_action_points = DIPLO
-	log (bold(data.flags[who].name + " buys " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
+	log (bold(data.flags[who].name + " has bought " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
 }
 
 
@@ -8986,7 +8983,7 @@ function do_buy_economic(who)
 	G.eligible[ECON] = TRUE
 	G.eligible_major[ECON] = TRUE
 	G.bought_action_points = ECON
-	log (bold(data.flags[who].name + " buys " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
+	log (bold(data.flags[who].name + " has bought " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
 }
 
 
@@ -9050,9 +9047,9 @@ function do_buy_event(who) {
 	if (G.deck.length > 0) {
 		G.hand[who].push(G.deck.pop())
 		L.drawn_extra = true
-		log (data.flags[who].name + " buys an extra event card.")
+		log (data.flags[who].name + " has bought an extra event card.")
 	} else {
-		log ("Event deck is EMPTY. Cannot draw an event card.")
+		log ("Event deck MPTY. Could not draw an event card.")
 	}
 }
 
@@ -9172,7 +9169,7 @@ function do_construct_squadron(who) {
 
 
 	log_br()
-	log(bold(data.flags[who].name + " constructs a squadron."))
+	log(bold(data.flags[who].name + " constructed a squadron."))
 	log(say_navy_box())
 	log_br()
 }
@@ -9470,7 +9467,7 @@ P.military_upgrade_decisions = {
 		L.confirmed = true
 		L.new_tile = draw_basic_war_tile(G.active, L.theater)
 		clear_bit(FLAG_MILITARY_UPGRADE) // No longer eligible for a military upgrade
-		log(bold(data.flags[G.active].name + " takes a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
+		log(bold(data.flags[G.active].name + " took a military upgrade in theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
 	},
 	basic_war(t) {
 		push_undo()
@@ -9482,14 +9479,14 @@ P.military_upgrade_decisions = {
 		push_undo()
 		delete G.upgrading_basic_tile
 		G.basic_war[G.active].push(L.get_rid_of_tile) // Put the other tile back in the stock
-		log(data.flags[G.active].name + " returns a basic war tile to the pool.")
+		log(data.flags[G.active].name + " returned a basic war tile to the pool.")
 		log_br()
 		end()
 	},
 	remove_from_game() {
 		push_undo()
 		delete G.upgrading_basic_tile
-		log(data.flags[G.active].name + " removes a basic war tile from the game: " + say_basic_war_tile(L.get_rid_of_tile) + ".")
+		log(data.flags[G.active].name + " removed a basic war tile from the game: " + say_basic_war_tile(L.get_rid_of_tile) + ".")
 		log_br()
 		end()
 	},
@@ -9572,7 +9569,7 @@ function use_choiseul()
 	G.committed[MIL]++
 	G.action_points_available_now++
 	log_box_ministry(FRANCE, CHOISEUL)
-	log ("France receives 1 extra " + say_action_points(1, MIL) + " (usable for deploying squadrons or buying bonus war tiles.")
+	log ("France received 1 extra " + say_action_points(1, MIL) + " (usable for deploying squadrons or buying bonus war tiles.")
 	log_box_end(LOG_BOX_MINISTRY)
 }
 
@@ -9603,7 +9600,7 @@ P.bonus_war_tile_decisions = {
 		L.confirmed      = has_transient(R, TRANSIENT_COOK)
 		if (L.confirmed) {
 			L.new_tile = draw_bonus_war_tile(G.active, 0)
-			log (data.flags[G.active].name + " draws a bonus war tile.")
+			log (data.flags[G.active].name + " drew a bonus war tile.")
 		}
 		L.theater        = 0
 		L.displaced_tile = -1
@@ -9654,7 +9651,7 @@ P.bonus_war_tile_decisions = {
 		clear_undo() // Drew a tile - so there's no going back!
 		L.confirmed = true
 		L.new_tile = draw_bonus_war_tile(G.active, 0)
-		log (data.flags[G.active].name + " buys a bonus war tile.")
+		log (data.flags[G.active].name + " has bought a bonus war tile.")
 	},
 	theater(t) {
 		t = display_to_theater(t)
@@ -9664,14 +9661,14 @@ P.bonus_war_tile_decisions = {
 			G.theater_bonus[G.active][L.theater].push(L.new_tile)
 			array_delete_item(G.theater_bonus[G.active][0], L.new_tile) // Remove from the "just drawn tiles" list
 			G.bonuswar_bought++
-			log(bold(data.flags[G.active].name + " places new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
+			log(bold(data.flags[G.active].name + " placed new bonus war tile into theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater] + "."))
 			log_br()
 			if (G.theater_bonus[G.active][L.theater].length <= 2) {
 				end() // If we don't need to displace another tile, we're done
 			}
 		} else {
 			G.theater_bonus[G.active][t].push(L.displaced_tile)
-			log(bold(data.flags[G.active].name + " moves a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t] + "."))
+			log(bold(data.flags[G.active].name + " moved a bonus war tile into theater " + t + ": " + data.wars[G.next_war].theater_names[t] + "."))
 			log_br()
 			end()
 		}
@@ -10632,10 +10629,10 @@ function can_merchant_bank()
 function log_spending()
 {
 	if (G.debt_spent > 0) {
-		log (data.flags[R].name + " spends " + say_spending(G.debt_spent + " debt.", R))
+		log (data.flags[R].name + " spent " + say_spending(G.debt_spent + " debt.", R))
 	}
 	if (G.treaty_points_spent > 0) {
-		log (data.flags[R].name + " spends " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
+		log (data.flags[R].name + " spent " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
 	}
 }
 
@@ -10696,7 +10693,7 @@ P.confirm_spend_debt_or_trps = {
 		push_undo()
 		if (can_merchant_bank()) {
 			log_box_ministry(R, MERCHANT_BANKS)
-			log("Britain ignores a point of debt spent for an [@0].")
+			log("Britain ignored a point of debt spent for an [@0].")
 			log_box_end(LOG_BOX_MINISTRY)
 			if (!is_ministry_exhausted(R, MERCHANT_BANKS, 0)) {
 				exhaust_ministry(R, MERCHANT_BANKS, 0, true)
@@ -10707,7 +10704,7 @@ P.confirm_spend_debt_or_trps = {
 			pay_debt(R, 1)
 			if (!has_transient(R, TRANSIENT_FIRST_DEBT_TAKEN) && has_active_ministry(R, TURGOT) && !is_ministry_exhausted(R, TURGOT) && (available_debt(FRANCE) > available_debt(BRITAIN))) {
 				add_action_point()
-				log (say_ministry(TURGOT, FRANCE) + " adds an extra action point.")
+				log (say_ministry(TURGOT, FRANCE) + " added an extra action point.")
 			}
 		}
 		G.debt_spent++
@@ -10959,7 +10956,7 @@ P.action_round_core = {
 		push_undo()
 		G.debug = 8
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
-		log(data.flags[R].name + " passes to " + say_spending("reduce debt by " + debt_reduction, R) + ".")
+		log(data.flags[R].name + " passed to " + say_spending("reduce debt by " + debt_reduction, R) + ".")
 		G.debt[R] = Math.max(0, G.debt[R] - 2)
 		end()
 	},
@@ -11500,13 +11497,13 @@ P.war_theater_reveal = {
 		push_undo()
 		switch (data.spaces[s].type) {
 			case FORT:
-				log(data.flags[R].name + " uses Damaged Fort tile.")
+				log(data.flags[R].name + " used Damaged Fort tile.")
 				set_damaged_fort(s, true, true)
 				array_delete_item(L.wartile_choices[R], WAR_FORT)
 				log_br()
 				break
 			case NAVAL:
-				log(data.flags[R].name + " uses Remove Fleet tile.")
+				log(data.flags[R].name + " used Remove Fleet tile.")
 				move_squadron_token(1-R, s, SPACE_NAVY_BOX)
 				reflag_space(s, NONE, true)
 				G.navy_box[1-R]++
@@ -11518,7 +11515,7 @@ P.war_theater_reveal = {
 				break
 			case MARKET:
 			case POLITICAL:
-				log(data.flags[R].name + " uses Unflag tile.")
+				log(data.flags[R].name + " used Unflag tile.")
 				reflag_space(s, NONE)
 				array_delete_item(L.wartile_choices[R], WAR_FLAG)
 				log_br()
@@ -11538,7 +11535,7 @@ P.war_theater_reveal = {
 
 		if (done) {
 			if (L.wartile_choices[R].length > 0) {
-				log(data.flags[R].name + " is unable to use " + L.wartile_choices[R].length + " war tile effect" + s(L.wartile_choices[R].length) + " (no eligible targets).")
+				log(data.flags[R].name + " was unable to use " + L.wartile_choices[R].length + " war tile effect" + s(L.wartile_choices[R].length) + " (no eligible targets).")
 			}
 
 			L.wartile_choices[R] = []
@@ -11610,7 +11607,7 @@ function start_war_theater_resolution()
 	}
 
 	if (L.war_winner === NONE) {
-		L.result_string = "Theater is tied; no winner or spoils."
+		L.result_string = "Theater tied; no winner or spoils."
 	} else {
 		L.result_string = "+" + L.war_delta + " " + data.flags[L.war_winner].adj + " victory!"
 
@@ -11669,7 +11666,7 @@ function start_war_theater_resolution()
 		if (L.war_cp || L.war_unflag) {
 			let msg = data.flags[L.war_winner].name
 			if (L.war_cp) {
-				msg += " gains " + L.war_cp + " conquest point" + s(L.war_cp)
+				msg += " has gained " + L.war_cp + " conquest point" + s(L.war_cp)
 			}
 			if (L.war_unflag) {
 				if (L.war_cp) msg += " and"
@@ -11723,7 +11720,7 @@ function start_war_theater_resolution()
 
 function conquer_from_navy_box()
 {
-	log(data.flags[L.war_winner].name + " spends 1 conquest point.")
+	log(data.flags[L.war_winner].name + " spent 1 conquest point.")
 	L.war_cp--
 	L.picking_squadron = false
 	set_bit(NAVY_FROM_NAVY_BOX)
@@ -11736,7 +11733,7 @@ function conquer_from_navy_box()
 
 function conquer_from_space(s)
 {
-	log(data.flags[L.war_winner].name + " spends 1 conquest point.")
+	log(data.flags[L.war_winner].name + " spent 1 conquest point.")
 	L.war_cp--
 	L.picking_squadron = false
 	clear_bit(NAVY_FROM_NAVY_BOX)
@@ -12005,11 +12002,11 @@ P.war_theater_resolve = {
 			L.war_squadrons--
 			reflag_space(s, NONE, true)
 			if (current_era() === REVOLUTION_ERA) {
-				log (data.flags[G.active].name + " removes the squadron at " + say_space(s) + " from the game.")
+				log (data.flags[G.active].name + " removed the squadron at " + say_space(s) + " from the game.")
 				move_squadron_token(G.active, s, SPACE_REMOVED_FROM_GAME)
 			} else {
 				G.unbuilt_squadrons[G.active]++
-				log (data.flags[G.active].name + " removes a squadron from " + say_space(s) + " to Unbuilt.")
+				log (data.flags[G.active].name + " removed a squadron from " + say_space(s) + " to Unbuilt.")
 				move_squadron_token(G.active, s, SPACE_UNBUILT)
 			}
 			log_br()
@@ -12024,7 +12021,7 @@ P.war_theater_resolve = {
 		} else if (L.war_cp > 0) {
 			L.war_space = s
 			if ((data.spaces[s].type === FORT) || (data.spaces[s].type === MARKET)) {
-				log(data.flags[L.war_winner].name + " spends 1 conquest point.")
+				log(data.flags[L.war_winner].name + " spent 1 conquest point.")
 				L.war_cp--
 				reflag_space(s, L.war_winner)
 			} else if (data.spaces[s].type === NAVAL) {
@@ -12079,12 +12076,12 @@ P.war_theater_resolve = {
 			L.war_squadrons--
 			G.navy_box[G.active]--
 			if (current_era() === REVOLUTION_ERA) {
-				log (data.flags[G.active].name + " removes a squadron in the Navy Box from the game.")
+				log (data.flags[G.active].name + " removed a squadron in the Navy Box from the game.")
 				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_REMOVED_FROM_GAME)
 			} else {
 				G.unbuilt_squadrons[G.active]++
 				move_squadron_token(G.active, SPACE_NAVY_BOX, SPACE_UNBUILT)
-				log (data.flags[G.active].name + " removes a squadron from the Navy Box to Unbuilt.")
+				log (data.flags[G.active].name + " removed a squadron from the Navy Box to Unbuilt.")
 			}
 			log_br()
 			validate_squadrons("WAR EFFECT NAVY BOX")
@@ -12098,7 +12095,7 @@ P.war_theater_resolve = {
 		t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
 		L.war_atlantic = false
 		G.theater_bonus[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
-		log (bold(data.flags[L.war_winner].name + " places Atlantic Dominance marker in theater 3: French & Indian War."))
+		log (bold(data.flags[L.war_winner].name + " placed Atlantic Dominance marker in theater 3: French & Indian War."))
 		log_br()
 	},
 	confirm() {
@@ -12106,7 +12103,7 @@ P.war_theater_resolve = {
 		mark_dirty(L.war_space)
 		L.confirming_conquest = false
 		let cost = conquest_point_cost(L.war_space)
-		log(data.flags[L.war_winner].name + " spends " + cost + " conquest point" + s(cost) + " at " + say_space(L.war_space) + ".")
+		log(data.flags[L.war_winner].name + " spent " + cost + " conquest point" + s(cost) + " at " + say_space(L.war_space) + ".")
 		L.war_cp -= cost
 
 		if ((G.flags[L.war_space] === NONE) || (G.war_refused[1 - L.war_winner] >= 2)) {
@@ -12119,7 +12116,7 @@ P.war_theater_resolve = {
 	},
 	refuse() {
 		let vp_cost = G.war_refused[1 - L.war_winner] ? 5 : 3
-		log(bold(data.flags[1 - L.war_winner].name + " refuses conquest of " + data.spaces[L.war_space].name) + "!")
+		log(bold(data.flags[1 - L.war_winner].name + " refused conquest of " + data.spaces[L.war_space].name) + "!")
 		award_vp(1 - L.war_winner, -vp_cost) // Construe it as paying/losing VP by the war loser
 		log_br()
 		G.war_refused[1 - L.war_winner]++
@@ -12128,7 +12125,7 @@ P.war_theater_resolve = {
 		G.active = 1 - G.active
 	},
 	accept() {
-		log(bold(data.flags[1 - L.war_winner].name + " accepts conquest of " + data.spaces[L.war_space].name) + ".")
+		log(bold(data.flags[1 - L.war_winner].name + " accepted conquest of " + data.spaces[L.war_space].name) + ".")
 		reflag_space(L.war_space, L.war_winner)
 		log_br()
 		L.checking_refusal = false
@@ -12326,7 +12323,7 @@ P.war_layout_phase = function () {
 		for (who = FRANCE; who <= BRITAIN; who++) {
 			let amount = Math.min(current_war_bonus_tiles[who], 3)
 			if (amount > 0) {
-				log("Austrian Succession Special: " + data.flags[who].name + " receives " + amount + " bonus war tiles for Seven Years War.")
+				log("Austrian Succession Special: " + data.flags[who].name + " received " + amount + " bonus war tiles for Seven Years War.")
 				for (var i = 0; i < amount; i++) {
 					draw_bonus_war_tile(who, 0)
 				}
