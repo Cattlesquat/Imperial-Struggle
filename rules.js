@@ -7863,6 +7863,7 @@ function do_award_jacobite_vp()
 	log_box_ministry(FRANCE, JACOBITE_UPRISINGS)
 	exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 1)
 	award_vp(FRANCE, jacobite_vp_value(), false, "Jacobite Uprisings")
+	display_action_cost()
 	log_box_end(LOG_BOX_MINISTRY)
 }
 
@@ -8951,6 +8952,7 @@ function do_buy_diplomatic(who)
 	G.eligible_major[DIPLO] = TRUE
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " has bought " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
+	display_action_cost()
 }
 
 
@@ -8984,6 +8986,7 @@ function do_buy_economic(who)
 	G.eligible_major[ECON] = TRUE
 	G.bought_action_points = ECON
 	log (bold(data.flags[who].name + " has bought " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
+	display_action_cost()
 }
 
 
@@ -9171,6 +9174,7 @@ function do_construct_squadron(who) {
 	log_br()
 	log(bold(data.flags[who].name + " constructed a squadron."))
 	log(say_navy_box())
+	display_action_cost()
 	log_br()
 }
 
@@ -9235,7 +9239,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	var cost = data.spaces[s].cost
 
 	// These two "side effect" fields allow us to explain complex cost adjustments to the player so we don't get unending "bug" reports
-	G.breakdown  = "Space: " + cost + "."
+	G.breakdown  = cost + " for space."
 	G.adjustable = cost
 	clear_bit(ACTION_COST_ADJUSTED)
 
@@ -9601,6 +9605,7 @@ P.bonus_war_tile_decisions = {
 		if (L.confirmed) {
 			L.new_tile = draw_bonus_war_tile(G.active, 0)
 			log (data.flags[G.active].name + " drew a bonus war tile.")
+			display_action_cost()
 		}
 		L.theater        = 0
 		L.displaced_tile = -1
@@ -9652,6 +9657,7 @@ P.bonus_war_tile_decisions = {
 		L.confirmed = true
 		L.new_tile = draw_bonus_war_tile(G.active, 0)
 		log (data.flags[G.active].name + " has bought a bonus war tile.")
+		display_action_cost()
 	},
 	theater(t) {
 		t = display_to_theater(t)
@@ -9951,6 +9957,8 @@ function execute_naval_move()
 		log (say_navy_box())
 	}
 
+	display_action_cost()
+
 	log_br() // Leave a blank line
 }
 
@@ -9971,6 +9979,8 @@ function reflag_space(s, who, silent = false) {
 			log(bold(msg))
 		}
 	}
+
+	display_action_cost()
 
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 	mark_navy_this_war(s)
@@ -10377,6 +10387,24 @@ function an(amount) {
 }
 
 
+function indent(string, yeah = true)
+{
+	return yeah ? "<span style=\"margin-left:15px;\">" + string + "</span>" : string
+}
+
+function display_action_cost()
+{
+	if (G.cost) {
+		log(italic(indent(G.cost)))
+		if (G.breakdown) {
+			log (italic(indent(G.breakdown)))
+		}
+		delete G.cost
+		delete G.breakdown
+	}
+}
+
+
 function pay_action_cost() {
 	advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 
@@ -10392,9 +10420,11 @@ function pay_action_cost() {
 			msg += " (Major action)"
 		}
 	}
-	if (is_bit(ACTION_COST_ADJUSTED)) msg += " Cost: " + G.breakdown
-	G.breakdown = "" // Get unneeded string back out of our game state blob
-	log(italic(msg))
+	G.cost = msg
+	if (!is_bit(ACTION_COST_ADJUSTED)) {
+		delete G.breakdown // Get unneeded string back out of our game state blob (if no breakdown to be displayed)
+	}
+	//display_action_cost()  // Moved display to after action is taken
 
 	G.action_cost -= G.committed[G.action_type] // Spend any committed bonus points first
 	if (G.action_cost !== prev_cost) {
@@ -10580,6 +10610,7 @@ function do_reflag_space(repair_if_damaged = true) {
 
 	if ((G.action_type === MIL) && has_conflict_marker(G.active_space)) {
 		remove_conflict_marker(G.active_space, false, true)
+		display_action_cost()
 		log_br() // Leave a blank line
 		return
 	}
