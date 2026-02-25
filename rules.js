@@ -2186,6 +2186,21 @@ function preset_handicap(scenario)
 	}
 }
 
+function swap_sides(text) // Presently only bothers to support "one player name per log line", which is all I presently emit. For more robust a "do" loop like in escape_square_brackets() in play.js
+{
+	let match = text.match(/\[.*?]/)        // Get the whole expression including the brackets
+	if (!match) return text
+	let inside = match[0].match(/\[(.*?)]/) // Get the inside-the-brackets bit.
+	let type = inside[1][0]                 // First character tells us what type of thing (S = Spending, A = Award, I = Investment, P = action points)
+	if (type !== "Y") return text           // We only want to flip the bit on player names sequences
+	let who_key = inside[1][1]              // Second character tells us what nation color to use, if any
+	who_key = (who_key === "F") ? "B" : (who_key === "B") ? "F" : "X" // Flip the player color character
+	let substitute = "[Y" + who_key + "]" // Construct the opposite version of the player name code
+	text = text.replace(/\[.*?]/, substitute)   // Stick it back in the string
+	return text
+}
+
+
 P.bid_for_sides = {
 	_begin() {
 		if (L.options.tournament) {
@@ -2254,6 +2269,9 @@ P.bid_for_sides = {
 
 			if (L.current_bidder !== L.bid_for_side) {
 				log (italic("Player colors swapped."))
+				for (let ix = 0; ix < G.log.length; ix++) {
+					G.log[ix] = swap_sides(G.log[ix])
+				}
 				G.$pie = 1
 			} else {
 				log (italic("Players keep their current colors."))
