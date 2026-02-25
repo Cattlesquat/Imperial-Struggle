@@ -667,8 +667,9 @@ function on_init() {
 	init_preference_checkbox("scoresies", false, on_dialog_refresh)
 
 	init_preference_radio("actionverbosity", "medium", function () {
-		// WARNING: we reach into client.js innards here to reformat the log messages!
+		// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
 		update_log(0, game_log.length)
+		update_header()
 	})
 
 	set_available_debt_tooltips()
@@ -2339,6 +2340,8 @@ function escape_text(text) {
 		text = text.replace("British", "BR")
 		text = text.replace("France", "FR")
 		text = text.replace("French", "FR")
+
+		text = text.replace("Spend Action Points", "Spend AP")
 	}
 
 	text = escape_event(text, /\bEE(\d+)\b/g, "tip-event-uc", "card event_card c$1", event_card_names, NONE)
