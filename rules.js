@@ -11860,7 +11860,7 @@ P.war_theater_resolve = {
 		} else if (Array.isArray(G.active) || L.opponent_confirm) {
 			return "review final theater results"
 		} else if (L.checking_refusal) {
-			return "decide whether spend VP to refuse the conquest"
+			return "tell the king the bad news"
 		} else if (L.confirming_conquest) {
 			return "confirm conquest of a territory"
 		} else if (L.picking_squadron) {
