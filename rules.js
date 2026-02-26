@@ -7648,7 +7648,7 @@ P.ministry_robert_walpole = {
 			}
 		} else {
 			V.prompt = ministry_prompt(R, ROBERT_WALPOLE, "You may draw an event card (and then discard one).") + say_action_points_left()
-			button("draw_event")
+			button("draw_an_event")
 			button("pass")
 		}
 	},

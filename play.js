@@ -1752,6 +1752,7 @@ function on_update() {
 	action_button("construct_squadron", (is_mobile() || shortest) ? "Squadron" : "Build Squadron")
 	action_button("buy_bonus_war_tile", (is_mobile() || shortest) ? "War Tile" : "Buy War Tile")
 	action_button("draw_event", "Buy Event")
+	action_button("draw_an_event", "Draw Event")
 
 	action_button("end_action_round", (is_mobile() || shortest) ? "End Round" : "End Action Round")
 	confirm_action_button("confirm_end_action_round_2", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
