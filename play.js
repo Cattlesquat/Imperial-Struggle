@@ -1323,6 +1323,9 @@ function on_update() {
 
 	begin_update()
 
+	let verbose = get_preference("actionverbosity", "medium")
+	let shortest = (verbose === "short")
+
 	if (R === FRANCE) {
 		update_favicon("favicon-fr.png")
 	} else if (R === BRITAIN) {
@@ -1728,8 +1731,8 @@ function on_update() {
 	for (var i = 0; i <= 5; ++i)
 		action_button_with_argument("bid", i, String(i))
 
-	action_button("paydebt", is_mobile() ? "1 Debt" : "Add 1 Debt")
-	action_button("paytrp", is_mobile() ? "1 TRP" : "Spend 1 Treaty Point")
+	action_button("paydebt", (is_mobile() || shortest) ? "1 Debt" : "Add 1 Debt")
+	action_button("paytrp", (is_mobile() || shortest) ? "1 TRP" : "Spend 1 Treaty Point")
 
 	action_button("refuse", "Refuse")
 	action_button("accept", "Accept")
@@ -1737,64 +1740,60 @@ function on_update() {
 	action_button("confirm", "Confirm")
 	action_button("continue", "Continue")
 
-	confirm_action_button("confirm_pass_to_reduce_debt", is_mobile() ? "Pass" : "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
+	confirm_action_button("confirm_pass_to_reduce_debt", (is_mobile() || shortest) ? "Pass" : "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
 	confirm_action_button("confirm_pass_usa_forts", "Pass", "You have not removed flags from all eligible forts. Confirm passing early?")
 
 	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
 
-	action_button("buy_diplomatic", is_mobile() ? "Buy Diplo" : "Buy Diplomatic")
-	action_button("buy_economic", is_mobile() ? "Buy Econ" : "Buy Economic")
+	action_button("buy_diplomatic", (is_mobile() || shortest) ? "Buy Diplo" : "Buy Diplomatic")
+	action_button("buy_economic", (is_mobile() || shortest) ? "Buy Econ" : "Buy Economic")
 
-	action_button("construct_squadron", is_mobile() ? "Squadron" : "Build Squadron")
-	action_button("buy_bonus_war_tile", is_mobile() ? "War Tile" : "Buy War Tile")
+	action_button("construct_squadron", (is_mobile() || shortest) ? "Squadron" : "Build Squadron")
+	action_button("buy_bonus_war_tile", (is_mobile() || shortest) ? "War Tile" : "Buy War Tile")
 	action_button("draw_event", "Buy Event")
 
-	action_button("end_action_round", is_mobile() ? "End Round" : "End Action Round")
-	confirm_action_button("confirm_end_action_round_2", is_mobile() ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
-	confirm_action_button("confirm_end_action_round_bank", is_mobile() ? "End Round" : "End Action Round", "You have not used Bank of England to increase your debt limit. Confirm ending your final action round this turn?")
-	confirm_action_button("confirm_end_action_round_halley", is_mobile() ? "End Round" : "End Action Round", "You have not used Edmond Halley to discard an event card for a treaty point. Confirm ending your final Action Round this turn?")
-	confirm_action_button("confirm_end_action_round_walpole", is_mobile() ? "End Round" : "End Action Round", "You have not used Robert Walpole to draw/discard event cards. Confirm ending your final action round this turn?")
-	confirm_action_button("confirm_end_action_round_huguenots", is_mobile() ? "End Round" : "End Action Round", "You have not used New World Huguenots to place Huguenots. Confirm ending your final action round this turn?")
+	action_button("end_action_round", (is_mobile() || shortest) ? "End Round" : "End Action Round")
+	confirm_action_button("confirm_end_action_round_2", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
+	confirm_action_button("confirm_end_action_round_bank", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You have not used Bank of England to increase your debt limit. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_halley", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You have not used Edmond Halley to discard an event card for a treaty point. Confirm ending your final Action Round this turn?")
+	confirm_action_button("confirm_end_action_round_walpole", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You have not used Robert Walpole to draw/discard event cards. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_huguenots", (is_mobile() || shortest) ? "End Round" : "End Action Round", "You have not used New World Huguenots to place Huguenots. Confirm ending your final action round this turn?")
 
 	for (const id of [ "end_action_round_button", "confirm_end_action_round_2_button", "confirm_end_action_round_bank_button", "confirm_end_action_round_halley_button", "confirm_end_action_round_walpole_button", "confirm_end_action_round_huguenots_button" ]) {
 		let button = document.getElementById(id)
 		let label = button.innerHTML
-		let className = (id === "end_action_round_button") ? "readybutton" : "almostbutton"
-		button.className = className
-		//if (!label.includes("<")) {
-		//	button.innerHTML = `<span class="${className}">` + label + `</span>`
-		//}
+		button.className = (id === "end_action_round_button") ? "readybutton" : "almostbutton"
 	}
 
-	confirm_action_button("confirm_end_action_round", is_mobile() ? "End Early" : "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
-	confirm_action_button("confirm_no_military_upgrade", is_mobile() ? "End Early" : "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
+	confirm_action_button("confirm_end_action_round", (is_mobile() || shortest) ? "End Early" : "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
+	confirm_action_button("confirm_no_military_upgrade", (is_mobile() || shortest) ? "End Early" : "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
 
 	action_button("reveal_ministry", "Reveal")
 	action_button("dont_reveal_ministry", "Don't Reveal")
 	action_button("exhaust_ministry", "Exhaust")
 	action_button("dont_exhaust_ministry", "Don't Exhaust")
 
-	action_button("diplomatic_point", is_mobile() ? "+1 Diplo" : "Gain Diplomatic Point")
-	action_button("military_point", is_mobile() ? "+1 Mil" : "Gain Military Point")
-	action_button("build_squadron", is_mobile() ? "Squadron Discount" : "Build Squadron w/ Discount")
-	action_button("discard_event_for_trp", is_mobile() ? "Event => TRP": "Discard Event for TRP")
+	action_button("diplomatic_point", (is_mobile() || shortest) ? "+1 Diplo" : "Gain Diplomatic Point")
+	action_button("military_point", (is_mobile() || shortest) ? "+1 Mil" : "Gain Military Point")
+	action_button("build_squadron", (is_mobile() || shortest) ? "Squadron Discount" : "Build Squadron w/ Discount")
+	action_button("discard_event_for_trp", (is_mobile() || shortest) ? "Event => TRP": "Discard Event for TRP")
 	action_button("increase_debt_limit", is_mobile() ? "Debt Limit" : "Increase Debt Limit")
 	action_button("play_event", "Play Event")
 	action_button("jacobite_vp", "Score VP")
-	action_button("unflag_discount", is_mobile() ? "Use" : "Use Discount This Round")
+	action_button("unflag_discount", (is_mobile() || shortest) ? "Use" : "Use Discount This Round")
 
-	action_button("shift_market", is_mobile() ? "Market" : "Shift Market")
-	action_button("place_conflict_marker", is_mobile() ? "Conflict" : "Place Conflict Marker")
-	action_button("diplomatic2", is_mobile() ? "+2 Diplo" : "+2 Diplomatic")
-	action_button("economic2", is_mobile() ? "+2 Econ" : "+2 Economic")
+	action_button("shift_market", (is_mobile() || shortest) ? "Market" : "Shift Market")
+	action_button("place_conflict_marker", (is_mobile() || shortest) ? "Conflict" : "Place Conflict Marker")
+	action_button("diplomatic2", (is_mobile() || shortest) ? "+2 Diplo" : "+2 Diplomatic")
+	action_button("economic2", (is_mobile() || shortest) ? "+2 Econ" : "+2 Economic")
 	action_button("scorecotton", "Score Cotton")
-	action_button("construct_squadron_now", is_mobile() ?  "Squadron" : "Build Squadron Now")
+	action_button("construct_squadron_now", (is_mobile() || shortest) ?  "Squadron" : "Build Squadron Now")
 	action_button("defer", "Defer")
 	action_button("fur", "Fur")
 	action_button("cotton", "Cotton")
-	action_button("take_control", is_mobile() ? "Control" : "Take Control")
-	action_button("place_conflicts", is_mobile() ? "Conflict" : "Place Conflict Markers")
+	action_button("take_control", (is_mobile() || shortest) ? "Control" : "Take Control")
+	action_button("place_conflicts", (is_mobile() || shortest) ? "Conflict" : "Place Conflict Markers")
 	action_button("diplomatic", is_mobile() ? "Diplo" : "Diplomatic")
 	action_button("military", is_mobile() ? "Mil" : "Military")
 
