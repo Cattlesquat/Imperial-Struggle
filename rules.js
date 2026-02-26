@@ -2020,6 +2020,12 @@ function say_investment_tile(msg, t, who = -1) {
 	return "[I" + encode_who(who) + encode_value(t) + msg + "]"
 }
 
+
+function say_inv(t, who = -1)
+{
+	return "[i" + encode_who(who) + encode_value(t) + "]"
+}
+
 function say_space(s, who = -1)
 {
 	return "[S" + encode_who(who) + encode_value(s) + "]"
@@ -4282,18 +4288,19 @@ function selected_a_tile(tile)
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
 	log (((G.active === FRANCE ? "=fr" : "=br") + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
-	log (data.flags[G.active].name + " investment tile: ");
-	log (say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype) + " " +
-	    parens(say_investment_tile(data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name, tile)))
+	log (data.flags[G.active].name + " investment tile: ")
+	log (say_inv(tile))
+	//log (say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype) + " " +
+	//    parens(say_investment_tile(data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name, tile)))
 
 	var major = data.investments[tile].majorval
 
 	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
-	if (major === 3) {
-		log (say_investment_tile("Event allowed", tile))
-	} else if (major === 2) {
-		log (say_investment_tile("Event allowed + Military Upgrade", tile))
-	}
+	//if (major === 3) {
+	//	log (say_investment_tile("Event allowed", tile))
+	//} else if (major === 2) {
+	//	log (say_investment_tile("Event allowed + Military Upgrade", tile))
+	//}
 
 	clear_dirty() // Clear highlights of opponent's previous round actions
 	G.dirty_who = G.active

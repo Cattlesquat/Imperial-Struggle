@@ -2502,6 +2502,43 @@ function bit_get(bits, index)
 }
 
 
+
+function say_action_points_brief(num, type, plus = false, force_num = true)
+{
+	let msg = plus ? "+" : ""
+	let doing_num = ((num > 0) || force_num || plus)
+	msg += "[@" + type + "]"
+	if (doing_num)	msg += num
+	return msg
+}
+
+
+function say_investment_tile(tile)
+{
+	let msg = `<span style="text-decoration: none; display: inline-block">` // No underline among the baked-in symbols - looks terrible
+	msg += escape_square_brackets(say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype))
+
+	let verbose = get_preference("actionverbosity", "medium")
+	if (verbose === "long") {
+		msg += " " + data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name
+	}
+	msg += `</span>`
+
+	var major = data.investments[tile].majorval
+
+	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
+	if (major === 3) {
+		msg += "<br/>"
+		msg += "Event allowed"
+	} else if (major === 2) {
+		msg += "<br/>"
+		msg += "Event allowed + Military Upgrade"
+	}
+
+	return msg
+}
+
+
 function escape_square_brackets(text) {
 	let runaway = 0
 	let match = ""
@@ -2533,7 +2570,7 @@ function escape_square_brackets(text) {
 			let msg     = inside[1].slice(has_who_key ? 2 : 1) // Rest of string is the message
 			let value = 0
 
-			if (["I", "W", "S", "B", "b"].includes(type)) {	// Some items encode a three-digit number
+			if (["i", "I", "W", "S", "B", "b"].includes(type)) {	// Some items encode a three-digit number
 				if (is_digit(msg[0])) {
 					value = msg[0] - '0'
 					msg = msg.substring(1)
@@ -2559,7 +2596,8 @@ function escape_square_brackets(text) {
 			// b - [bF001] - basic war tile
 			// B - [BF001] - bonus war tile
 			// F - [FFstring] - "Flag" string - colored by nationality of second letter (i.e. F/B/X)
-			// I - [IF001] - Investment tile
+			// i - [iF001] - Investment tile (make own message)
+			// I - [IF001] - Investment tile (with provided string)
 			// W - [WF001] - Award tile
 			// S - [SF001] - Space name
 			// V - [V] - scroll down to war mat
@@ -2613,6 +2651,16 @@ function escape_square_brackets(text) {
 					tooltip_text = `<span 
 						class="${className}"
 						>${escape_typography(msg)}</span>`
+					break
+				case "i":
+					className = "tip-investment"
+					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
+					tooltip_text = `<span 
+						class="${className}"
+						onmouseenter="_tip_focus_investment(${value}, ${who})"
+						onmouseleave="_tip_blur_investment()"
+						onmousedown="_tip_click_light('investment',${value})"
+						>${say_investment_tile(value)}</span>`
 					break
 				case "I":
 					className = "tip-investment"
