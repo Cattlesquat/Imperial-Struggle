@@ -11197,10 +11197,10 @@ P.before_end_of_action_round = script(`
 P.end_of_action_round = {
 	inactive: "end the action round",
 	prompt() {
-		V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("End of Action Round.")
-		button("done")
+		V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Confirm end of action round. (No undo possible past this point)")
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		push_undo()
 		end()
 	}
