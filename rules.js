@@ -3915,7 +3915,7 @@ function start_action_round() {
 
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
 	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
-	refresh_ministrY(BRITAIN, EDMUND_BURKE) // Edmund Burke's power works every time you use him
+	refresh_ministry(BRITAIN, EDMUND_BURKE) // Edmund Burke's power works every time you use him
 
 	G.bonuswar_bought = 0
 
