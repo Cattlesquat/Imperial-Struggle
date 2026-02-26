@@ -17,7 +17,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 18
+const GAME_STATE_VERSION = 19
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -1049,6 +1049,10 @@ function on_load()
 		upconvert (17, upconvert_shorter_names_2)
 	}
 
+	if (G.game_state_version < 19) {
+		upconvert (19, upconvert_usa_flags)
+	}
+
 	G.game_state_version = GAME_STATE_VERSION
 }
 
@@ -1065,6 +1069,15 @@ function upconvert(version, converter) {
 	}
 }
 
+
+function upconvert_usa_flags(state)
+{
+	state.usa_flags = 0
+	for (let s = 0; s < NUM_SPACES; s++) {
+		if (state.flags[s] !== USA) continue
+		state.usa_flags++
+	}
+}
 
 function upconvert_patch_bitflags(state)
 {
@@ -9994,6 +10007,8 @@ function reflag_space(s, who, silent = false) {
 	var former = G.flags[s]
 	if (former !== who) {
 		G.flags[s] = who
+		if (who === USA) G.usa_flags++
+		if ((former === USA) && G.usa_flags > 0) G.usa_flags-- // Don't think this ever happens, but...
 		set_delete(G.controlled, s) // 5.4.1 - change in control means we can't chain from here later in the round even if we get it back during the round
 		if (!silent) {
 			let msg = say_space(s) + " "
