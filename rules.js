@@ -409,6 +409,7 @@ const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
 const TRANSIENT_BANK_OF_ENGLAND             = 9
+const TRANSIENT_BURKE_FOR_DISCOUNT			 = 10
 
 
 /* TILES & CARDS */
@@ -3914,6 +3915,7 @@ function start_action_round() {
 
 	refresh_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) // Pompadour and Du Barry works once per action round
 	refresh_ministry(BRITAIN, JAMES_WATT) // James Watt once per action round
+	refresh_ministrY(BRITAIN, EDMUND_BURKE) // Edmund Burke's power works every time you use him
 
 	G.bonuswar_bought = 0
 
@@ -7527,7 +7529,7 @@ function reveal_ministry(who, index) {
 		remove_jacobites()
 	}
 
-	if (m === EDMUND_BURKE) {
+	if ((m === EDMUND_BURKE) && !has_transient(who, TRANSIENT_BURKE_FOR_DISCOUNT)) {
 		if ((G.subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 			exhaust_ministry(who, m)
@@ -10172,6 +10174,7 @@ function handle_space_click(s, force_type = -1)
 	if ((G.action_type === DIPLO) && [ SONS_OF_LIBERTY, USA_1, USA_2 ].includes(s)) {
 		if (has_inactive_ministry(G.active, EDMUND_BURKE)) {
 			G.needs_to_flip_ministry = EDMUND_BURKE
+			set_transient(G.active, TRANSIENT_BURKE_FOR_DISCOUNT)
 		}
 	}
 
@@ -10189,7 +10192,7 @@ P.space_flow = script(`
     	}
 	   	if (G.has_required_ministry) {
 	        eval { G.action_cost = action_point_cost(G.active, G.active_space, G.action_type) }
-	    }    	
+	    }
     }
         
     // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
@@ -10304,7 +10307,7 @@ P.space_flow = script(`
     	}
     }
      
-    if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) { 
+    if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) {
     	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true, false, true) }
     	if (G.has_required_ministry && !is_ministry_exhausted(R, EDMUND_BURKE)) {
     		eval {
