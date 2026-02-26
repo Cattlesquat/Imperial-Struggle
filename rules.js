@@ -10399,8 +10399,19 @@ function display_action_cost()
 		if (G.breakdown) {
 			log (italic(indent(G.breakdown)))
 		}
+
+		if (G.debt_spending) {
+			log (indent(G.debt_spending))
+		}
+
+		if (G.trp_spending) {
+			log(indent(G.trp_spending))
+		}
+
 		delete G.cost
 		delete G.breakdown
+		delete G.debt_spending
+		delete G.trp_spending
 	}
 }
 
@@ -10660,10 +10671,12 @@ function can_merchant_bank()
 function log_spending()
 {
 	if (G.debt_spent > 0) {
-		log (data.flags[R].name + " spent " + say_spending(G.debt_spent + " debt.", R))
+		G.debt_spending = data.flags[R].name + " spent " + say_spending(G.debt_spent + " debt.", R)
+		//log (data.flags[R].name + " spent " + say_spending(G.debt_spent + " debt.", R))
 	}
 	if (G.treaty_points_spent > 0) {
-		log (data.flags[R].name + " spent " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
+		G.trp_spending = data.flags[R].name + " spent " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R)
+		//log (data.flags[R].name + " spent " + say_spending(G.treaty_points_spent + " treaty point" + s(G.treaty_points_spent) + ".", R))
 	}
 }
 
