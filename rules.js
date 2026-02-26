@@ -9353,10 +9353,13 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 
 			if (has_transient(who, TRANSIENT_CHARLES_HANBURY_WILLIAMS)) {
 				if (G.flags[s] === FRANCE) {
-					cost--
-					set_bit(ACTION_COST_ADJUSTED)
-					G.breakdown += " -1 Charles Hanbury Williams."
-					G.adjustable--
+					if ([ PRUSSIA_1, PRUSSIA_2, PRUSSIA_3, PRUSSIA_4, GERMAN_STATES_1, GERMAN_STATES_2, RUSSIA ].includes(s))
+					{
+						cost--
+						set_bit(ACTION_COST_ADJUSTED)
+						G.breakdown += " -1 Charles Hanbury Williams."
+						G.adjustable--
+					}
 				}
 			}
 
