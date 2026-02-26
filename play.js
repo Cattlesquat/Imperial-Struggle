@@ -653,12 +653,31 @@ function set_available_debt_tooltips() {
 
 var Whole //BR// Hack to let me scroll to this specific element
 
-// When player roles are swapped
-function on_pie()
+
+function mention_verbosity()
+{
+	if (V.prompt.includes("(Verbosity")) {
+		let index = V.prompt.indexOf("      (Verbosity")
+		V.prompt = V.prompt.slice(0, index - 1)
+	}
+
+	V.prompt += escape_square_brackets("[v]")
+}
+
+
+
+
+function rebuild_ui()
 {
 	// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
 	update_log(0, game_log.length)
 	update_header()
+}
+
+// When player roles are swapped
+function on_pie()
+{
+	rebuild_ui()
 	window.location.reload()
 }
 
@@ -677,9 +696,8 @@ function on_init() {
 	init_preference_checkbox("scoresies", false, on_dialog_refresh)
 
 	init_preference_radio("actionverbosity", "medium", function () {
-		// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
-		update_log(0, game_log.length)
-		update_header()
+		mention_verbosity()
+		rebuild_ui()
 	})
 
 	set_available_debt_tooltips()
@@ -1317,6 +1335,19 @@ function next_peace_turn(turn)
 	if (turn < PEACE_TURN_6) return PEACE_TURN_6
 	return GAME_OVER
 }
+
+function say_verbosity()
+{
+	let verbose = get_preference("actionverbosity", "medium")
+	console.log (verbose)
+	if (verbose === "short") {
+		return "Brief"
+	} else if (verbose === "long") {
+		return "Verbose"
+	}
+	return "Normal"
+}
+
 
 function on_update() {
 	var i, r, s, a
@@ -2565,7 +2596,7 @@ function escape_square_brackets(text) {
 				continue
 			}
 
-			let has_who_key = ((type !== "@") && (type !== "a"))
+			let has_who_key = ((type !== "@") && (type !== "a") && (type !== "v"))
 			let who_key = inside[1][1]                         // Second character tells us what nation color to use, if any
 			let msg     = inside[1].slice(has_who_key ? 2 : 1) // Rest of string is the message
 			let value = 0
@@ -2692,6 +2723,9 @@ function escape_square_brackets(text) {
 						onmouseleave="_tip_blur_space()"
 						onmousedown="_tip_click_light('space',${value})"
 						>${escape_typography(msg)}</span>`
+					break
+				case "v":
+					tooltip_text = italic("      (Verbosity: " + say_verbosity() + ")")
 					break
 				case "V":
 					tooltip_text = `${escape_typography(msg)}`
@@ -3241,6 +3275,9 @@ window.addEventListener("keydown", function (evt) {
 				verbose = "short"
 			}
 			set_preference_radio("actionverbosity", verbose)
+			mention_verbosity()
+			rebuild_ui()
+			window.location.reload() //BR// Somehow just doing rebuild_ui() here was temporarily making some log text not be escaped
 			evt.preventDefault()
 			break
 
