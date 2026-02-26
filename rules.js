@@ -2358,7 +2358,8 @@ function start_of_peace_turn() {
 	clear_bit(DID_THE_BRIG)
 
 	review_begin()
-	review_push("START OF TURN " + data.turns[G.turn].id)
+	review_push("START OF TURN " + data.turns[G.turn].id + ": PEACE. [Click] \"Done\" to proceed.")
+
 	clear_dirty()
 }
 
@@ -2434,7 +2435,7 @@ P.deck_phase = function () {
 		validate_decks("DECK PHASE 2")
 	}
 
-	review_push("DECK PHASE")
+	review_push("DECK PHASE: Review event deck changes.")
 	end()
 }
 
@@ -2448,7 +2449,7 @@ P.debt_limit_increase_phase = function () {
 		G.debt_limit[FRANCE]  += 4
 		G.debt_limit[BRITAIN] += 4
 	}
-	review_push ("DEBT LIMIT INCREASE PHASE")
+	review_push ("DEBT LIMIT INCREASE PHASE: Debt Limits increased by 4.")
 	end()
 }
 
@@ -2474,7 +2475,7 @@ P.award_phase = function () {
 	}
 	log(codes) // Displays the awards in the log
 
-	review_push ("AWARD PHASE")
+	review_push ("AWARD PHASE: Review new award chits.")
 	end()
 }
 
@@ -2497,7 +2498,7 @@ P.global_demand_phase = function () {
 	}
 	log(codes) // Displays the demands in the log
 
-	review_push ("GLOBAL DEMAND PHASE")
+	review_push ("GLOBAL DEMAND PHASE: Review new global demands.")
 	end()
 }
 
@@ -2542,7 +2543,7 @@ P.reset_phase = function () {
 	G.townshend_acts = -1
 	set_bit(DID_THE_BRIG)
 
-	review_push("RESET PHASE")
+	review_push("RESET PHASE: Advantages and Ministries refreshed.")
 	end()
 }
 
@@ -2632,18 +2633,31 @@ P.deal_cards_discard = {
 	},
 	prompt() {
 		if (G.review_step[R] < G.review_index.length) {
-			V.prompt = say_action_header(G.review_phase[G.review_step[R]] + ": ")
-			V.prompt += "[Click] \"Done\" to proceed to next phase."
+			V.prompt = say_action_header(G.review_phase[G.review_step[R]])
+			//V.prompt += bold(" [Click] \"Done\" to proceed to next phase.")
 			button ("done")
 		} else {
 			if (beginning_of_era()) show_all_ministry_cards(false)
 			if (G.hand[R].length > 3) {
 				V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Discard down to three Event cards.")
+
+				let any = false
+				for (const c of G.hand[R]) {
+					if (any) {
+						V.prompt += ", "
+					} else {
+						V.prompt += " ("
+					}
+					V.prompt += say_event(c)
+					any = true
+				}
+				if (any) V.prompt += ")"
+
 				for (var c of G.hand[R])
 					action_event_card(c)
 			} else {
 				V.prompt = say_action_header("DEAL CARDS PHASE: ") + say_action("Review newly drawn Event cards.")
-				var any = false
+				let any = false
 				for (const c of G.hand[R]) {
 					if (any) {
 						V.prompt += ", "
@@ -3254,9 +3268,9 @@ function tell_first_player_choice()
 }
 
 P.choose_first_player = {
-	inactive: "choose which player will go first this turn",
+	inactive: "choose who will go first this turn",
 	prompt() {
-		V.prompt = say_action_header("INITIATIVE PHASE: ") + say_action("Choose the player to go first in each action round this turn.")
+		V.prompt = say_action_header("INITIATIVE PHASE: ") + say_action("Choose who will go first in each action round this turn.")
 		button("france")
 		button("britain")
 	},
