@@ -6715,7 +6715,6 @@ function do_polish_succession(who)
 }
 
 
-
 // BR: Gain 2 TRP. Bonus: Shift Russia.
 // FR: Score 2 VP. Bonus: Shift Russia or Sweden
 P.event_war_of_the_polish_succession = {
@@ -6732,14 +6731,18 @@ P.event_war_of_the_polish_succession = {
 			}
 		} else {
 			let msg = "shift Russia or Sweden"
-			let any = false
-			for (const s of [ RUSSIA, SWEDEN ]) {
-				if (G.flags[s] === R) continue
-				action_space(s)
-				any = true
-			}
-			if (!any) {
-				msg += " (None possible)"
+			if (G.qualifies_for_bonus) {
+				let any = false
+				for (const s of [ RUSSIA, SWEDEN ]) {
+					if (G.flags[s] === R) continue
+					action_space(s)
+					any = true
+				}
+				if (!any) {
+					msg += " (None possible)"
+					button("done")
+				}
+			} else {
 				button("done")
 			}
 			V.prompt = event_prompt(R, G.played_event, "Score 2 VP", msg)
