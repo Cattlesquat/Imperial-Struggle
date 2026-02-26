@@ -2274,3 +2274,47 @@ div[data-tooltip]:after {
     #british_ministry_dialog { top: 100px; left: 0px; }
 }
 
+/* BUTTON */
+
+.readybutton {
+    flex: 0 0 auto;
+    white-space: nowrap;
+
+    padding: 1px 10px;
+    vertical-align: middle;
+    border: 2px solid;
+
+    background-color: springgreen;
+    border-color: lightgreen darkgreen darkgreen lightgreen;
+    color: black;
+    outline: 1px solid black;
+
+    line-height: 22px;
+}
+
+.readybutton:enabled:active:hover {
+    border-color: darkgreen lightgreen lightgreen darkgreen;
+    padding: 2px 9px 0px 11px;
+}
+
+.almostbutton {
+    flex: 0 0 auto;
+    white-space: nowrap;
+
+    padding: 1px 10px;
+    vertical-align: middle;
+    border: 2px solid;
+
+    background-color: lightyellow;
+    border-color: yellow gold gold yellow;
+    color: black;
+    outline: 1px solid black;
+
+    line-height: 22px;
+}
+
+.almostbutton:enabled:active:hover {
+    border-color: gold yellow yellow gold;
+    padding: 2px 9px 0px 11px;
+}
+

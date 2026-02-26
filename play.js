@@ -1743,20 +1743,29 @@ function on_update() {
 
 	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
 
-	action_button("end_action_round", is_mobile() ? "End Round" : "End Action Round")
-	confirm_action_button("confirm_end_action_round_2", is_mobile() ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
-
-	confirm_action_button("confirm_end_action_round_bank", is_mobile() ? "End Round" : "End Action Round", "You have not used Bank of England to increase your debt limit. Confirm ending your final action round this turn?")
-	confirm_action_button("confirm_end_action_round_halley", is_mobile() ? "End Round" : "End Action Round", "You have not used Edmond Halley to discard an event card for a treaty point. Confirm ending your final Action Round this turn?")
-	confirm_action_button("confirm_end_action_round_walpole", is_mobile() ? "End Round" : "End Action Round", "You have not used Robert Walpole to draw/discard event cards. Confirm ending your final action round this turn?")
-	confirm_action_button("confirm_end_action_round_huguenots", is_mobile() ? "End Round" : "End Action Round", "You have not used New World Huguenots to place Huguenots. Confirm ending your final action round this turn?")
-
 	action_button("buy_diplomatic", is_mobile() ? "Buy Diplo" : "Buy Diplomatic")
 	action_button("buy_economic", is_mobile() ? "Buy Econ" : "Buy Economic")
 
 	action_button("construct_squadron", is_mobile() ? "Squadron" : "Build Squadron")
 	action_button("buy_bonus_war_tile", is_mobile() ? "War Tile" : "Buy War Tile")
 	action_button("draw_event", "Buy Event")
+
+	action_button("end_action_round", is_mobile() ? "End Round" : "End Action Round")
+	confirm_action_button("confirm_end_action_round_2", is_mobile() ? "End Round" : "End Action Round", "You still have usable advantages. Confirm ending Action Round?")
+	confirm_action_button("confirm_end_action_round_bank", is_mobile() ? "End Round" : "End Action Round", "You have not used Bank of England to increase your debt limit. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_halley", is_mobile() ? "End Round" : "End Action Round", "You have not used Edmond Halley to discard an event card for a treaty point. Confirm ending your final Action Round this turn?")
+	confirm_action_button("confirm_end_action_round_walpole", is_mobile() ? "End Round" : "End Action Round", "You have not used Robert Walpole to draw/discard event cards. Confirm ending your final action round this turn?")
+	confirm_action_button("confirm_end_action_round_huguenots", is_mobile() ? "End Round" : "End Action Round", "You have not used New World Huguenots to place Huguenots. Confirm ending your final action round this turn?")
+
+	for (const id of [ "end_action_round_button", "confirm_end_action_round_2_button", "confirm_end_action_round_bank_button", "confirm_end_action_round_halley_button", "confirm_end_action_round_walpole_button", "confirm_end_action_round_huguenots_button" ]) {
+		let button = document.getElementById(id)
+		let label = button.innerHTML
+		let className = (id === "end_action_round_button") ? "readybutton" : "almostbutton"
+		button.className = className
+		//if (!label.includes("<")) {
+		//	button.innerHTML = `<span class="${className}">` + label + `</span>`
+		//}
+	}
 
 	confirm_action_button("confirm_end_action_round", is_mobile() ? "End Early" : "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
 	confirm_action_button("confirm_no_military_upgrade", is_mobile() ? "End Early" : "End Action Round Early", "You are still eligible for a military upgrade! Confirm ending Action Round early?")
