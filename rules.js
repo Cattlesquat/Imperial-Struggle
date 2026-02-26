@@ -11748,7 +11748,7 @@ function start_war_theater_resolution()
 		}
 
 		if ((G.next_war === WAR_7YW) && (G.theater === 1)) {
-			L.war_atlantic = true
+			if (L.war_tier >= 0) L.war_atlantic = true
 			if (L.war_tier > 0) L.war_squadrons = L.war_tier
 		}
 
