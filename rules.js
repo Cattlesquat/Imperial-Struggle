@@ -4625,7 +4625,7 @@ P.event_flow = script (`
         		log_box_end(LOG_BOX_MINISTRY)
             } else {
         		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true, true)
-			    log_box_ministry(R, MARQUIS_DE_CONDORCET) // Start a box if it didn't already get started above
+			    log_box_ministry(R, BANK_OF_ENGLAND) // Start a box if it didn't already get started above
 	       		log("Used to play economic event without [@0] major action.")
 				log_box_end(LOG_BOX_MINISTRY)		            		
         	}
