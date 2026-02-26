@@ -2529,10 +2529,10 @@ function say_investment_tile(tile)
 	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
 	if (major === 3) {
 		msg += "<br/>"
-		msg += "Event allowed"
+		msg += (verbose === "short") ? "Event" : "Event allowed"
 	} else if (major === 2) {
 		msg += "<br/>"
-		msg += "Event allowed + Military Upgrade"
+		msg += (verbose === "short") ? "Event + Military" : "Event allowed + Military Upgrade"
 	}
 
 	return msg
