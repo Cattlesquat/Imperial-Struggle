@@ -656,9 +656,11 @@ var Whole //BR// Hack to let me scroll to this specific element
 
 function mention_verbosity()
 {
+	if (is_mobile()) return
+
 	if (V.prompt.includes("(Verbosity")) {
-		let index = V.prompt.indexOf("      (Verbosity")
-		V.prompt = V.prompt.slice(0, index - 1)
+		let index = V.prompt.indexOf("<b><i>      (Verbosity")
+		V.prompt = V.prompt.slice(0, index)
 	}
 
 	V.prompt += escape_square_brackets("[v]")
@@ -2725,7 +2727,7 @@ function escape_square_brackets(text) {
 						>${escape_typography(msg)}</span>`
 					break
 				case "v":
-					tooltip_text = italic("      (Verbosity: " + say_verbosity() + ")")
+					tooltip_text = "<b><i>      (Verbosity changed to: " + say_verbosity() + ")</i></b>"
 					break
 				case "V":
 					tooltip_text = `${escape_typography(msg)}`
