@@ -7340,7 +7340,7 @@ P.event_cook_and_bougainville = {
 			L.squadrons++
 		}
 		L.squadrons += G.navy_box[BRITAIN]
-		L.econ_award = L.squadrons / 2
+		L.econ_award = Math.floor(L.squadrons / 2)
 		L.done_award = false
 	},
 	inactive: "play an Event",
