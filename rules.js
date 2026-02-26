@@ -1600,10 +1600,10 @@ function pay_treaty_points(who, amount) {
 	G.treaty_points[who] -= amount
 }
 
-function add_treaty_points(who, amount)
+function add_treaty_points(who, amount, silent = false)
 {
 	G.treaty_points[who] += amount
-	if (amount > 0) {
+	if ((amount > 0) && !silent) {
 		log (data.flags[who].name + " gained " + say_spending(amount + " Treaty Point" + s(amount), who) + ".")
 	}
 }
@@ -4305,8 +4305,9 @@ function selected_a_tile(tile)
 
 	if (is_bit(FLAG_MILITARY_UPGRADE) && (G.turn === PEACE_TURN_6)) {
 		clear_bit(FLAG_MILITARY_UPGRADE)
+		log_br()
 		log (data.flags[G.active].name + " gained " + say_spending("1 Treaty Point", G.active) + " for having a Military Upgrade symbol on Turn 6 (see 5.3.3).")
-		add_treaty_points(G.active, 1)
+		add_treaty_points(G.active, 1, true)
 	}
 
 	// Major action point levels for the 3 types (ECON, DIPLO, MIL). We may get extra amounts from an event. Then we can increase our action points with debt/TRPs (but not in a category that is zero)
