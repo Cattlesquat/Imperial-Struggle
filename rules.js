@@ -7652,7 +7652,7 @@ P.ministry_robert_walpole = {
 			button("pass")
 		}
 	},
-    draw_event() {
+    draw_an_event() {
 		clear_undo() // Because we're drawing a new event card
 
 		log_box_ministry(R, ROBERT_WALPOLE)
