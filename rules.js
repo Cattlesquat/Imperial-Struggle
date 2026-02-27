@@ -5083,8 +5083,8 @@ P.event_war_of_jenkins_ear = {
 				}
 				V.prompt = event_prompt(R, G.played_event, msg)
 			} else {
-				V.prompt = event_prompt (R, G.played_event, say_action_points(1, DIPLO, true))
-				button ("done")
+				V.prompt = event_prompt (R, G.played_event, "Confirm gain of " + say_action_points(1, DIPLO, true))
+				button ("confirm")
 			}
 		}
 	},
@@ -5092,6 +5092,9 @@ P.event_war_of_jenkins_ear = {
 		push_undo()
 		add_conflict_marker(s)
 		L.conflicts_placed++
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -5152,9 +5155,9 @@ P.event_native_american_alliances = {
 			}
 		} else {
 			if (!L.done_action_points) {
-				V.prompt = say_action_points(2, ECON, true) + " in North America only"
+				V.prompt = "Confirm gain of " + say_action_points(2, ECON, true) + " in North America only"
 				//V.prompt = "+2 Economic action points in North America only"
-				button("done")
+				button("confirm")
 			} else {
 				let msg = "Unflag a local alliance in North America"
 				let any = false
@@ -5198,6 +5201,9 @@ P.event_native_american_alliances = {
 	pass() {
 		push_undo()
 		end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -5410,8 +5416,8 @@ P.event_great_northern_war = {
 					button("done")
 				}
 			} else {
-				msg = "Bonus: " + say_action_points(1, DIPLO)
-				button("done")
+				msg = "Confirm Bonus: " + say_action_points(1, DIPLO, true)
+				button("confirm")
 			}
 		} else {
 			if (!L.shifted_space) {
@@ -5450,6 +5456,9 @@ P.event_great_northern_war = {
 			}
 			if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 		}
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -5504,8 +5513,8 @@ P.event_vatican_politics = {
 	inactive: "go papal on you",
 	prompt() {
 		if (R === BRITAIN) {
-			V.prompt = event_prompt(R, G.played_event, say_action_points(2, DIPLO) + " (German States, Prussia, Dutch Republic)", say_action_points(1, DIPLO) + " (Europe)")
-			button ("done")
+			V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, DIPLO, true) + " (German States, Prussia, Dutch Republic)", say_action_points(1, DIPLO, true) + " (Europe)")
+			button ("confirm")
 		} else {
 			if (!L.shifted_space) {
 				V.prompt = event_prompt(R, G.played_event, "Shift any Spain or Austria space", "if there are afterwards no BR flags in Spain and Austria, score 2 VP")
@@ -5534,6 +5543,9 @@ P.event_vatican_politics = {
 		}
 		end()
 	},
+	confirm() {
+		this.done()
+	},
 	done() {
 		push_undo()
 		if (R === BRITAIN) {
@@ -5559,8 +5571,8 @@ P.event_calico_acts = {
 		let msg = ""
 		if (R === BRITAIN) {
 			if (!L.unflagged_markets) {
-				msg += say_action_points(2, ECON) + "; must be used to unflag markets"
-				button("done")
+				msg += "Confirm gain of " + say_action_points(2, ECON, true) + "; must be used to unflag markets"
+				button("confirm")
 			} else {
 				msg = "You may score Cotton (as if in Global Demand)"
 				button("scorecotton")
@@ -5646,6 +5658,9 @@ P.event_calico_acts = {
 			log ("  Winner: NONE")
 		}
 		end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -5772,8 +5787,8 @@ P.event_alberonis_ambition = {
 	inactive: "tame Alberoni's ambition",
 	prompt() {
 		if (R === BRITAIN) {
-			V.prompt = event_prompt(R, G.played_event, say_action_points(L.econ_amount, ECON) + " (must be spent to flag markets next to a British-flagged market).")
-			button("done")
+			V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(L.econ_amount, ECON, true) + " (must be spent to flag markets next to a British-flagged market)")
+			button("confirm")
 		} else {
 			if (!L.shifted_alliance) {
 				let msg = "Shift an Alliance space in Austria, the Dutch Republic, or Spain"
@@ -5799,6 +5814,9 @@ P.event_alberonis_ambition = {
 		reflag_space(s, (G.flags[s] === NONE) ? R : NONE)
 		L.shifted_alliance = true
 		if (!is_bit(QUALIFIES_FOR_BONUS)) end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -6028,11 +6046,11 @@ P.event_pacte_de_famille = {
 					any = true
 				}
 				let gauge = ((any || (L.num_refreshed >= 2)) ? L.num_refreshed+ "/" + 2 : "DONE")
-				V.prompt = event_prompt(R, G.played_event, msg + parens(gauge), say_action_points(2, DIPLO) + " in Spain and/or Austria")
+				V.prompt = event_prompt(R, G.played_event, msg + parens(gauge), "gain " + say_action_points(2, DIPLO, true) + " in Spain and/or Austria")
 				if (!any) button("done")
 			} else {
-				V.prompt = event_prompt(R, G.played_event, say_action_points(2, DIPLO) + " in Spain and/or Austria")
-				button("done")
+				V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, DIPLO, true) + " in Spain and/or Austria")
+				button("confirm")
 			}
 		}
 	},
@@ -6041,6 +6059,9 @@ P.event_pacte_de_famille = {
 		refresh_advantage(a)
 		L.num_refreshed++
 		if ((L.num_refreshed >= 2) && !is_bit(QUALIFIES_FOR_BONUS)) end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -6135,13 +6156,13 @@ P.event_le_beau_monde = {
 	inactive: "do the high society",
 	prompt() {
 		if (R === BRITAIN) {
-			V.prompt = event_prompt(R, G.played_event, "You may put Fur or Cotton into Global Demand", say_action_points(1, ECON))
+			V.prompt = event_prompt(R, G.played_event, "You may put Fur or Cotton into Global Demand", "gain " + say_action_points(1, ECON, true))
 			button("fur", !G.global_demand.includes(FURS))
 			button("cotton", !G.global_demand.includes(COTTON))
 			button("pass")
 		} else {
-			V.prompt = event_prompt(R, G.played_event, say_action_points(1, DIPLO) + " in Europe", "an additional " + say_action_points(2, DIPLO) + " in Europe")
-			button("done")
+			V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(1, DIPLO) + " in Europe", "an additional " + say_action_points(2, DIPLO) + " in Europe")
+			button("confirm")
 		}
 	},
 	fur() {
@@ -6162,6 +6183,9 @@ P.event_le_beau_monde = {
 		push_undo()
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
 		end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -6224,7 +6248,7 @@ P.event_hyder_ali = {
 			}
 		}
 
-		V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, ECON) + " in India")
+		V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON) + " in India")
 	},
 	take_control() {
 		push_undo()
@@ -6441,10 +6465,10 @@ P.event_european_panic = {
 P.event_west_african_gold_mining = {
 	inactive: "dig up some serious gold",
 	prompt() {
-		V.prompt = event_prompt(R, G.played_event, say_action_points(1, ECON), say_action_points(2, ECON) + " in the Caribbean")
-		button("done")
+		V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(1, ECON), say_action_points(2, ECON) + " in the Caribbean")
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		push_undo()
 		add_action_points(ECON, 1)
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_CARIBBEAN, SHORT_CARIBBEAN)
@@ -6517,7 +6541,7 @@ P.event_war_of_the_quadruple_alliance = {
 				msg += " (None possible)"
 				button("done")
 			}
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(1, DIPLO))
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(1, DIPLO))
 		}
 	},
 	space(s) {
@@ -6583,11 +6607,11 @@ P.event_salon_d_hercule = {
 		if (R === BRITAIN) {
 			V.prompt = event_prompt(R, G.played_event, "Increase French Debt by 1", "increase French Debt by another 2")
 		} else {
-			V.prompt = event_prompt(R, G.played_event, say_action_points(2, DIPLO) + " in Europe", "an additional " + say_action_points(2, DIPLO) + " in Europe")
+			V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, DIPLO) + " in Europe", "an additional " + say_action_points(2, DIPLO) + " in Europe")
 		}
-		button("done")
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		push_undo()
 		if (R === BRITAIN) {
 			increase_debt(FRANCE, is_bit(QUALIFIES_FOR_BONUS) ? 3 : 1)
@@ -6660,7 +6684,7 @@ P.event_father_le_loutre = {
 				msg += " (None possible)"
 				button("done")
 			}
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, MIL) + " in North America")
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, MIL) + " in North America")
 		} else {
 			let msg = "Place a conflict marker in a British-flagged market"
 			let any = false
@@ -6675,7 +6699,7 @@ P.event_father_le_loutre = {
 				msg += " (None possible)"
 				button("done")
 			}
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, ECON) + " in North America")
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON) + " in North America")
 		}
 	},
 	space(s) {
@@ -6767,10 +6791,10 @@ P.event_war_of_the_polish_succession = {
 P.event_jonathans_coffee_house = {
 	inactive: "grab a quick coffee",
 	prompt() {
-		V.prompt = event_prompt(R, G.played_event, say_action_points(2, ECON), "an additional " + say_action_points(1, ECON) + " and reduce your debt by 1")
-		button("done")
+		V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, ECON), "an additional " + say_action_points(1, ECON) + " and reduce your debt by 1")
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		add_action_points(ECON, is_bit(QUALIFIES_FOR_BONUS) ? 3 : 2)
 		if (is_bit(QUALIFIES_FOR_BONUS)) {
 			if (G.debt[R] > 0) {
@@ -6966,7 +6990,7 @@ P.event_loge_des_neuf_soeurs = {
 			} else {
 				button("pass") //BR// If we don't let people pass here, then you can end up with eligible-to-activate-but-currently-unusable advantages (e.g. discount w/ no econ points, conflict w/ no eligible targets) blocking the player from getting the bonus half of the card
 			}
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, DIPLO))
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, DIPLO))
 		}
 	},
 	space(s) {
@@ -7035,9 +7059,9 @@ P.event_la_gabelle = {
 				msg += " " + parens(L.advantages_done + "/2")
 			}
 			button("pass")
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(2, ECON))
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON))
 		} else {
-			V.prompt = event_prompt(R, G.played_event, "Gain " + say_action_points(2, ECON), "score 2 VP, or 3 VP if you have the Governance keyword")
+			V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, ECON), "score 2 VP, or 3 VP if you have the Governance keyword")
 			button("done")
 		}
 	},
@@ -7093,7 +7117,7 @@ P.event_jesuit_abolition = {
 				msg += " (None possible)"
 				button("done")
 			}
-			V.prompt = event_prompt(R, G.played_event, msg, say_action_points(3, ECON) + " (Caribbean only)")
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(3, ECON) + " (Caribbean only)")
 		} else {
 			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "score 2 VP")
 			button("done")
@@ -7124,10 +7148,10 @@ P.event_jesuit_abolition = {
 P.event_wealth_of_nations = {
 	inactive: "get rich quick",
 	prompt() {
-		V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", say_action_points(3, ECON))
-		button("done")
+		V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "gain " + say_action_points(3, ECON))
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		push_undo()
 		reduce_debt(R, 2)
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 3)
@@ -7141,9 +7165,9 @@ P.event_debt_crisis = {
 	inactive: "call in your debt",
 	prompt() {
 		V.prompt = event_prompt(R, G.played_event, "If you have more available debt than opponent, receive " + say_action_points(3, ECON) + " (must be used to unflag markets)", "bonus: score 2 VP")
-		button("done")
+		button("confirm")
 	},
-	done() {
+	confirm() {
 		push_undo()
 		if (available_debt(R) > available_debt(1-R)) {
 			add_contingent(ECON, 3, RULE_UNFLAG_MARKETS, SHORT_UNFLAG_MARKETS)
@@ -7199,8 +7223,8 @@ P.event_stamp_act = {
 	inactive: "find out what Boston thinks about taxes",
 	prompt() {
 		if (R === BRITAIN) {
-			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", say_action_points(2, ECON))
-			button("done")
+			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "gain " + say_action_points(2, ECON))
+			button("confirm")
 		} else {
 			let msg = "Place " + L.conflicts_to_do + " conflict marker" + s(L.conflicts_to_do) + " in the Northern Colonies sub-region"
 			let any = false
@@ -7230,6 +7254,9 @@ P.event_stamp_act = {
 		add_conflict_marker(s)
 		L.conflicts_done++
 		if (L.conflicts_done >= L.conflicts_to_do) end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -7269,8 +7296,8 @@ P.event_falklands_crisis = {
 			}
 		} else {
 			if (!L.done_starting) {
-				V.prompt = event_prompt(R, G.played_event, say_action_points(1, MIL) + " for each French flag in Spain", "remove a British squadron from the game")
-				button("done")
+				V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(1, MIL) + " for each French flag in Spain", "remove a British squadron from the game")
+				button("confirm")
 			} else {
 				let msg = "Remove a British squadron from the game"
 				let any = false
@@ -7314,6 +7341,9 @@ P.event_falklands_crisis = {
 		log ("British squadron from Navy Box removed from the game.")
 		log (say_navy_box())
 		end()
+	},
+	confirm() {
+		this.done()
 	},
 	done() {
 		push_undo()
@@ -7373,7 +7403,7 @@ P.event_cook_and_bougainville = {
 	prompt() {
 		if (R === BRITAIN) {
 			if (!L.done_award) {
-				V.prompt = event_prompt(R, G.played_event, "+" + L.econ_award + " Economic Points (1 for every 2 squadrons you have on the map or in the Navy Box)", "draw a Bonus War Tile")
+				V.prompt = event_prompt(R, G.played_event, "Confirm gain of +" + say_action_points(L.econ_award, ECON) + " (1 for every 2 squadrons you have on the map or in the Navy Box)", "draw a Bonus War Tile")
 				button("done")
 			} else {
 				V.prompt = event_prompt(R, G.played_event, "Confirm drawing Bonus War Tile (CANNOT BE UNDONE)")
