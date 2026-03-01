@@ -4067,7 +4067,7 @@ function show_card_list(id, params) {
 				}
 			}
 
-			if (current_era() === EMPIRE_ERA) {
+			if (current_era() < REVOLUTION_ERA) {
 				append_header("Revolution Era Ministries (not yet in play)")
 				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 					if (data.ministries[m].side !== who) continue
