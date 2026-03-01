@@ -7841,7 +7841,12 @@ P.ministry_edmond_halley = {
 
 function cardinal_ministers_value()
 {
-	let raw_value = ((G.flags[SAVOY] === FRANCE) ? 1 : 0) + ((G.flags[SARDINIA] === FRANCE) ? 1 : 0) + ((G.flags[AUSTRIA_2] === FRANCE) ? 1 : 0) + ((G.flags[AUSTRIA_4] === FRANCE) ? 1 : 0) + ((G.flags[SPAIN_2] === FRANCE) ? 1 : 0) + ((G.flags[SPAIN_4] === FRANCE) ? 1 : 0)
+	let raw_value = 0
+	for (const s of [SAVOY, SARDINIA, AUSTRIA_2, AUSTRIA_4, SPAIN_2, SPAIN_4]) {
+		if (G.flags[s] !== FRANCE) continue
+		if (has_conflict_marker(s)) continue
+		raw_value++
+	}
 	return Math.min(raw_value, 3)
 }
 
