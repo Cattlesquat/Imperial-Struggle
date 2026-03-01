@@ -2785,14 +2785,14 @@ P.choose_ministry_cards = {
 		if ((R >= 0) && G.ministry[1-R].length < num_ministry_slots(R)) {
 			return "choose two ministry cards"
 		} else {
-			return "confirm choice of ministers"
+			return "confirm choice of ministries"
 		}
 	},
 	prompt() {
 		if (G.ministry[R].length < num_ministry_slots(R)) {
 			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Choose two ministry cards.")
 		} else {
-			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Confirm choice of ministers: ")
+			V.prompt = say_action_header("MINISTRY PHASE: ") + say_action("Confirm choice of ministries: ")
 			var any = false
 			var list = ""
 			for (const i of G.ministry[R]) {
@@ -2840,7 +2840,7 @@ function announce_ministry_changes()
 
 		if (num_changed) {
 			if (!any) log ("=Ministry Phase")
-			log (data.flags[who].name+ " replaced " + num_changed + " Minister" + s(num_changed) + ".")
+			log (data.flags[who].name+ " replaced " + num_changed + " Ministr" + ((num_changed === 1) ? "y" : "ies") + ".")
 			any = true
 		}
 	}
@@ -2865,7 +2865,7 @@ P.replace_ministry_cards = {
 		L.original_revealed = G.ministry_revealed
 		L.any_changes = [ false, false ]
 	},
-	inactive: "confirm or replace ministers",
+	inactive: "confirm or replace ministries",
 	prompt() {
 		let any_hidden = 0;
 		for (let i = 0; i < G.ministry[R].length; i++) {
@@ -4435,7 +4435,7 @@ P.select_investment_tile = {
 				}
 			}
 		} else {
-			V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Select an investment tile or activate a minister.")
+			V.prompt = say_action_header("ACTION ROUND " + G.round + ": ") + say_action("Select an investment tile or activate a ministry.")
 			for (var tile of G.inv_avail) {
 				if (G.inv_played.includes(tile)) continue
 				action_investment(tile)

@@ -4049,7 +4049,7 @@ function show_card_list(id, params) {
 			}
 		} else if ((id === "french_ministry_dialog") || (id === "british_ministry_dialog")) {
 			let who = (id === "french_ministry_dialog") ? FRANCE : BRITAIN
-			append_header("Current Available Ministers")
+			append_header("Current Available Ministries")
 			for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 				if (data.ministries[m].side !== who) continue
 				if (!data.ministries[m].era.includes(current_era())) continue
@@ -4058,7 +4058,7 @@ function show_card_list(id, params) {
 			}
 
 			if (current_era() === SUCCESSION_ERA) {
-				append_header("Empire Era Ministers (not yet in play)")
+				append_header("Empire Era Ministries (not yet in play)")
 				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 					if (data.ministries[m].side !== who) continue
 					if (data.ministries[m].era.includes(current_era())) continue
@@ -4068,7 +4068,7 @@ function show_card_list(id, params) {
 			}
 
 			if (current_era() === EMPIRE_ERA) {
-				append_header("Revolution Era Ministers (not yet in play)")
+				append_header("Revolution Era Ministries (not yet in play)")
 				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 					if (data.ministries[m].side !== who) continue
 					if (data.ministries[m].era.includes(current_era())) continue
@@ -4084,7 +4084,7 @@ function show_card_list(id, params) {
 			}
 
 			if (current_era() === REVOLUTION_ERA) {
-				append_header("Empire Era Ministers (out of play)")
+				append_header("Empire Era Ministries (out of play)")
 				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 					if (data.ministries[m].side !== who) continue
 					if (data.ministries[m].era.includes(current_era())) continue
@@ -4094,7 +4094,7 @@ function show_card_list(id, params) {
 			}
 
 			if (current_era() !== SUCCESSION_ERA) {
-				append_header("Succession Era Ministers (out of play)")
+				append_header("Succession Era Ministries (out of play)")
 				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
 					if (data.ministries[m].side !== who) continue
 					if (data.ministries[m].era.includes(current_era())) continue
