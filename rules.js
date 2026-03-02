@@ -8501,8 +8501,8 @@ P.advantage_unflag_discount = {
 				L.adv_market = true
 				break
 			case GERMAN_DIPLOMACY:
-				L.adv_string = "space in Russia, Silesia, or Bavaria"
-				L.adv_plural = "spaces in Russia, Silesia, or Bavaria"
+				L.adv_string = "space in Russia, Sweden, or Bavaria"
+				L.adv_plural = "spaces in Russia, Sweden, or Bavaria"
 				L.adv_region = REGION_EUROPE
 				L.adv_market = false
 				L.adv_for_one = true
@@ -8549,11 +8549,20 @@ P.advantage_unflag_discount = {
 				if (!is_shift_allowed(s, R, true, space_rules(s, type))) continue
 				if (!has_conflict_marker(s)) any_non_conflict = true
 				if (!action_points_eligible_major(type, space_rules(s, type)) && !eligible_for_minor_action(s, R)) continue
+
+				if (G.active_advantage === GERMAN_DIPLOMACY) {
+					if (![RUSSIA, SWEDEN, BAVARIA].includes(s)) continue
+				} else if (G.active_advantage === SILESIA_NEGOTIATIONS) {
+					if (![PRUSSIA_1, PRUSSIA_2, PRUSSIA_3, PRUSSIA_4, GERMAN_STATES_1, GERMAN_STATES_2].includes(s)) continue
+				} else if (G.active_advantage === ITALY_INFLUENCE) {
+					if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
+				}
+
 				action_space(s)
 				any = true
 			}
 			if (!any_flagged) {
-				msg = "There are no enemy-flagged " + L.adv_plural + " right now."
+				msg = "There are no eligible enemy-flagged " + L.adv_plural + " right now."
 			} else if (any_non_conflict && G.minor[type] > 0) {
 				msg = "With a minor action you can only unflag spaces that have a conflict marker."
 			} else if (!any) {
