@@ -5092,6 +5092,8 @@ P.event_war_of_jenkins_ear = {
 		push_undo()
 		add_conflict_marker(s)
 		L.conflicts_placed++
+		L.doing_bonus = true
+		if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 	},
 	confirm() {
 		this.done()
