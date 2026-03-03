@@ -3282,7 +3282,6 @@ window.addEventListener("keydown", function (evt) {
 			document.querySelector("aside").hidden = is_mobile() // Show the log (unless mobile, in which case hide it)
 			document.body.classList.remove("hide-markers")
 			set_preference_checkbox("allwars", false)
-			hide_notepad()
 			update_zoom()
 			evt.preventDefault()
 			break;
