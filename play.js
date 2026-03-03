@@ -3285,7 +3285,7 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 
-		case "Tab": // TAB
+		case " ":  //"Tab": // TAB
 			toggle_markers()
 			evt.preventDefault()
 			break;
