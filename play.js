@@ -3279,9 +3279,6 @@ window.addEventListener("keydown", function (evt) {
 				verbose = "short"
 			}
 			set_preference_radio("actionverbosity", verbose)
-			mention_verbosity()
-			rebuild_ui()
-			window.location.reload() //BR// Somehow just doing rebuild_ui() here was temporarily making some log text not be escaped
 			evt.preventDefault()
 			break
 
