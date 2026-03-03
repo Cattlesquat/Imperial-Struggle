@@ -1983,7 +1983,6 @@ function theater_tier(war, winner, theater, delta)
 
 
 
-var temp = 1
 
 function update_war_display() {
 	var player, theater, offset
