@@ -2207,6 +2207,7 @@ function preset_handicap(scenario)
 	}
 }
 
+/* Naughty naughty code. Baaaaaaad.
 function swap_sides(text) // Presently only bothers to support "one player name per log line", which is all I presently emit. For more robust a "do" loop like in escape_square_brackets() in play.js
 {
 	let match = text.match(/\[.*?]/)        // Get the whole expression including the brackets
@@ -2220,6 +2221,7 @@ function swap_sides(text) // Presently only bothers to support "one player name 
 	text = text.replace(/\[.*?]/, substitute)   // Stick it back in the string
 	return text
 }
+*/
 
 
 P.bid_for_sides = {
@@ -2237,7 +2239,8 @@ P.bid_for_sides = {
 		L.bidding_for_sides = true // for client voodoo
 
 		log ("=Bid for Sides")
-		log ("First bidder: " +say_player(G.active) + ".")
+		//log ("First bidder: " + say_player(G.active) + ".")
+		log ("First bidder: " + say_nation("Player " + (G.active + 1), G.active))
 	},
 	prompt() {
 		if (L.final_confirmation) {
@@ -2248,7 +2251,7 @@ P.bid_for_sides = {
 			button("france")
 			button("britain")
 		} else if (L.current_bidder === NONE) {
-			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid to play " + data.flags[L.bid_for_side].name + "?")
+			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid (give to " + data.flags[1 - L.bid_for_side].name + ") in order to play " + data.flags[L.bid_for_side].name + "?")
 			for (var i = 0; i <= 5; ++i)
 				action("bid", i)
 		} else if (L.current_bidder !== R) {
@@ -2267,17 +2270,19 @@ P.bid_for_sides = {
 	},
 	confirm() {
 		if (!L.final_confirmation) {
-			log(bold(say_player(G.active) + " bid +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
+			log(bold(say_nation("Player " + (G.active + 1), G.active) + " bid +" + L.current_bid + " TRP for " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."))
 			G.active = 1 - G.active
 		} else {
-			log (bold(say_player(G.active) + " has accepted the bid."))
+			log (bold(say_nation("Player " + (G.active + 1), G.active) + " has accepted the bid."))
 
-			let msg = say_player(G.active) + " will play " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
+			let msg = say_player(1 - L.bid_for_side) + " will play " + say_nation(data.flags[1 - L.bid_for_side].name, 1 - L.bid_for_side)
 			if (L.current_bid > 0) {
 				msg += " with +" + L.current_bid + " TRP at start."
 			} else {
 				msg += "."
 			}
+			log (bold(msg))
+			msg = say_player(L.bid_for_side) + " will play " + say_nation(data.flags[L.bid_for_side].name, L.bid_for_side) + "."
 			log (bold(msg))
 			if (L.current_bid > 0) {
 				G.bid = L.current_bid
@@ -2290,9 +2295,9 @@ P.bid_for_sides = {
 
 			if (L.current_bidder !== L.bid_for_side) {
 				log (italic("Player colors swapped."))
-				for (let ix = 0; ix < G.log.length; ix++) {
-					G.log[ix] = swap_sides(G.log[ix])
-				}
+				//for (let ix = 0; ix < G.log.length; ix++) {
+				//	G.log[ix] = swap_sides(G.log[ix])
+				//}
 				G.$pie = 1
 			}
 			L.bidding_for_sides = false
