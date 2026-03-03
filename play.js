@@ -3302,6 +3302,7 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break;
 
+		/*
 		case " ":
 			if (window.location.search.includes("France")) {
 				window.location.search = window.location.search.replace("France", "Britain")
@@ -3310,20 +3311,7 @@ window.addEventListener("keydown", function (evt) {
 			}
 			evt.preventDefault()
 			break
-
-		// TODO take out the below (cheat/debug keys)
-		case "x":
-		case "X":
-			send_message("action", ["cheat_cheat", null, game_cookie])
-			evt.preventDefault()
-			break;
-
-		case "1":
-		case "2":
-			temp = temp + 1
-			if (temp > 3) temp = 1
-			console.log(temp)
-			break;
+		 */
 	}
 })
 

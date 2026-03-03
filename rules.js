@@ -498,6 +498,7 @@ function setup_procs()
 
 /* SETUP */
 function on_setup(scenario, options) {
+
 	// Most recently written game state version
 	G.game_state_version      = GAME_STATE_VERSION
 
