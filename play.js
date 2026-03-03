@@ -680,7 +680,6 @@ function rebuild_ui()
 function on_pie()
 {
 	rebuild_ui()
-	window.location.reload()
 }
 
 
