@@ -3300,8 +3300,8 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break;
 
-		/*
-		case " ":
+		case "x": //NB - if you try this in a non-solo game it just throws you out
+		case "X":
 			if (window.location.search.includes("France")) {
 				window.location.search = window.location.search.replace("France", "Britain")
 			} else {
@@ -3309,7 +3309,6 @@ window.addEventListener("keydown", function (evt) {
 			}
 			evt.preventDefault()
 			break
-		 */
 	}
 })
 

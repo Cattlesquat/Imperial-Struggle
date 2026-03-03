@@ -2331,7 +2331,7 @@ function review_begin()
 // Push another phase name onto the beginning of turn log-review stack (but only if something happened in the log that phase)
 function review_push(phase)
 {
-	if ((G.review_index.length === 0) || G.review_index.at(-1)) {
+	if ((G.review_index.length === 0) || (G.review_index.slice(-1).pop() < G.log.length - 1)) {
 		G.review_index.push(G.log.length - 1)
 		G.review_phase.push(phase)
 		if (G.temp_view) delete G.temp_view
@@ -2379,7 +2379,13 @@ function start_of_peace_turn() {
 	clear_bit(DID_THE_BRIG)
 
 	review_begin()
-	review_push("START OF TURN " + data.turns[G.turn].id + ": PEACE. [Click] \"Done\" to proceed.")
+	let msg = "START OF TURN " + data.turns[G.turn].id + ": PEACE. "
+	if ((G.turn === PEACE_TURN_3) || (G.turn === PEACE_TURN_5)) {
+		msg += " [Click] \"Done\" to add new event cards."
+	} else {
+		msg += " [Click] \"Done\" to draw awards chits."
+	}
+	review_push(msg)
 
 	clear_dirty()
 }
