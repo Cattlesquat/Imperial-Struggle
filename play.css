@@ -1953,7 +1953,7 @@ div[data-tooltip]:after {
     line-height: 24px;
     height: 480px;
     padding: 4px 8px;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: #F9EEDC; /* floralwhite was previous */
 }
 
