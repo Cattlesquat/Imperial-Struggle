@@ -3217,6 +3217,7 @@ window.addEventListener("keydown", function (evt) {
 			evt.preventDefault()
 			break
 
+		/*
 		case "h":
 		case "H":
 			window.location.href = "/games/active";
@@ -3228,6 +3229,7 @@ window.addEventListener("keydown", function (evt) {
 			window.location.href = "/games/next";
 			evt.preventDefault()
 			break
+		 */
 
 		case "m":
 		case "M":
