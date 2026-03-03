@@ -12672,6 +12672,8 @@ function end(result) {
 
 exports.roles ??= ROLES
 
+exports.default_scenario = "Bid for Sides"
+
 exports.scenarios ??= (typeof SCENARIOS !== "undefined") ? SCENARIOS : [ "Standard" ]
 
 exports.setup = function (seed, scenario, options) {
