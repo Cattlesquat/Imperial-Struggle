@@ -2020,23 +2020,11 @@ function update_war_display() {
 
 					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
 
-					if (margin === temp) {
-						update_keyword(box, theater, `theater-margin ${flag_class}`)
-						update_show(box, theater, true)
+					update_show(box, theater, false)
 
-						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-							box += "-br"
-							update_keyword(box, theater, `theater-margin ${flag_class}`)
-							update_show(box, theater, true)
-						}
-
-					} else {
+					if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
+						box += "-br"
 						update_show(box, theater, false)
-
-						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-							box += "-br"
-							update_show(box, theater, false)
-						}
 					}
 				}
 			}
