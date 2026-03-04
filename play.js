@@ -3432,62 +3432,62 @@ function say_action_points(space = true, brackets = true) {
 	for (var level = MAJOR; level <= MINOR; level++) {
 		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 			if (G.eligible === undefined) continue
-			if (action_points_eligible(i, active_rules())) {
-				if ((level === MAJOR) && G.eligible_major[i]) {
+			if (!action_points_eligible(i, active_rules())) continue
+			if ((level === MAJOR) && G.eligible_major[i]) {
 
-					if (need_comma) {
-						tell += ", "
-					}
-					tell += names[i] + (!longest ? "" : ": ")
-					told_name[i] = true
-					need_comma = true;
+				if (need_comma) {
+					tell += ", "
+				}
+				tell += names[i] + (!longest ? "" : ": ")
+				told_name[i] = true
+				need_comma = true;
 
-					tell += G.major[i] //+ " major"
-					if (G.minor[i]) {
-						tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
-						early[i] = true
-					}
+				tell += G.major[i] //+ " major"
+				if (G.minor[i]) {
+					tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
 				}
 
-				if ((level === MAJOR) === early[i]) {
-					if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
-						if (level === MINOR) {
-							if (need_comma) {
-								tell += ", "
-							}
-							tell += names[i] + (!longest ? "" : ": ")
-							told_name[i] = true
-						}
+				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
+			}
 
-						tell += G.minor[i] + (shortest ? "m" : " Minor")
-						need_comma = true;
-					}
-
-					if (G.committed[i] > 0) {
+			if ((level === MAJOR) === early[i]) {
+				if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
+					if (level === MINOR) {
 						if (need_comma) {
 							tell += ", "
 						}
+						tell += names[i] + (!longest ? "" : ": ")
+						told_name[i] = true
+					}
 
+					tell += G.minor[i] + (shortest ? "m" : " Minor")
+					need_comma = true;
+				}
+
+				if (G.committed[i] > 0) {
+					if (need_comma) {
+						tell += ", "
+					}
+
+					if (!told_name[i]) {
+						tell += names[i] + (!longest ? "" : ": ")
+						told_name[i] = true
+					}
+
+					tell += G.committed[i] + " Bonus"
+					need_comma = true;
+				}
+
+				for (let rule of active_rules_list()) {
+					let amount = rule.amount //get_contingent(i, rule.rule)
+					if (any_contingent(i, rule.rule)) {
+						if (need_comma) tell += ", "
 						if (!told_name[i]) {
 							tell += names[i] + (!longest ? "" : ": ")
 							told_name[i] = true
 						}
-
-						tell += G.committed[i] + " Bonus"
-						need_comma = true;
-					}
-
-					for (let rule of active_rules_list()) {
-						let amount = rule.amount //get_contingent(i, rule.rule)
-						if (any_contingent(i, rule.rule)) {
-							if (need_comma) tell += ", "
-							if (!told_name[i]) {
-								tell += names[i] + (!longest ? "" : ": ")
-								told_name[i] = true
-							}
-							tell += amount + " " + (shortest ? rule.short : rule.rule)
-							need_comma = true
-						}
+						tell += amount + " " + (shortest ? rule.short : rule.rule)
+						need_comma = true
 					}
 				}
 			}

@@ -4071,7 +4071,7 @@ const SHORT_SCOTLAND_IRELAND    = "Scot/Ire"
 function space_rules(s, type, force_type = -1)
 {
 	let qualified_rules = []
-	let matching_type = (force_type >= 0) ? force_type : space_action_type(s)
+	let matching_type = (force_type >= 0) ? force_type : (s >= 0) ? space_action_type(s) : -1
 
 	if ((s >= 0) && (type === matching_type)) {
 		for (let rule of active_rules()) {
