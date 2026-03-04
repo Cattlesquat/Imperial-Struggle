@@ -8352,9 +8352,28 @@ P.advantage_naval_bastion = {
 
 		log (say_navy_box())
 
-		end()
+		G.action_cost = 1
+
+		goto ("pay_naval_bastion")
 	}
 }
+
+
+function do_naval_bastion()
+{
+	display_action_cost()
+}
+
+
+P.pay_naval_bastion = script(`	        
+  	call decide_how_and_whether_to_spend_action_points	
+    if (!is_bit(PAID_ACTION_COST)) {
+    	eval { pop_undo() }
+    	return
+    }
+       
+    eval { do_naval_bastion() }
+`)
 
 
 function set_up_conflict_advantage(a)
