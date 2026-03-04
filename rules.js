@@ -65,10 +65,10 @@ const OLD_NUM_MINISTRY_CARDS= 21
 const NUM_MINISTRY_SLOTS    = 2
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
-const NUM_ADVANTAGES 		= 22
+const NUM_ADVANTAGES 		 = 22
 const NUM_SPACES            = 112
 const NUM_ACTION_POINTS_TYPES= 3
-const NUM_SQUADRONS			= 8 // per side, counter mix limit
+const NUM_SQUADRONS         = 8 // per side, counter mix limit
 
 // Types of War Tile
 const WAR_DUDE = 0 // Just a soldier
@@ -1385,11 +1385,12 @@ function on_view(RR = undefined) {
 	V.played_tile = G.played_tile
 
 	// Current available investments, and used investment pile, are public.
-	// Shuffled investment deck is not.
+	// Shuffled investment deck is public, but not the order of it
 	V.inv_avail = G.inv_avail
 	V.inv_played = G.inv_played
 	V.inv_used = G.inv_used
 	V.inv_stack = G.inv_stack
+	V.inv_stack.sort((a, b) => a - b)
 
 	// Flags on the board are always visible
 	V.flags = G.flags
