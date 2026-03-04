@@ -4068,11 +4068,12 @@ const SHORT_SCOTLAND_IRELAND    = "Scot/Ire"
 
 
 // Returns a list of presently-active contingent action point rules for which the specified space *qualifies* under the specified type
-function space_rules(s, type)
+function space_rules(s, type, force_type = -1)
 {
 	let qualified_rules = []
+	let matching_type = (force_type >= 0) ? force_type : space_action_type(s)
 
-	if ((s >= 0) && (type === space_action_type(s))) {
+	if ((s >= 0) && (type === matching_type)) {
 		for (let rule of active_rules()) {
 			switch (rule) {
 				case RULE_UNFLAG_EUROPE:
@@ -10129,7 +10130,7 @@ function advance_action_round_subphase(subphase)
 }
 
 // Set up our tracking of an impending "How would you like to pay for this, Sir?" situation
-function action_cost_setup(s, t) {
+function action_cost_setup(s, t, force_type = -1) {
 
 	// The space we're checking, if any (could be -1)
 	G.active_space = s
@@ -10149,10 +10150,10 @@ function action_cost_setup(s, t) {
 	}
 
 	// How many action points (of the active flavor) are immediately available (without taking debt, spending TRP, or otherwise invoking an ability to gain more)
-	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false, space_rules(G.active_space, G.action_type)) + committed
+	G.action_points_available_now  = action_points_available(G.active, G.active_space, G.action_type, false, space_rules(G.active_space, G.action_type, force_type)) + committed
 
 	// How many action points (of the active flavor) would we have total, if we took all possible debt and spent all our TRP. Our notional absolute maximum w/o needing an ability/advantage.
-	G.action_points_available_debt = action_points_available(G.active, G.active_space, G.action_type, true, space_rules(G.active_space, G.action_type)) + committed
+	G.action_points_available_debt = action_points_available(G.active, G.active_space, G.action_type, true, space_rules(G.active_space, G.action_type, force_type)) + committed
 
 	// Clause to remind player why he might be wanting to cough up enough debt or whatever (e.g. "... to unflag Denmark")
 	G.action_string = ""
@@ -10192,7 +10193,7 @@ function action_cost_setup(s, t) {
 function handle_space_click(s, force_type = -1)
 {
 	if (has_transient(G.active, TRANSIENT_JACOBITES_USED_2) && [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s) && (force_type === -1)) {
-		if (!action_points_available(G.active, s, DIPLO, true, space_rules(s))) {
+		if (!action_points_available(G.active, s, DIPLO, true, space_rules(s, DIPLO))) {
 			advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 			action_cost_setup(s, MIL)
 			G.action_cost   = action_point_cost(R, s, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
@@ -10201,14 +10202,14 @@ function handle_space_click(s, force_type = -1)
 			call ("jacobite_flow")
 			return
 		}
-		if (action_points_eligible_major(G.active, s, MIL, true, space_rules(s))) {
+		if (action_points_eligible_major(G.active, s, MIL, true, space_rules(s, MIL))) {
 			G.active_space = s
 			call ("jacobite_divert")
 			return
 		}
 	}
 
-	action_cost_setup(s, (force_type > 0) ? force_type : space_action_type(s))
+	action_cost_setup(s, (force_type > 0) ? force_type : space_action_type(s), force_type)
 
 	if (data.spaces[s].type === NAVAL) {
 		handle_naval_space(s)
@@ -10565,7 +10566,7 @@ function pay_action_cost() {
 	}
 
 	// Spent contingent points, if available
-	for (let rule of space_rules(G.active_space, G.action_type)) {
+	for (let rule of space_rules(G.active_space, G.action_type, (G.action_type === MIL) ? MIL : -1)) {
 		if (rule === RULE_EUROPE_BURKE) continue
 
 		G.action_cost = use_contingent(G.action_cost, G.action_type, rule)
