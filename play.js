@@ -1795,8 +1795,9 @@ function on_update() {
 
 	for (const id of [ "end_action_round_button", "confirm_end_action_round_2_button", "confirm_end_action_round_bank_button", "confirm_end_action_round_halley_button", "confirm_end_action_round_walpole_button", "confirm_end_action_round_huguenots_button" ]) {
 		let button = document.getElementById(id)
-		let label = button.innerHTML
-		button.className = (id === "end_action_round_button") ? "readybutton" : "almostbutton"
+		if (button !== null) {
+			button.className = (id === "end_action_round_button") ? "readybutton" : "almostbutton"
+		}
 	}
 
 	confirm_action_button("confirm_end_action_round", (is_mobile() || shortest) ? "End Early" : "End Action Round Early", "You still have unspent action points! Confirm ending Action Round early?")
