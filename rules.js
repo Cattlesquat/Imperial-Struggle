@@ -3700,7 +3700,8 @@ P.scoring_phase = function () {
 		G.scoring_region_trp.push(G.treaty_points.slice())
 	}
 
-	for (const d of G.global_demand) {
+	for (let d = 0; d < NUM_DEMANDS; d++) {
+		if (!G.global_demand.includes(d)) continue
 		let winner = demand_flag_winner(d)
 		if (winner !== NONE) {
 			log_box_begin(winner, "Scoring: " + data.demands[d].name.toUpperCase() + "\n" + data.flags[winner].name + " +" + demand_flag_delta(d) + " flags")
