@@ -10105,10 +10105,10 @@ function reflag_space(s, who, silent = false) {
 			}
 			msg += "."
 			log(bold(msg))
+
+			display_action_cost()
 		}
 	}
-
-	display_action_cost()
 
 	mark_dirty(s) // We've now changed this space. Highlight it until next investment tile.
 	mark_navy_this_war(s)
