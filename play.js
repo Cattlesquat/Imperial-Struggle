@@ -2115,10 +2115,12 @@ function update_war_display() {
 			if (!already_done) {
 				if ((R === FRANCE) || (R === BRITAIN)) {
 					for (const t of G.theater_basic[R][theater]) {
+						if (t < 0) continue
 						if (!set_has(G.basic_revealed[R], t)) unrevealed += data.basic_war_tiles[t].val
 					}
 
 					for (const t of G.theater_bonus[R][theater]) {
+						if (t < 0) continue
 						if (!set_has(G.bonus_revealed[R], t)) unrevealed += data.bonus_war_tiles[t].val
 					}
 				}
