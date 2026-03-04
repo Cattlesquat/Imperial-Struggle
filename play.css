@@ -53,6 +53,7 @@ body.Britain header.your_turn { background-color: salmon }
 
 #all_ministries {
 	margin: 12px auto;
+    min-width: 2550px;
 	max-width: 2550px;
 }
 
