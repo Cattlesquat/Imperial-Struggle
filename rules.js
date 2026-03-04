@@ -6769,7 +6769,7 @@ P.event_war_of_the_polish_succession = {
 			}
 		} else {
 			let msg = "shift Russia or Sweden"
-			if (G.qualifies_for_bonus) {
+			if (is_bit(QUALIFIES_FOR_BONUS)) {
 				let any = false
 				for (const s of [ RUSSIA, SWEDEN ]) {
 					if (G.flags[s] === R) continue
