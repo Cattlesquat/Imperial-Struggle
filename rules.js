@@ -395,6 +395,7 @@ const ADVANTAGE_OPTIONAL          = 22
 const LEAVE_LOG_BOX_OPEN          = 23
 const STARTED_MINISTRY_BOX        = 24
 const ELIGIBLE_FOR_HUGUENOTS      = 25
+const MINISTRY_JUST_REVEALED      = 26
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -7491,6 +7492,8 @@ function handle_ministry_card_click(m)
 }
 
 P.ministry_flow = script (`	
+    eval { clear_bit(MINISTRY_JUST_REVEALED) }
+    
     if (!G.ministry_revealed[R][G.ministry_index]) {
         eval { clear_bit(STARTED_MINISTRY_BOX) }
     	call confirm_reveal_ministry
@@ -7643,6 +7646,7 @@ P.confirm_reveal_ministry = {
 	},
 	reveal_ministry() {
 		push_undo()
+		set_bit(MINISTRY_JUST_REVEALED)
 		if (!is_log_box(LOG_BOX_MINISTRY)) {
 			log_box_ministry(R, G.ministry_id) // If we manually click on a minister to reveal him, don't reveal his name into the log until he's confirmed to be getting revealed (otherwise would leak information)
 			set_bit(STARTED_MINISTRY_BOX)
@@ -8027,7 +8031,7 @@ P.ministry_jacobite_uprisings = {
 				V.prompt = say_ministry_header() + say_action("This ministry requires [@2] (military action points) to activate.")
 			}
 		}
-		button("pass")
+		if (is_bit(MINISTRY_JUST_REVEALED)) button("pass") // If we just manually revealed the ministry (only) we may not want to do any actions and that's okay (allowing pass in other conditions would leave a spurious log box commemorating our indecision)
 	},
 	jacobite_vp() {
 		push_undo()
