@@ -12386,6 +12386,7 @@ P.war_reset_phase = function () {
 			if (!data.wars[G.next_war].theater[theater].conflicts) continue
 			let r = data.spaces[s].region
 			if ((r === data.wars[G.next_war].theater[theater].region) || ((G.next_war === WAR_7YW) && (theater === 3) && (r === REGION_CARIBBEAN))) {
+				if ((G.flags[s] !== FRANCE) && (G.flags[s] !== BRITAIN)) continue // Don't remove conflicts on neutral spaces (they didn't grant anybody strength). On off chance we ever support e.g. SPAIN, those don't count either.
 				conflicts_removed.push(s)
 				remove_conflict_marker(s, true)
 			}
