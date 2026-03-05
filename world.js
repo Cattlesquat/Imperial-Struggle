@@ -363,7 +363,7 @@ function lookup_thing(action, id) {
 
 function _on_click_thing(evt) {
 	if (evt.button === 0) {
-		var thing = evt.target.thing
+		var thing = evt.currentTarget.thing
 		evt.stopPropagation()
 		if (_focus_stack(thing.element.parentElement.thing))
 			if (!send_action(thing.my_action, thing.my_id))
@@ -373,7 +373,7 @@ function _on_click_thing(evt) {
 
 function _on_click_stackable(evt) {
 	if (evt.button === 0) {
-		var thing = evt.target.thing
+		var thing = evt.currentTarget.thing
 		evt.stopPropagation()
 		_focus_stack(thing.element.parentElement.thing)
 	}
@@ -381,7 +381,7 @@ function _on_click_stackable(evt) {
 
 function _on_focus_stackable(evt) {
 	if (world.mouse_focus) {
-		var thing = evt.target.thing
+		var thing = evt.currentTarget.thing
 		_focus_stack(thing.element.parentElement.thing)
 	}
 }
