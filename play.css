@@ -726,60 +726,22 @@ body[data-noanims="false"] .card.action {
                                 #ffd580 10px,
                                 #ffd580 20px); }
 
-
-.ministry_card.exhausted-1::before, .ministry_card.exhausted-2::before {
-	content: "";
+.ministry_card .exhausted.a1 {
 	position: absolute;
-	width: 34px;
-	height: 34px;
-	background-image: url(tiles75/square-sm/exhausted.png);
-	background-size: 38px;
-	background-position: center;
-	right: 0;
-}
-
-.ministry_card.exhausted-1::before {
 	top: 55%;
+	right: -8px;
 }
 
-.ministry_card.exhausted-2::before {
+.ministry_card .exhausted.a2 {
+	position: absolute;
 	top: 75%;
+	right: -8px;
 }
 
-.ministry_card.exhausted-1.exhausted-2::before {
-	content: "";
+.advantage .exhausted {
 	position: absolute;
-	width: 34px;
-	height: 130px;
-	background-image: url(tiles75/square-sm/exhausted.png), url(tiles75/square-sm/exhausted.png);
-	background-size: 38px;
-	background-position: center top, center bottom;
-	background-repeat: no-repeat;
-	top: 55%;
-	right: 0;
-}
-
-.marker.advantage.exhausted::before {
-	content: "";
-	position: absolute;
-	width: 34px;
-	height: 34px;
-	background-image: url(tiles75/square-sm/exhausted.png);
-	background-size: 38px;
-	background-position: center;
-	top: 0;
-	right: 0;
-}
-
-.marker.advantage-exhausted {
-    content: "";
-    position: absolute;
-    width: 34px;
-    height: 34px;
-    background-image: url(tiles75/square-sm/exhausted.png);
-    background-size: 38px;
-    background-position: center;
-    top: 45px;
+	top: -6px;
+	right: -6px;
 }
 
 .bonus_war.hidden, .basic_war.hidden {

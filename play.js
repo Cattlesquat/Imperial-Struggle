@@ -896,8 +896,6 @@ function on_init() {
 	//define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
 	//define_thing("tip-award", REGION_INDIA).layout(find_layout_node("Award India")).tooltip(award_tooltip)
 
-	define_marker("exhausted", undefined, "square-sm")
-
 	define_marker("game-turn", 0, "square-sm").tooltip(game_turn_tooltip)
 	define_marker("victory-points", undefined, "square-sm black").tooltip(vp_tooltip)
 	define_marker("debt", FRANCE, "square-sm fr").tooltip(debt_tooltip)
@@ -954,8 +952,6 @@ function on_init() {
 			.keyword("square advantage a" + a.num)
 			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
-
-		define_marker ("advantage-exhausted", a.num).tooltip(advantage_tooltip).tooltip_image(advantage_tooltip_image)
 	}
 
 	for (a of data.investments) {
@@ -1603,11 +1599,12 @@ function on_update() {
 		populate(layout, index, "advantage", a)
 
 		if (is_advantage_exhausted(a) && (V.advantages[a] !== NONE)) {
-			populate("lout-advantage", a, "advantage-exhausted", a)
+			populate_generic("lout-advantage", a, "marker square-sm exhausted")
 		}
 
 		update_keyword("advantage", a, "reverse", reverse)
-		update_keyword("advantage", a, "exhausted", is_advantage_exhausted(a) && (noflipsies || (downanddirty && V.advantages[a] === NONE)))
+		if (is_advantage_exhausted(a) && (noflipsies || (downanddirty && V.advantages[a] === NONE)))
+			populate_generic("advantage", a, "marker square-sm exhausted")
 	}
 
 	if (V.all_ministries) {
@@ -1676,14 +1673,10 @@ function on_update() {
 
 				//console.log ("Ministry: " + data.ministries[m].name + "  Ability 1 exhausted: " + is_ministry_exhausted(who, m, 0) + "  Ability 2 exhausted: " + is_ministry_exhausted(who, m, 1))
 
-				for (let ability = 0; ability < 2; ability++) {
-					update_keyword("ministry_card", m, "exhausted-" + (ability + 1), is_ministry_exhausted(who, m, ability))
-				}
-				//for (let ability = 0; ability < data.ministries[m].abilities; ability++) {
-				//	if (is_ministry_exhausted(who, m, ability)) {
-				//		update_keyword("ministry_card", m, "exhausted-" + (ability + 1), true)
-				//	}
-				//}
+				if (is_ministry_exhausted(who, m, 0))
+					populate_generic("ministry_card", m, "marker square-sm exhausted a1")
+				if (is_ministry_exhausted(who, m, 1))
+					populate_generic("ministry_card", m, "marker square-sm exhausted a2")
 			} else {
 				set_fallback_tips(populate_generic("panel-ministry", who, "card ministry_card deck_" + ((who === FRANCE) ? "fr" : "br")), (bold(((who === FRANCE) ? "French" : "British") + " Ministry: ")) + "Hidden.")
 			}
