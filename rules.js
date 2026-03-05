@@ -8567,7 +8567,7 @@ P.advantage_unflag_discount = {
 		let type = L.adv_market ? ECON : DIPLO
 		let msg = "Pick a " + L.adv_string + " to unflag " + (L.adv_for_one ? "for " + say_action_points(1, type) + "." : "for one fewer [@" + type + "].")
 		let space_type = L.adv_market ? MARKET : POLITICAL
-		if (!G.eligible[type] ) {
+		if (!action_points_eligible(type, active_rules())) { // Consider all possible sources of action points. If we don't have ANY of the right type then stop.
 			if (type === ECON) {
 				msg = "You must have an Economic action available to unflag markets."
 			} else {
