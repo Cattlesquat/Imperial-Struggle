@@ -1389,8 +1389,7 @@ function on_view(RR = undefined) {
 	V.inv_avail = G.inv_avail
 	V.inv_played = G.inv_played
 	V.inv_used = G.inv_used
-	V.inv_stack = G.inv_stack
-	V.inv_stack.sort((a, b) => a - b)
+	V.inv_stack = G.inv_stack.slice().sort((a, b) => a - b)
 
 	// Flags on the board are always visible
 	V.flags = G.flags
