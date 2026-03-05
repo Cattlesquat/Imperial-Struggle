@@ -12666,7 +12666,6 @@ function finish(result, message) {
 	G.active = -1
 	G.result = ROLES[result] ?? result
 	G.L = L = { message }
-	log()
 	log(message)
 }
 
