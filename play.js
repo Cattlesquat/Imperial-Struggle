@@ -718,7 +718,8 @@ function on_init() {
 	define_panel("#played", "panel-played", 0)
 	define_panel("#available_investment_tiles", "panel-available-investments")
 	define_panel("#used_investment_tiles", "panel-used-investments")
-
+	define_panel("#upcoming_investment_tiles", "panel-upcoming-investments")
+s
 	define_board("#map", 2550, 1650, [0, 0, 0, 0])
 
 	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5, 0, -50)
@@ -1409,7 +1410,7 @@ function on_update() {
 		}
 	}
 
-	if (V.inv_stack) {
+	if (V.inv_stack && (V.inv_stack.length > 16)) {
 		for (const i of V.inv_stack) {
 			populate("stack-deal", undefined, "investment", i)
 		}
@@ -1633,6 +1634,14 @@ function on_update() {
 		return aa - bb
 	})
 
+	V.inv_stack.sort((a, b) =>
+	{
+		let aa = data.investments[a].majortype * 100 + (5 - data.investments[a].majorval) * 10 + data.investments[a].minortype
+		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
+		return aa - bb
+	})
+
+
 	populate_with_list("panel-available-investments", "investment", V.inv_avail)
 
 	if (V.subphase !== NOT_ACTION_PHASE) {
@@ -1659,6 +1668,10 @@ function on_update() {
 	}
 
 	populate_with_list("panel-used-investments", "investment", V.inv_used)
+
+	if (V.inv_stack.length <= 16) {
+		populate_with_list("panel-upcoming-investments", "investment", V.inv_stack)
+	}
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		if (!V.ministry) continue
