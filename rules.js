@@ -9369,7 +9369,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 	// General Rule: Apply all reductions before any increases (5.4.2, 5.5.2)
 
 	if (type === MIL) {
-		if ((data.spaces[s].type === FORT) && is_damaged_fort()) {
+		if ((data.spaces[s].type === FORT) && is_damaged_fort(s)) {
 			if (G.flags[s] === G.active) { //BR// hmmm... should I be passing "who" as a parameter, or do I only ever need for active player? For now I *think* the latter.
 				cost -= 1 // Repairing friendly fort costs one less than strength
 				G.breakdown += " -1 friendly fort."
