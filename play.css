@@ -40,7 +40,7 @@ body.Britain header.your_turn { background-color: salmon }
 #panels {
 	display: grid;
 	max-width: fit-content;
-	grid-template-columns: repeat(3, min-content);
+	grid-template-columns: repeat(4, min-content);
 	margin: 20px auto;
 	gap: 20px;
 }
@@ -53,7 +53,7 @@ body.Britain header.your_turn { background-color: salmon }
 
 #all_ministries {
 	margin: 12px auto;
-    min-width: 2550px;
+	min-width: 2550px;
 	max-width: 2550px;
 }
 
@@ -66,14 +66,18 @@ body.Britain header.your_turn { background-color: salmon }
     visibility: hidden
 }
 
-#advantage_fr .panel-body, #advantage_br .panel-body { width: 252px }
+#played .panel-body, #advantage_fr .panel-body, #advantage_br .panel-body { width: 252px }
+
+#available_investment_tiles .panel-body { width: 492px; min-height: 328px; }
 #ministry_fr .panel-body, #ministry_br .panel-body { width: 516px }
+
 #events_fr .panel-body, #events_br .panel-body { width: 780px }
 
-#played .panel-body { width: 252px }
-#available_investment_tiles .panel-body { width: 492px; min-height: 328px; }
-/* #available_investment_tiles .panel-body { width: 516px } */
-#used_investment_tiles .panel-body { width: 780px }
+#used_investment_tiles .panel-body, #upcoming_investment_tiles .panel-body { width: 368px; }
+
+#events_fr, #events_br {
+	grid-column: span 2;
+}
 
 body.Britain #advantage_br,
 body.Britain #ministry_br,
@@ -308,6 +312,18 @@ header details menu { min-width: 200px; }
 
 .layout.lout-theater-drawn .hex {
 	margin: 0px -10px;
+}
+
+#advantage_fr .panel-body,
+#advantage_br .panel-body {
+	justify-content: center;
+	gap: 8px;
+}
+
+#used_investment_tiles .panel-body,
+#upcoming_investment_tiles .panel-body {
+	justify-content: center;
+	gap: 8px;
 }
 
 #available_investment_tiles .panel-body {
