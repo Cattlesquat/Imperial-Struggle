@@ -11515,9 +11515,9 @@ P.war_theater_reveal = {
 
 		// First to act is player closest to automatic victory, or if tied it's whoever went first on the last peace turn
 		if (G.vp > 15) {
-			G.first_war_player = BRITAIN
-		} else if (G.vp < 15) {
 			G.first_war_player = FRANCE
+		} else if (G.vp < 15) {
+			G.first_war_player = BRITAIN
 		} else {
 			G.first_war_player = G.first_player
 		}
