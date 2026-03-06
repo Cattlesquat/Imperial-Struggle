@@ -9382,7 +9382,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 		}
 
 		if (has_conflict_marker(s)) {
-			cost = get_conflict_marker() + 1 // Either 2 for basic conflict or 3 for Haitians
+			cost = get_conflict_marker(s) + 1 // Either 2 for basic conflict or 3 for Haitians
 			G.breakdown = "Remove Conflict: 2."
 			if (cost > 2) {
 				G.breakdown += " +1 Haitian Revolution."
