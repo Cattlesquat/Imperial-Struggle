@@ -692,6 +692,7 @@ function on_init() {
 	init_preference_checkbox("noflipsies", false)
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
+	init_preference_checkbox("redsies", false)
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
 	init_preference_checkbox("scoresies", false, on_dialog_refresh)
@@ -1578,8 +1579,9 @@ function on_update() {
 		}
 		let dirty = set_has(V.dirty, s.num)
 		let tracksies = get_preference("tracksies", true)
-		update_keyword("space", s.num, "dirty_br", dirty && (V.dirty_who === BRITAIN) && tracksies)
-		update_keyword("space", s.num, "dirty_fr", dirty && (V.dirty_who !== BRITAIN) && tracksies)
+		let redsies = get_preference("redsies", false)
+		update_keyword("space", s.num, "dirty_br", dirty && tracksies && ((V.dirty_who === BRITAIN) || redsies))
+		update_keyword("space", s.num, "dirty_fr", dirty && tracksies && ((V.dirty_who !== BRITAIN) && !redsies))
 	}
 
 	let noflipsies = get_preference("noflipsies", false)
