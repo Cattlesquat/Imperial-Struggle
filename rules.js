@@ -8327,8 +8327,8 @@ P.advantage_naval_bastion = {
 	},
 	inactive: "activate Naval Bastion",
 	prompt() {
-		if (!G.eligible[MIL]) {
-			V.prompt = advantage_prompt(R, G.active_advantage, "You need an available Military action to use this advantage.")
+		if (!G.eligible_major[MIL]) {
+			V.prompt = advantage_prompt(R, G.active_advantage, "You need an available major Military action to use this advantage.")
 		} else {
 			let any = false;
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -9374,7 +9374,7 @@ function action_point_cost (who, s, type, ignore_region_switching = false)
 				cost -= 1 // Repairing friendly fort costs one less than strength
 				G.breakdown += " -1 friendly fort."
 				set_bit(ACTION_COST_ADJUSTED)
-			} else if (G.flags[s] === G.active - 1) {
+			} else if (G.flags[s] === 1 - G.active) {
 				cost += 1 // Seizing enemy fort costs one more than strength
 				G.breakdown += " +1 enemy fort."
 				set_bit(ACTION_COST_ADJUSTED)
