@@ -1354,7 +1354,7 @@ function on_view(RR = undefined) {
 		V = { log: G.log }
 	}
 
-	if (G.temp_view) {
+	if (G.active >= 0 && G.temp_view) {
 		if (G.temp_view[R] && (G.temp_view[R].game_state_version && (G.temp_view[R].game_state_version >= 17))) {
 			V = G.temp_view[R]
 			absolute_view()
