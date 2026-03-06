@@ -2289,7 +2289,7 @@ function update_war_display() {
 					
 					// flag no count if conflict or damaged
 					if (flag !== FRANCE && flag !== BRITAIN) continue
-					if (set_has(V.conflicts, s) || is_damaged_fort(s)) continue
+					if (has_conflict_marker(s) || is_damaged_fort(s)) continue
 					
 					// Add space to array (avoid duplicates)
 					if (flag === FRANCE && !alliances[name].fr.includes(s)) alliances[name].fr.push(s)
