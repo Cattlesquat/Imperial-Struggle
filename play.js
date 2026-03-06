@@ -3449,17 +3449,23 @@ function say_action_points(space = true, brackets = true) {
 				}
 				tell += names[i] + (!longest ? "" : ": ")
 				told_name[i] = true
-				need_comma = true;
+				need_comma = true
 
 				tell += G.major[i] //+ " major"
 				if (G.minor[i]) {
 					tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
 				}
 
+				console.log ("Major " + i)
+
 				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
 			}
 
 			if ((level === MAJOR) === early[i]) {
+
+				console.log ("Minor " + i)
+				console.log ("   early? " + early[i])
+
 				if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
 					if (level === MINOR) {
 						if (need_comma) {
@@ -3467,6 +3473,8 @@ function say_action_points(space = true, brackets = true) {
 						}
 						tell += names[i] + (!longest ? "" : ": ")
 						told_name[i] = true
+					} else if (need_comma) {
+						tell += ", "
 					}
 
 					tell += G.minor[i] + (shortest ? "m" : " Minor")
@@ -3484,7 +3492,7 @@ function say_action_points(space = true, brackets = true) {
 					}
 
 					tell += G.committed[i] + " Bonus"
-					need_comma = true;
+					need_comma = true
 				}
 
 				for (let rule of active_rules_list()) {
