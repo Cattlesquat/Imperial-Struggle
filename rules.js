@@ -10943,9 +10943,9 @@ P.action_round_core = {
 		let whom = ((G.active === "France") || (G.active === FRANCE)) ? FRANCE : BRITAIN
 		if (G.subphase <= OPTION_TO_PLAY_EVENT) {
 			if ((data.investments[G.played_tile].majorval <= 3) || (has_active_ministry(whom, MARQUIS_DE_CONDORCET) && !is_ministry_exhausted(whom, MARQUIS_DE_CONDORCET))) {
-				return "play an event or begin spending action points and using abilities"
+				return "play an event or begin spending action points and using abilities. " + say_action_points_left()
 			} else {
-				return "begin spending action points and using abilities"
+				return "begin spending action points and using abilities. " + say_action_points_left()
 			}
 		} else {
 			return "spend action points or use an ability. " + say_action_points_left()
