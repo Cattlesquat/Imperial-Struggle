@@ -276,8 +276,8 @@ function space_tooltip_image(s, onoff)
 
 		world.map_tip.hidden = false
 		world.map_tip.style.backgroundPosition = "-" + rect[0] + "px -" + rect[1] + "px" //need negative offsets
-		world.map_tip.style.width = rect[2] + "px";
-		world.map_tip.style.height = rect[3] + "px";
+		world.map_tip.style.width = rect[2] + "px"
+		world.map_tip.style.height = rect[3] + "px"
 	} else {
 		world.map_tip.hidden = true
 	}
@@ -1337,7 +1337,6 @@ function next_peace_turn(turn)
 function say_verbosity()
 {
 	let verbose = get_preference("actionverbosity", "medium")
-	console.log (verbose)
 	if (verbose === "short") {
 		return "Brief"
 	} else if (verbose === "long") {
@@ -2580,7 +2579,7 @@ function escape_square_brackets(text) {
 			if (type === "P") {
 				let action_text = say_action_points()
 				text = text.replace(/\[.*?]/, action_text)
-				break; // Gonna cheat and break here, because I only use this at the end of strings. Sorry, future-self-using-it-somewhere-else...
+				break // Gonna cheat and break here, because I only use this at the end of strings. Sorry, future-self-using-it-somewhere-else...
 			}
 
 			if (inside[1] === "Click") {
@@ -2647,9 +2646,9 @@ function escape_square_brackets(text) {
 				case "@":
 					className = "symbol"
 					switch (value) {
-						case ECON: className += " econ"; break;
-						case DIPLO: className += " diplo"; break;
-						case MIL: className += " mil"; break;
+						case ECON: className += " econ"; break
+						case DIPLO: className += " diplo"; break
+						case MIL: className += " mil"; break
 					}
 					tooltip_text = `<span 
 						class="${className}"
@@ -3177,7 +3176,7 @@ window.addEventListener("keydown", function (evt) {
 			on_dialog_refresh("scoresies", get_preference("scoresies", false))
 			var input = document.querySelector(`input[name="scoresies"]`)
 			input.checked = get_preference("scoresies", false)
-			break;
+			break
 
 		case "y":
 		case "Y":
@@ -3215,13 +3214,13 @@ window.addEventListener("keydown", function (evt) {
 		/*
 		case "h":
 		case "H":
-			window.location.href = "/games/active";
+			window.location.href = "/games/active"
 			evt.preventDefault()
 			break
 
 		case "n":
 		case "N":
-			window.location.href = "/games/next";
+			window.location.href = "/games/next"
 			evt.preventDefault()
 			break
 		 */
@@ -3261,7 +3260,7 @@ window.addEventListener("keydown", function (evt) {
 		case "P":
 			toggle_notepad()
 			evt.preventDefault()
-			break;
+			break
 
 		case "v":
 		case "V":
@@ -3280,7 +3279,7 @@ window.addEventListener("keydown", function (evt) {
 		case " ":  //"Tab": // TAB
 			toggle_markers()
 			evt.preventDefault()
-			break;
+			break
 
 		case "Escape": // ESC - hide any dialogs, restore approximate "default state"
 			hide_dialog("scoring_summary_dialog")
@@ -3293,7 +3292,7 @@ window.addEventListener("keydown", function (evt) {
 			set_preference_checkbox("allwars", false)
 			update_zoom()
 			evt.preventDefault()
-			break;
+			break
 
 		case "x": //NB - if you try this in a non-solo game it just throws you out
 		case "X":
@@ -3456,16 +3455,10 @@ function say_action_points(space = true, brackets = true) {
 					tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
 				}
 
-				console.log ("Major " + i)
-
 				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
 			}
 
 			if ((level === MAJOR) === early[i]) {
-
-				console.log ("Minor " + i)
-				console.log ("   early? " + early[i])
-
 				if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
 					if (level === MINOR) {
 						if (need_comma) {
@@ -3478,7 +3471,7 @@ function say_action_points(space = true, brackets = true) {
 					}
 
 					tell += G.minor[i] + (shortest ? "m" : " Minor")
-					need_comma = true;
+					need_comma = true
 				}
 
 				if (G.committed[i] > 0) {
@@ -4311,7 +4304,7 @@ function dragElement(e) {
 
 		// set the element's new position
 
-		the_e.style.position = "absolute";
+		the_e.style.position = "absolute"
 		the_e.style.top = (the_e.offsetTop - pos2) + "px"
 		the_e.style.left = (the_e.offsetLeft - pos1) + "px"
 	}
