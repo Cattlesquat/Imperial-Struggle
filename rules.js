@@ -369,7 +369,7 @@ const NOT_ACTION_PHASE				= 6
 
 // Generic persistent bitflags
 const NUM_BITFLAGS                = 32
-const FLAG_MILITARY_UPGRADE	      = 0
+const FLAG_MILITARY_UPGRADE	   = 0
 const BUYING_WAR_TILE             = 1
 const JACOBITES_ALWAYS            = 2
 const JACOBITES_NEVER             = 3
@@ -396,6 +396,7 @@ const LEAVE_LOG_BOX_OPEN          = 23
 const STARTED_MINISTRY_BOX        = 24
 const ELIGIBLE_FOR_HUGUENOTS      = 25
 const MINISTRY_JUST_REVEALED      = 26
+const LAST_EVENT_BY_BRITAIN       = 27
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -1382,6 +1383,7 @@ function on_view(RR = undefined) {
 	V.discard_pile = G.discard_pile
 	V.played_events = G.played_events
 	V.played_event = G.played_event
+	V.played_event_who = is_bit(LAST_EVENT_BY_BRITAIN) ? BRITAIN : FRANCE
 	V.played_tile = G.played_tile
 
 	// Current available investments, and used investment pile, are public.
@@ -4508,6 +4510,7 @@ P.after_selecting_tile = script(`
 // Player selects an event card to play
 function handle_event_card_click(c) {
 	G.played_event = c
+	set_bit(LAST_EVENT_BY_BRITAIN, (R === BRITAIN))
 	G.action_header = "PLAY EVENT: "
 
 	if (data.cards[c].action !== WILD) {

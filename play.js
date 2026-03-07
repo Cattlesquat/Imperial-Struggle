@@ -379,7 +379,7 @@ function event_tooltip(c, who) {
 		if ((who === undefined) && ((R === FRANCE) || (R === BRITAIN))) {
 			if (V.hand[R].includes(c)) who = R
 			if (V.played_event === c) {
-				who = V.active
+				who = V.played_event_who ?? V.active
 			}
 		}
 
