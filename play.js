@@ -1607,6 +1607,9 @@ function on_update() {
 	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	//}
 
+	let tracksies = get_preference("tracksies", true)
+	let redsies = get_preference("redsies", false)
+
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
 			if (V.flags[s.num] === FRANCE) {
@@ -1630,8 +1633,6 @@ function on_update() {
 			}
 		}
 		let dirty = set_has(V.dirty, s.num)
-		let tracksies = get_preference("tracksies", true)
-		let redsies = get_preference("redsies", false)
 		update_keyword("space", s.num, "dirty_br", dirty && tracksies && ((V.dirty_who === BRITAIN) || redsies))
 		update_keyword("space", s.num, "dirty_fr", dirty && tracksies && ((V.dirty_who !== BRITAIN) && !redsies))
 	}
