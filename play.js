@@ -408,6 +408,18 @@ function ministry_tooltip(m, who) {
 	msg += ": "
 	msg += escape_square_brackets(data.ministries[m].effect)
 
+	if (V && V.ministry && Array.isArray(V.ministry)) {
+		who = data.ministries[m].side
+		if (is_ministry_fully_exhausted(who, m)) {
+			msg += " " + bold("EXHAUSTED.")
+		} else if (is_ministry_partially_exhausted(who, m)) {
+			let report = " Ability #1: "
+			report = " Ability #1: " + (is_ministry_exhausted(who, m, 0) ? "EXHAUSTED. " : "Available. ")
+			report += " Ability #2: " + (is_ministry_exhausted(who, m, 1) ? "EXHAUSTED. " : "Available. ")
+			msg += bold(report)
+		}
+	}
+
 	return msg
 }
 
@@ -973,7 +985,7 @@ function on_init() {
 		define_card("ministry_card", i)
 			.animate()
 			.keyword("c" + i)
-			.tooltip(ministry_tooltip(i))
+			.tooltip(ministry_tooltip)
 	}
 
 	for (i = 0; i < NUM_BASE_WAR_TILES; ++i) {
