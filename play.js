@@ -716,6 +716,46 @@ function on_init() {
 
 	set_available_debt_tooltips()
 
+	// Rollovers for top toolbar
+	let toolbar = document.getElementById("toolbar")
+	if (toolbar) {
+		let cog = toolbar.firstElementChild
+		if (cog) {
+			cog.onmouseenter = () => { world.status.innerHTML = bold("Tools: ") + "Recent changes list, UI options, navigation, notepad, and resign." }
+			cog.onmouseleave = () => { world.status.innerHTML = ""}
+		}
+		let log_button = document.getElementById("log_button")
+		if (log_button) {
+			log_button.onmouseenter = () => { world.status.innerHTML = bold("Toggle Log: ") + "Shows or hides the game log." + (!is_mobile() ? italic(" Hotkey: L.") : "") }
+			log_button.onmouseleave = () => { world.status.innerHTML = ""}
+		}
+		let zoom_button = document.getElementById("zoom_button")
+		if (zoom_button) {
+			zoom_button.onmouseenter = () => { world.status.innerHTML = bold("Zoom: ") + "Switches map zoom mode between Fit-to-Width, Fit-to-Both, and free zoom. General zooming can be performed with Ctrl+Mousewheel on desktop or pinch on mobile." + (!is_mobile() ? italic(" Hotkey: Z.") : "") }
+			zoom_button.onmouseleave = () => { world.status.innerHTML = ""}
+		}
+		let chat_button = document.getElementById("chat_button")
+		if (chat_button) {
+			chat_button.onmouseenter = () => { world.status.innerHTML = bold("Chat: ") + "Shows or hides the chat window." + (!is_mobile() ? italic(" Hotkey: ENTER.") : "")}
+			chat_button.onmouseleave = () => { world.status.innerHTML = ""}
+		}
+		let info_button = document.getElementById("info_menu")
+		if (info_button) {
+			info_button.onmouseenter = () => { world.status.innerHTML = bold("Info: ") + "Card lists, summaries, scroll hotkeys, rulebook, player aids."}
+			info_button.onmouseleave = () => { world.status.innerHTML = ""}
+			let world_button = info_button.nextElementSibling
+			if (world_button) {
+				world_button.onmouseenter = () => { world.status.innerHTML = bold("World: ") + "Shows, or temporarily hides, all counters on the map." + (!is_mobile() ? italic(" Hotkey: SPACE (or hold SHIFT for quick peek).") : "")}
+				world_button.onmouseleave = () => { world.status.innerHTML = ""}
+			}
+		}
+		let prompt_button = document.getElementById("prompt")
+		if (prompt_button) {
+			prompt_button.onmouseenter = () => { world.status.innerHTML = bold("Prompt: ") + "When this bar is shown in your team colour, it is your turn to act and the message explains your current choices; buttons will appear to the right offering some choices, and actionable spaces/counters/cards will be highlighted on the map. When this bar is shown in brown, that generally means the game awaits your opponent's attention." }
+			prompt_button.onmouseleave = () => { world.status.innerHTML = ""}
+		}
+	}
+
 	//BR// get_preference("noanims", false) (second argument is the "default" value if it's not set or has been deleted)
 	//BR// body[data-noanims="true"] .space.action { non-animated css }
 

@@ -2295,7 +2295,7 @@ P.bid_for_sides = {
 			}
 
 			if (L.current_bidder !== L.bid_for_side) {
-				log (italic("Player colors swapped."))
+				log (italic("Player colours swapped."))
 				//for (let ix = 0; ix < G.log.length; ix++) {
 				//	G.log[ix] = swap_sides(G.log[ix])
 				//}
