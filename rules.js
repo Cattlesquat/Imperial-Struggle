@@ -10740,10 +10740,13 @@ function do_reflag_space(repair_if_damaged = true) {
 				log (bold("Fort repaired at " + say_space(G.active_space) + "."))
 				whom = G.active // Stays on our team
 				silent = true
+				display_action_cost()
 			}
 			else {
 				log (bold("Damaged fort seized at " + say_space(G.active_space) + "."))
 				whom = G.active // We go all the way to our team, no stop at neutral
+				silent = true
+				display_action_cost()
 			}
 		}
 	}
