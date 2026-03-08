@@ -929,15 +929,23 @@ function begin_update() {
 }
 
 function end_update() {
-	for (var e of document.querySelectorAll(".layout.square"))
+	var e, ee, thing
+
+	for (e of document.querySelectorAll(".layout.square"))
 		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
+
+	for (e of document.querySelectorAll(".panel.autohide")) {
+		ee = e.querySelector(".panel-body")
+		console.log("AUTOHIDE CHILDREN:", ee.children.length)
+		e.hidden = (ee.children.length === 0)
+	}
 
 	_layout_stacks()
 
-	for (var thing of world.keyword_list)
+	for (thing of world.keyword_list)
 		thing.element.setAttribute("class", [ ...thing.my_keywords, ...thing.my_dynamic_keywords ].join(" "))
 
-	for (var thing of world.text_list) {
+	for (thing of world.text_list) {
 		if (thing.my_text_html !== null)
 			thing.element.innerHTML = thing.my_text_html
 		else if (thing.my_text !== null)
@@ -946,11 +954,11 @@ function end_update() {
 			thing.element.textContent = ""
 	}
 
-	for (var thing of world.action_list) {
+	for (thing of world.action_list) {
 		thing.element.classList.toggle("action", is_action(thing.my_action, thing.my_id))
 	}
 
-	for (var thing of world.button_list) {
+	for (thing of world.button_list) {
 		if (is_action(thing.my_action, thing.my_id)) {
 			thing.element.disabled = false
 			thing.element.hidden = false
@@ -967,6 +975,8 @@ function end_update() {
 }
 
 /* PANELS */
+
+document.querySelectorAll(".panel.autohide").forEach(e => e.hidden = true)
 
 function create_panel(parent, action, id, text) {
 	var panel = document.createElement("div")

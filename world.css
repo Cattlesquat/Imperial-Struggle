@@ -75,10 +75,6 @@ body.hide-pieces .piece { display: none }
 	padding: 12px;
 }
 
-.panel.autohide:has(.panel-body:empty) {
-	display: none;
-}
-
 /* OVERLAYS */
 
 .overlay {
