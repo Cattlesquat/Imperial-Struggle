@@ -7513,10 +7513,12 @@ P.ministry_flow = script (`
 		if (data.ministries[G.ministry_id].proc !== undefined) {
 			call (data.ministries[G.ministry_id].proc)
 		} else {
-			if (!ministry_has_activatable_abilities(G.ministry_id)) {
-				call ministry_not_activatable
-			} else {		 		
-				call ministry_not_implemented
+	        if (!is_bit(MINISTRY_MANUALLY_CLICKED)) {	
+				if (!ministry_has_activatable_abilities(G.ministry_id)) {
+					call ministry_not_activatable
+				} else {		 		
+					call ministry_not_implemented
+				}
 			}
 		}
     }
