@@ -10882,11 +10882,11 @@ P.confirm_spend_debt_or_trps = {
 				exhaust_ministry(R, MERCHANT_BANKS, 1, true)
 			}
 		} else {
-			pay_debt(R, 1)
-			if (!has_transient(R, TRANSIENT_FIRST_DEBT_TAKEN) && has_active_ministry(R, TURGOT) && !is_ministry_exhausted(R, TURGOT) && (available_debt(FRANCE) > available_debt(BRITAIN))) {
+			if (!has_transient(R, TRANSIENT_FIRST_DEBT_TAKEN) && has_active_ministry(R, TURGOT) && (available_debt(FRANCE) > available_debt(BRITAIN))) {
 				add_action_point()
 				log (say_ministry(TURGOT, FRANCE) + " added an extra action point.")
 			}
+			pay_debt(R, 1) // Turgot checks the debt level *before* expending it
 		}
 		G.debt_spent++
 		set_transient(R, TRANSIENT_FIRST_DEBT_TAKEN)
@@ -11744,8 +11744,21 @@ function remove_jacobites()
 	set_bit(JACOBITES_NEVER)
 	let index = G.ministry[FRANCE].indexOf(JACOBITE_UPRISINGS)
 	if (index >= 0) {
+		let len = G.ministry[FRANCE].length
 		array_delete(G.ministry[FRANCE], index)
 		array_delete(G.ministry_revealed[FRANCE], index)
+
+		// We just deleted a ministry from the array, and exhausted is infelicitously tracked by the ministry's "relative position in the current ministries" as opposed to its real ministry id, so
+		// we have to copy all the crud down a notch.
+ 		for (let idx = index; idx < len - 1; idx++) {
+			for (let abil = 0; abil < 2; abil++) {
+				if (set_has(G.ministry_exhausted[FRANCE], (idx + 1) + (abil * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))) {
+					set_add(G.ministry_exhausted[FRANCE], idx + (abil * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
+				} else {
+					set_delete(G.ministry_exhausted[FRANCE], idx + (abil * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
+				}
+			}
+		}
 	}
 	log (bold(say_ministry(JACOBITE_UPRISINGS) + " ministry removed from the game."))
 }

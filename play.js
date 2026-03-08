@@ -3203,6 +3203,14 @@ function toggle_dialog(id)
 	}
 }
 
+function refresh_visible_dialogs()
+{
+	for (const dialog of [ "scoring_summary_dialog", "final_scoring_summary_dialog", "british_ministry_dialog", "french_ministry_dialog", "event_card_dialog"]) {
+		if (!document.getElementById(id).classList.contains("show")) continue
+		show_card_list(id, null)
+	}
+}
+
 
 // A preference has changed that only needs to refresh active dialogs (not the whole document)
 function on_dialog_refresh(name, value) {
