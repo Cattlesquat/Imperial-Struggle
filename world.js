@@ -929,16 +929,14 @@ function begin_update() {
 }
 
 function end_update() {
-	var e, ee, thing
+	var e, thing
 
 	for (e of document.querySelectorAll(".layout.square"))
 		e.style.setProperty("--square", Math.ceil(Math.sqrt(e.childElementCount)))
 
-	for (e of document.querySelectorAll(".panel.autohide")) {
-		ee = e.querySelector(".panel-body")
-		console.log("AUTOHIDE CHILDREN:", ee.children.length)
-		e.hidden = (ee.children.length === 0)
-	}
+	/* FIXME: workaround WebKit bug with :has(:empty) selectors */
+	for (e of document.querySelectorAll(".panel.autohide"))
+		e.hidden = (e.querySelector(".panel-body").children.length === 0)
 
 	_layout_stacks()
 
@@ -976,6 +974,7 @@ function end_update() {
 
 /* PANELS */
 
+/* FIXME: workaround WebKit bug with :has(:empty) selectors */
 document.querySelectorAll(".panel.autohide").forEach(e => e.hidden = true)
 
 function create_panel(parent, action, id, text) {
