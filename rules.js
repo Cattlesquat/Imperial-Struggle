@@ -17,7 +17,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 19
+const GAME_STATE_VERSION = 20
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -1012,56 +1012,37 @@ function on_load()
 		console.error ("WARNING: Code is older than the version game state was made with. (Code version: " + GAME_STATE_VERSION + ", file made with: " + G.game_state_version + ")")
 	}
 
-	if (G.game_state_version < 1) {
-		upconvert (1, upconvert_exhausted)
-	}
+	upconvert (1, upconvert_exhausted)
 
 	if (G.game_state_version < 4) {
-		upconvert (4, upconvert_squadrons) // Upconvert squadrons (so they always have tokens)
-		upconvert (4, upconvert_discards)  // Automatically fix corrupted discard piles
+		upconvert (4, upconvert_squadrons)       // Upconvert squadrons (so they always have tokens)
+		upconvert (4, upconvert_discards, true)  // Automatically fix corrupted discard piles
 	} else if (G.game_state_version < 7) {
-		upconvert (6, upconvert_squadrons) // Clean up after The Buggening
+		upconvert (6, upconvert_squadrons, true) // Clean up after The Buggening
 		validate_squadrons("DONE LOAD")
 	}
 
-	if (G.game_state_version < 10) {
-		upconvert (10, upconvert_old_wars)
-	}
-
-	if (G.game_state_version < 11) {
-		upconvert (11, upconvert_did_the_brig)
-	}
-
-	if (G.game_state_version < 12) {
-		upconvert (12, upconvert_jacobite_turns)
-	}
-
-	if (G.game_state_version < 14) {
-		upconvert (14, upconvert_bitflags)
-	}
+	upconvert (10, upconvert_old_wars)
+	upconvert (11, upconvert_did_the_brig)
+	upconvert (12, upconvert_jacobite_turns)
+	upconvert (14, upconvert_bitflags)
 
 	if ((G.game_state_created_with <= 14) && (G.game_state_version < 15)) {
 		upconvert (15, upconvert_patch_bitflags)
 	}
 
-	if (G.game_state_version < 16) {
-		upconvert (16, upconvert_shorter_names)
-	}
-
-	if (G.game_state_version < 17) {
-		upconvert (17, upconvert_shorter_names_2)
-	}
-
-	if (G.game_state_version < 19) {
-		upconvert (19, upconvert_usa_flags)
-	}
+	upconvert (16, upconvert_shorter_names)
+	upconvert (17, upconvert_shorter_names_2)
+	upconvert (19, upconvert_usa_flags)
+	upconvert (20, upconvert_scoring_review)
 
 	G.game_state_version = GAME_STATE_VERSION
 }
 
 
 // Applies a conversion method to the main game state and all of its undo states
-function upconvert(version, converter) {
+function upconvert(version, converter, force = false) {
+	if ((G.game_state_version >= version) && !force) return
 	converter(G)
 	G.game_state_version = version // In case someone "undoes" back to here, it will remember it has been upgraded
 	if (G.undo) {
@@ -1069,6 +1050,18 @@ function upconvert(version, converter) {
 			converter(G.undo[i])
 			G.undo[i].game_state_version = version
 		}
+	}
+}
+
+//NB remember not to call functions that might refer to "G" while writing an upconvert -- only use "state".
+
+
+function upconvert_scoring_review(state)
+{
+	if (state.temp_vp !== undefined) { // Separate temp mini-view per-player, just like the Big Boy Review.
+		state.temp_vp   = [ state.temp_vp, state.temp_vp ]
+		state.temp_trp  = [ state.temp_trp, state.temp_trp ]
+		state.temp_debt = [ state.temp_debt, state.temp_debt ]
 	}
 }
 
@@ -1370,14 +1363,20 @@ function on_view(RR = undefined) {
 	V.game_state_version = G.game_state_version
 
 	V.turn = G.turn
-	V.vp = G.temp_vp ?? G.vp
 	V.initiative = G.initiative
 	V.first_player = G.first_player
 
-	// Player debts/TRPs always visible
-	V.debt = G.temp_debt ?? G.debt
+	if (Array.isArray(G.temp_vp)) {
+		V.vp   = G.temp_vp[R]
+		V.debt = G.temp_debt[R]
+		V.treaty_points = G.temp_trp[R]
+	} else {
+		V.vp = G.vp
+		V.debt = G.debt
+		V.treaty_points = G.treaty_points
+	}
+
 	V.debt_limit = G.debt_limit
-	V.treaty_points = G.temp_trp ?? G.treaty_points
 
 	// Discard pile and played event pile are both public. Shuffled event deck is not.
 	V.discard_pile = G.discard_pile
@@ -3451,45 +3450,57 @@ function demand_flag_delta(demand)
 }
 
 
-function adjust_scoring_view_prestige()
+function adjust_scoring_view_start(who)
 {
-	G.temp_trp = G.scoring_start_trp
-	if (L.score_prestige < 0) {
-		G.temp_vp = G.scoring_start_vp
-	} else if (L.score_prestige === 0) {
-		G.temp_vp = G.scoring_prestige_vp
+	G.temp_trp[who] = G.scoring_start_trp
+	G.temp_vp[who] = G.scoring_start_vp
+	G.temp_debt[who] = G.scoring_start_debt ?? (Array.isArray(G.scoring_demand_debt) ? G.scoring_demand_debt[0] : G.debt)
+}
+
+function adjust_scoring_view_prestige(who)
+{
+	adjust_scoring_view_start(who)
+	if (L.score_prestige >= 0) {
+		G.temp_vp[who] = G.scoring_prestige_vp
 	}
-	G.temp_debt = G.scoring_start_debt ?? G.scoring_demand_debt[0] ?? G.debt
 }
 
 // Causes the VP/TRP/Debt markers to be shown in adjusted positions (from mid-points in scoring phase)
-function adjust_scoring_view_region()
+function adjust_scoring_view_region(who)
 {
 	// Show VP markers temporarily at intermediate positions (during scoring phase)
-	G.temp_vp   = G.scoring_region_vp[L.region_ticker[R]]
+	G.temp_vp[who]   = G.scoring_region_vp[L.region_ticker[R]]
 
 	// Show TRP markers temporarily at intermediate positions (during scoring phase)
-	G.temp_trp  = G.scoring_region_trp[L.region_ticker[R]]
+	G.temp_trp[who]  = G.scoring_region_trp[L.region_ticker[R]]
 
 	// Show Debt markers temporarily at intermediate positions (during scoring phase)
-	G.temp_debt = G.scoring_start_debt ?? G.scoring_demand_debt[0] ?? G.debt
+	G.temp_debt[who] = G.scoring_start_debt ?? G.scoring_demand_debt[0] ?? G.debt
 }
 
 
-function adjust_scoring_view_demand()
+function adjust_scoring_view_demand(who)
 {
-	G.temp_vp   = G.scoring_demand_vp[L.demand_ticker[R]]
-	G.temp_trp  = G.scoring_demand_trp[L.demand_ticker[R]]
-	G.temp_debt = G.scoring_demand_debt[L.demand_ticker[R]]
+	G.temp_vp[who]   = G.scoring_demand_vp[L.demand_ticker[R]]
+	G.temp_trp[who]  = G.scoring_demand_trp[L.demand_ticker[R]]
+	G.temp_debt[who] = G.scoring_demand_debt[L.demand_ticker[R]]
+}
+
+
+function adjust_scoring_done(who)
+{
+	G.temp_vp[who]   = G.vp
+	G.temp_trp[who]  = G.treaty_points
+	G.temp_debt[who] = G.debt
 }
 
 
 // Stop showing temporary VP/TRP/Debt values and revert to the true current ones
 function close_scoring_view()
 {
-	G.temp_vp   = undefined
-	G.temp_trp  = undefined
-	G.temp_debt = undefined
+	delete G.temp_vp
+	delete G.temp_trp
+	delete G.temp_debt
 }
 
 
@@ -3503,7 +3514,12 @@ P.scoring_review = {
 		L.region_ticker  = [0, 0] // How many regions each player has progressed through region scoring
 		L.demand_ticker  = [0, 0] // How many regions each player has progressed through demand scoring
 
-		adjust_scoring_view_prestige()
+		// Separate temp mini-view per-player, just like the Big Boy Review.
+		G.temp_vp   = [ ]
+		G.temp_trp  = [ ]
+		G.temp_debt = [ ]
+		adjust_scoring_view_start(FRANCE)
+		adjust_scoring_view_start(BRITAIN)
 	},
 	inactive: "review scoring phase results",
 	prompt() {
@@ -3535,22 +3551,22 @@ P.scoring_review = {
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			L.demand_ticker[R]++
 		} else {
-			close_scoring_view()
+			adjust_scoring_end(R)
 		}
 
 		// Update which part of the log we are hiding (and check if this player is done with this phase)
 		let done = false
 		if (L.score_prestige === 0) {
 			G.log_hide_after[R] = G.scoring_prestige_index
-			adjust_scoring_view_prestige()
+			adjust_scoring_view_prestige(R)
 		} else if (L.region_ticker[R] < NUM_REGIONS) {
 			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
-			adjust_scoring_view_region()
+			adjust_scoring_view_region(R)
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			G.log_hide_after[R] = G.scoring_demand_indices[L.demand_ticker[R]]
-			adjust_scoring_view_demand()
+			adjust_scoring_view_demand(R)
 		} else {
-			close_scoring_view()
+			adjust_scoring_done(R)
 			if (G.log_hide_after[R] === G.scoring_extra_index) { // This step may not even happen if nothing got written to the log in that step
 				done = true
 			} else {
@@ -3563,6 +3579,7 @@ P.scoring_review = {
 			if (G.active.length === 0) {
 				G.log_hide_after = [-1, -1] // Stop hiding any part of the log
 				clear_dirty()
+				close_scoring_view()
 				end_of_scoring_phase()
 				end()
 			}
@@ -3572,11 +3589,11 @@ P.scoring_review = {
 		if (L.demand_ticker[R] > 0) {
 			L.demand_ticker[R]--
 			G.log_hide_after[R] = G.scoring_demand_indices[L.demand_ticker[R]]
-			adjust_scoring_view_demand()
+			adjust_scoring_view_demand(R)
 		} else if (L.region_ticker[R] > 0) {
 			L.region_ticker[R]--
 			G.log_hide_after[R] = G.scoring_region_indices[L.region_ticker[R]]
-			adjust_scoring_view_region()
+			adjust_scoring_view_region(R)
 		} else if (L.score_prestige > -1) {
 			L.score_prestige--
 			if (L.score_prestige === 0) {
@@ -3584,7 +3601,7 @@ P.scoring_review = {
 			} else {
 				G.log_hide_after[R] = G.scoring_start_index
 			}
-			adjust_scoring_view_prestige()
+			adjust_scoring_view_prestige(R)
 		}
 	}
 }
