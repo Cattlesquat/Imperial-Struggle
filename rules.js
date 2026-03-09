@@ -3394,18 +3394,21 @@ P.resolve_remaining_powers = function () {
 }
 
 
-function debt_winner() {
+function debt_winner()
+{
 	if (available_debt(FRANCE) > available_debt(BRITAIN) + 1) return FRANCE
 	if (available_debt(BRITAIN) > available_debt(FRANCE) + 1) return BRITAIN
 	return NONE
 }
 
 
-function debt_delta() {
+function debt_delta()
+{
 	return Math.abs(available_debt(FRANCE) - available_debt(BRITAIN))
 }
 
-function debt_award() {
+function debt_award()
+{
 	return Math.min(4, Math.floor(debt_delta() / 2))
 }
 
@@ -3417,42 +3420,51 @@ function get_winner(france, britain)
 	return NONE
 }
 
-function region_flag_winner(region) {
+function region_flag_winner(region)
+{
 	return get_winner(G.flag_count[FRANCE][region], G.flag_count[BRITAIN][region])
 }
 
-function region_flag_delta(region) {
+function region_flag_delta(region)
+{
 	return Math.abs(G.flag_count[FRANCE][region] - G.flag_count[BRITAIN][region])
 }
 
-function prestige_winner() {
+function prestige_winner()
+{
 	return get_winner(G.prestige_flags[FRANCE], G.prestige_flags[BRITAIN])
 }
 
-function prestige_flag_delta() {
+function prestige_flag_delta()
+{
 	return Math.abs(G.prestige_flags[FRANCE] - G.prestige_flags[BRITAIN])
 }
 
-function demand_flag_winner(demand) {
+function demand_flag_winner(demand)
+{
 	return get_winner(G.demand_flag_count[FRANCE][demand], G.demand_flag_count[BRITAIN][demand])
 }
 
-function demand_flag_delta(demand) {
+function demand_flag_delta(demand)
+{
 	return Math.abs(G.demand_flag_count[FRANCE][demand] - G.demand_flag_count[BRITAIN][demand])
 }
 
 
-function adjust_scoring_view_prestige() {
+function adjust_scoring_view_prestige()
+{
 	G.temp_trp = G.scoring_start_trp
 	if (L.score_prestige < 0) {
 		G.temp_vp = G.scoring_start_vp
 	} else if (L.score_prestige === 0) {
 		G.temp_vp = G.scoring_prestige_vp
 	}
+	G.temp_debt = G.scoring_start_debt ?? G.scoring_demand_debt[0] ?? G.debt
 }
 
 // Causes the VP/TRP/Debt markers to be shown in adjusted positions (from mid-points in scoring phase)
-function adjust_scoring_view_region() {
+function adjust_scoring_view_region()
+{
 	// Show VP markers temporarily at intermediate positions (during scoring phase)
 	G.temp_vp   = G.scoring_region_vp[L.region_ticker[R]]
 
@@ -3460,11 +3472,12 @@ function adjust_scoring_view_region() {
 	G.temp_trp  = G.scoring_region_trp[L.region_ticker[R]]
 
 	// Show Debt markers temporarily at intermediate positions (during scoring phase)
-	G.temp_debt = G.debt
+	G.temp_debt = G.scoring_start_debt ?? G.scoring_demand_debt[0] ?? G.debt
 }
 
 
-function adjust_scoring_view_demand() {
+function adjust_scoring_view_demand()
+{
 	G.temp_vp   = G.scoring_demand_vp[L.demand_ticker[R]]
 	G.temp_trp  = G.scoring_demand_trp[L.demand_ticker[R]]
 	G.temp_debt = G.scoring_demand_debt[L.demand_ticker[R]]
@@ -3472,7 +3485,8 @@ function adjust_scoring_view_demand() {
 
 
 // Stop showing temporary VP/TRP/Debt values and revert to the true current ones
-function close_scoring_view() {
+function close_scoring_view()
+{
 	G.temp_vp   = undefined
 	G.temp_trp  = undefined
 	G.temp_debt = undefined
@@ -3588,6 +3602,7 @@ function end_of_scoring_phase()
 	delete G.scoring_start_trp
 	delete G.scoring_start_vp
 	delete G.scoring_start_index
+	delete G.scoring_start_debt
 }
 
 /* 4.1.12 - SCORING PHASE */
@@ -3601,6 +3616,7 @@ P.scoring_phase = function () {
 	G.scoring_start_index    = G.log.length - 1
 	G.scoring_start_vp       = G.vp
 	G.scoring_start_trp      = G.treaty_points.slice()
+	G.scoring_start_debt     = G.debt.slice()
 	G.scoring_region_indices = []
 	G.scoring_demand_indices = []
 	G.scoring_region_vp   = []
