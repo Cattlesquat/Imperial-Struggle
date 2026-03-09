@@ -3551,7 +3551,7 @@ P.scoring_review = {
 		} else if (L.demand_ticker[R] < G.global_demand.length) {
 			L.demand_ticker[R]++
 		} else {
-			adjust_scoring_end(R)
+			adjust_scoring_done(R)
 		}
 
 		// Update which part of the log we are hiding (and check if this player is done with this phase)
