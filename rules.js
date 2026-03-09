@@ -17,7 +17,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 20
+const GAME_STATE_VERSION = 21
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -1348,9 +1348,19 @@ function on_view(RR = undefined) {
 		V = { log: G.log }
 	}
 
-	if (G.active >= 0 && G.temp_view) {
-		if (G.temp_view[R] && (G.temp_view[R].game_state_version && (G.temp_view[R].game_state_version >= 17))) {
-			V = G.temp_view[R]
+	if (G.active >= 0 && G.temp_view && (RR === undefined)) {
+		if (typeof G.temp_view[R] === "number") {
+			if (G.temp_view[R] >= 0) {
+				// New temp views index into an array of deltas
+				V = object_copy(G.current_view[R])
+				for (let index = G.review_view.length - 1; index >= G.temp_view[R]; index--) {
+					V = object_patch(V, G.review_view[index][R])
+				}
+				absolute_view()
+				return
+			}
+		} else if (G.temp_view[R] !== null) {
+			V = G.temp_view[R]  // Old temp views up through GS 20 are full copies
 			absolute_view()
 			return
 		}
@@ -2353,17 +2363,44 @@ function review_push(phase)
 	}
 }
 
+
+function review_compile()
+{
+	// Compute latest view for each player - we need to store this pair to diff against, while the review progresses. Better than storing e.g. 5 pairs!
+	G.current_view = []
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		on_view(who)
+		G.current_view[who] = copy_view_without_log(V)
+	}
+
+	// Diff a delta against latest view for each of the review steps, and store only delta (successive deltas in reverse order back from current view)
+	for (let index = 0; index < G.review_view.length; index++) {
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			if (index === G.review_view.length - 1) {
+				G.review_view[index][who] = object_diff(G.current_view[who], G.review_view[index][who])
+			} else {
+				G.review_view[index][who] = object_diff(G.review_view[index + 1][who], G.review_view[index][who])
+			}
+		}
+	}
+}
+
+
 function review_step(step, who)
 {
+	if (G.current_view === undefined) {
+		review_compile()
+	}
+
 	if (step < G.review_index.length) {
 		G.log_hide_after[who] = G.review_index[step]
-		if (G.temp_view === undefined) G.temp_view = [undefined, undefined]
-		G.temp_view[who] = G.review_view[step][who]
+		if (G.temp_view === undefined) G.temp_view = [ -1, -1 ]
+		G.temp_view[who] = step
 		if (who === R) on_view()
 	} else {
 		G.log_hide_after[who] = -1
 		if (G.temp_view !== undefined) {
-			G.temp_view[who] = undefined
+			G.temp_view[who] = -1
 		}
 		if (who === R) on_view()
 	}
@@ -2371,10 +2408,11 @@ function review_step(step, who)
 
 function review_end() {
 	G.log_hide_after = [ -1, -1 ]        // Clear any log-hiding
-	if (G.temp_view) delete G.temp_view  // Clear any temporary view
+	delete G.temp_view                   // Clear any temporary view
 	G.review_view = []                   // Clear any stored views
-	G.review_index = []					 // Clear the indices: since we often detect whether a review is in progress by the length of it.
+	G.review_index = []                  // Clear the indices: since we often detect whether a review is in progress by the length of it.
 	G.review_phase = []                  // Clear the strings from the game state
+	delete G.current_view                // Clear stored current-views
 }
 
 function start_of_peace_turn() {
@@ -11559,8 +11597,6 @@ P.war_theater_reveal = {
 		log ("=" + "Theater " + G.theater + ": " + data.wars[G.next_war].theater_names[G.theater])
 		review_begin()
 		review_push("")
-		review_step(0, FRANCE)
-		review_step(0, BRITAIN)
 
 		L.wartile_choices = [ [], [] ]
 		L.wartile_debt = [ 0, 0 ]
@@ -11620,6 +11656,9 @@ P.war_theater_reveal = {
 		} else {
 			G.active = [ FRANCE, BRITAIN ]
 		}
+
+		review_step(0, FRANCE)
+		review_step(0, BRITAIN)
 	},
 	inactive() {
 		if (R < 0) {
@@ -13384,32 +13423,32 @@ function object_copy(original) {
 }
 
 
-// Deep compare on two objects. Returns false if objects are equivalent.
-function object_compare(a, b) {
+// Deep compare on two objects. Returns true if objects are equivalent.
+function is_object_equal(a, b) {
 	var i, key, a_length
 	if (a === b)
-		return false
+		return true
 	if (a !== null && b !== null && typeof a === "object" && typeof b === "object") {
 		if (Array.isArray(a)) {
 			if (!Array.isArray(b))
-				return true
+				return false
 			a_length = a.length
 			if (b.length !== a_length)
-				return true
+				return false
 			for (i = 0; i < a_length; ++i)
-				if (object_compare(a[i], b[i]))
-					return true
-			return false
+				if (!is_object_equal(a[i], b[i]))
+					return false
+			return true
 		}
 		for (key in a)
-			if (object_compare(a[key], b[key]))
-				return true
+			if (!is_object_equal(a[key], b[key]))
+				return false
 		for (key in b)
 			if (!(key in a))
-				return true
-		return false
+				return false
+		return true
 	}
-	return true
+	return false
 }
 
 function is_primitive_array(array) {
@@ -13421,7 +13460,7 @@ function array_diff(a, b) {
 	if (a.length !== b.length)
 		diff.length = b.length
 	for (i = 0; i < a.length && i < b.length; ++i)
-		if (object_compare(a[i], b[i]))
+		if (!is_object_equal(a[i], b[i]))
 			diff[i] = object_diff(a[i], b[i])
 	for (; i < b.length; ++i)
 		diff[i] = b[i]
@@ -13450,7 +13489,7 @@ function object_diff(a, b) {
 		if (a_val !== b_val) {
 			if (b_val === undefined)
 				diff[key] = null
-			else if (object_compare(a_val, b_val)) {
+			else if (!is_object_equal(a_val, b_val)) {
 				if (typeof a_val === "object") {
 					diff[key] = object_diff(a_val, b_val)
 				} else {
