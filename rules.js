@@ -3450,8 +3450,22 @@ function demand_flag_delta(demand)
 }
 
 
+function ensure_arrays()
+{
+	if (G.temp_vp === undefined) {
+		G.temp_vp = [ G.vp, G. vp ]
+		G.temp_trp = [ G.treaty_points, G.treaty_points ]
+		G.temp_debt = [ G.debt, G.debt ]
+	} else if (!Array.isArray(G.temp_vp)) {
+		G.temp_vp = [ G.temp_vp, G.temp_vp ]
+		G.temp_trp = [ G.temp_trp, G.temp_trp ]
+		G.temp_debt = [ G.temp_debt, G.temp_debt ]
+	}
+}
+
 function adjust_scoring_view_start(who)
 {
+	ensure_arrays()
 	G.temp_trp[who] = G.scoring_start_trp
 	G.temp_vp[who] = G.scoring_start_vp
 	G.temp_debt[who] = G.scoring_start_debt ?? (Array.isArray(G.scoring_demand_debt) ? G.scoring_demand_debt[0] : G.debt)
@@ -3462,12 +3476,15 @@ function adjust_scoring_view_prestige(who)
 	adjust_scoring_view_start(who)
 	if (L.score_prestige >= 0) {
 		G.temp_vp[who] = G.scoring_prestige_vp
+		G.temp_debt = [ G.debt, G.debt ]
 	}
 }
 
 // Causes the VP/TRP/Debt markers to be shown in adjusted positions (from mid-points in scoring phase)
 function adjust_scoring_view_region(who)
 {
+	ensure_arrays()
+
 	// Show VP markers temporarily at intermediate positions (during scoring phase)
 	G.temp_vp[who]   = G.scoring_region_vp[L.region_ticker[R]]
 
@@ -3481,6 +3498,8 @@ function adjust_scoring_view_region(who)
 
 function adjust_scoring_view_demand(who)
 {
+	ensure_arrays()
+
 	G.temp_vp[who]   = G.scoring_demand_vp[L.demand_ticker[R]]
 	G.temp_trp[who]  = G.scoring_demand_trp[L.demand_ticker[R]]
 	G.temp_debt[who] = G.scoring_demand_debt[L.demand_ticker[R]]
@@ -3489,6 +3508,8 @@ function adjust_scoring_view_demand(who)
 
 function adjust_scoring_done(who)
 {
+	ensure_arrays()
+
 	G.temp_vp[who]   = G.vp
 	G.temp_trp[who]  = G.treaty_points
 	G.temp_debt[who] = G.debt
