@@ -1935,6 +1935,7 @@ function on_update() {
 	}
 
 	update_debt_display()
+	refresh_visible_dialogs()
 
 	end_update()
 }
@@ -3206,8 +3207,8 @@ function toggle_dialog(id)
 function refresh_visible_dialogs()
 {
 	for (const dialog of [ "scoring_summary_dialog", "final_scoring_summary_dialog", "british_ministry_dialog", "french_ministry_dialog", "event_card_dialog"]) {
-		if (!document.getElementById(id).classList.contains("show")) continue
-		show_card_list(id, null)
+		if (!document.getElementById(dialog).classList.contains("show")) continue
+		show_card_list(dialog, null)
 	}
 }
 
