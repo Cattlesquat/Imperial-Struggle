@@ -3810,7 +3810,7 @@ P.scoring_phase = function () {
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
 		let vp = 0
 		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
-			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
+			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a) && !is_advantage_exhausted(a)) {
 				vp++
 			}
 		}
