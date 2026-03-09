@@ -1719,10 +1719,10 @@ function refresh_advantage(a)
 
 
 /* 8.0 - Advantages */
-function has_advantage_eligible(who, a, ignore_exhaustion = false)
+function has_advantage_eligible(who, a, ignore_exhaustion = false, ignore_new = false)
 {
 	if (!has_advantage(who, a)) return false				                     // 8.1 - control all the connected spaces
-	if (G.adv_new & (1 << a)) return false                                       // 8.0 - Can only be used the round *after* control is gained
+	if ((G.adv_new & (1 << a)) && !ignore_new) return false                      // 8.0 - Can only be used the round *after* control is gained
 	if ((G.adv_exhaust & (1 << a)) && !ignore_exhaustion) return false	         // 8.1 - Exhausted when used
 	if (is_advantage_conflicted(a)) return false		                         // 8.1 - can't be used if any conflict markers, but remains "controlled"
 	if (G.adv_used >= 2) return false                                            // 8.2 - Can only use 2 advantages per action round
@@ -5223,7 +5223,7 @@ P.event_native_american_alliances = {
 				let msg = "Immediately activate an advantage you control in North America, ignoring exhaustion"
 				let any = false
 				for (let a of [ ALGONQUIN_RAIDS, FUR_TRADE, IROQUOIS_RAIDS, PATRIOT_AGITATION, WHEAT ]) {
-					if (!has_advantage_eligible(R, a, true)) continue
+					if (!has_advantage_eligible(R, a, true, true)) continue
 					action_advantage(a)
 					any = true
 				}
