@@ -2595,6 +2595,12 @@ function log_dealt(dealt) {
 P.deal_cards_phase = function () {
 	log("=Deal Cards Phase")
 
+	// At beginning of new era don't leave ministry display confusingly full of last-era's ministry cards while choosing which event cards to keep.
+	// This is a minor deviation (but inconsequential from an effects standpoint) from rules-as-written but otherwise people accidentally choose
+	// events that match their old ministers, etc. If they want to remember their old ministers they can still look back in log, but there's no
+	// game value anyway.
+	if (beginning_of_era()) G.ministry = [ [ ], [ ] ]
+
 	while (G.inv_avail.length < 9) {
 		if (G.inv_stack.length === 0) {
 			log("Reshuffled investment tiles.")
