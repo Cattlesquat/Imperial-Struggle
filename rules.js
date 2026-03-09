@@ -13384,6 +13384,7 @@ function object_copy(original) {
 }
 
 
+// Deep compare on two objects. Returns false if objects are equivalent.
 function object_compare(a, b) {
 	var i, key, a_length
 	if (a === b)
