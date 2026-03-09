@@ -13383,10 +13383,9 @@ function object_copy(original) {
 	}
 }
 
-// Fast deep object comparison for objects without cycles
-function object_diff(a, b) {
-	var i, key
-	var a_length
+
+function object_compare(a, b) {
+	var i, key, a_length
 	if (a === b)
 		return false
 	if (a !== null && b !== null && typeof a === "object" && typeof b === "object") {
@@ -13397,12 +13396,12 @@ function object_diff(a, b) {
 			if (b.length !== a_length)
 				return true
 			for (i = 0; i < a_length; ++i)
-				if (object_diff(a[i], b[i]))
+				if (object_compare(a[i], b[i]))
 					return true
 			return false
 		}
 		for (key in a)
-			if (object_diff(a[key], b[key]))
+			if (object_compare(a[key], b[key]))
 				return true
 		for (key in b)
 			if (!(key in a))
@@ -13411,6 +13410,81 @@ function object_diff(a, b) {
 	}
 	return true
 }
+
+function is_primitive_array(array) {
+	return array.every(x => typeof x !== "object")
+}
+
+function array_diff(a, b) {
+	var i, diff = {}
+	if (a.length !== b.length)
+		diff.length = b.length
+	for (i = 0; i < a.length && i < b.length; ++i)
+		if (object_compare(a[i], b[i]))
+			diff[i] = object_diff(a[i], b[i])
+	for (; i < b.length; ++i)
+		diff[i] = b[i]
+	return diff
+}
+
+
+// Compute a "diff" object to transform object "a" into object "b"
+function object_diff(a, b) {
+	// CAVEATS: property must not change type from object to array or vice versa
+	// return "b" if either one is not an object
+	if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
+		return b
+	if (Array.isArray(a) && Array.isArray(b)) {
+		// copy arrays of primitive values verbatim
+		// TODO: pick representation based on how much they differ
+		if (is_primitive_array(b))
+			return b.slice()
+		// represent array diff as object
+		return array_diff(a, b)
+	}
+	var diff = {}
+	for (var key in a) {
+		var a_val = a[key]
+		var b_val = b[key]
+		if (a_val !== b_val) {
+			if (b_val === undefined)
+				diff[key] = null
+			else if (object_compare(a_val, b_val)) {
+				if (typeof a_val === "object") {
+					diff[key] = object_diff(a_val, b_val)
+				} else {
+					if (typeof b_val === "object")
+						diff[key] = object_copy(b_val)
+					else
+						diff[key] = b_val
+				}
+			}
+		}
+	}
+	for (var key in b) {
+		if (a[key] === undefined)
+			diff[key] = b[key]
+	}
+	return diff
+}
+
+// mutate object to apply patch!
+function object_patch(obj, diff) {
+	var i, a, b
+	for (i in diff) {
+		a = obj[i]
+		b = diff[i]
+		if (a !== null && b !== null && typeof a === "object" && typeof b === "object")
+			obj[i] = object_patch(a, b)
+		else if (b === undefined || b === null)
+			delete obj[i]
+		else
+			obj[i] = b
+	}
+	return obj
+}
+
+
 
 // Array remove and insert (faster than splice)
 
