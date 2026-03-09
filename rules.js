@@ -6826,7 +6826,9 @@ P.event_war_of_the_polish_succession = {
 			if (G.flags[RUSSIA] === BRITAIN) {
 				button("done")
 			} else {
-				action_space(RUSSIA)
+				if (is_bit(QUALIFIES_FOR_BONUS)) {
+					action_space(RUSSIA)
+				}
 				button("done")
 			}
 		} else {
@@ -6856,7 +6858,7 @@ P.event_war_of_the_polish_succession = {
 	},
 	done() {
 		push_undo()
-		if ((R === BRITAIN) && (G.flags[RUSSIA] !== BRITAIN)) reflag_space(RUSSIA, (G.flags[RUSSIA] === NONE) ? R : NONE)
+		if ((R === BRITAIN) && (G.flags[RUSSIA] !== BRITAIN) && is_bit(QUALIFIES_FOR_BONUS)) reflag_space(RUSSIA, (G.flags[RUSSIA] === NONE) ? R : NONE)
 		do_polish_succession(R)
 		end()
 	}
