@@ -7529,7 +7529,7 @@ P.ministry_flow = script (`
 		if (data.ministries[G.ministry_id].proc !== undefined) {
 			call (data.ministries[G.ministry_id].proc)
 		} else {
-	        if (!is_bit(MINISTRY_MANUALLY_CLICKED)) {	
+	        if (is_bit(MINISTRY_JUST_REVEALED) && !is_bit(MINISTRY_MANUALLY_CLICKED)) {	
 				if (!ministry_has_activatable_abilities(G.ministry_id)) {
 					call ministry_not_activatable
 				} else {		 		
