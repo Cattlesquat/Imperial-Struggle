@@ -7096,6 +7096,7 @@ P.event_loge_des_neuf_soeurs = {
 		G.adv_used++
 		G.adv_regions |= (1 << get_advantage_region(a))
 		clear_bit(ADVANTAGE_ALREADY_EXHAUSTED)
+		set_bit(DONT_EXHAUST_ADVANTAGE)
 		goto ("advantage_flow")
 	},
 	pass() {
