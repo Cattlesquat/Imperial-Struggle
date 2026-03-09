@@ -397,6 +397,7 @@ const STARTED_MINISTRY_BOX        = 24
 const ELIGIBLE_FOR_HUGUENOTS      = 25
 const MINISTRY_JUST_REVEALED      = 26
 const LAST_EVENT_BY_BRITAIN       = 27
+const DONT_EXHAUST_ADVANTAGE      = 28
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -5278,6 +5279,7 @@ P.event_native_american_alliances = {
 		G.adv_used++
 		G.adv_regions |= (1 << get_advantage_region(a))
 		clear_bit(ADVANTAGE_ALREADY_EXHAUSTED)
+		set_bit(DONT_EXHAUST_ADVANTAGE)
 		goto ("advantage_flow")
 	},
 	pass() {
@@ -8325,10 +8327,13 @@ P.advantage_flow = script (`
 		eval { require_ministry(R, POMPADOUR_AND_DU_BARRY, "For an extra TRP when activating an advantage in Europe", true) } 
 	}
 	
-	if (!is_bit(ADVANTAGE_ALREADY_EXHAUSTED)) {
+	if (!is_bit(ADVANTAGE_ALREADY_EXHAUSTED) && !is_bit(DONT_EXHAUST_ADVANTAGE)) {
 		eval { exhaust_advantage(G.active_advantage, false) } //NB: This also begins a log box with LOG_BOX_ADVANTAGE
 	} else {
-		eval { log_box_begin(R, say_advantage(G.active_advantage, R, true), LOG_BOX_ADVANTAGE) }
+		eval { 
+			log_box_begin(R, say_advantage(G.active_advantage, R, true), LOG_BOX_ADVANTAGE)
+			clear_bit (DONT_EXHAUST_ADVANTAGE) 
+		}
 	} 
 
 	if (data.advantages[G.active_advantage].proc !== undefined) {
