@@ -8954,7 +8954,8 @@ function action_eligible_spaces_mil(region)
 	}
 }
 
-function action_territories_debug() {
+function action_territories_debug()
+{
 	for (const space of data.spaces) {
 		if (space.type !== TERRITORY) continue
 		action_space(space.num)
@@ -8977,7 +8978,8 @@ function action_eligible_spaces(type, region)
 	}
 }
 
-function action_all_eligible_spaces() {
+function action_all_eligible_spaces()
+{
 	for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
 		if (globalThis.RTT_FUZZER && G.fail !== undefined && (G.fail[i] > 2)) continue
 		if (!action_points_eligible(i, active_rules())) continue
@@ -8985,7 +8987,8 @@ function action_all_eligible_spaces() {
 	}
 }
 
-function action_eligible_ministries() {
+function action_eligible_ministries()
+{
 	if (globalThis.RTT_FUZZER && G.fail !== undefined) {
 		for (const fail of G.fail) {
 			if (fail > 3) return
@@ -9002,7 +9005,8 @@ function action_eligible_ministries() {
 	}
 }
 
-function action_eligible_advantages() {
+function action_eligible_advantages()
+{
 	if (globalThis.RTT_FUZZER && (G.fail !== undefined)) {
 		for (const fail of G.fail) {
 			if (fail > 3) return
@@ -9050,14 +9054,16 @@ data.advantages[NAVAL_BASTION].proc = "advantage_naval_bastion"
 data.advantages[SLAVING_CONTRACTS].proc = "advantage_slaving_contracts"
 
 
-function space_action_type(s) {
+function space_action_type(s)
+{
 	if (data.spaces[s].type === POLITICAL) return DIPLO
 	if (data.spaces[s].type === MARKET) return ECON
 	return MIL
 }
 
 
-function is_entirely_in_europe(type) {
+function is_entirely_in_europe(type)
+{
 	for (const r of [ REGION_NORTH_AMERICA, REGION_CARIBBEAN, REGION_INDIA ]) {
 		if (set_has(G.action_point_regions[type], r)) return false
 	}
@@ -9066,7 +9072,8 @@ function is_entirely_in_europe(type) {
 
 
 /* Purchases in multiple regions - 5.3.4 - does NOT apply to military */
-function charge_region_switching_penalty(type, region) {
+function charge_region_switching_penalty(type, region)
+{
 	if (type === MIL) return false
 	if (set_has(G.action_point_regions[type], region)) return false // We've already spent this type of points in this region, so don't charge again
 
@@ -9079,7 +9086,8 @@ function charge_region_switching_penalty(type, region) {
 }
 
 
-function squadrons_in_region(who, region) {
+function squadrons_in_region(who, region)
+{
 	var squadrons = 0
 	for (let s = data.regions[region].first_space; s < data.regions[region].first_space + data.regions[region].spaces; s++) {
 		if (data.spaces[s].type !== NAVAL) continue
@@ -9090,41 +9098,55 @@ function squadrons_in_region(who, region) {
 }
 
 
-function is_bit(b) {
+function is_bit(b)
+{
 	return !!bit_get(G.bitflags, b)
 }
 
-function set_bit(b, on = true) {
+function set_bit(b, on = true)
+{
 	bit_set(G.bitflags, b, on)
 }
 
-function clear_bit(b) {
+function clear_bit(b)
+{
 	bit_set(G.bitflags, b, false)
 }
 
 
-function set_bit2(state, b, on = true) {
+function set_bit2(state, b, on = true)
+{
 	bit_set(state.bitflags, b, on)
 }
 
-function clear_bit2(state, b) {
+function clear_bit2(state, b)
+{
 	bit_set(state, state.bitflags, b, false)
 }
 
-function is_bit2(state, b) {
+function is_bit2(state, b)
+{
 	return !!bit_get(state.bitflags, b)
 }
 
 
 
 
-function has_transient(who, t) {
+function has_transient(who, t)
+{
 	return !!bit_get(G.transient_bitflags[who], t)
 }
 
-function set_transient(who, t, on = true) {
+function set_transient(who, t, on = true)
+{
 	bit_set(G.transient_bitflags[who], t, on)
 }
+
+function clear_transient(who, t)
+{
+	set_transient(who, t, false)
+}
+
 
 function cost_to_build_squadron(who, check_minimum = false, info = {})
 {
@@ -9411,7 +9433,7 @@ function do_construct_squadron(who) {
 	G.unbuilt_squadrons[who]--
 	G.navy_box[who]++
 	validate_squadrons("DO CONSTRUCT")
-
+	clear_transient(R, TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT)
 
 	log_br()
 	log(bold(data.flags[who].name + " constructed a squadron."))
