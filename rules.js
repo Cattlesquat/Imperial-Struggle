@@ -1337,6 +1337,7 @@ function on_save()
 // Items that we keep current even when we're in "review mode" looking at an old view
 function absolute_view() {
 	if ((V === null) || (V === undefined)) {
+		console.error ("Got a null view from the temp_view/review_view pipe! " + L.P)
 		V = { log: G.log }
 		return false
 	}
