@@ -12150,6 +12150,7 @@ P.war_theater_resolve = {
 
 				if (data.spaces[s].type === TERRITORY) {
 					if (G.flags[s] === L.war_winner) continue
+					if (G.flags[s] === USA) continue             // Can come up during Antilles war
 					if (G.war_refused_list.includes(s)) continue // If opponent has already paid VP to refuse this space, don't include it in the options
 					if (data.spaces[s].conquest) {               // If there are conquest lines to the territory, must control something at the other end of one in order to take this territory
 						let connected = false
