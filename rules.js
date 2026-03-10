@@ -9380,7 +9380,7 @@ P.construct_squadron_flow = script(`
         	if (G.prepicked_ministry === L.info.ministry) {
         		G.has_required_ministry = TRUE
         	} else {
-        		require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost)
+        		require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost, true)
         	}
         }
         if (G.has_required_ministry) {
