@@ -1336,12 +1336,19 @@ function on_save()
 
 // Items that we keep current even when we're in "review mode" looking at an old view
 function absolute_view() {
+	if ((V === null) || (V === undefined)) {
+		V = { log: G.log }
+		return false
+	}
+
 	V.active              = G.active
 	V.log                 = G.log
 	V.log_hide_after      = G.log_hide_after
 	V.log_length          = G.log.length       // Footgun alert: the only place in rules.js that "log_length" with underscore should ever appear!
 
 	V.bidding_for_sides   = L.bidding_for_sides ?? false
+
+	return true
 }
 
 function on_view(RR = undefined) {
@@ -1357,13 +1364,11 @@ function on_view(RR = undefined) {
 				for (let index = G.review_view.length - 1; index >= G.temp_view[R]; index--) {
 					V = object_patch(V, G.review_view[index][R])
 				}
-				absolute_view()
-				return
+				if (absolute_view()) return
 			}
 		} else if (G.temp_view[R] !== null) {
 			V = G.temp_view[R]  // Old temp views up through GS 20 are full copies
-			absolute_view()
-			return
+			if (absolute_view()) return
 		}
 	}
 
