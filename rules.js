@@ -4095,7 +4095,7 @@ function check_if_market_isolated(market)
 			if (G.flags[s] === who) connected = true
 		}
 		else if (data.spaces[s].type === FORT) {
-			if (is_damaged_fort(s)) continue
+			// NB - doesn't matter if fort is damaged
 			if (G.flags[s] === who) connected = true
 		}
 		else if (data.spaces[s].type === MARKET) {
@@ -12352,8 +12352,10 @@ P.war_theater_resolve = {
 			L.already_isolated = []
 			for (let s2 = 0; s2 < NUM_SPACES; s2++) {
 				if (data.spaces[s2].type !== MARKET) continue
-				if ((data.spaces[s2].region !== REGION_CARIBBEAN) && (data.spaces[s2] !== REGION_NORTH_AMERICA)) continue
-				if (check_if_market_isolated(s2)) L.already_isolated.push(s2)
+				if ((data.spaces[s2].region !== REGION_CARIBBEAN) && (data.spaces[s2].region !== REGION_NORTH_AMERICA)) continue
+				if (check_if_market_isolated(s2)) {
+					L.already_isolated.push(s2)
+				}
 			}
 
 			if (data.spaces[s].type === FORT) {
