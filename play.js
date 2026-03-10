@@ -2182,7 +2182,7 @@ function update_war_display() {
 
 					for (const t of G.theater_bonus[R][theater]) {
 						if (t < 0) continue
-						if (!set_has(G.bonus_revealed[R], t)) unrevealed += data.bonus_war_tiles[t].val
+						if (!set_has(G.bonus_revealed[R], t) && (t < ATLANTIC_DOMINANCE)) unrevealed += data.bonus_war_tiles[t].val
 					}
 				}
 			}
