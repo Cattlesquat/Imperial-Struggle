@@ -12015,13 +12015,12 @@ function start_war_theater_resolution()
 					} else {
 						continue
 					}
-
-					if (data.spaces[s].type !== NAVAL) continue
-					if (G.flags[s] !== L.war_winner) continue
-					if (set_has(G.navy_this_war, s)) continue /* A given Squadron can capture one space per war */
-					L.free_squadrons.push(s)
 				}
-			}
+				if (data.spaces[s].type !== NAVAL) continue
+				if (G.flags[s] !== L.war_winner) continue
+				if (set_has(G.navy_this_war, s)) continue /* A given Squadron can capture one space per war */
+				L.free_squadrons.push(s)
+s			}
 		}
 	}
 }
