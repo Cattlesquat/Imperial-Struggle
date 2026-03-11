@@ -17,7 +17,7 @@ var G, L, R, V, P = {}    // G = Game state, V = View, R = role of active player
 
 /* CONSTANTS */
 
-const GAME_STATE_VERSION = 21
+const GAME_STATE_VERSION = 22
 
 const TRUE  = 1 // JSON size optimization preserving a bit of readability
 const FALSE = 0
@@ -702,6 +702,7 @@ function on_setup(scenario, options) {
 	// <br><b>
 	// set_has(G.dirty, s)
 	G.dirty = []
+	G.dirty_conflict = []
 
 	// Which player made the most recent changes to spaces
 	G.dirty_who = FRANCE
@@ -1036,6 +1037,7 @@ function on_load()
 	upconvert (17, upconvert_shorter_names_2)
 	upconvert (19, upconvert_usa_flags)
 	upconvert (20, upconvert_scoring_review)
+	upconvert (22, upconvert_dirty_conflict)
 
 	G.game_state_version = GAME_STATE_VERSION
 }
@@ -1056,6 +1058,10 @@ function upconvert(version, converter, force = false) {
 
 //NB remember not to call functions that might refer to "G" while writing an upconvert -- only use "state".
 
+function upconvert_dirty_conflict(state)
+{
+	state.dirty_conflict = []
+}
 
 function upconvert_scoring_review(state)
 {
@@ -1412,6 +1418,7 @@ function on_view(RR = undefined) {
 	// Flags on the board are always visible
 	V.flags = G.flags
 	V.dirty = G.dirty
+	V.dirty_conflict = G.dirty_conflict
 	V.dirty_who = G.dirty_who
 	V.conflicts = G.conflicts
 	V.damaged_forts = G.damaged_forts
@@ -1852,6 +1859,7 @@ function add_conflict_marker(s, n = CONFLICT_NORMAL) {
 		remove_conflict_marker(s)
 	} else {
 		map_set(G.conflicts, s, n)
+		mark_dirty_conflict(s)
 		log ("Conflict added at " + say_space(s) + ((n > CONFLICT_NORMAL) ? " (+1 to remove)." : "."))
 	}
 	update_flag_counts()
@@ -1859,6 +1867,8 @@ function add_conflict_marker(s, n = CONFLICT_NORMAL) {
 
 function remove_conflict_marker(s, silent = false, bold_it = false) {
 	if (!silent && has_conflict_marker(s)) log (bold("Conflict removed at " + say_space(s) + ".", bold_it))
+	mark_dirty(s)
+	mark_dirty_conflict(s)
 	map_delete(G.conflicts, s)
 	update_flag_counts()
 }
@@ -4072,8 +4082,14 @@ function mark_dirty(s) {
 	set_add(G.dirty, s)
 }
 
+function mark_dirty_conflict(s) {
+	set_add(G.dirty_conflict, s)
+}
+
+
 function clear_dirty() {
 	set_clear(G.dirty)
+	set_clear(G.dirty_conflict)
 }
 
 function mark_navy_this_war(s) {

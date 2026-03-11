@@ -1784,6 +1784,11 @@ function on_update() {
 	map_for_each(V.conflicts, (s, n) => {
 		populate("conflict-space", s, "conflict", s)
 		update_keyword("conflict", s, "plus-one", n > 1)
+
+		let dirty = Array.isArray(V.dirty_conflict) && set_has(V.dirty_conflict, s)
+		console.log (data.spaces[s].name + " " + dirty)
+		update_keyword("conflict", s, "dirty_br", dirty && tracksies && ((V.dirty_who === BRITAIN) || redsies))
+		update_keyword("conflict", s, "dirty_fr", dirty && tracksies && ((V.dirty_who !== BRITAIN) && !redsies))
 	})
 
 	for (s = 0; s < NUM_SPACES; s++) {

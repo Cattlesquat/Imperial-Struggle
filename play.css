@@ -448,6 +448,43 @@ body[data-noanims="true"] .space.naval.dirty_br {
     border: 4px solid crimson;
 }
 
+/*
+body[data-noanims="false"] .space.fort.dirty_fr,
+body[data-noanims="false"] .space.naval.dirty_fr {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: dirty-pulse-french-shape 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.fort.dirty_fr,
+body[data-noanims="true"] .space.naval.dirty_fr {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    border: 4px solid royalblue;
+}
+
+
+body[data-noanims="false"] .space.fort.dirty_br,
+body[data-noanims="false"] .space.naval.dirty_br {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+}
+
+
+body[data-noanims="true"] .space.fort.dirty_br,
+body[data-noanims="true"] .space.naval.dirty_br {
+    transform: scale(1.2);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    border: 4px solid crimson;
+}
+
+*/
+
 .space.advantage {
 	background-size: 88px 88px;
 	border-radius: 50%;
@@ -904,7 +941,54 @@ body[data-noanims="false"] .card.action {
 }
 
 
+body[data-noanims="false"] .marker.conflict.dirty_br:before,
+body[data-noanims="false"] .marker.conflict.plus-one.dirty_br:before,
+body[data-noanims="false"] .marker.damaged.dirty_br:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.75) translateX(-23px) translateY(-27px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+}
 
+.marker.conflict.dirty_br:before, .marker.conflict.plus-one.dirty_br:before, .marker.damaged.dirty_br:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    background-color: crimson;
+}
+
+
+body[data-noanims="false"] .marker.conflict.dirty_fr:before,
+body[data-noanims="false"] .marker.conflict.plus-one.dirty_fr:before,
+body[data-noanims="false"] .marker.damaged.dirty_fr:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    animation: dirty-pulse-french-shape 4s ease-in-out infinite;
+}
+
+.marker.conflict.dirty_fr:before, .marker.conflict.plus-one.dirty_fr:before, .marker.damaged.dirty_fr:before {
+    content: "";
+    display: flex;
+    height: 100px;
+    width: 100px;
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    -webkit-mask: url(images/hexagon.svg) no-repeat center;
+    mask: url(images/hexagon.svg) no-repeat center;
+    background-color: royalblue;
+}
 
 .marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
 .marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
@@ -934,7 +1018,6 @@ body[data-noanims="false"] .marker.damaged.action:before {
     mask: url(images/hexagon.svg) no-repeat center;
     background-color: yellow;
 }
-
 
 /* IMAGES */
 
