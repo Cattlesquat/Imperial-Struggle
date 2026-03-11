@@ -8137,15 +8137,28 @@ P.jacobite_divert = {
 	}
 }
 
+function jacobite_start_shift()
+{
+	G.action_header = ""
+	log_box_ministry(FRANCE, JACOBITE_UPRISINGS)
+	if (!is_ministry_exhausted(FRANCE, JACOBITE_UPRISINGS, 0)) {
+		exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 0)
+	}
+}
 
 P.jacobite_flow = script (`
-    call decide_how_and_whether_to_spend_action_points	
-	eval { G.action_header = "" } 
+    call decide_how_and_whether_to_spend_action_points        
+    	
+	eval { jacobite_start_shift() }
+	 
     if (!is_bit(PAID_ACTION_COST)) {
     	return
     }
        
-    eval { do_reflag_space() }    
+    eval { 
+    	do_reflag_space()
+    	log_box_end(LOG_BOX_MINISTRY) 
+    }    
 `)
 
 
@@ -8155,7 +8168,7 @@ P.ministry_jacobite_uprisings = {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with " + say_action_points(0, MIL, false, false), "score " + jacobite_vp_value() + " VP for " + say_action_points(3, MIL)) + say_action_points_left()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.subphase)) {
 			if (G.eligible[MIL]) {
-				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, JACOBITES_USED_2)) {
+				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
 					for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 						if (G.flags[s] !== FRANCE) {
 							if ((G.flags[s] === NONE) || action_points_eligible_major(MIL, space_rules(s, MIL))) { // If we're unflagging, can't use minor action
