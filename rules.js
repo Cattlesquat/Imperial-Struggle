@@ -7583,6 +7583,8 @@ P.event_cook_and_bougainville = {
 
 function handle_ministry_card_click(m)
 {
+	G.action_header = data.ministries[m].name.toUpperCase() + ": "
+
 	// The *index* into the player's ministry i.e. G.ministry[R][G.ministry_index] of the ministry card clicked on (distinct from the actual ministr" id)
 	// <br><b>
 	// G.ministry[R][G.ministry_index] </b> contains card id (m) the card the player clicked on
@@ -7611,8 +7613,8 @@ P.ministry_flow = script (`
     if (!G.ministry_revealed[R][G.ministry_index]) {
         eval { clear_bit(STARTED_MINISTRY_BOX) }
     	call confirm_reveal_ministry
-    	if (is_bit(MINISTRY_MANUALLY_CLICKED) && !ministry_useful_this_phase(G.ministry_id, G.subphase)) {
-    		return // If we manually revealed the minister, but he can't do anything right now, don't proceed into the you-can't-use-him-right-now part
+    	if (is_bit(MINISTRY_MANUALLY_CLICKED)) {
+    		return // If we manually clicked the minister and then chose to reveal him, that's the action.
     	}
     }
     
