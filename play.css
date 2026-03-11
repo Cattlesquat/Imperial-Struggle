@@ -520,6 +520,21 @@ body[data-noanims="true"] .marker.demand.action {
     border: 4px solid yellow;
 }
 
+body[data-noanims="false"] .marker.demand.dirty_br {
+    animation: dirty-pulse-british 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .marker.demand.dirty_br {
+    border: 4px solid crimson;
+}
+
+body[data-noanims="false"] .marker.demand.dirty_fr {
+    animation: dirty-pulse-french 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .marker.demand.dirty_fr {
+    border: 4px solid royalblue;
+}
 
 
 @keyframes action-pulse {
@@ -948,7 +963,8 @@ body[data-noanims="false"] .marker.damaged.dirty_br:before {
     display: flex;
     height: 100px;
     width: 100px;
-    transform: scale(.75) translateX(-23px) translateY(-27px);
+    transform: scale(.68) translateX(-25px) translateY(-29px);
+    /* transform: scale(.75) translateX(-23px) translateY(-27px); */
     -webkit-mask: url(images/hexagon.svg) no-repeat center;
     mask: url(images/hexagon.svg) no-repeat center;
     animation: dirty-pulse-british-shape 4s ease-in-out infinite;

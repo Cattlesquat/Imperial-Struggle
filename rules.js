@@ -703,6 +703,7 @@ function on_setup(scenario, options) {
 	// set_has(G.dirty, s)
 	G.dirty = []
 	G.dirty_conflict = []
+	G.dirty_demand = 0
 
 	// Which player made the most recent changes to spaces
 	G.dirty_who = FRANCE
@@ -1061,6 +1062,7 @@ function upconvert(version, converter, force = false) {
 function upconvert_dirty_conflict(state)
 {
 	state.dirty_conflict = []
+	state.dirty_demand = 0
 }
 
 function upconvert_scoring_review(state)
@@ -1419,6 +1421,7 @@ function on_view(RR = undefined) {
 	V.flags = G.flags
 	V.dirty = G.dirty
 	V.dirty_conflict = G.dirty_conflict
+	V.dirty_demand = G.dirty_demand
 	V.dirty_who = G.dirty_who
 	V.conflicts = G.conflicts
 	V.damaged_forts = G.damaged_forts
@@ -4090,6 +4093,7 @@ function mark_dirty_conflict(s) {
 function clear_dirty() {
 	set_clear(G.dirty)
 	set_clear(G.dirty_conflict)
+	G.dirty_demand = 0
 }
 
 function mark_navy_this_war(s) {
@@ -6312,6 +6316,7 @@ P.event_le_beau_monde = {
 	fur() {
 		push_undo()
 		G.global_demand.push(FURS)
+		G.dirty_demand |= (1 << FURS)
 		log(bold(say_demand(FURS) + " added to Global Demand."))
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
 		end()
@@ -6319,6 +6324,7 @@ P.event_le_beau_monde = {
 	cotton() {
 		push_undo()
 		G.global_demand.push(COTTON)
+		G.dirty_demand |= (1 << COTTON)
 		log(bold(say_demand(COTTON) + " added to Global Demand."))
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
 		end()
@@ -6457,6 +6463,7 @@ P.event_co_hong_system = {
 		shuffle(global_demand_chits)
 		L.drawn_demand = global_demand_chits.pop()
 		G.global_demand.push(L.drawn_demand)
+		G.dirty_demand |= (1 << L.drawn_demand)
 		log (bold(say_demand(L.drawn_demand) + " added to Global Demand."))
 	},
 	demand(d) {
