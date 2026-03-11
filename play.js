@@ -3602,7 +3602,7 @@ function format_ministry_info(c) {
 
 function say_flag_color(who, string)
 {
-	return escape_square_brackets("[F" + ((who === FRANCE) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
+	return escape_square_brackets("[F" + (((who === FRANCE) || (who === USA)) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
 }
 
 function format_prestige_info()
