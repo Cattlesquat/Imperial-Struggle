@@ -1696,7 +1696,7 @@ function exhaust_advantage(a, close_box, reason = "", silent = false, watt = tru
 	G.adv_exhaust |= (1 << a)
 
 	if (get_advantage_region(a) === REGION_EUROPE) {
-		if (has_advantage(FRANCE, a) && has_active_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
+		if (watt && has_advantage(FRANCE, a) && has_active_ministry(FRANCE, POMPADOUR_AND_DU_BARRY) && !is_ministry_exhausted(FRANCE, POMPADOUR_AND_DU_BARRY)) {
 			exhaust_ministry(FRANCE, POMPADOUR_AND_DU_BARRY, 0, true)
 			G.treaty_points[FRANCE]++
 			log_box_ministry(FRANCE, POMPADOUR_AND_DU_BARRY)
