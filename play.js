@@ -1406,6 +1406,8 @@ function on_update() {
 
 	let verbose = get_preference("actionverbosity", "medium")
 	let shortest = (verbose === "short")
+	let tracksies = get_preference("tracksies", true)
+	let redsies = get_preference("redsies", false)
 
 	if (R === FRANCE) {
 		update_favicon("favicon-fr.png")
@@ -1514,6 +1516,13 @@ function on_update() {
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
 
+	for (let d = 0; d < NUM_DEMANDS; d++) {
+		if (!V.global_demand.includes(d)) continue
+		let dirty = (V.dirty_demand & (1 << d))
+		update_keyword("demand", d, "dirty_br", dirty && tracksies && ((V.dirty_who === BRITAIN) || redsies))
+		update_keyword("demand", d, "dirty_fr", dirty && tracksies && ((V.dirty_who !== BRITAIN) && !redsies))
+	}
+
 	if (V.townshend_acts >= 0) {
 		let demand_tiles = document.querySelector(".layout.lout-demand").firstElementChild
 		let index = V.global_demand.indexOf(V.townshend_acts)
@@ -1606,9 +1615,6 @@ function on_update() {
 	//	populate("lout-navy", "squadron-br-navy", i)
 	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
 	//}
-
-	let tracksies = get_preference("tracksies", true)
-	let redsies = get_preference("redsies", false)
 
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
@@ -1786,7 +1792,6 @@ function on_update() {
 		update_keyword("conflict", s, "plus-one", n > 1)
 
 		let dirty = Array.isArray(V.dirty_conflict) && set_has(V.dirty_conflict, s)
-		console.log (data.spaces[s].name + " " + dirty)
 		update_keyword("conflict", s, "dirty_br", dirty && tracksies && ((V.dirty_who === BRITAIN) || redsies))
 		update_keyword("conflict", s, "dirty_fr", dirty && tracksies && ((V.dirty_who !== BRITAIN) && !redsies))
 	})
