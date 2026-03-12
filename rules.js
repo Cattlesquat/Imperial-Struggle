@@ -2227,11 +2227,21 @@ const HANDICAP_TABLE = {
 	"France +3 TRP": { side: FRANCE, bid: 3 },
 	"France +4 TRP": { side: FRANCE, bid: 4 },
 	"France +5 TRP": { side: FRANCE, bid: 5 },
+	"Britain +1 TRP (Bid)": { side: BRITAIN, bid: 1 },
+	"Britain +2 TRP (Bid)": { side: BRITAIN, bid: 2 },
+	"Britain +3 TRP (Bid)": { side: BRITAIN, bid: 3 },
+	"Britain +4 TRP (Bid)": { side: BRITAIN, bid: 4 },
+	"Britain +5 TRP (Bid)": { side: BRITAIN, bid: 5 },
+	"France +1 TRP (Bid)": { side: FRANCE, bid: 1 },
+	"France +2 TRP (Bid)": { side: FRANCE, bid: 2 },
+	"France +3 TRP (Bid)": { side: FRANCE, bid: 3 },
+	"France +4 TRP (Bid)": { side: FRANCE, bid: 4 },
+	"France +5 TRP (Bid)": { side: FRANCE, bid: 5 },
 }
 
 function preset_handicap(scenario)
 {
-	if (scenario !== "Standard") {
+	if (scenario !== "Standard" && scenario !== "Standard (Bid)") {
 		var { side, bid } = HANDICAP_TABLE[scenario]
 		log("=Setup")
 		log(say_nation(ROLES[side], side) + " received " + bid + " treaty point" + s(bid) + ".")
@@ -2325,14 +2335,31 @@ P.bid_for_sides = {
 				G.handicap_side = NONE
 			}
 
+			var scenario
+			if (0) {
+				// new scenario name without (Bid) suffix
+				if (G.handicap_side === BRITAIN)
+					scenario = "Britain +" + G.bid + " TRP"
+				else if (G.handicap_side === FRANCE)
+					scenario = "France +" + G.bid + " TRP"
+				else
+					scenario = "Standard"
+			} else {
+				if (G.handicap_side === BRITAIN)
+					scenario = "Britain +" + G.bid + " TRP (Bid)"
+				else if (G.handicap_side === FRANCE)
+					scenario = "France +" + G.bid + " TRP (Bid)"
+				else
+					scenario = "Standard (Bid)"
+			}
+
 			if (L.current_bidder !== L.bid_for_side) {
 				log (italic("Player colours swapped."))
-				//for (let ix = 0; ix < G.log.length; ix++) {
-				//	G.log[ix] = swap_sides(G.log[ix])
-				//}
-				G.$pie = 1
+				G.$pie = { swap: true, scenario }
+			} else {
+				G.$pie = { swap: false, scenario }
 			}
-			L.bidding_for_sides = false
+
 			end()
 		}
 	},
