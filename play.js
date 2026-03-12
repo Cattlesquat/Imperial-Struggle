@@ -1960,8 +1960,7 @@ function on_update() {
 
 	end_update()
 
-	var search_params = new URLSearchParams(window.location.search)
-	if (is_bit(SKIPPED_EVENT) && !V.UNDID && ((R === FRANCE) || (R === BRITAIN)) && (search_params.get("mode") !== "replay")) {
+	if (is_bit(SKIPPED_EVENT) && !V.UNDID && ((R === FRANCE) || (R === BRITAIN)) && (params.mode === "play")) {
 		if (!skipped_event) { // Prevents this warning from coming up more than once before it has been cleared in between
 			skipped_event = true
 			if (get_preference("eventsies", true)) {
