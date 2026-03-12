@@ -1842,6 +1842,9 @@ function on_update() {
 	action_button("confirm", "Confirm")
 	action_button("continue", "Continue")
 
+	action_button("no", "No")
+	action_button("yes", "Yes")
+
 	confirm_action_button("confirm_pass_to_reduce_debt", (is_mobile() || shortest) ? "Pass" : "Pass for Debt Reduction", "Confirm passing your entire action round to reduce Debt?")
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
 	confirm_action_button("confirm_pass_usa_forts", "Pass", "You have not removed flags from all eligible forts. Confirm passing early?")

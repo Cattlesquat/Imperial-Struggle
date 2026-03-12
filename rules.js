@@ -398,6 +398,7 @@ const ELIGIBLE_FOR_HUGUENOTS      = 25
 const MINISTRY_JUST_REVEALED      = 26
 const LAST_EVENT_BY_BRITAIN       = 27
 const DONT_EXHAUST_ADVANTAGE      = 28
+const MUST_PLACE_IN_NORTH_AMERICA = 29
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -9913,6 +9914,8 @@ function use_choiseul()
 
 P.buy_bonus_war_tile_flow = script(`
 	eval {
+		clear_bit(MUST_PLACE_IN_NORTH_AMERICA)
+
 		G.has_required_ministry = false
 		if (action_points_eligible_major(MIL, active_rules()) > 0) {  
 			require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
@@ -9950,7 +9953,7 @@ P.bonus_war_tile_decisions = {
 		} else if (L.theater <= 0) {
 			return "select a theater for a new bonus war tile"
 		} else if (L.displaced_tile < 0) {
-			return "${}select a bonus war tile to displace from an overfull theater"
+			return "select a bonus war tile to displace from an overfull theater"
 		} else {
 			return "select a new theater for a displaced bonus war tile"
 		}
@@ -9969,7 +9972,7 @@ P.bonus_war_tile_decisions = {
 		} else if (L.theater <= 0) {
 			msg = say_action_header()
 			msg += "Select theater for " + say_bonus_war_tile(L.new_tile, false) + " tile."
-			action_all_theaters()
+			action_all_eligible_theaters()
 		} else if (L.displaced_tile < 0) {
 			msg += "Theater had two bonus tiles already. Select a bonus tile to displace."
 			for (const t of G.theater_bonus[G.active][L.theater]) {
@@ -10665,6 +10668,7 @@ P.space_flow = script(`
 `)
 
 
+
 P.decide_how_and_whether_to_spend_action_points = script(`
 	eval { clear_bit(PAID_ACTION_COST) }
 	
@@ -10690,6 +10694,21 @@ P.decide_how_and_whether_to_spend_action_points = script(`
     			G.action_points_available_now  -= G.minor[G.action_type]
     		}
     	}  	
+    }
+    
+    // If player is buying a bonus war tile, and happens to have geographically restricted military points, find out if he wants to use them
+    if (is_bit(BUYING_WAR_TILE)) {
+    	eval { L.restricted = get_contingent(MIL, RULE_NORTH_AMERICA) }
+    	if (L.restricted > 0) {
+    		call confirm_north_america
+    		
+    		eval {
+    			if (is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
+    				G.action_points_available_now  += L.restricted
+    				G.action_points_available_debt += L.restricted
+    			}
+    		}
+    	}
     }
         
     // If it is going to cost debt or TRPs, then see if player wants to spend them
@@ -10793,6 +10812,10 @@ function pay_action_cost() {
 			cost_string += "  MinorDrain: " + (prev_cost - G.action_cost)
 			prev_cost = G.action_cost
 		}
+	}
+
+	if (is_bit(BUYING_WAR_TILE) && is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
+		G.action_cost = use_contingent(G.action_cost, MIL, RULE_NORTH_AMERICA)
 	}
 
 	// Spent contingent points, if available
@@ -10969,6 +10992,25 @@ function do_reflag_space(repair_if_damaged = true) {
 	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
 
 	log_br() // Leave a blank line
+}
+
+
+P.confirm_north_america = {
+	inactive: "peer across the cold North Atlantic",
+	prompt() {
+		V.prompt = say_action_header() + say_action("Use points restricted to North America? (Affects which theaters tile can be placed in)")
+		button("no")
+		button("yes")
+	},
+	yes() {
+		push_undo()
+		set_bit(MUST_PLACE_IN_NORTH_AMERICA)
+		end()
+	},
+	no() {
+		push_undo()
+		end()
+	}
 }
 
 
@@ -12796,8 +12838,11 @@ function action_theater(t)
 	action("theater", theater_to_display(t))
 }
 
-function action_all_theaters() {
+function action_all_eligible_theaters() {
 	for (let t = 1; t <= data.wars[G.next_war].theaters; t++) { //NB 1 to theaters, inclusive
+		if (is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
+			if (data.wars[G.next_war].theater[t].region !== REGION_NORTH_AMERICA) continue
+		}
 		action_theater(t)
 	}
 }
