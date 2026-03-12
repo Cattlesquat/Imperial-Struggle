@@ -1359,6 +1359,8 @@ function absolute_view() {
 
 	V.bidding_for_sides   = L.bidding_for_sides ?? false
 
+	V.UNDID = G.UNDID
+
 	return true
 }
 
@@ -13115,6 +13117,8 @@ exports.action = function (state, role, action, argument) {
 
 	_load()
 
+	G.UNDID = FALSE
+
 	var this_state = P[L.P]
 	if (this_state && typeof this_state[action] === "function") {
 		this_state[action](argument)
@@ -13534,6 +13538,7 @@ function pop_undo() {
 		save_log.length = G.log
 		G.log = save_log
 		G.undo = save_undo
+		G.UNDID = TRUE
 	}
 }
 

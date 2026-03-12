@@ -1400,7 +1400,7 @@ function say_verbosity()
 }
 
 
-var skipped_event = false
+var skipped_event = true // Don't warn when first refreshing or coming back
 
 
 function on_update() {
@@ -1960,7 +1960,7 @@ function on_update() {
 
 	end_update()
 
-	if (is_bit(SKIPPED_EVENT)) {
+	if (is_bit(SKIPPED_EVENT) && !V.UNDID) {
 		if (!skipped_event) { // Prevents this warning from coming up more than once before it has been cleared in between
 			skipped_event = true
 			if (get_preference("eventsies", true)) {
