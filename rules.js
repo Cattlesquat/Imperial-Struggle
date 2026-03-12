@@ -4476,7 +4476,7 @@ function selected_a_tile(tile)
 {
 	advance_action_round_subphase(PICKED_TILE_OPTION_TO_PASS)
 
-	log (((G.active === FRANCE ? "=fr" : "=br") + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
+	log (((G.active === FRANCE ? "=fr" : "=br") + "Turn " + data.turns[G.turn].id + "\n" + "Action Round " + G.round + " (" + data.flags[G.active].adj + ")"))
 	log (data.flags[G.active].name + " investment tile: ")
 	log (say_inv(tile))
 	//log (say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype) + " " +
