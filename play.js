@@ -708,6 +708,7 @@ function on_init() {
 	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
 	init_preference_checkbox("scoresies", false, on_dialog_refresh)
+	init_preference_checkbox("eventsies", true)
 
 	init_preference_radio("actionverbosity", "medium", function () {
 		mention_verbosity()
@@ -1399,6 +1400,9 @@ function say_verbosity()
 }
 
 
+var skipped_event = false
+
+
 function on_update() {
 	var i, r, s, a
 
@@ -1951,6 +1955,19 @@ function on_update() {
 	refresh_visible_dialogs()
 
 	end_update()
+
+	if (is_bit(SKIPPED_EVENT)) {
+		if (!skipped_event) { // Prevents this warning from coming up more than once before it has been cleared in between
+			skipped_event = true
+			if (get_preference("eventsies", true)) {
+				if (!confirm("You have skipped playing an event although your investment tile makes you eligible for one.")) {
+					send_action("undo")
+				}
+			}
+		}
+	} else {
+		skipped_event = false
+	}
 }
 
 

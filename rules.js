@@ -399,6 +399,7 @@ const MINISTRY_JUST_REVEALED      = 26
 const LAST_EVENT_BY_BRITAIN       = 27
 const DONT_EXHAUST_ADVANTAGE      = 28
 const MUST_PLACE_IN_NORTH_AMERICA = 29
+const SKIPPED_EVENT               = 30
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -409,7 +410,7 @@ const TRANSIENT_JACOBITES_USED_2            = 2 // Shift spaces with military ac
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
-const TRANSIENT_NORTH_AMERICAN_TRADE	    = 6
+const TRANSIENT_NORTH_AMERICAN_TRADE	     = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
 const TRANSIENT_BANK_OF_ENGLAND             = 9
@@ -3369,6 +3370,7 @@ P.initiative_phase = function () {
 }
 
 function start_action_phase() {
+	clear_bit(SKIPPED_EVENT)
 	//("START ACTION PHASE: " + data.turns[G.turn].name)
 }
 
@@ -10359,6 +10361,16 @@ function advance_action_round_subphase(subphase)
 	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
 		log_box_begin(G.active, "NO EVENT PLAYED", LOG_BOX_EVENT)
 		log_box_end(LOG_BOX_EVENT)
+
+		for (var card of G.hand[G.active]) {
+			// If any of our event cards were *actually* eligible to be played, then we can throw the Skipped Event semaphore
+			if ((data.cards[card].action === WILD) || (data.cards[card].action === data.investments[G.played_tile].majortype) ||
+				(has_ministry(G.active, BANK_OF_ENGLAND) && (data.cards[card].action === ECON) && !is_ministry_exhausted(G.active, BANK_OF_ENGLAND, 1))) {
+				set_bit(SKIPPED_EVENT)
+			}
+		}
+	} else {
+		clear_bit(SKIPPED_EVENT)
 	}
 }
 
@@ -11174,6 +11186,7 @@ P.confirm_spend_debt_or_trps = {
 P.action_round_core = {
 	_begin() {
 		clear_bit(BUYING_WAR_TILE)
+		clear_bit(SKIPPED_EVENT)
 		L.clicked_upgrade = false
 		if (globalThis.RTT_FUZZER) G.fail = [ 0, 0, 0, 0 ]
 	},
@@ -11186,6 +11199,7 @@ P.action_round_core = {
 	},
 	_end() {
 		clear_bit(BUYING_WAR_TILE)
+		clear_bit(SKIPPED_EVENT)
 		L.clicked_upgrade = false
 		delete G.ministry_required_because
 		delete G.advantage_required_because
@@ -11387,6 +11401,7 @@ P.action_round_core = {
 	},
 	end_action_round() {
 		push_undo()
+		clear_bit(SKIPPED_EVENT)
 		G.debug = 9
 		end()
 	},
@@ -11583,6 +11598,7 @@ P.end_of_action_round = {
 	},
 	confirm() {
 		push_undo()
+		clear_bit(SKIPPED_EVENT)
 		end()
 	}
 }
