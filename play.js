@@ -1854,6 +1854,10 @@ function on_update() {
 	confirm_action_button("confirm_pass_usa_forts", "Pass", "You have not removed flags from all eligible forts. Confirm passing early?")
 
 	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
+	let button = document.getElementById("military_upgrade_button")
+	if (button !== null) {
+		button.className = "readybutton"
+	}
 
 	action_button("buy_diplomatic", (is_mobile() || shortest) ? "Buy Diplo" : "Buy Diplomatic")
 	action_button("buy_economic", (is_mobile() || shortest) ? "Buy Econ" : "Buy Economic")
