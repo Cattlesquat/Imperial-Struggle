@@ -11182,6 +11182,12 @@ P.confirm_spend_debt_or_trps = {
 }
 
 
+function check_event_skip()
+{
+	if (is_bit(SKIPPED_EVENT)) clear_bit(SKIPPED_EVENT)
+}
+
+
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
@@ -11351,48 +11357,57 @@ P.action_round_core = {
 	},
 	military_upgrade() {
 		push_undo()
+		check_event_skip()
 		G.debug = 0
 		L.clicked_upgrade = true
 		// This is mostly just a dummy - only effect of button is to scroll down to war
 	},
 	draw_event() {
 		push_undo()
+		check_event_skip()
 		G.debug = 1
 		handle_buy_event()
 	},
 	construct_squadron() {
 		push_undo()
+		check_event_skip()
 		G.debug = 2
 		handle_construct_squadron_button()
 	},
 	basic_war(t) {
 		push_undo()
+		check_event_skip()
 		G.debug = 3
 		handle_military_upgrade(t)
 	},
 	navy_box() {
 		push_undo()
+		check_event_skip()
 		G.debug = 4
 		handle_navy_box()
 	},
 	buy_bonus_war_tile() {	// buy a bonus war tile, and deploy it into the next war
 		push_undo()
+		check_event_skip()
 		G.debug = 5
 		set_bit(BUYING_WAR_TILE)
 		handle_buy_bonus_war_tile()
 	},
 	buy_diplomatic() { // TBD: Turn 6 only, spend 2 mil to buy 1 diplo. Can't buy both diplo & econ in same turn.
 		push_undo()
+		check_event_skip()
 		G.debug = 6
 		handle_buy_diplomatic()
 	},
 	buy_economic() { // TBD: Turn 6 only, spend 2 mil to buy 1 econ. Can't buy both diplo & econ in same turn
 		push_undo()
+		check_event_skip()
 		G.debug = 7
 		handle_buy_economic()
 	},
 	confirm_pass_to_reduce_debt() {
 		push_undo()
+		check_event_skip()
 		G.debug = 8
 		var debt_reduction = (G.debt[R] >= 2) ? 2 : (G.debt[R] >= 1) ? 1 : 0
 		log(data.flags[R].name + " passed to " + say_spending("reduce debt by " + debt_reduction, R) + ".")
@@ -11433,6 +11448,7 @@ P.action_round_core = {
 			this.space(s)
 		} else {
 			push_undo()
+			check_event_skip()
 			handle_space_click(s, MIL)
 		}
 	},
@@ -11441,27 +11457,32 @@ P.action_round_core = {
 	},
 	space(s) {
 		push_undo()
+		check_event_skip()
 		G.debug = 11
 		handle_space_click(s)
 	},
 	ministry_card(m) {
 		push_undo()
+		check_event_skip()
 		G.debug = 12
 		handle_ministry_card_click(m)
 	},
 	advantage(a) {
 		push_undo()
+		check_event_skip()
 		G.debug = 13
 		advance_action_round_subphase(BEFORE_SPENDING_ACTION_POINTS) // Can't play an event after using an advantage
 		handle_advantage_click(a)
 	},
 	event_card(c) {
 		push_undo()
+		check_event_skip()
 		G.debug = 14
 		handle_event_card_click(c)
 	},
 	demand(d) {
 		push_undo()
+		check_event_skip()
 		G.debug = 15
 		handle_townshend_acts_click(d)
 	},
