@@ -8290,7 +8290,7 @@ P.ministry_charles_hanbury_williams = {
 		V.prompt = ministry_prompt(R, CHARLES_HANBURY_WILLIAMS, "Reduce cost to unflag FR spaces in Prussia, German States, and Russia by 1 [@1]") + say_action_points_left()
 		if (ministry_useful_this_phase(CHARLES_HANBURY_WILLIAMS, G.subphase)) {
 			if (!is_ministry_exhausted(R, CHARLES_HANBURY_WILLIAMS)) {
-				button ("unflag_discount", G.eligible_major[DIPLO])
+				button ("unflag_discount", action_points_eligible_major(DIPLO, active_rules()))
 			}
 		}
 		button ("pass")
