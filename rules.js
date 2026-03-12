@@ -8112,6 +8112,7 @@ function jacobite_vp_value()
 {
 	let vp = 0
 	for (const s of [ IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2 ]) {
+		if (has_conflict_marker(s)) continue
 		if (G.flags[s] === FRANCE) vp++
 	}
 
