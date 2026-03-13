@@ -7748,11 +7748,6 @@ function handle_ministry_card_click(m)
 	}
 }
 
-function do_nothing()
-{
-	// So we don't break my script commenting out
-}
-
 P.ministry_flow = script (`	
     eval { clear_bit(MINISTRY_JUST_REVEALED) }
     
@@ -7764,9 +7759,9 @@ P.ministry_flow = script (`
     	}
     }
     
-    eval { 
-    	if (!is_log_box(LOG_BOX_MINISTRY)) do_nothing() 
-    }
+    //eval { 
+    //	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id) 
+    //}
     
     if (G.ministry_revealed[R][G.ministry_index]) {
 		if (data.ministries[G.ministry_id].proc !== undefined) {
