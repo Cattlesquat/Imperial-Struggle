@@ -1960,7 +1960,7 @@ function on_update() {
 
 	end_update()
 
-	if (is_bit(SKIPPED_EVENT) && !V.UNDID && ((R === FRANCE) || (R === BRITAIN)) && (params.mode === "play")) {
+	if (is_bit(SKIPPED_EVENT) && !V.UNDID && ((R === FRANCE) || (R === BRITAIN)) && (params.mode === "play") && (R === V.active)) {
 		if (!skipped_event) { // Prevents this warning from coming up more than once before it has been cleared in between
 			skipped_event = true
 			if (get_preference("eventsies", true)) {
