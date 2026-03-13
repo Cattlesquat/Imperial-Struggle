@@ -415,6 +415,10 @@ const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
 const TRANSIENT_BANK_OF_ENGLAND             = 9
 const TRANSIENT_BURKE_FOR_DISCOUNT			 = 10
+const TRANSIENT_EVENT_MADE_DIPLO            = 11
+const TRANSIENT_TILE_MADE_DIPLO             = 12
+const TRANSIENT_EVENT_MADE_ECON             = 13
+const TRANSIENT_BOUGHT_EVENT                = 14
 
 
 /* TILES & CARDS */
@@ -4342,10 +4346,10 @@ function active_rules_list() {
 // If action is "not_independent" then it isn't its own major/minor action but must instead be attached to another one
 function add_contingent(type, amount, rule, short, not_independent = false) {
 	let nat = false
-	if (!not_independent && (type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
-		amount++
-		nat = true
-	}
+	//if (!not_independent && (type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
+	//	amount++
+	//	nat = true
+	//}
 
 	G.contingent.push({ type, amount, rule, short, not_independent })
 	log ("+" + say_action_points(amount, type) + " (" + rule +")" + (nat ? " (North American Trade increased award)" : ""))
@@ -4442,10 +4446,10 @@ function drain_non_independent(type, rule) {
 function add_action_points(type, amount)
 {
 	let nat = false
-	if ((type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
-		amount++
-		nat = true
-	}
+	//if ((type === ECON) && !action_points_eligible_major(ECON, active_rules()) && has_transient(G.active, TRANSIENT_NORTH_AMERICAN_TRADE)) {
+	//	amount++
+	//	nat = true
+	//}
 
 	G.major[type] += amount
 	G.eligible[type] = TRUE
@@ -4550,10 +4554,12 @@ function selected_a_tile(tile)
 	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
 	G.action_point_regions = [ [], [], [] ]
 
+	if (G.eligible_major[DIPLO]) set_transient(G.active, TRANSIENT_TILE_MADE_DIPLO)
+
 	// Ministries that increase action points right away
 
 	if (has_active_ministry(G.active, EDMUND_BURKE) && !is_ministry_exhausted(G.active, EDMUND_BURKE)) {
-		if (action_points_eligible_major[DIPLO]) {
+		if (G.eligible_major[DIPLO]) {
 			let points = burke_points(G.active)
 			if (points > 0) {
 				log_box_ministry(G.active, EDMUND_BURKE)
@@ -4696,6 +4702,34 @@ function handle_event_card_click(c) {
 
 	call ("event_flow")
 }
+
+
+function event_made_diplo()
+{
+	if (!has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) {
+		set_transient(R, TRANSIENT_EVENT_MADE_DIPLO)
+		if (has_active_ministry(R, EDMUND_BURKE)) {
+			add_contingent(DIPLO, burke_points(R), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+		}
+	}
+}
+
+function event_made_econ(rule = null, short = null)
+{
+	if (!has_transient(R, TRANSIENT_EVENT_MADE_ECON)) {
+		set_transient(R, TRANSIENT_EVENT_MADE_ECON)
+		if (has_active_ministry(R, NORTH_AMERICAN_TRADE)) {
+			log_box_ministry(R, NORTH_AMERICAN_TRADE)
+			if (rule === null) {
+				add_action_points(ECON, 1)
+			} else {
+				add_contingent(ECON, 1, rule, short, true)
+			}
+			log_box_end(LOG_BOX_MINISTRY)
+		}
+	}
+}
+
 
 function begin_event_play(c) {
 	advance_action_round_subphase(DURING_EVENT)
@@ -5035,6 +5069,7 @@ P.event_acts_of_union = {
 		} else {
 			add_action_points(DIPLO, 2)
 		}
+		event_made_diplo()
 	},
 	inactive: "get busy with some Acts of Union",
 	prompt() {
@@ -5282,6 +5317,7 @@ P.event_war_of_jenkins_ear = {
 		} else {
 			if ((R === FRANCE) && is_bit(QUALIFIES_FOR_BONUS)) {
 				add_action_points(DIPLO, 1)
+				event_made_diplo()
 			}
 			end()
 		}
@@ -5396,6 +5432,7 @@ P.event_native_american_alliances = {
 		} else {
 			if (!L.done_action_points) {
 				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+				event_made_econ(RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 				L.done_action_points = true
 				if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 			} else {
@@ -5509,11 +5546,13 @@ P.event_austro_spanish_rivalry = {
 	diplomatic2() {
 		push_undo()
 		add_contingent(DIPLO, 2, RULE_INDIA, SHORT_INDIA)
+		event_made_diplo()
 		end()
 	},
 	economic2() {
 		push_undo()
 		add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+		event_made_econ(RULE_INDIA, SHORT_INDIA)
 		end()
 	},
 	done() {
@@ -5559,7 +5598,10 @@ P.event_tax_reform = {
 	confirm() {
 		push_undo()
 		if (L.reduction_amount > 0) reduce_debt(R, L.reduction_amount)
-		if (L.economic_points > 0) add_action_points(ECON, L.economic_points)
+		if (L.economic_points > 0) {
+			add_action_points(ECON, L.economic_points)
+			event_made_econ()
+		}
 		end()
 	}
 }
@@ -5649,6 +5691,7 @@ P.event_great_northern_war = {
 				if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 			} else {
 				add_action_points(DIPLO, 1)
+				event_made_diplo()
 				end()
 			}
 		} else {
@@ -5664,6 +5707,7 @@ P.event_great_northern_war = {
 				if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 			} else {
 				add_action_points(DIPLO, 1)
+				event_made_diplo()
 				end()
 			}
 		}
@@ -5730,6 +5774,7 @@ P.event_vatican_politics = {
 		push_undo()
 		if (R === BRITAIN) {
 			add_contingent(DIPLO, 2, RULE_GERMAN_PRUSSIA_DUTCH, SHORT_GERMAN_PRUSSIA_DUTCH)
+			event_made_diplo()
 			if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(DIPLO, 1, RULE_EUROPE, SHORT_EUROPE)
 			end()
 		} else {
@@ -5847,6 +5892,7 @@ P.event_calico_acts = {
 		if (R === BRITAIN) {
 			L.unflagged_markets = true
 			add_contingent(ECON, 2, RULE_UNFLAG_MARKETS, SHORT_UNFLAG_MARKETS)
+			event_made_econ(RULE_UNFLAG_MARKETS, SHORT_UNFLAG_MARKETS)
 			if (!is_bit(QUALIFIES_FOR_BONUS)) end()
 		} else {
 			if (!L.unflagged_markets) {
@@ -6002,6 +6048,7 @@ P.event_alberonis_ambition = {
 		push_undo()
 		if (R === BRITAIN) {
 			add_contingent(ECON, L.econ_amount, RULE_MARKET_MARKET, SHORT_MARKET_MARKET)
+			event_made_econ(RULE_MARKET_MARKET, SHORT_MARKET_MARKET)
 		} else {
 			if (!L.shifted_alliance) {
 				L.shifted_alliance = true
@@ -6250,10 +6297,12 @@ P.event_pacte_de_famille = {
 			set_transient(R, TRANSIENT_PACTE_DE_FAMILLE)
 			if (is_bit(QUALIFIES_FOR_BONUS)) {
 				add_action_points(DIPLO, 1)
+				event_made_diplo()
 			}
 		} else {
 			if (is_bit(QUALIFIES_FOR_BONUS)) {
 				add_contingent(DIPLO, 2, RULE_SPAIN_AUSTRIA, SHORT_SPAIN_AUSTRIA)
+				event_made_diplo()
 			}
 		}
 		end()
@@ -6350,7 +6399,10 @@ P.event_le_beau_monde = {
 		G.global_demand.push(FURS)
 		G.dirty_demand |= (1 << FURS)
 		log(bold(say_demand(FURS) + " added to Global Demand."))
-		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_action_points(ECON, 1)
+			event_made_econ()
+		}
 		end()
 	},
 	cotton() {
@@ -6358,12 +6410,18 @@ P.event_le_beau_monde = {
 		G.global_demand.push(COTTON)
 		G.dirty_demand |= (1 << COTTON)
 		log(bold(say_demand(COTTON) + " added to Global Demand."))
-		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_action_points(ECON, 1)
+			event_made_econ()
+		}
 		end()
 	},
 	pass() {
 		push_undo()
-		if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(ECON, 1)
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_action_points(ECON, 1)
+			event_made_econ()
+		}
 		end()
 	},
 	confirm() {
@@ -6372,6 +6430,7 @@ P.event_le_beau_monde = {
 	done() {
 		push_undo()
 		add_contingent(DIPLO, is_bit(QUALIFIES_FOR_BONUS) ? 3 : 1, RULE_EUROPE, SHORT_EUROPE)
+		event_made_diplo()
 		end()
 	}
 }
@@ -6444,19 +6503,28 @@ P.event_hyder_ali = {
 		push_undo()
 		if (L.taking_control) {
 			reflag_space(s, R)
-			if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+			if (is_bit(QUALIFIES_FOR_BONUS)) {
+				add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+				event_made_econ(RULE_INDIA, SHORT_INDIA)
+			}
 			end()
 		} else {
 			add_conflict_marker(s)
 			L.conflicts_done++
 			if (L.conflicts_done >= 2) {
-				if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+				if (is_bit(QUALIFIES_FOR_BONUS)) {
+					add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+					event_made_econ(RULE_INDIA, SHORT_INDIA)
+				}
 				end()
 			}
 		}
 	},
 	done() {
-		if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+			event_made_econ(RULE_INDIA, SHORT_INDIA)
+		}
 		end()
 	}
 }
@@ -6503,7 +6571,10 @@ P.event_co_hong_system = {
 		array_delete_item(G.global_demand, d)
 		log (bold(say_demand(d) + " removed from Global Demand."))
 
-		if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+			event_made_econ(RULE_INDIA, SHORT_INDIA)
+		}
 		end()
 	}
 }
@@ -6654,6 +6725,7 @@ P.event_west_african_gold_mining = {
 	confirm() {
 		push_undo()
 		add_action_points(ECON, 1)
+		event_made_econ()
 		if (is_bit(QUALIFIES_FOR_BONUS)) add_contingent(ECON, 2, RULE_CARIBBEAN, SHORT_CARIBBEAN)
 		end()
 	}
@@ -6740,7 +6812,10 @@ P.event_war_of_the_quadruple_alliance = {
 			if (quadruple_alliance_british_bonus()) end()
 		} else {
 			reflag_space(s, (G.flags[s] === NONE) ? FRANCE : NONE)
-			if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(DIPLO, 1)
+			if (is_bit(QUALIFIES_FOR_BONUS)) {
+				add_action_points(DIPLO, 1)
+				event_made_diplo()
+			}
 			end()
 		}
 	},
@@ -6775,7 +6850,10 @@ P.event_war_of_the_quadruple_alliance = {
 				if (quadruple_alliance_british_bonus()) end()
 			}
 		} else {
-			if (is_bit(QUALIFIES_FOR_BONUS)) add_action_points(DIPLO, 1)
+			if (is_bit(QUALIFIES_FOR_BONUS)) {
+				add_action_points(DIPLO, 1)
+				event_made_diplo()
+			}
 			end()
 		}
 	}
@@ -6800,6 +6878,7 @@ P.event_salon_d_hercule = {
 			increase_debt(FRANCE, is_bit(QUALIFIES_FOR_BONUS) ? 3 : 1)
 		} else {
 			add_contingent(DIPLO, is_bit(QUALIFIES_FOR_BONUS) ? 4 : 2, RULE_EUROPE, SHORT_EUROPE)
+			event_made_diplo()
 		}
 		end()
 	}
@@ -6893,6 +6972,7 @@ P.event_father_le_loutre = {
 				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 			} else {
 				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+				event_made_econ(RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 			}
 		}
 		end()
@@ -6904,6 +6984,7 @@ P.event_father_le_loutre = {
 				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 			} else {
 				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+				event_made_econ(RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
 			}
 		}
 		end()
@@ -6981,6 +7062,7 @@ P.event_jonathans_coffee_house = {
 	},
 	confirm() {
 		add_action_points(ECON, is_bit(QUALIFIES_FOR_BONUS) ? 3 : 2)
+		event_made_econ()
 		if (is_bit(QUALIFIES_FOR_BONUS)) {
 			if (G.debt[R] > 0) {
 				reduce_debt(R, 1)
@@ -7047,6 +7129,7 @@ P.event_nootka_incident = {
 	diplomatic2() {
 		push_undo()
 		add_action_points(DIPLO, 2)
+		event_made_diplo()
 		nootka_bonus()
 		end()
 	},
@@ -7189,6 +7272,7 @@ P.event_loge_des_neuf_soeurs = {
 
 		if (is_bit(QUALIFIES_FOR_BONUS)) {
 			add_action_points(DIPLO, 2)
+			event_made_diplo()
 		}
 
 		G.active_advantage = a
@@ -7208,6 +7292,7 @@ P.event_loge_des_neuf_soeurs = {
 		} else {
 			if (is_bit(QUALIFIES_FOR_BONUS)) {
 				add_action_points(DIPLO, 2)
+				event_made_diplo()
 			}
 		}
 		end()
@@ -7777,7 +7862,10 @@ function reveal_ministry(who, index) {
 
 	if ((m === EDMUND_BURKE) && !has_transient(who, TRANSIENT_BURKE_FOR_DISCOUNT)) {
 		if ((G.subphase > BEFORE_PICKING_TILE) && is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, RULE_EUROPE_BURKE)) {
-			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+			let proc = 0
+			if (has_transient(who, TRANSIENT_TILE_MADE_DIPLO)) proc++
+			if (has_transient(who, TRANSIENT_EVENT_MADE_DIPLO)) proc++
+			add_contingent(DIPLO, burke_points(who) * proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 			exhaust_ministry(who, m)
 		}
 	}
@@ -9136,6 +9224,7 @@ function space_action_type(s)
 
 function is_entirely_in_europe(type)
 {
+	if (has_transient(R, TRANSIENT_BOUGHT_EVENT)) return false
 	for (const r of [ REGION_NORTH_AMERICA, REGION_CARIBBEAN, REGION_INDIA ]) {
 		if (set_has(G.action_point_regions[type], r)) return false
 	}
@@ -9289,6 +9378,13 @@ function do_buy_diplomatic(who)
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " has bought " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
 	display_action_cost()
+	if (!has_transient(who, TRANSIENT_TILE_MADE_DIPLO) && !has_transient(who, TRANSIENT_EVENT_MADE_DIPLO)) {
+		set_transient(who, TRANSIENT_TILE_MADE_DIPLO)
+		if (has_active_ministry(who, EDMUND_BURKE)) {
+			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+			exhaust_ministry(who, EDMUND_BURKE)
+		}
+	}
 }
 
 
@@ -9375,6 +9471,7 @@ P.buy_event_decisions = {
 
 
 function do_buy_event(who) {
+	set_transient(who, TRANSIENT_BOUGHT_EVENT)
 	if (G.deck.length === 0) {
 		log ("Discard Pile shuffled to form new Event Deck.")
 		G.deck = G.discard_pile.slice()
@@ -10342,7 +10439,10 @@ function reflag_space(s, who, silent = false) {
 	if (who === BRITAIN) {
 		if (has_active_ministry(who, EDMUND_BURKE) && [IRELAND_1, IRELAND_2].includes(s)) {
 			if (is_entirely_in_europe(DIPLO) && action_points_eligible_major(DIPLO, active_rules())) {
-				add_contingent(DIPLO, 1, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+				let proc = 0
+				if (has_transient(who, TRANSIENT_TILE_MADE_DIPLO)) proc++
+				if (has_transient(who, TRANSIENT_EVENT_MADE_DIPLO)) proc++
+				add_contingent(DIPLO, proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 				exhaust_ministry(who, EDMUND_BURKE, 0, true) // but we don't *check* exhaustion before allowing here, because he's allowed to gain strength on the fly
 			}
 		}
@@ -10646,7 +10746,10 @@ P.space_flow = script(`
     		eval {
     			log_box_ministry(R, EDMUND_BURKE)
     			exhaust_ministry(R, EDMUND_BURKE)
-    			add_contingent(DIPLO, potential_burke_points(G.active), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+    			L.proc = 0
+    			if (has_transient(R, TRANSIENT_TILE_MADE_DIPLO)) L.proc++
+    			if (has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) L.proc++
+    			add_contingent(DIPLO, potential_burke_points(G.active) * L.proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
     			G.action_points_available_now += potential_burke_points(G.active)
     			if (G.minor[DIPLO] > 0) {
     			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.minor[DIPLO]) // Burke points don't combine with minor action points
