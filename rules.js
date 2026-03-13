@@ -7759,9 +7759,9 @@ P.ministry_flow = script (`
     	}
     }
     
-    eval { 
-    	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id) 
-    }
+    //eval { 
+    //	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id) 
+    //}
     
     if (G.ministry_revealed[R][G.ministry_index]) {
 		if (data.ministries[G.ministry_id].proc !== undefined) {
@@ -7782,6 +7782,12 @@ P.ministry_flow = script (`
     	log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
     } 
 `)
+
+
+function start_ministry_effect()
+{
+	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id)
+}
 
 
 function ministry_has_activatable_abilities(m)
@@ -7989,6 +7995,7 @@ P.ministry_robert_walpole = {
 	},
     draw_an_event() {
 		clear_undo() // Because we're drawing a new event card
+		start_ministry_effect()
 
 		log_box_ministry(R, ROBERT_WALPOLE)
 		exhaust_ministry(R, ROBERT_WALPOLE)
@@ -8048,6 +8055,7 @@ P.ministry_bank_of_england = {
 	},
 	increase_debt_limit() {
 		push_undo()
+		start_ministry_effect()
 		log_box_ministry(R, BANK_OF_ENGLAND)
 		exhaust_ministry(R, BANK_OF_ENGLAND)
 		G.debt_limit[R]++
@@ -8059,6 +8067,7 @@ P.ministry_bank_of_england = {
 	},
 	play_event() {
 		push_undo()
+		start_ministry_effect()
 		L.picking_event = true
 	},
 	event_card(c) {
@@ -8093,6 +8102,7 @@ P.ministry_edmond_halley = {
 	},
 	build_squadron() {
 		push_undo()
+		start_ministry_effect()
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
@@ -8102,6 +8112,7 @@ P.ministry_edmond_halley = {
 	},
 	event_card(c) {
 		push_undo()
+		start_ministry_effect()
 		log_box_ministry(R, EDMOND_HALLEY)
 		exhaust_ministry(R, EDMOND_HALLEY,1)
 
@@ -8160,6 +8171,7 @@ P.ministry_cardinal_ministers = {
 	},
 	confirm() {
 		push_undo()
+		start_ministry_effect()
 		use_cardinal_ministers()
 		end()
 	},
@@ -8192,6 +8204,7 @@ P.ministry_new_world_huguenots = {
 	},
 	space(s) {
 		push_undo()
+		start_ministry_effect()
 		log_box_ministry(R, NEW_WORLD_HUGUENOTS)
 		exhaust_ministry(R, NEW_WORLD_HUGUENOTS)
 		add_huguenots(s)
@@ -8311,6 +8324,7 @@ P.ministry_jacobite_uprisings = {
 	},
 	jacobite_vp() {
 		push_undo()
+		start_ministry_effect()
 		set_transient(R, TRANSIENT_JACOBITES_USED_1)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
@@ -8324,6 +8338,7 @@ P.ministry_jacobite_uprisings = {
 	},
 	space(s) {
 		push_undo()
+		start_ministry_effect()
 		set_transient(R, TRANSIENT_JACOBITES_USED_2)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
@@ -8355,6 +8370,7 @@ P.ministry_pitt_the_elder = {
 	},
 	build_squadron() {
 		push_undo()
+		start_ministry_effect()
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
@@ -8364,6 +8380,7 @@ P.ministry_pitt_the_elder = {
 	},
 	diplomatic_point() {
 		push_undo()
+		start_ministry_effect()
 		log_box_ministry(R, PITT_THE_ELDER)
 		exhaust_ministry(R, PITT_THE_ELDER, 0)
 		add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
@@ -8390,7 +8407,7 @@ P.ministry_charles_hanbury_williams = {
 	},
 	unflag_discount() {
 		push_undo()
-		log_box_ministry(R, CHARLES_HANBURY_WILLIAMS)
+		start_ministry_effect()
 		exhaust_ministry(R, CHARLES_HANBURY_WILLIAMS)
 		set_transient(R, TRANSIENT_CHARLES_HANBURY_WILLIAMS)
 		log (say_ministry(CHARLES_HANBURY_WILLIAMS) + " will reduce the cost to unflag French-flagged spaces in Prussia, German States, and Russia for the rest of the action round.")
@@ -8414,6 +8431,7 @@ P.ministry_choiseul = {
 	},
 	build_squadron() {
 		push_undo()
+		start_ministry_effect()
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_string = "to construct a squadron"
@@ -8423,6 +8441,7 @@ P.ministry_choiseul = {
 	},
 	military_point() {
 		push_undo()
+		start_ministry_effect()
 		log_box_ministry(R, CHOISEUL)
 		exhaust_ministry(R, CHOISEUL, 0)
 		add_contingent(MIL, 1, RULE_WAR_TILE_OR_DEPLOY, SHORT_WAR_TILE_OR_DEPLOY, true)
@@ -8453,7 +8472,7 @@ P.ministry_papacy_hanover_negotiations = {
 	},
 	done() {
 		push_undo()
-		log_box_ministry(R, PAPACY_HANOVER_NEGOTIATIONS)
+		start_ministry_effect()
 		exhaust_ministry(R, PAPACY_HANOVER_NEGOTIATIONS)
 		add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
 		log_box_end(LOG_BOX_MINISTRY)
@@ -8477,6 +8496,7 @@ P.ministry_townshend_acts = {
 	},
 	demand(d) {
 		push_undo()
+		start_ministry_effect()
 		apply_townshend_acts(d)
 		end()
 	}
