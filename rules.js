@@ -7479,6 +7479,7 @@ P.event_falklands_crisis = {
 					msg += " (None possible)"
 					button("done")
 				}
+				V.prompt = event_prompt(R, G.played_event, msg)
 			}
 		} else {
 			if (!L.done_starting) {
