@@ -10746,10 +10746,10 @@ P.space_flow = script(`
     		eval {
     			log_box_ministry(R, EDMUND_BURKE)
     			exhaust_ministry(R, EDMUND_BURKE)
-    			L.proc = 0
-    			if (has_transient(R, TRANSIENT_TILE_MADE_DIPLO)) L.proc++
-    			if (has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) L.proc++
-    			add_contingent(DIPLO, potential_burke_points(G.active) * L.proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+    			let proc = 0
+    			if (has_transient(R, TRANSIENT_TILE_MADE_DIPLO)) proc++
+    			if (has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) proc++
+    			add_contingent(DIPLO, potential_burke_points(G.active) * proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
     			G.action_points_available_now += potential_burke_points(G.active)
     			if (G.minor[DIPLO] > 0) {
     			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.minor[DIPLO]) // Burke points don't combine with minor action points
