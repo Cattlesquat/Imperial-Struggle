@@ -424,6 +424,7 @@ const TRANSIENT_BOUGHT_EVENT                = 14
 /* TILES & CARDS */
 
 setup_procs()
+unit_tests()
 
 function setup_procs()
 {
@@ -503,6 +504,64 @@ function setup_procs()
 	data.advantages[ITALY_INFLUENCE].proc = "advantage_unflag_discount"
 	data.advantages[NAVAL_BASTION].proc = "advantage_naval_bastion"
 	data.advantages[SLAVING_CONTRACTS].proc = "advantage_slaving_contracts"
+}
+
+
+function unit_tests()
+{
+	for (let i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].num !== i)
+			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
+	}
+
+	// Unit test to confirm two-way connections
+	for (let i = 0; i < data.spaces.length; i++) {
+		if (data.spaces[i].connects !== undefined) {
+			for (const space of data.spaces[i].connects) {
+				let connection = false
+				if (data.spaces[space].connects !== undefined) {
+					for (const space2 of data.spaces[space].connects) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					console.error(
+						"Space " +
+						data.spaces[i].name +
+						" specifies a connection to " +
+						data.spaces[space].name +
+						" but the reverse connection does not exist."
+					)
+				}
+			}
+		}
+
+		if (data.spaces[i].conquest !== undefined) {
+			for (const space of data.spaces[i].conquest) {
+				let connection = false
+				if (data.spaces[space].conquest !== undefined) {
+					for (const space2 of data.spaces[space].conquest) {
+						if (space2 === i) {
+							connection = true
+							break
+						}
+					}
+				}
+				if (!connection) {
+					console.error(
+						"Space " +
+						data.spaces[i].name +
+						" specifies a conquest line to " +
+						data.spaces[space].name +
+						" but the reverse conquest line does not exist."
+					)
+				}
+			}
+		}
+	}
 }
 
 /* SETUP */
@@ -595,7 +654,6 @@ function on_setup(scenario, options) {
 	for (i = 1; i <= SUCCESSION_ERA_CARDS; ++i)
 		G.deck.push(i)
 	shuffle(G.deck)
-	validate_decks("START")
 
 	// Investments available this action round
 	G.inv_avail = []
@@ -744,60 +802,6 @@ function on_setup(scenario, options) {
 	// <br><b>
 	// for (const h of G.huguenots_spent) { assert (G.huguenots.includes(h)) }
 	G.huguenots_spent = []
-
-	for (i = 0; i < data.spaces.length; i++) {
-		if (data.spaces[i].num !== i)
-			throw new Error("Space numbering is wrong for " + data.spaces[i].name)
-	}
-
-	// Unit test to confirm two-way connections
-	for (i = 0; i < data.spaces.length; i++) {
-		if (data.spaces[i].connects !== undefined) {
-			for (const space of data.spaces[i].connects) {
-				let connection = false
-				if (data.spaces[space].connects !== undefined) {
-					for (const space2 of data.spaces[space].connects) {
-						if (space2 === i) {
-							connection = true
-							break
-						}
-					}
-				}
-				if (!connection) {
-					console.error(
-						"Space " +
-						data.spaces[i].name +
-						" specifies a connection to " +
-						data.spaces[space].name +
-						" but the reverse connection does not exist."
-					)
-				}
-			}
-		}
-
-		if (data.spaces[i].conquest !== undefined) {
-			for (const space of data.spaces[i].conquest) {
-				let connection = false
-				if (data.spaces[space].conquest !== undefined) {
-					for (const space2 of data.spaces[space].conquest) {
-						if (space2 === i) {
-							connection = true
-							break
-						}
-					}
-				}
-				if (!connection) {
-					console.error(
-						"Space " +
-						data.spaces[i].name +
-						" specifies a conquest line to " +
-						data.spaces[space].name +
-						" but the reverse conquest line does not exist."
-					)
-				}
-			}
-		}
-	}
 
 	// How many squadrons left in each player's navy box. For *unbuilt* squadrons see G.unbuilt_squadrons[who] instead.
 	// <br><b>
