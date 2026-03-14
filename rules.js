@@ -1404,9 +1404,9 @@ function on_view(RR = undefined) {
 	V.first_player = G.first_player
 
 	if (Array.isArray(G.temp_vp)) {
-		V.vp   = G.temp_vp[R]
-		V.debt = G.temp_debt[R]
-		V.treaty_points = G.temp_trp[R]
+		V.vp   = G.temp_vp[R] ?? G.vp
+		V.debt = G.temp_debt[R] ?? G.debt
+		V.treaty_points = G.temp_trp[R] ?? G.treaty_points
 	} else {
 		V.vp = G.vp
 		V.debt = G.debt
@@ -3572,7 +3572,7 @@ function adjust_scoring_view_start(who)
 	ensure_arrays()
 	G.temp_trp[who] = G.scoring_start_trp
 	G.temp_vp[who] = G.scoring_start_vp
-	G.temp_debt[who] = G.scoring_start_debt ?? (Array.isArray(G.scoring_demand_debt) ? G.scoring_demand_debt[0] : G.debt)
+	G.temp_debt[who] = G.scoring_start_debt ?? (Array.isArray(G.scoring_demand_debt) ? (G.scoring_demand_debt[0] ?? G.debt) : G.debt)
 }
 
 function adjust_scoring_view_prestige(who)
@@ -7842,8 +7842,9 @@ function ministry_prompt(who, m, string1, string2 = "") {
 			prompt += string2 + "."
 		}
 		else {
-			prompt += strike(string1, is_ministry_exhausted(who, m, 0))
-			if (is_ministry_exhausted(who, m, 0)) prompt += " (exhausted)"
+			let ex = is_ministry_exhausted(who, m, 0) && ((m !== JACOBITE_UPRISINGS) || !has_transient(who, TRANSIENT_JACOBITES_USED_2))
+			prompt += strike(string1, ex)
+			if (ex) prompt += " (exhausted)"
 			prompt += " OR "
 			prompt += strike(string2, is_ministry_exhausted(who, m, 1))
 			if (is_ministry_exhausted(who, m, 1)) prompt += " (exhausted)"
@@ -8280,9 +8281,10 @@ function jacobite_start_shift()
 {
 	G.action_header = ""
 	log_box_ministry(FRANCE, JACOBITE_UPRISINGS)
-	if (!is_ministry_exhausted(FRANCE, JACOBITE_UPRISINGS, 0)) {
-		exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 0)
-	}
+	set_transient(R, TRANSIENT_JACOBITES_USED_2)
+	//if (!is_ministry_exhausted(FRANCE, JACOBITE_UPRISINGS, 0)) {
+	//	exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 0)
+	//}
 }
 
 P.jacobite_flow = script (`
@@ -11749,6 +11751,11 @@ P.end_of_action_round = {
 	},
 	confirm() {
 		push_undo()
+
+		if (has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
+			exhaust_ministry(R, JACOBITE_UPRISINGS, 0)
+		}
+
 		clear_bit(SKIPPED_EVENT)
 		end()
 	}
