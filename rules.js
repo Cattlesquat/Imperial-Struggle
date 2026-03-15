@@ -1,4 +1,5 @@
 "use strict"
+
 const data = require("./data.js")
 
 const ROLES = [ "France", "Britain" ]
@@ -1980,14 +1981,6 @@ function refresh_huguenots() {
 	G.huguenots_spent = []
 }
 
-function is_space_eligible_for_huguenots(s)
-{
-	if (data.spaces[s].type !== TERRITORY) return false
-	if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) return false
-	if (has_huguenots(s)) return false
-	return G.flags[s] === FRANCE
-}
-
 
 
 /* 5.4.1 Isolated Market flags */
@@ -2068,14 +2061,6 @@ function say_player(who = -1) {
 
 function say_spending(msg, who = -1) {
 	return "[$" + encode_who(who) + msg + "]"
-}
-
-function say_award_tile(msg, t, who = -1) {
-	return "[W" + encode_who(who) + encode_value(t) + msg + "]"
-}
-
-function say_investment_tile(msg, t, who = -1) {
-	return "[I" + encode_who(who) + encode_value(t) + msg + "]"
 }
 
 
@@ -2173,17 +2158,6 @@ function say_action_points(num, type, plus = false, force_num = true)
 	msg += "[a" + type + (doing_num ? s(num) : "") + "]"
 	return msg
 }
-
-
-function say_action_points_brief(num, type, plus = false, force_num = true)
-{
-	let msg = plus ? "+" : ""
-	let doing_num = ((num > 0) || force_num || plus)
-	msg += "[@" + type + "]"
-	if (doing_num) msg += num
-	return msg
-}
-
 
 
 // Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
@@ -9141,14 +9115,6 @@ function action_eligible_spaces_mil(region)
 	}
 }
 
-function action_territories_debug()
-{
-	for (const space of data.spaces) {
-		if (space.type !== TERRITORY) continue
-		action_space(space.num)
-	}
-}
-
 function action_eligible_spaces(type, region)
 {
 	if (!action_points_eligible_major(type, active_rules()) && (G.minor[type] <= 0)) return
@@ -9305,16 +9271,6 @@ function clear_bit(b)
 function set_bit2(state, b, on = true)
 {
 	bit_set(state.bitflags, b, on)
-}
-
-function clear_bit2(state, b)
-{
-	bit_set(state, state.bitflags, b, false)
-}
-
-function is_bit2(state, b)
-{
-	return !!bit_get(state.bitflags, b)
 }
 
 
@@ -9680,11 +9636,6 @@ function is_spain(s)
 function is_austria(s)
 {
 	return (s >= AUSTRIA_1) && (s <= AUSTRIA_4)
-}
-
-function is_prussia(s)
-{
-	return (s >= PRUSSIA_1) && (s <= PRUSSIA_4)
 }
 
 function is_europe(s)
@@ -10879,13 +10830,6 @@ function a(amount) {
 	if (amount === 1) return "a "
 	return ""
 }
-
-// Returns "an " if the amount is exactly 1; returns "" if amount is any other value
-function an(amount) {
-	if (amount === 1) return "an "
-	return ""
-}
-
 
 function indent(string, yeah = true)
 {
@@ -12986,12 +12930,6 @@ function action_damaged(s) {
 	action("damaged", s)
 }
 
-
-function action_navy(who) {
-	action("navy", who)
-}
-
-
 function action_navy_box()
 {
 	action("navy_box", 0)
@@ -13094,10 +13032,6 @@ function log_box_end(type = 0) {
 }
 
 
-function prompt(s) {
-	V.prompt = s
-}
-
 function button(action, enabled = true) {
 	V.actions[action] = !!enabled | 0
 }
@@ -13113,13 +13047,6 @@ function finish(result, message) {
 	G.result = ROLES[result] ?? result
 	G.L = L = { message }
 	log(message)
-}
-
-function call_or_goto(pred, name, env) {
-	if (pred)
-		call(name, env)
-	else
-		goto(name, env)
 }
 
 function call(name, env) {
@@ -13161,20 +13088,6 @@ exports.setup = function (seed, scenario, options) {
 	_save()
 
 	return G
-}
-
-exports.static_view = function (game) {
-	var SV = null
-	if (typeof on_static_view === "function") {
-		G = state
-		L = null
-		R = role
-		V = null
-		_load()
-		SV = on_static_view()
-		_save()
-	}
-	return SV
 }
 
 exports.view = function (state, role) {
@@ -13286,31 +13199,6 @@ exports.finish = function (state, result, message) {
 	_save()
 
 	return G
-}
-
-exports.query = function (state, role, q) {
-	G = state
-	L = G.L
-	R = role
-	V = null
-
-	_load()
-	var result = on_query(q)
-	_save()
-
-	return result
-}
-
-exports.assert = function (state) {
-	if (typeof on_assert === "function") {
-		G = state
-		L = G.L
-		R = null
-		V = null
-		_load()
-		on_assert()
-		_save()
-	}
 }
 
 function _load() {
@@ -13679,10 +13567,6 @@ function pop_undo() {
 }
 
 
-function discard_undo() {
-	if (G.undo) G.undo.pop()
-}
-
 function random(range) {
 	// An MLCG using integer arithmetic with doubles.
 	// https://www.ams.org/journals/mcom/1999-68-225/S0025-5718-99-00996-5/S0025-5718-99-00996-5.pdf
@@ -13690,30 +13574,11 @@ function random(range) {
 	return (G.seed = G.seed * 200105 % 34359738337) % range
 }
 
-function random_bigint(range) {
-	// Largest MLCG that will fit its state in a double.
-	// Uses BigInt for arithmetic, so is an order of magnitude slower.
-	// https://www.ams.org/journals/mcom/1999-68-225/S0025-5718-99-00996-5/S0025-5718-99-00996-5.pdf
-	// m = 2**53 - 111
-	return (G.seed = Number(BigInt(G.seed) * 5667072534355537n % 9007199254740881n)) % range
-}
-
 function shuffle(list) {
 	// Fisher-Yates shuffle
 	var i, j, tmp
 	for (i = list.length - 1; i > 0; --i) {
 		j = random(i + 1)
-		tmp = list[j]
-		list[j] = list[i]
-		list[i] = tmp
-	}
-}
-
-function shuffle_bigint(list) {
-	// Fisher-Yates shuffle
-	var i, j, tmp
-	for (i = list.length - 1; i > 0; --i) {
-		j = random_bigint(i + 1)
 		tmp = list[j]
 		list[j] = list[i]
 		list[i] = tmp
@@ -13949,45 +13814,7 @@ function set_delete(set, item) {
 	}
 }
 
-function set_toggle(set, item) {
-	var a = 0
-	var b = set.length - 1
-	while (a <= b) {
-		var m = (a + b) >> 1
-		var x = set[m]
-		if (item < x)
-			b = m - 1
-		else if (item > x)
-			a = m + 1
-		else {
-			array_delete(set, m)
-			return
-		}
-	}
-	array_insert(set, a, item)
-}
-
 // Map as plain sorted array of key/value pairs
-
-function map_clear(map) {
-	map.length = 0
-}
-
-function map_has(map, key) {
-	var a = 0
-	var b = (map.length >> 1) - 1
-	while (a <= b) {
-		var m = (a + b) >> 1
-		var x = map[m<<1]
-		if (key < x)
-			b = m - 1
-		else if (key > x)
-			a = m + 1
-		else
-			return true
-	}
-	return false
-}
 
 function map_get(map, key, missing) {
 	var a = 0
@@ -14040,19 +13867,6 @@ function map_delete(map, key) {
 	}
 }
 
-function map_get_set(map, key) {
-	var set = map_get(map, key, null)
-	if (set === null)
-		map_set(map, key, (set = []))
-	return set
-}
-
-function map_for_each(map, f) {
-	for (var i = 0; i < map.length; i += 2)
-		f(map[i], map[i+1])
-}
-
-
 // Bit flags. bits = "array" of dwords e.g. G.my_bits. index = which bit are we setting, bool_value = true or false
 function bit_set(bits, index, bool_value) {
 	var w = index >> 5
@@ -14078,90 +13892,12 @@ function bit_init(total_bits) {
 }
 
 
-// same as Object.groupBy
-function object_group_by(items, callback) {
-	var item, key
-	var groups = {}
-	if (typeof callback === "function") {
-		for (item of items) {
-			key = callback(item)
-			if (key in groups)
-				groups[key].push(item)
-			else
-				groups[key] = [ item ]
-		}
-	} else {
-		for (item of items) {
-			key = item[callback]
-			if (key in groups)
-				groups[key].push(item)
-			else
-				groups[key] = [ item ]
-		}
-	}
-	return groups
-}
-
-// like Object.groupBy but for plain array maps
-function map_group_by(items, callback) {
-	var item, key, arr
-	var groups = []
-	if (typeof callback === "function") {
-		for (item of items) {
-			key = callback(item)
-			arr = map_get(groups, key)
-			if (arr)
-				arr.push(item)
-			else
-				map_set(groups, key, [ item ])
-		}
-	} else {
-		for (item of items) {
-			key = item[callback]
-			arr = map_get(groups, key)
-			if (arr)
-				arr.push(item)
-			else
-				map_set(groups, key, [ item ])
-		}
-	}
-	return groups
-}
-
-
 // === Log Helpers ===
 
 function log_br() {
 	if (G.log.length > 0 && G.log[G.log.length-1] !== "")
 		log("")
 }
-
-function logi(msg) {
-	log(">" + msg)
-}
-function logii(msg) {
-	log(">>" + msg)
-}
-
-function log_h1(msg) {
-	log_br()
-	log(".h1 " + msg)
-	log_br()
-}
-
-function log_h2(msg) {
-	log_br()
-	log(".h2 " + msg)
-	log_br()
-}
-
-function log_h3(msg) {
-	log_br()
-	log(".h3 " + msg)
-	log_br()
-}
-
-
 
 function pad(s, condition = true) {
 	if (!condition) return s
@@ -14189,10 +13925,4 @@ function strike (s, condition = true )
 {
 	if (!condition) return s
 	return "<s>" + s + "</s>"
-}
-
-
-function on_query (q, params)
-{
-	// So far it looks like this needs to be here but doesn't have to "do" anything
 }
