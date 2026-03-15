@@ -65,7 +65,7 @@ const OLD_NUM_MINISTRY_CARDS= 21
 const NUM_MINISTRY_SLOTS    = 2
 const NUM_DEMANDS           = 6
 const NUM_AWARD_TILES       = 8
-const NUM_ADVANTAGES 		 = 22
+const NUM_ADVANTAGES        = 22
 const NUM_SPACES            = 112
 const NUM_ACTION_POINTS_TYPES= 3
 const NUM_SQUADRONS         = 8 // per side, counter mix limit
@@ -230,7 +230,7 @@ const NUM_SPACES_CARIBBEAN      = 30
 const NUM_SPACES_INDIA          = 22
 
 // SPACES
-const SPACE_NAVY_BOX = -1	// The negative numbers are for keeping track of squadron "token" locations for animation purposes
+const SPACE_NAVY_BOX = -1 // The negative numbers are for keeping track of squadron "token" locations for animation purposes
 const SPACE_UNBUILT = -2
 const SPACE_THE_BRIG = -3
 const SPACE_REMOVED_FROM_GAME = -4
@@ -365,11 +365,11 @@ const OPTION_TO_PLAY_EVENT          = 2
 const DURING_EVENT                  = 3
 const BEFORE_SPENDING_ACTION_POINTS = 4
 const ACTION_POINTS_ALREADY_SPENT   = 5
-const NOT_ACTION_PHASE				= 6
+const NOT_ACTION_PHASE              = 6
 
 // Generic persistent bitflags
 const NUM_BITFLAGS                = 32
-const FLAG_MILITARY_UPGRADE	   = 0
+const FLAG_MILITARY_UPGRADE       = 0
 const BUYING_WAR_TILE             = 1
 const JACOBITES_ALWAYS            = 2
 const JACOBITES_NEVER             = 3
@@ -410,11 +410,11 @@ const TRANSIENT_JACOBITES_SHIFT_SPACES      = 2 // Shift spaces with military ac
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
-const TRANSIENT_NORTH_AMERICAN_TRADE	     = 6
+const TRANSIENT_NORTH_AMERICAN_TRADE        = 6
 const TRANSIENT_FIRST_DEBT_TAKEN            = 7
 const TRANSIENT_COOK                        = 8
 const TRANSIENT_BANK_OF_ENGLAND             = 9
-const TRANSIENT_BURKE_FOR_DISCOUNT			 = 10
+const TRANSIENT_BURKE_FOR_DISCOUNT          = 10
 const TRANSIENT_EVENT_MADE_DIPLO            = 11
 const TRANSIENT_TILE_MADE_DIPLO             = 12
 const TRANSIENT_EVENT_MADE_ECON             = 13
@@ -865,14 +865,14 @@ function on_setup(scenario, options) {
 	// activated *before* even picking a tile. Some ministries can *only* be used *before* spending any action points, but
 	// other ministries and advantages can be used throughout the round. This field tracks how long-in-the-tooth the current
 	// action round has gotten.
-	// <br><b>
-	// BEFORE_PICKING_TILE				<br>
-	// PICKED_TILE_OPTION_TO_PASS		<br>
-	// OPTION_TO_PLAY_EVENT				<br>
-	// DURING_EVENT						<br>
-	// BEFORE_SPENDING_ACTION_POINTS	<br>
-	// ACTION_POINTS_ALREADY_SPENT		<br>
-	// NOT_ACTION_PHASE					<br>
+	//
+	// BEFORE_PICKING_TILE
+	// PICKED_TILE_OPTION_TO_PASS
+	// OPTION_TO_PLAY_EVENT
+	// DURING_EVENT
+	// BEFORE_SPENDING_ACTION_POINTS
+	// ACTION_POINTS_ALREADY_SPENT
+	// NOT_ACTION_PHASE
 	G.subphase = NOT_ACTION_PHASE
 
 	// When asking player about whether to flip ministers, expend advantages and abilities, etc, this header
@@ -1462,9 +1462,9 @@ function on_view(RR = undefined) {
 
 	V.played_tile  = G.played_tile
 	V.played_tiles = G.played_tiles
-	
+
 	V.active_keywords = [[], []]
-	
+
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		for (let keyword = 0; keyword < data.keywords.length; keyword++) {
 			if (has_active_keyword(who, keyword)) {
@@ -1760,12 +1760,12 @@ function refresh_advantage(a)
 /* 8.0 - Advantages */
 function has_advantage_eligible(who, a, ignore_exhaustion = false, ignore_new = false)
 {
-	if (!has_advantage(who, a)) return false				                     // 8.1 - control all the connected spaces
-	if ((G.adv_new & (1 << a)) && !ignore_new) return false                      // 8.0 - Can only be used the round *after* control is gained
-	if ((G.adv_exhaust & (1 << a)) && !ignore_exhaustion) return false	         // 8.1 - Exhausted when used
-	if (is_advantage_conflicted(a)) return false		                         // 8.1 - can't be used if any conflict markers, but remains "controlled"
-	if (G.adv_used >= 2) return false                                            // 8.2 - Can only use 2 advantages per action round
-	if (G.adv_regions & (1 << get_advantage_region(a))) return false             // 8.2 - Can only use 1 advantage in a region per action round
+	if (!has_advantage(who, a)) return false                                // 8.1 - control all the connected spaces
+	if ((G.adv_new & (1 << a)) && !ignore_new) return false                 // 8.0 - Can only be used the round *after* control is gained
+	if ((G.adv_exhaust & (1 << a)) && !ignore_exhaustion) return false      // 8.1 - Exhausted when used
+	if (is_advantage_conflicted(a)) return false                            // 8.1 - can't be used if any conflict markers, but remains "controlled"
+	if (G.adv_used >= 2) return false                                       // 8.2 - Can only use 2 advantages per action round
+	if (G.adv_regions & (1 << get_advantage_region(a))) return false        // 8.2 - Can only use 1 advantage in a region per action round
 	return true
 }
 
@@ -1945,7 +1945,7 @@ function add_huguenots(s)
 		throw new Error("Tried to add Huguenots to a space that isn't FR-flagged: " + data.spaces[s].name)
 	}
 
-    G.huguenots.push(s)
+	G.huguenots.push(s)
 }
 
 function remove_huguenots(s)
@@ -1985,7 +1985,7 @@ function is_space_eligible_for_huguenots(s)
 	if (data.spaces[s].type !== TERRITORY) return false
 	if ((data.spaces[s].region !== REGION_NORTH_AMERICA) && (data.spaces[s].region !== REGION_CARIBBEAN)) return false
 	if (has_huguenots(s)) return false
-	return G.flags[s] === FRANCE;
+	return G.flags[s] === FRANCE
 }
 
 
@@ -2169,7 +2169,7 @@ function say_action_points(num, type, plus = false, force_num = true)
 	let msg = plus ? "+" : ""
 	let doing_num = ((num > 0) || force_num || plus)
 	msg += "[@" + type + "]"
-	if (doing_num)	msg += num
+	if (doing_num) msg += num
 	msg += "[a" + type + (doing_num ? s(num) : "") + "]"
 	return msg
 }
@@ -2180,7 +2180,7 @@ function say_action_points_brief(num, type, plus = false, force_num = true)
 	let msg = plus ? "+" : ""
 	let doing_num = ((num > 0) || force_num || plus)
 	msg += "[@" + type + "]"
-	if (doing_num)	msg += num
+	if (doing_num) msg += num
 	return msg
 }
 
@@ -2498,7 +2498,7 @@ function start_of_peace_turn() {
 
 P.peace_turn = script (`
 	eval { start_of_peace_turn()  }
-	
+
 	if (G.turn === PEACE_TURN_3 || G.turn === PEACE_TURN_5) {
 		call deck_phase
 		call debt_limit_increase_phase
@@ -2528,7 +2528,7 @@ P.deck_phase = function () {
 
 	if (beginning_of_era() && current_era() === EMPIRE_ERA) {
 		for (var i = SUCCESSION_ERA_CARDS + 1; i <= EMPIRE_ERA_CARDS; i++)
-			G.deck.push(i);
+			G.deck.push(i)
 		log("=Deck Phase")
 		log ("Empire Era events added to Event Deck.")
 		log ("Shuffled Event Deck.")
@@ -2559,7 +2559,7 @@ P.deck_phase = function () {
 		*/
 
 		for (let i = EMPIRE_ERA_CARDS + 1; i <= REVOLUTION_ERA_CARDS; i++)
-			G.deck.push(i);
+			G.deck.push(i)
 		log ("Revolution Era events added to Event Deck.")
 		log ("Shuffled Event Deck.")
 		shuffle(G.deck)
@@ -2833,7 +2833,7 @@ P.deal_cards_discard = {
 			for (var who = FRANCE; who <= BRITAIN; who++) {
 				for (let c of L.discarded[who]) {
 					log(data.flags[who].name + " discards " + say_event(c, who) + ".")
-					G.discard_pile.push(c);
+					G.discard_pile.push(c)
 				}
 			}
 			end()
@@ -2913,9 +2913,9 @@ P.choose_ministry_cards = {
 			var any = false
 			var list = ""
 			for (const i of G.ministry[R]) {
-				if (any) list += ", ";
+				if (any) list += ", "
 				list += say_ministry(i)
-				any = true;
+				any = true
 			}
 			if (any) list += "."
 			V.prompt += say_action(list)
@@ -2984,7 +2984,7 @@ P.replace_ministry_cards = {
 	},
 	inactive: "confirm or replace ministries",
 	prompt() {
-		let any_hidden = 0;
+		let any_hidden = 0
 		for (let i = 0; i < G.ministry[R].length; i++) {
 			if (!G.ministry_revealed[R][i]) any_hidden++
 		}
@@ -3161,10 +3161,10 @@ function require_advantage(who, a, why, optional = false)
 }
 
 P.advantage_is_required = script (`
-    call confirm_use_advantage
-    eval {
-    	set_bit(USED_REQUIRED_ADVANTAGE, !has_advantage_eligible(R, G.advantage)) 
-    }
+	call confirm_use_advantage
+	eval {
+		set_bit(USED_REQUIRED_ADVANTAGE, !has_advantage_eligible(R, G.advantage))
+	}
 `)
 
 
@@ -3272,19 +3272,19 @@ function require_ministry_unexhausted(who, m, why, ability = 0, optional = false
 
 
 P.ministry_is_required = script (`
-    eval { clear_bit(STARTED_MINISTRY_BOX) }
-    call confirm_reveal_ministry
-    eval {
-    	if (is_bit(MINISTRY_PROMPT_TO_EXHAUST) && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
-    		G.has_required_ministry = FALSE
-    	} else {    
-    		G.has_required_ministry = G.ministry_revealed[R][G.ministry_index] ? TRUE : FALSE
-    	}
-	    if (is_bit(STARTED_MINISTRY_BOX) && !is_bit(LEAVE_LOG_BOX_OPEN)) {
-	    	log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
-	    	clear_bit(STARTED_MINISTRY_BOX)
-	    }
-    }
+	eval { clear_bit(STARTED_MINISTRY_BOX) }
+	call confirm_reveal_ministry
+	eval {
+		if (is_bit(MINISTRY_PROMPT_TO_EXHAUST) && !is_ministry_exhausted(R, G.ministry_id, G.ministry_ability)) {
+			G.has_required_ministry = FALSE
+		} else {
+			G.has_required_ministry = G.ministry_revealed[R][G.ministry_index] ? TRUE : FALSE
+		}
+		if (is_bit(STARTED_MINISTRY_BOX) && !is_bit(LEAVE_LOG_BOX_OPEN)) {
+			log_box_end(LOG_BOX_MINISTRY) // In case we revealed any ministries
+				clear_bit(STARTED_MINISTRY_BOX)
+		}
+	}
 `)
 
 // True if ministry is presently exhausted
@@ -3461,7 +3461,7 @@ P.reduce_treaty_points_phase = function () {
 		log ("=Reduce Treaty Points Phase")
 		log ("French treaty points reduced from " + G.treaty_points[FRANCE] + " to 4.")
 		G.treaty_points[FRANCE] = 4
-		any = true;
+		any = true
 	}
 	if (G.treaty_points[BRITAIN] > 4) {
 		if (!any) log ("=Reduce Treaty Points Phase")
@@ -4078,9 +4078,9 @@ P.game_over = function () {
 /* 5.0 - ACTION ROUNDS */
 
 P.action_round = script (`
-    eval {
-        start_action_round()	// This is the official "start of action round" per the "Play Note" on p. 10 (beneath 5.1)
-    }
+	eval {
+		start_action_round() // This is the official "start of action round" per the "Play Note" on p. 10 (beneath 5.1)
+	}
 	call select_investment_tile
 	call action_round_core
 	call before_end_of_action_round
@@ -4183,7 +4183,7 @@ function check_if_market_isolated(market)
 // Checks if a specified market (space) qualifies as isolated per 5.4.1
 function check_and_mark_if_market_isolated(market)
 {
-    if (check_if_market_isolated(market)) {
+	if (check_if_market_isolated(market)) {
 		set_isolated_market(market)
 	}
 }
@@ -4592,7 +4592,7 @@ function selected_a_tile(tile)
 // Player is picking an investment tile
 P.select_investment_tile = {
 	_begin() {
-		//	push_undo() // It was backing out from later points all the way to back to initiative?!
+		// push_undo() // It was backing out from later points all the way to back to initiative?!
 		L.tile_to_move = -1
 		L.moved_any_tiles = false
 		L.theaters = []
@@ -4671,7 +4671,7 @@ P.after_selecting_tile = script(`
 		eval { require_ministry_unexhausted(R, THE_CARDINAL_MINISTERS, "To gain " + say_action_points(cardinal_ministers_value(), DIPLO), 0, true, true) }
 		if (G.has_required_ministry) {
 			eval { use_cardinal_ministers() }
-		} 
+		}
 	}
 `)
 
@@ -4836,85 +4836,85 @@ function check_event_bonus_requirements(who) {
 
 
 P.event_flow = script (`
-    if (data.investments[G.played_tile].majorval > 3) {
-        eval {
-        	require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile", 0, false, true, true)
-        }
-        if (!G.has_required_ministry) {
-        	eval { pop_undo() } 
-        	return
+	if (data.investments[G.played_tile].majorval > 3) {
+		eval {
+			require_ministry_unexhausted(R, MARQUIS_DE_CONDORCET, "Required to play event with a non-event Investment Tile", 0, false, true, true)
+		}
+		if (!G.has_required_ministry) {
+			eval { pop_undo() }
+			return
 		} else {
-		    eval {
-			    log_box_ministry(R, MARQUIS_DE_CONDORCET) // Start a box if it didn't already get started above
-	       		log("Used to play event with a non-event Investment Tile.")
-				log_box_end(LOG_BOX_MINISTRY)		    
-			}
-		}
-    }
-
-    if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
-        eval {
-        	if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) { // Up here we're coming in from a ministry flow, having / clicked on Bank of England
-        	    log_box_ministry(R, BANK_OF_ENGLAND)
-        		exhaust_ministry(R, BANK_OF_ENGLAND, 1)
-        		log("Used to play economic event without [@0] major action.")
-        		G.has_required_ministry = TRUE
-        		log_box_end(LOG_BOX_MINISTRY)
-            } else {
-        		require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true, true)
-			    log_box_ministry(R, BANK_OF_ENGLAND) // Start a box if it didn't already get started above
-	       		log("Used to play economic event without [@0] major action.")
-				log_box_end(LOG_BOX_MINISTRY)		            		
-        	}
-        }
-        if (!G.has_required_ministry) {
-        	eval { pop_undo() }
-        	return
-		}
-    }       
-    
-    eval {
-    	check_event_bonus_requirements(R)
-    }
-    
-    if ((G.played_event === LA_GABELLE) && is_bit(QUALIFIES_FOR_BONUS) && has_inactive_keyword(R, GOVERNANCE) && !has_active_keyword(R, GOVERNANCE)) {
-    	eval {
-    		require_ministry(R, get_minister_for_keyword(R, GOVERNANCE), "To unlock Governance keyword for an extra victory point from La Gabelle event", true)
-    	}
-    }
-    
-    if (G.needs_to_flip_ministry >= 0) {
-    	eval {
-    		require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.played_event].keyword].name, true)    		
-    	}
-    	if (G.has_required_ministry) {
 			eval {
-				check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus	    	
+				log_box_ministry(R, MARQUIS_DE_CONDORCET) // Start a box if it didn't already get started above
+				log("Used to play event with a non-event Investment Tile.")
+				log_box_end(LOG_BOX_MINISTRY)
 			}
-		}
-    }
-    
-    if (is_bit(QUALIFIES_FOR_BONUS)) {
-    	eval {
-    		require_ministry(R, LAVOISIER, "To receive extra action points from your investment tile when gaining an event's bonus", true, false) 
-    	}
-    }
-    
-    if (true) { // Make sure this waits for Lavoisier, above
-		eval { 
-			begin_event_play(G.played_event) 
 		}
 	}
-    
-    // Here we branch to an unholy number of possible events 
+
+	if ((data.cards[G.played_event].action !== WILD) && (data.cards[G.played_event].action !== data.investments[G.played_tile].majortype)) {
+		eval {
+			if (has_transient(R, TRANSIENT_BANK_OF_ENGLAND) && !is_ministry_exhausted(R, BANK_OF_ENGLAND, 1)) { // Up here we're coming in from a ministry flow, having / clicked on Bank of England
+				log_box_ministry(R, BANK_OF_ENGLAND)
+				exhaust_ministry(R, BANK_OF_ENGLAND, 1)
+				log("Used to play economic event without [@0] major action.")
+				G.has_required_ministry = TRUE
+				log_box_end(LOG_BOX_MINISTRY)
+			} else {
+				require_ministry_unexhausted(R, BANK_OF_ENGLAND, "Required to play an economic event without an economic major action", 1, false, true, true)
+				log_box_ministry(R, BANK_OF_ENGLAND) // Start a box if it didn't already get started above
+				log("Used to play economic event without [@0] major action.")
+				log_box_end(LOG_BOX_MINISTRY)
+			}
+		}
+		if (!G.has_required_ministry) {
+			eval { pop_undo() }
+			return
+		}
+	}
+
+	eval {
+		check_event_bonus_requirements(R)
+	}
+
+	if ((G.played_event === LA_GABELLE) && is_bit(QUALIFIES_FOR_BONUS) && has_inactive_keyword(R, GOVERNANCE) && !has_active_keyword(R, GOVERNANCE)) {
+		eval {
+			require_ministry(R, get_minister_for_keyword(R, GOVERNANCE), "To unlock Governance keyword for an extra victory point from La Gabelle event", true)
+		}
+	}
+
+	if (G.needs_to_flip_ministry >= 0) {
+		eval {
+			require_ministry(R, G.needs_to_flip_ministry, "To unlock bonus keyword: " + data.keywords[data.cards[G.played_event].keyword].name, true)
+		}
+		if (G.has_required_ministry) {
+			eval {
+				check_event_bonus_requirements(R) // Re-evaluate if we now qualify for the bonus
+			}
+		}
+	}
+
+	if (is_bit(QUALIFIES_FOR_BONUS)) {
+		eval {
+			require_ministry(R, LAVOISIER, "To receive extra action points from your investment tile when gaining an event's bonus", true, false)
+		}
+	}
+
+	if (true) { // Make sure this waits for Lavoisier, above
+		eval {
+			begin_event_play(G.played_event)
+		}
+	}
+
+	// Here we branch to an unholy number of possible events
 	if (data.cards[G.played_event].proc !== undefined) {
 		call (data.cards[G.played_event].proc)
 		eval { end_event_play(G.played_event) }
 		return
-	} 
-				 		
-    call event_not_implemented
-    eval { end_event_play(G.played_event) }
+	}
+
+	call event_not_implemented
+	eval { end_event_play(G.played_event) }
 `)
 
 
@@ -5181,7 +5181,7 @@ P.event_south_sea_speculation = {
 	},
 	inactive: "sail to the south seas",
 	prompt() {
-	    if (!L.unflagged) {
+		if (!L.unflagged) {
 			V.prompt = event_prompt(R, G.played_event, "Unflag a market whose removal does not isolate any other markets")
 
 			let any = false
@@ -7665,7 +7665,7 @@ P.event_falklands_crisis = {
 // FR: Add a squadron to the Navy Box. Bonus: Reduce your debt by 2.
 P.event_cook_and_bougainville = {
 	_begin() {
-		L.squadrons	= 0
+		L.squadrons = 0
 		for (let s = 0; s < NUM_SPACES; s++) {
 			if (data.spaces[s].type !== NAVAL) continue
 			if (G.flags[s] !== BRITAIN) continue
@@ -7752,39 +7752,39 @@ function handle_ministry_card_click(m)
 	}
 }
 
-P.ministry_flow = script (`	
-    eval { clear_bit(MINISTRY_JUST_REVEALED) }
-    
-    if (!G.ministry_revealed[R][G.ministry_index]) {
-        eval { clear_bit(STARTED_MINISTRY_BOX) }
-    	call confirm_reveal_ministry
-    	if (is_bit(MINISTRY_MANUALLY_CLICKED)) {
-    		return // If we manually clicked the minister and then chose to reveal him, that's the action.
-    	}
-    }
-    
-    //eval { 
-    //	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id) 
-    //}
-    
-    if (G.ministry_revealed[R][G.ministry_index]) {
+P.ministry_flow = script (`
+	eval { clear_bit(MINISTRY_JUST_REVEALED) }
+
+	if (!G.ministry_revealed[R][G.ministry_index]) {
+		eval { clear_bit(STARTED_MINISTRY_BOX) }
+		call confirm_reveal_ministry
+		if (is_bit(MINISTRY_MANUALLY_CLICKED)) {
+			return // If we manually clicked the minister and then chose to reveal him, that's the action.
+		}
+	}
+
+	//eval {
+	//	if (!is_log_box(LOG_BOX_MINISTRY)) log_box_ministry(G.active, G.ministry_id)
+	//}
+
+	if (G.ministry_revealed[R][G.ministry_index]) {
 		if (data.ministries[G.ministry_id].proc !== undefined) {
 			call (data.ministries[G.ministry_id].proc)
 		} else {
-	        if (is_bit(MINISTRY_JUST_REVEALED) && !is_bit(MINISTRY_MANUALLY_CLICKED)) {	
+			if (is_bit(MINISTRY_JUST_REVEALED) && !is_bit(MINISTRY_MANUALLY_CLICKED)) {
 				if (!ministry_has_activatable_abilities(G.ministry_id)) {
 					call ministry_not_activatable
-				} else {		 		
+				} else {
 					call ministry_not_implemented
 				}
 			}
 		}
-    }
-    
-    eval {
-    	clear_bit(MINISTRY_MANUALLY_CLICKED)
-    	log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
-    } 
+	}
+
+	eval {
+		clear_bit(MINISTRY_MANUALLY_CLICKED)
+			log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
+	}
 `)
 
 
@@ -7796,7 +7796,7 @@ function start_ministry_effect()
 
 function ministry_has_activatable_abilities(m)
 {
-	return ![JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE].includes(m);
+	return ![JONATHAN_SWIFT, EAST_INDIA_COMPANY, MARQUIS_DE_CONDORCET, JOHN_LAW, COURT_OF_THE_SUN_KING, MERCHANT_BANKS, SAMUEL_JOHNSON, JAMES_WATT, EDMUND_BURKE, TURGOT, VOLTAIRE, POMPADOUR_AND_DU_BARRY, DUPLEIX, LAVOISIER, NORTH_AMERICAN_TRADE].includes(m)
 }
 
 // Is there something the player could conceivably accomplish by clicking on this ministry right now (based on how long-in-the-tooth the current action phase has gotten)
@@ -7998,7 +7998,7 @@ P.ministry_robert_walpole = {
 			button("pass")
 		}
 	},
-    draw_an_event() {
+	draw_an_event() {
 		clear_undo() // Because we're drawing a new event card
 		start_ministry_effect()
 
@@ -8123,7 +8123,7 @@ P.ministry_edmond_halley = {
 
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
-		G.discard_pile.push(c);
+		G.discard_pile.push(c)
 		log (data.flags[R].name + " discarded event: E" + c)
 
 		G.treaty_points[R]++
@@ -8244,13 +8244,12 @@ function do_award_jacobite_vp()
 }
 
 P.jacobite_vp_flow = script (`
-    call decide_how_and_whether_to_spend_action_points	
-	eval { G.action_header = "" } 
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { do_award_jacobite_vp() }    
+	call decide_how_and_whether_to_spend_action_points
+	eval { G.action_header = "" }
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+	eval { do_award_jacobite_vp() }
 `)
 
 
@@ -8288,18 +8287,18 @@ function jacobite_start_shift()
 }
 
 P.jacobite_flow = script (`
-    call decide_how_and_whether_to_spend_action_points        
-    	
+	call decide_how_and_whether_to_spend_action_points
+
 	eval { jacobite_start_shift() }
-	 
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { 
-    	do_reflag_space()
-    	log_box_end(LOG_BOX_MINISTRY) 
-    }    
+
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	eval {
+		do_reflag_space()
+		log_box_end(LOG_BOX_MINISTRY)
+	}
 `)
 
 
@@ -8553,31 +8552,31 @@ function handle_advantage_click(a)
 }
 
 
-P.advantage_flow = script (`  
+P.advantage_flow = script (`
 	if ((R === FRANCE) && get_advantage_region(G.active_advantage) === REGION_EUROPE) {
-		eval { require_ministry(R, POMPADOUR_AND_DU_BARRY, "For an extra TRP when activating an advantage in Europe", true) } 
+		eval { require_ministry(R, POMPADOUR_AND_DU_BARRY, "For an extra TRP when activating an advantage in Europe", true) }
 	}
-	
+
 	if (!is_bit(ADVANTAGE_ALREADY_EXHAUSTED) && !is_bit(DONT_EXHAUST_ADVANTAGE)) {
 		eval { exhaust_advantage(G.active_advantage, false) } //NB: This also begins a log box with LOG_BOX_ADVANTAGE
 	} else {
-		eval { 
+		eval {
 			log_box_begin(R, say_advantage(G.active_advantage, R, true), LOG_BOX_ADVANTAGE)
-			clear_bit (DONT_EXHAUST_ADVANTAGE) 
+			clear_bit (DONT_EXHAUST_ADVANTAGE)
 		}
-	} 
+	}
 
 	if (data.advantages[G.active_advantage].proc !== undefined) {
 		call (data.advantages[G.active_advantage].proc)
 	} else {
-		
+
 		//if (!advantage_activatable_now(G.active_advantage)) {
 		//	call advantage_not_activatable
 		//}
-				
+
 		call advantage_not_implemented
 	}
-	
+
 	eval { log_box_end(LOG_BOX_ADVANTAGE) }
 `)
 
@@ -8635,7 +8634,7 @@ P.advantage_naval_bastion = {
 		if (!G.eligible_major[MIL]) {
 			V.prompt = advantage_prompt(R, G.active_advantage, "You need an available major Military action to use this advantage.")
 		} else {
-			let any = false;
+			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].type !== NAVAL) continue
 				if (G.flags[s] !== 1 - R) continue
@@ -8674,14 +8673,14 @@ function do_naval_bastion()
 }
 
 
-P.pay_naval_bastion = script(`	        
-  	call decide_how_and_whether_to_spend_action_points	
-    if (!is_bit(PAID_ACTION_COST)) {
-    	eval { pop_undo() }
-    	return
-    }
-       
-    eval { do_naval_bastion() }
+P.pay_naval_bastion = script(`
+	call decide_how_and_whether_to_spend_action_points
+	if (!is_bit(PAID_ACTION_COST)) {
+		eval { pop_undo() }
+		return
+	}
+
+	eval { do_naval_bastion() }
 `)
 
 
@@ -8692,44 +8691,44 @@ function set_up_conflict_advantage(a)
 			L.adv_string = "in a market in India."
 			L.adv_market_only = true
 			L.adv_region = REGION_INDIA
-			break;
+			break
 		case SEPARATIST_WARS:
 			L.adv_string = "in a Cotton market."
 			L.adv_market_only = true
 			L.adv_market_type = COTTON
-			break;
+			break
 		case POWER_STRUGGLE:
 			L.adv_string = "in a Carnatic Coast market."
 			L.adv_region = REGION_INDIA
 			L.adv_market_only = true
 			// unique code for Carnatic Coast specifically
-			break;
+			break
 		case LETTERS_OF_MARQUE:
 		case PIRATE_HAVENS:
 			L.adv_string = "in an unprotected Caribbean market."
 			L.adv_market_only = true
 			L.adv_region = REGION_CARIBBEAN
 			// unique code for unprotected
-			break;
+			break
 		case PATRIOT_AGITATION:
 			L.adv_string = "in North America."
 			L.adv_region = REGION_NORTH_AMERICA
-			break;
+			break
 		case IROQUOIS_RAIDS:
 		case ALGONQUIN_RAIDS:
 			L.adv_string = "in a Fur Market."
 			L.adv_market_only = true
 			L.adv_market_type = FURS
-			break;
+			break
 		case MEDITERRANEAN_INTRIGUE:
 			L.adv_string = "in Spain or Austria."
 			// unique code
-			break;
+			break
 		case CENTRAL_EUROPE_CONFLICT:
 			L.adv_string = "in an alliance space in Europe."
 			L.adv_region = REGION_EUROPE
 			// unique code for alliance
-			break;
+			break
 	}
 }
 
@@ -8748,22 +8747,22 @@ function check_advantage_targets(who, mark_action)
 
 		switch (G.active_advantage) {
 			case POWER_STRUGGLE:
-				if (data.spaces[s].subreg !== SUBREGION_CARNATIC_COAST) continue;
-				break;
+				if (data.spaces[s].subreg !== SUBREGION_CARNATIC_COAST) continue
+				break
 
 			case LETTERS_OF_MARQUE:
 			case PIRATE_HAVENS:
-				if (is_protected(s)) continue;
-				break;
+				if (is_protected(s)) continue
+				break
 
 			case MEDITERRANEAN_INTRIGUE:
 				if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
-				break;
+				break
 
 			case CENTRAL_EUROPE_CONFLICT:
 				if (data.spaces[s].alliance === undefined) continue
 				if (data.spaces[s].alliance.length <= 0) continue
-				break;
+				break
 		}
 
 		if ((who === FRANCE) || (who === BRITAIN)) {
@@ -8821,20 +8820,20 @@ P.advantage_unflag_discount = {
 				L.adv_region = REGION_NORTH_AMERICA
 				L.adv_market = true
 				L.adv_for_one = true
-				break;
+				break
 			case WHEAT:
 				L.adv_string = "market in North America"
 				L.adv_plural = "markets in North America"
 				L.adv_region = REGION_NORTH_AMERICA
 				L.adv_market = true
-				break;
+				break
 			case TEXTILES:
 			case SILK:
 				L.adv_string = "market in India"
 				L.adv_plural = "markets in India"
 				L.adv_region = REGION_INDIA
 				L.adv_market = true
-				break;
+				break
 			case RUM:
 			case FRUIT:
 				L.adv_string = "market in the Caribbean"
@@ -9156,13 +9155,13 @@ function action_eligible_spaces(type, region)
 	switch (type) {
 		case ECON:
 			action_eligible_spaces_econ(region)
-			break;
+			break
 		case DIPLO:
 			action_eligible_spaces_diplo(region)
-			break;
+			break
 		case MIL:
 			action_eligible_spaces_mil(region)
-			break;
+			break
 	}
 }
 
@@ -9360,7 +9359,7 @@ function cost_to_build_squadron(who, check_minimum = false, info = {})
 		}
 	}
 
-    if (has_advantage_eligible(who, SLAVING_CONTRACTS) && check_minimum) {
+	if (has_advantage_eligible(who, SLAVING_CONTRACTS) && check_minimum) {
 		cost = 2
 		info.advantage = SLAVING_CONTRACTS
 	} else if (G.prepicked_advantage === SLAVING_CONTRACTS) {
@@ -9388,13 +9387,13 @@ function handle_buy_diplomatic() {
 }
 
 
-P.buy_diplomatic_flow = script(`	        
-  	call decide_how_and_whether_to_spend_action_points	
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { do_buy_diplomatic(G.active) }
+P.buy_diplomatic_flow = script(`
+	call decide_how_and_whether_to_spend_action_points
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	eval { do_buy_diplomatic(G.active) }
 `)
 
 
@@ -9429,13 +9428,13 @@ function handle_buy_economic() {
 }
 
 
-P.buy_economic_flow = script(`	        
-  	call decide_how_and_whether_to_spend_action_points	
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { do_buy_economic(G.active) }
+P.buy_economic_flow = script(`
+	call decide_how_and_whether_to_spend_action_points
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	eval { do_buy_economic(G.active) }
 `)
 
 
@@ -9473,13 +9472,13 @@ function handle_buy_event() {
 }
 
 
-P.buy_event_flow = script(`	        
-  	call decide_how_and_whether_to_spend_action_points	
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    goto buy_event_decisions
+P.buy_event_flow = script(`
+	call decide_how_and_whether_to_spend_action_points
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	goto buy_event_decisions
 `)
 
 
@@ -9552,48 +9551,48 @@ P.noff_noff_squadrons = {
 
 
 P.construct_squadron_flow = script(`
-    eval {
-    	G.action_cost = cost_to_build_squadron(G.active, false)
-        L.info = {}
-    	L.min_cost = cost_to_build_squadron(G.active, true, L.info)
-    	L.flipped_something = false
-    }        
-    if (!G.eligible[MIL]) {
-    	call no_military_action_squadron
-    	return
-    }
-    if (G.action_points_available_debt < L.min_cost) {
-    	call noff_noff_money_squadron
-    	return // If we can't even afford it w/ debt and trps, we shouldn't be here
-    }    
-    if (G.unbuilt_squadrons[G.active] <= 0) {
-    	call noff_noff_squadrons
-    	return // If we don't have any available squadrons
-    }
-    
-    // Possible option to flip relevant ministry
-    if ((L.info.ministry !== undefined) && (G.prepicked_advantage === -1)) {
-        eval {
-        	if (G.prepicked_ministry === L.info.ministry) {
-        		G.has_required_ministry = TRUE
-        	} else {
-        		require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost, true)
-        	}
-        }
-        if (G.has_required_ministry) {
-        	eval { 
-        		G.action_cost = (L.info.ability !== undefined) ? 0 : 2
-        		L.flipped_something  = true
-        		log_box_ministry(R, L.info.ministry)
-        		exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
-       			log(say_ministry(L.info.ministry, R) + " reduces squadron construction cost by 2.")
-       			log_box_end(LOG_BOX_MINISTRY)
-        	} 	
-		} 
-		if (!G.has_required_ministry && (G.action_points_available_debt < L.min_cost)) {
-			return // If it's now impossible to afford cost because we didn't flip the ministry		    
+	eval {
+		G.action_cost = cost_to_build_squadron(G.active, false)
+		L.info = {}
+		L.min_cost = cost_to_build_squadron(G.active, true, L.info)
+		L.flipped_something = false
+	}
+	if (!G.eligible[MIL]) {
+		call no_military_action_squadron
+		return
+	}
+	if (G.action_points_available_debt < L.min_cost) {
+		call noff_noff_money_squadron
+		return // If we can't even afford it w/ debt and trps, we shouldn't be here
+	}
+	if (G.unbuilt_squadrons[G.active] <= 0) {
+		call noff_noff_squadrons
+		return // If we don't have any available squadrons
+	}
+
+	// Possible option to flip relevant ministry
+	if ((L.info.ministry !== undefined) && (G.prepicked_advantage === -1)) {
+	eval {
+		if (G.prepicked_ministry === L.info.ministry) {
+				G.has_required_ministry = TRUE
+		} else {
+			require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost, true)
 		}
-    }
+	}
+		if (G.has_required_ministry) {
+			eval {
+				G.action_cost = (L.info.ability !== undefined) ? 0 : 2
+				L.flipped_something  = true
+				log_box_ministry(R, L.info.ministry)
+				exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
+				log(say_ministry(L.info.ministry, R) + " reduces squadron construction cost by 2.")
+				log_box_end(LOG_BOX_MINISTRY)
+			}
+		}
+		if (!G.has_required_ministry && (G.action_points_available_debt < L.min_cost)) {
+			return // If it's now impossible to afford cost because we didn't flip the ministry
+		}
+	}
 
 	// Possible option to use advantage
 	if ((L.info.advantage !== undefined) && !L.flipped_something && (G.prepicked_advantage === -1)) {
@@ -9607,20 +9606,20 @@ P.construct_squadron_flow = script(`
 			}
 		}
 		if (!is_bit(USED_REQUIRED_ADVANTAGE) && (G.action_points_available_debt < L.min_cost)) {
-			return // If it's now impossible to afford cost because we didn't use the advantage		    
+			return // If it's now impossible to afford cost because we didn't use the advantage
 		}
 	} else {
 		if (G.prepicked_advantage >= 0) {
 			eval { G.action_cost = (L.info.ability !== undefined) ? 0 : 2 }
 		}
-	}  
-	        
-  	call decide_how_and_whether_to_spend_action_points	
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { do_construct_squadron(G.active) }
+	}
+
+	call decide_how_and_whether_to_spend_action_points
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	eval { do_construct_squadron(G.active) }
 `)
 
 function do_construct_squadron(who) {
@@ -9859,7 +9858,7 @@ function update_flag_counts()
 		let who = G.flags[s]
 		if ((who !== FRANCE) && (who !== BRITAIN)) continue
 		if (has_conflict_marker(s)) continue
-        G.flag_count[who][data.spaces[s].region]++
+		G.flag_count[who][data.spaces[s].region]++
 		if (data.spaces[s].prestige > 0) G.prestige_flags[who]++
 		if (data.spaces[s].type === MARKET) {
 			G.demand_flag_count[who][data.spaces[s].market]++
@@ -9941,7 +9940,7 @@ P.military_upgrade_decisions = {
 		push_undo()
 		L.get_rid_of_tile = t
 		array_delete_item(G.theater_basic[G.active][L.theater], L.get_rid_of_tile)
-        L.picked_one_to_keep = true
+		L.picked_one_to_keep = true
 	},
 	return_to_pool() {
 		push_undo()
@@ -9979,7 +9978,7 @@ function free_theaters(who) {
 
 // Returns the total number of bonus war tiles a player already has on the next war mat
 function num_bonus_tiles_in_play(who) {
-    let num = 0
+	let num = 0
 	for (let theater = 1; (theater <= data.wars[G.next_war].theaters); theater++) { //NB: this one is intentionally *1* through <= theaters
 		num += G.theater_bonus[who][theater].length
 	}
@@ -10047,21 +10046,21 @@ P.buy_bonus_war_tile_flow = script(`
 		clear_bit(MUST_PLACE_IN_NORTH_AMERICA)
 
 		G.has_required_ministry = false
-		if (action_points_eligible_major(MIL, active_rules()) > 0) {  
+		if (action_points_eligible_major(MIL, active_rules()) > 0) {
 			require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
 		}
 	}
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
-	}		
+	}
 
-    call decide_how_and_whether_to_spend_action_points
+	call decide_how_and_whether_to_spend_action_points
 	if (!is_bit(PAID_ACTION_COST)) {
-		eval { G.action_header = "" }         
+		eval { G.action_header = "" }
 		return
 	}
 
-    goto bonus_war_tile_decisions    	
+	goto bonus_war_tile_decisions
 `)
 
 
@@ -10341,32 +10340,32 @@ function get_naval_cost()
 
 
 P.naval_flow = script(`
-    eval {
-    	G.action_cost = get_naval_cost()
-    	G.has_required_ministry = false
-    	
-    	L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)    	
-    	if (L.choiseul > 0) {	
+	eval {
+		G.action_cost = get_naval_cost()
+		G.has_required_ministry = false
+
+		L.choiseul = get_contingent(MIL, RULE_WAR_TILE_OR_DEPLOY, false)
+		if (L.choiseul > 0) {
 			G.committed[MIL] += L.choiseul
 			// G.action_points_available_now += L.choiseul // NB - No! They already got added in as part of contingent
 			use_contingent(L.choiseul, MIL, RULE_WAR_TILE_OR_DEPLOY)
 		}
-    	
-    	if (action_points_eligible_major(MIL, active_rules()) > 0) {
-    		require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
-    	}
-    }
+
+		if (action_points_eligible_major(MIL, active_rules()) > 0) {
+			require_ministry_unexhausted(R, CHOISEUL, "For an extra " + say_action_points(1, MIL), 0, true, true)
+		}
+	}
 	if (G.has_required_ministry) {
 		eval { use_choiseul() }
 	}
-	
-    call decide_how_and_whether_to_spend_action_points
+
+	call decide_how_and_whether_to_spend_action_points
 	if (!is_bit(PAID_ACTION_COST)) {
-		eval { G.action_header = "" }         
+		eval { G.action_header = "" }
 		return
 	}
 
-    eval { execute_naval_move() }    	
+	eval { execute_naval_move() }
 `)
 
 function execute_naval_move()
@@ -10403,7 +10402,7 @@ function execute_naval_move()
 		throw new Error("Naval move with no destination! G.navy_from: " + G.navy_from)
 	}
 
-	let msg;
+	let msg
 	if (is_bit(NAVY_FROM_NAVY_BOX)) {
 		msg = "Navy box to " + say_space(G.navy_to, G.active)
 		move_squadron_token(G.active, SPACE_NAVY_BOX, G.navy_to)
@@ -10486,7 +10485,7 @@ function eligible_to_play_event()
 function advance_action_round_subphase(subphase)
 {
 	if (G.subphase >= subphase) return
-    let prior_phase = G.subphase
+	let prior_phase = G.subphase
 	G.subphase = subphase
 
 	if ((subphase >= BEFORE_SPENDING_ACTION_POINTS) && (prior_phase <= OPTION_TO_PLAY_EVENT) && eligible_to_play_event()) {
@@ -10645,46 +10644,46 @@ function handle_space_click(s, force_type = -1)
 
 P.space_flow = script(`
 
-	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action. 
+	eval { mark_dirty(G.active_space) } // Mark our space dirty -- so that it will be highlighted as our current action.
 
-    if (G.needs_to_flip_ministry >= 0) {
-    	eval { 
-    		require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)
-    	}
-	   	if (G.has_required_ministry) {
-	        eval { G.action_cost = action_point_cost(G.active, G.active_space, G.action_type) }
-	    }
-    }
-        
-    // These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
-    	eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
-    	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
-    		eval {
-    			action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
-    		 }
-    	}
-    }
-    
-    // These advantages reduce the cost of unflagging a *market* in *north america* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
-    	eval { require_advantage(R, WHEAT, "To reduce action cost by 1", true) }
-    	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
-    		eval {
+	if (G.needs_to_flip_ministry >= 0) {
+		eval {
+			require_ministry(R, G.needs_to_flip_ministry, "For an action point discount", true)
+		}
+		if (G.has_required_ministry) {
+			eval { G.action_cost = action_point_cost(G.active, G.active_space, G.action_type) }
+		}
+	}
+
+	// These advantages reduce the cost of unflagging a *market* in *north america* to 1 econ point.
+	if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
+		eval { require_advantage(R, FUR_TRADE, "To reduce action cost to 1", true) }
+		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
+			eval {
+				action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
+			}
+		}
+	}
+
+	// These advantages reduce the cost of unflagging a *market* in *north america* BY 1 action point
+	if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_NORTH_AMERICA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
+		eval { require_advantage(R, WHEAT, "To reduce action cost by 1", true) }
+		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
+			eval {
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
-    		}
-    	}
-    }
-    
-    // These advantages reduce the cost of unflagging a *market* in *india* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
-    	eval { require_advantage(R, TEXTILES, "To reduce action cost by 1", true) }
-    	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
-    		eval {
+			}
+		}
+	}
+
+	// These advantages reduce the cost of unflagging a *market* in *india* BY 1 action point
+	if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_INDIA) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
+		eval { require_advantage(R, TEXTILES, "To reduce action cost by 1", true) }
+		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
+			eval {
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
-    		}
-    	}
-    	if ((G.adjustable > 1) && (G.adv_used < 2)) {
+			}
+		}
+		if ((G.adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, SILK, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -10692,17 +10691,17 @@ P.space_flow = script(`
 				}
 			}
 		}
-    }
-    
-    // These advantages reduce the cost of unflagging a *market* in *the caribbean* BY 1 action point
-    if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
-    	eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
-    	if (is_bit(USED_REQUIRED_ADVANTAGE)) {
-    		eval {
+	}
+
+	// These advantages reduce the cost of unflagging a *market* in *the caribbean* BY 1 action point
+	if ((G.action_type === ECON) && (data.spaces[G.active_space].region === REGION_CARIBBEAN) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
+		eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
+		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
+			eval {
 				action_point_cost_modify(-1, MODIFY_ADVANTAGE)
-    		}
-    	}
-    	if ((G.adjustable > 1) && (G.adv_used < 2)) {
+			}
+		}
+		if ((G.adjustable > 1) && (G.adv_used < 2)) {
 			eval { require_advantage(R, RUM, "To reduce action cost by 1", true) }
 			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
@@ -10710,18 +10709,18 @@ P.space_flow = script(`
 				}
 			}
 		}
-    }
-    
-    // European reduce-cost-to-1 unflagging advantages
-    if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
-    	if ((G.active_space === RUSSIA) || (G.active_space === SWEDEN) || (G.active_space === BAVARIA)) {
-    	    eval { require_advantage(R, GERMAN_DIPLOMACY, "To reduce action cost to 1", true) }
-    		if (is_bit(USED_REQUIRED_ADVANTAGE)) {
+	}
+
+	// European reduce-cost-to-1 unflagging advantages
+	if ((G.action_type === DIPLO) && (data.spaces[G.active_space].region === REGION_EUROPE) && (G.flags[G.active_space] === (1 - G.active)) && (G.adjustable > 1)) {
+		if ((G.active_space === RUSSIA) || (G.active_space === SWEDEN) || (G.active_space === BAVARIA)) {
+			eval { require_advantage(R, GERMAN_DIPLOMACY, "To reduce action cost to 1", true) }
+			if (is_bit(USED_REQUIRED_ADVANTAGE)) {
 				eval {
 					action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
 				}
-    		}
-    	} else {
+			}
+		} else {
 			if ((((G.active_space >= PRUSSIA_1) && (G.active_space <= PRUSSIA_4)) || (G.active_space === GERMAN_STATES_1) || (G.active_space === GERMAN_STATES_2)) && (G.adjustable > 1)) {
 				eval { require_advantage(R, SILESIA_NEGOTIATIONS, "To reduce action cost to 1", true) }
 				if (is_bit(USED_REQUIRED_ADVANTAGE)) {
@@ -10736,136 +10735,136 @@ P.space_flow = script(`
 						eval {
 							action_point_cost_modify(MODIFY_SET_TO_1, MODIFY_ADVANTAGE)
 						}
-					}    	
+					}
 				}
 			}
 		}
-    }
-    
-    if ((G.action_type === DIPLO) && !data.spaces[G.active_space].prestige) {
-    	eval { require_ministry_unexhausted(R, PITT_THE_ELDER, "To gain a diplomatic point usable for shifting non-Prestige political spaces", 0, true, true, true) }
-    	if (G.has_required_ministry) {
-    		eval { 
-    			log_box_ministry(BRITAIN, PITT_THE_ELDER)
-    			exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0)
-    			add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
-    			G.action_points_available_now++
-    			log_box_end(LOG_BOX_MINISTRY)
-    		} 
-    	}
-    }
-    
-    if ((G.action_type === DIPLO) && [ SCOTLAND_1, SCOTLAND_2, IRELAND_1, IRELAND_2 ].includes(G.active_space)) {
-    	eval { require_ministry_unexhausted(R, PAPACY_HANOVER_NEGOTIATIONS, "To gain 2 diplomatic points usable for shifting spaces in Scotland and Ireland", 0, true, true, true) }
-    	if (G.has_required_ministry) {
-    		eval { 
-    			log_box_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS)
-    			exhaust_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS, 0)
-    			add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
-    			G.action_points_available_now += 2
-    			log_box_end(LOG_BOX_MINISTRY)
-    		}
-    	}
-    }
-     
-    if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) {
-    	eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true, false, true) }
-    	if (G.has_required_ministry && !is_ministry_exhausted(R, EDMUND_BURKE)) {
-    		eval {
-    			log_box_ministry(R, EDMUND_BURKE)
-    			exhaust_ministry(R, EDMUND_BURKE)
-    			let proc = 0
-    			if (has_transient(R, TRANSIENT_TILE_MADE_DIPLO)) proc++
-    			if (has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) proc++
-    			add_contingent(DIPLO, potential_burke_points(G.active) * proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
-    			G.action_points_available_now += potential_burke_points(G.active)
-    			if (G.minor[DIPLO] > 0) {
-    			    G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.minor[DIPLO]) // Burke points don't combine with minor action points
-    			}
-    			log_box_end(LOG_BOX_MINISTRY)
-    		}
-    	}
-    }
-    
-    if ((G.action_type === ECON) && (G.action_points_available_now < G.action_cost)) {
-    	eval { require_ministry_unexhausted(R, MERCHANT_BANKS, "To ignore the first two debt you take as Economic action points this turn.", 0, true, false) }
-    }
-    
-    eval {
-    	set_bit(ELIGIBLE_FOR_HUGUENOTS, (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.adjustable > 1))
-    }
-    
-    if (is_bit(ELIGIBLE_FOR_HUGUENOTS)) {
-    	call ask_about_huguenots
-    	if (is_bit(ELIGIBLE_FOR_HUGUENOTS)) {
-    		eval {
-    			action_point_cost_modify(-1, MODIFY_HUGUENOTS) 
-    		}
-    	}
-    }
+	}
 
-	call decide_how_and_whether_to_spend_action_points	
-	eval { G.action_header = "" } 
-    if (!is_bit(PAID_ACTION_COST)) {
-    	return
-    }
-       
-    eval { do_reflag_space() }
+	if ((G.action_type === DIPLO) && !data.spaces[G.active_space].prestige) {
+		eval { require_ministry_unexhausted(R, PITT_THE_ELDER, "To gain a diplomatic point usable for shifting non-Prestige political spaces", 0, true, true, true) }
+		if (G.has_required_ministry) {
+			eval {
+				log_box_ministry(BRITAIN, PITT_THE_ELDER)
+				exhaust_ministry(BRITAIN, PITT_THE_ELDER, 0)
+				add_contingent(DIPLO, 1, RULE_SHIFT_NON_PRESTIGE, SHORT_SHIFT_NON_PRESTIGE, true)
+				G.action_points_available_now++
+				log_box_end(LOG_BOX_MINISTRY)
+			}
+		}
+	}
+
+	if ((G.action_type === DIPLO) && [ SCOTLAND_1, SCOTLAND_2, IRELAND_1, IRELAND_2 ].includes(G.active_space)) {
+		eval { require_ministry_unexhausted(R, PAPACY_HANOVER_NEGOTIATIONS, "To gain 2 diplomatic points usable for shifting spaces in Scotland and Ireland", 0, true, true, true) }
+		if (G.has_required_ministry) {
+			eval {
+				log_box_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS)
+				exhaust_ministry(BRITAIN, PAPACY_HANOVER_NEGOTIATIONS, 0)
+				add_contingent(DIPLO, 2, RULE_SCOTLAND_IRELAND, SHORT_SCOTLAND_IRELAND, true)
+				G.action_points_available_now += 2
+				log_box_end(LOG_BOX_MINISTRY)
+			}
+		}
+	}
+
+	if ((G.action_type === DIPLO) && is_europe(G.active_space) && is_entirely_in_europe(DIPLO) && (potential_burke_points(G.active) > 0) && (action_points_major(DIPLO, space_rules(G.active_space, G.action_type), false) > 0)) {
+		eval { require_ministry(R, EDMUND_BURKE, "To gain Diplomatic points for each space of Ireland you have flagged, usable only while spending a major diplomatic action entirely within Europe.", true, false, true) }
+		if (G.has_required_ministry && !is_ministry_exhausted(R, EDMUND_BURKE)) {
+			eval {
+				log_box_ministry(R, EDMUND_BURKE)
+				exhaust_ministry(R, EDMUND_BURKE)
+				let proc = 0
+				if (has_transient(R, TRANSIENT_TILE_MADE_DIPLO)) proc++
+				if (has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) proc++
+				add_contingent(DIPLO, potential_burke_points(G.active) * proc, RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
+				G.action_points_available_now += potential_burke_points(G.active)
+				if (G.minor[DIPLO] > 0) {
+					G.action_points_available_now -= Math.max(potential_burke_points(G.active), G.minor[DIPLO]) // Burke points don't combine with minor action points
+				}
+				log_box_end(LOG_BOX_MINISTRY)
+			}
+		}
+	}
+
+	if ((G.action_type === ECON) && (G.action_points_available_now < G.action_cost)) {
+		eval { require_ministry_unexhausted(R, MERCHANT_BANKS, "To ignore the first two debt you take as Economic action points this turn.", 0, true, false) }
+	}
+
+	eval {
+		set_bit(ELIGIBLE_FOR_HUGUENOTS, (G.active === FRANCE) && (G.action_type === ECON) && any_huguenots_in_region(data.spaces[G.active_space].region) && (G.adjustable > 1))
+	}
+
+	if (is_bit(ELIGIBLE_FOR_HUGUENOTS)) {
+		call ask_about_huguenots
+		if (is_bit(ELIGIBLE_FOR_HUGUENOTS)) {
+			eval {
+				action_point_cost_modify(-1, MODIFY_HUGUENOTS)
+			}
+		}
+	}
+
+	call decide_how_and_whether_to_spend_action_points
+	eval { G.action_header = "" }
+	if (!is_bit(PAID_ACTION_COST)) {
+		return
+	}
+
+	eval { do_reflag_space() }
 `)
 
 
 
 P.decide_how_and_whether_to_spend_action_points = script(`
 	eval { clear_bit(PAID_ACTION_COST) }
-	
-    if (is_bit(ELIGIBLE_MINOR)) {
-    	if (G.action_points_available_debt < G.action_cost + 2) {
-        	eval { set_bit(ACTION_MINOR) }  // If the only way we can do this is as a minor action, we don't need to make a choice
-        }
-        if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type))) { 
-			eval { set_bit(ACTION_MINOR) }  // If we're not eligible for a major action in this category, we don't need to make a choice    
-        }
-        if (has_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (G.action_type === DIPLO) && ((G.active_space < 0) || (data.spaces[G.active_space].region !== REGION_EUROPE))) {
-        	eval { set_bit(ACTION_MINOR) }  // If we've spent Edmund Burke's special points in Europe already, only a minor action can be used outside of Europe
-        }
-    }
-    
-    // If we could do *either* major or minor action, make our choice
-    if (is_bit(ELIGIBLE_MINOR) && !is_bit(ACTION_MINOR)) {
-    	call choice_use_minor_action
-    	eval {
-    		if (!is_bit(ACTION_MINOR)) {
-    			clear_bit(ACTION_MINOR)
-    			G.action_points_available_debt -= G.minor[G.action_type]
-    			G.action_points_available_now  -= G.minor[G.action_type]
-    		}
-    	}  	
-    }
-    
-    // If player is buying a bonus war tile, and happens to have geographically restricted military points, find out if he wants to use them
-    if (is_bit(BUYING_WAR_TILE)) {
-    	eval { L.restricted = get_contingent(MIL, RULE_NORTH_AMERICA) }
-    	if (L.restricted > 0) {
-    		call confirm_north_america
-    		
-    		eval {
-    			if (is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
-    				G.action_points_available_now  += L.restricted
-    				G.action_points_available_debt += L.restricted
-    			}
-    		}
-    	}
-    }
-        
-    // If it is going to cost debt or TRPs, then see if player wants to spend them
-    if (G.action_points_available_now < G.action_cost) {
-    	call confirm_spend_debt_or_trps
-    	if (G.action_points_available_now < G.action_cost) {
-    		return // If we didn't decide to spend enough, we're done
-    	}
-    }
-    
-    eval { pay_action_cost() }
+
+	if (is_bit(ELIGIBLE_MINOR)) {
+		if (G.action_points_available_debt < G.action_cost + 2) {
+			eval { set_bit(ACTION_MINOR) }  // If the only way we can do this is as a minor action, we don't need to make a choice
+		}
+		if (!action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type))) {
+			eval { set_bit(ACTION_MINOR) }  // If we're not eligible for a major action in this category, we don't need to make a choice
+		}
+		if (has_transient(G.active, TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE) && (G.action_type === DIPLO) && ((G.active_space < 0) || (data.spaces[G.active_space].region !== REGION_EUROPE))) {
+			eval { set_bit(ACTION_MINOR) }  // If we've spent Edmund Burke's special points in Europe already, only a minor action can be used outside of Europe
+		}
+	}
+
+	// If we could do *either* major or minor action, make our choice
+	if (is_bit(ELIGIBLE_MINOR) && !is_bit(ACTION_MINOR)) {
+		call choice_use_minor_action
+		eval {
+			if (!is_bit(ACTION_MINOR)) {
+				clear_bit(ACTION_MINOR)
+				G.action_points_available_debt -= G.minor[G.action_type]
+				G.action_points_available_now  -= G.minor[G.action_type]
+			}
+		}
+	}
+
+	// If player is buying a bonus war tile, and happens to have geographically restricted military points, find out if he wants to use them
+	if (is_bit(BUYING_WAR_TILE)) {
+		eval { L.restricted = get_contingent(MIL, RULE_NORTH_AMERICA) }
+		if (L.restricted > 0) {
+			call confirm_north_america
+
+			eval {
+				if (is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
+					G.action_points_available_now  += L.restricted
+					G.action_points_available_debt += L.restricted
+				}
+			}
+		}
+	}
+
+	// If it is going to cost debt or TRPs, then see if player wants to spend them
+	if (G.action_points_available_now < G.action_cost) {
+		call confirm_spend_debt_or_trps
+		if (G.action_points_available_now < G.action_cost) {
+			return // If we didn't decide to spend enough, we're done
+		}
+	}
+
+	eval { pay_action_cost() }
 `)
 
 
@@ -10922,7 +10921,7 @@ function pay_action_cost() {
 
 	set_bit(PAID_ACTION_COST)
 	let prev_cost = G.action_cost
-	let cost_string = " Cost: "	+ G.action_cost
+	let cost_string = " Cost: " + G.action_cost
 
 	let msg = say_action_points(G.action_cost, G.action_type) + " spent."
 	if (action_points_eligible_major(G.action_type, space_rules(G.active_space, G.action_type)) && G.minor[G.action_type] > 0) {
@@ -11042,7 +11041,7 @@ function tell_action_points(space = true, brackets = true) {
 	}
 
 
-	var need_comma = false;
+	var need_comma = false
 	var early = [ false, false, false ]
 	var tell = ""
 	for (var level = MAJOR; level <= MINOR; level++) {
@@ -11055,7 +11054,7 @@ function tell_action_points(space = true, brackets = true) {
 						tell += ", "
 					}
 					tell += names[i] + (shortest ? "" : ": ")
-					need_comma = true;
+					need_comma = true
 
 					tell += G.major[i] //+ " major"
 					if (G.minor[i]) {
@@ -11074,7 +11073,7 @@ function tell_action_points(space = true, brackets = true) {
 						}
 
 						tell += G.minor[i] + (shortest ? "m" : " Minor")
-						need_comma = true;
+						need_comma = true
 					}
 
 					if (G.committed[i] > 0) {
@@ -11082,7 +11081,7 @@ function tell_action_points(space = true, brackets = true) {
 							tell += ", "
 						}
 						tell += G.committed[i] + " Bonus"
-						need_comma = true;
+						need_comma = true
 					}
 
 					for (let rule of active_rules_list()) {
@@ -11407,7 +11406,7 @@ P.action_round_core = {
 			if (is_ministry_fully_exhausted(R, m)) continue
 			if (!ministry_useful_this_phase(R, G.subphase)) continue
 			any_ministries = true
-			break;
+			break
 		}
 
 		if (any_advantages && any_ministries) {
@@ -11419,7 +11418,7 @@ P.action_round_core = {
 		} else {
 			prompt += "Spend Action Points."
 		}
-		V.prompt = say_action_header(header) + say_action(prompt) + say_action_points_left();
+		V.prompt = say_action_header(header) + say_action(prompt) + say_action_points_left()
 
 		action_eligible_advantages()
 		action_eligible_ministries()
@@ -11480,13 +11479,13 @@ P.action_round_core = {
 			button("confirm_pass_to_reduce_debt")
 		} else {
 			button((left > 0)              ? "confirm_end_action_round" :
-					is_bit(FLAG_MILITARY_UPGRADE) ? "confirm_no_military_upgrade" :
-					still_advantages              ? "confirm_end_action_round_2" :
-					still_bank                    ? "confirm_end_action_round_bank" :
-					still_halley                  ? "confirm_end_action_round_halley" :
-					still_walpole                 ? "confirm_end_action_round_walpole" :
-					still_huguenots               ? "confirm_end_action_round_huguenots" :
-					"end_action_round")
+				is_bit(FLAG_MILITARY_UPGRADE) ? "confirm_no_military_upgrade" :
+				still_advantages              ? "confirm_end_action_round_2" :
+				still_bank                    ? "confirm_end_action_round_bank" :
+				still_halley                  ? "confirm_end_action_round_halley" :
+				still_walpole                 ? "confirm_end_action_round_walpole" :
+				still_huguenots               ? "confirm_end_action_round_huguenots" :
+				"end_action_round")
 		}
 	},
 	military_upgrade() {
@@ -11520,7 +11519,7 @@ P.action_round_core = {
 		G.debug = 4
 		handle_navy_box()
 	},
-	buy_bonus_war_tile() {	// buy a bonus war tile, and deploy it into the next war
+	buy_bonus_war_tile() { // buy a bonus war tile, and deploy it into the next war
 		push_undo()
 		check_event_skip()
 		G.debug = 5
@@ -11686,35 +11685,35 @@ var cheat_damage_flag = false
 
 P.before_end_of_action_round = script(`
 	eval { G.subphase = NOT_ACTION_PHASE }
-		
+
 	if ((G.round === 1) && has_inactive_ministry(R, JAMES_WATT)) {
 		eval { require_ministry(R, JAMES_WATT, "Must be active before opponent's turn to receive a bonus when opponent activates an advantage.", true) }
-	}		
-		
-	if (G.round < 4) {
-		return // Only need to do the below reminders on the player's last action round of the turn 
 	}
-	
+
+	if (G.round < 4) {
+		return // Only need to do the below reminders on the player's last action round of the turn
+	}
+
 	if (has_inactive_ministry(R, COURT_OF_THE_SUN_KING)) {
 		eval { require_ministry(R, COURT_OF_THE_SUN_KING, "Last chance to flip in time for scoring phase" + ((G.turn <= PEACE_TURN_3) ? " (and Style keyword for upcoming war)" : ""), true) }
 	}
-	
+
 	if (has_inactive_ministry(R, EAST_INDIA_COMPANY)) {
 		eval { require_ministry(R, EAST_INDIA_COMPANY, "Last chance to flip in time for scoring phase", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, JOHN_LAW)) {
-		eval { require_ministry(R, JOHN_LAW, "Last chance to flip in time to reduce debt at end of turn", true) }		
+		eval { require_ministry(R, JOHN_LAW, "Last chance to flip in time to reduce debt at end of turn", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, THE_CARDINAL_MINISTERS) && (G.turn === PEACE_TURN_1)) {
 		eval { require_ministry(R, THE_CARDINAL_MINISTERS, "Last chance to flip in time use Governance keyword in upcoming war", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, JONATHAN_SWIFT) && (G.turn <= PEACE_TURN_3)) {
 		eval { require_ministry(R, JONATHAN_SWIFT, "Last chance to flip in time use Style keyword in upcoming war", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, ROBERT_WALPOLE) && (G.turn === PEACE_TURN_1)) {
 		eval { require_ministry(R, ROBERT_WALPOLE, "Last chance to flip in time use Governance keyword in upcoming war", true) }
 	}
@@ -11722,23 +11721,23 @@ P.before_end_of_action_round = script(`
 	if (has_inactive_ministry(R, CHARLES_HANBURY_WILLIAMS) && (G.turn <= PEACE_TURN_3)) {
 		eval { require_ministry(R, CHARLES_HANBURY_WILLIAMS, "Last chance to flip in time use Style keyword in upcoming war", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, POMPADOUR_AND_DU_BARRY) && (G.turn <= PEACE_TURN_3)) {
 		eval { require_ministry(R, POMPADOUR_AND_DU_BARRY, "Last chance to flip in time use Style keyword in upcoming war", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, SAMUEL_JOHNSON)) {
 		eval { require_ministry(R, SAMUEL_JOHNSON, "Last chance to flip in time for scoring phase", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, DUPLEIX)) {
 		eval { require_ministry(R, DUPLEIX, "Last chance to flip in time for scoring phase", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, VOLTAIRE)) {
 		eval { require_ministry(R, VOLTAIRE, "Last chance to flip in time for scoring phase", true) }
 	}
-	
+
 	if (has_inactive_ministry(R, JAMES_WATT)) {
 		eval { require_ministry(R, JAMES_WATT, "Last chance to flip to protect from debt overruns during scoring or war", true) }
 	}
@@ -11799,7 +11798,7 @@ function theater_tier(theater)
 	let who   = theater_winner(theater)
 	let delta = theater_delta(theater)
 
-	var margin;
+	var margin
 	if ((who === FRANCE) && (data.wars[G.next_war].theater[theater].france_margin !== undefined)) {
 		margin = data.wars[G.next_war].theater[theater].france_margin
 	} else {
@@ -11824,7 +11823,7 @@ function theater_strength(who, theater)
 				if (a[0] !== G.next_war) continue
 				if (a[1] !== theater) continue
 				if (G.flags[s] !== who) continue
-				if (has_conflict_marker(s)) continue	 // Only non-conflicted spaces (3.8)
+				if (has_conflict_marker(s)) continue     // Only non-conflicted spaces (3.8)
 				if (is_damaged_fort(s)) continue         // Only undamaged forts (7.1.3)
 				score++
 			}
@@ -11832,7 +11831,7 @@ function theater_strength(who, theater)
 
 		if (data.spaces[s].region !== data.wars[G.next_war].theater[theater].region) {
 			if ((G.next_war === WAR_7YW) && (theater === 3)) {
-				if (data.spaces[s].region !== REGION_CARIBBEAN) continue		// 7YW, theater 3 has two regions
+				if (data.spaces[s].region !== REGION_CARIBBEAN) continue // 7YW, theater 3 has two regions
 			} else {
 				continue
 			}
@@ -11984,7 +11983,7 @@ P.war_theater_reveal = {
 		} else if (G.review_step[1-R] < G.review_index.length) {
 			if (G.review_step[1-R] === 0) {
 				return "review war tiles"
-			} else 			{
+			} else {
 				return "review revealed war tiles"
 			}
 		} else if ((L.wartile_debt[R] > 0) && L.wartile_choices[1-R].includes(WAR_DEBT)) {
@@ -12010,7 +12009,7 @@ P.war_theater_reveal = {
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (data.spaces[s].region !== data.wars[G.next_war].theater[G.theater].region) {
 					if ((G.next_war === WAR_7YW) && (G.theater === 3)) {
-						if (data.spaces[s].region !== REGION_CARIBBEAN) continue		// 7YW, theater 3 has two regions
+						if (data.spaces[s].region !== REGION_CARIBBEAN) continue // 7YW, theater 3 has two regions
 					} else {
 						continue
 					}
@@ -12171,7 +12170,7 @@ function remove_jacobites()
 
 		// We just deleted a ministry from the array, and exhausted is infelicitously tracked by the ministry's "relative position in the current ministries" as opposed to its real ministry id, so
 		// we have to copy all the crud down a notch.
- 		for (let idx = index; idx < len - 1; idx++) {
+		for (let idx = index; idx < len - 1; idx++) {
 			for (let abil = 0; abil < 2; abil++) {
 				if (set_has(G.ministry_exhausted[FRANCE], (idx + 1) + (abil * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))) {
 					set_add(G.ministry_exhausted[FRANCE], idx + (abil * ((G.game_state_created_with < 2) ? OLD_NUM_MINISTRY_CARDS : NUM_MINISTRY_CARDS)))
@@ -12326,7 +12325,7 @@ function start_war_theater_resolution()
 				if (G.flags[s] !== L.war_winner) continue
 				if (set_has(G.navy_this_war, s)) continue /* A given Squadron can capture one space per war */
 				L.free_squadrons.push(s)
-s			}
+			}
 		}
 	}
 }
@@ -12542,7 +12541,7 @@ P.war_theater_resolve = {
 				button("done")
 			}
 		} else if (L.war_unflag) {
-				if (data.wars[G.next_war].theater[G.theater].region === REGION_EUROPE) {
+			if (data.wars[G.next_war].theater[G.theater].region === REGION_EUROPE) {
 				msg += say_action("Unflag a political space in Europe.")
 
 				let any = false
@@ -12629,9 +12628,9 @@ P.war_theater_resolve = {
 		} else if (L.picking_squadron) {
 			conquer_from_space(s)
 			log_br()
-			let index = L.free_squadrons.indexOf(s);
+			let index = L.free_squadrons.indexOf(s)
 			if (index !== -1) {
-				L.free_squadrons.splice(index, 1);
+				L.free_squadrons.splice(index, 1)
 			}
 		} else if (L.war_cp > 0) {
 			L.war_space = s
@@ -12655,7 +12654,7 @@ P.war_theater_resolve = {
 				mark_dirty(s)
 				L.confirming_conquest = true
 			}
- 		} else if (L.war_unflag > 0) {
+		} else if (L.war_unflag > 0) {
 			L.war_unflag--
 			reflag_space(s, NONE)
 			log_br()
@@ -12927,7 +12926,7 @@ P.war_layout_phase = function () {
 		}
 	}
 
-	G.next_war++; // Here's where we officially move to the next war mat
+	G.next_war++ // Here's where we officially move to the next war mat
 
 	G.war_winner = [ -1, -1, -1, -1, -1 ]
 
@@ -13055,10 +13054,10 @@ function log(s) {
 }
 
 
-const LOG_BOX_MINISTRY	= 1
-const LOG_BOX_EVENT	= 2
-const LOG_BOX_ADVANTAGE= 3
-const LOG_BOX_MISC     = 4		// Used in other situations -- scoring, wars, etc.
+const LOG_BOX_MINISTRY  = 1
+const LOG_BOX_EVENT     = 2
+const LOG_BOX_ADVANTAGE = 3
+const LOG_BOX_MISC      = 4 // Used in other situations -- scoring, wars, etc.
 
 function log_box_begin(who, header, type = LOG_BOX_MISC) {
 	if (!G.log_box) {
