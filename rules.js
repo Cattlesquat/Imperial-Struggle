@@ -4896,7 +4896,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
-	var header = say_event(c, -1, true) + ": " // FIXME(TOR): pass "who" here?
+	var header = say_event(c, -1, true) + ": " 
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || (!is_bit(QUALIFIES_FOR_BONUS) && !even_if_no_bonus)) {
@@ -6127,8 +6127,7 @@ P.event_famine_in_ireland = {
 		array_delete_item(G.theater_bonus[FRANCE][4], L.displaced_tile)
 		G.theater_bonus[FRANCE][theater].push(L.displaced_tile)
 
-		// FIXME(TOR) - USE THIS?
-		// let msg = "France displaced a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
+		log("France displaced a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + ".")
 
 		if (G.theater_bonus[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
 			end()
@@ -8504,7 +8503,7 @@ function handle_townshend_acts_click(d)
 
 
 function advantage_prompt(who, a, string1 = "") {
-	var header = say_advantage(a, -1, true) + ": " // FIXME(TOR): pass "who" here?
+	var header = say_advantage(a, -1, true) + ": "
 
 	var prompt = ""
 	if (G.subphase === BEFORE_PICKING_TILE) {
@@ -8758,7 +8757,7 @@ function has_advantage_targets(who, a)
 {
 	if (![CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) return true
 	set_up_conflict_advantage(a)
-	return check_advantage_targets(-1, false) // FIXME(TOR): pass "who" here instead of -1 ?
+	return check_advantage_targets(who, false)
 }
 
 
