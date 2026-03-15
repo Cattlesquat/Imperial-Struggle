@@ -4896,7 +4896,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
-	var header = say_event(c, -1, true) + ": " 
+	var header = say_event(c, -1, true) + ": " // NB: Not passing who -- don't want text colored in a prompt
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || (!is_bit(QUALIFIES_FOR_BONUS) && !even_if_no_bonus)) {
@@ -8503,7 +8503,7 @@ function handle_townshend_acts_click(d)
 
 
 function advantage_prompt(who, a, string1 = "") {
-	var header = say_advantage(a, -1, true) + ": "
+	var header = say_advantage(a, -1, true) + ": " // NB: Not passing who -- don't want text colored in a prompt
 
 	var prompt = ""
 	if (G.subphase === BEFORE_PICKING_TILE) {
