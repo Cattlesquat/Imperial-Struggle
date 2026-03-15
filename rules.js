@@ -405,8 +405,8 @@ const SKIPPED_EVENT               = 30
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
 const NUM_TRANSIENT_BITFLAGS = 32
 const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
-const TRANSIENT_JACOBITES_USED_1            = 1 // Score VP
-const TRANSIENT_JACOBITES_USED_2            = 2 // Shift spaces with military action points
+const TRANSIENT_JACOBITES_SCORE_VP          = 1 // Score VP
+const TRANSIENT_JACOBITES_SHIFT_SPACES      = 2 // Shift spaces with military action points
 const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
 const TRANSIENT_PACTE_DE_FAMILLE            = 4
 const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
@@ -7842,7 +7842,7 @@ function ministry_prompt(who, m, string1, string2 = "") {
 			prompt += string2 + "."
 		}
 		else {
-			let ex = is_ministry_exhausted(who, m, 0) && ((m !== JACOBITE_UPRISINGS) || !has_transient(who, TRANSIENT_JACOBITES_USED_2))
+			let ex = is_ministry_exhausted(who, m, 0) && ((m !== JACOBITE_UPRISINGS) || !has_transient(who, TRANSIENT_JACOBITES_SHIFT_SPACES))
 			prompt += strike(string1, ex)
 			if (ex) prompt += " (exhausted)"
 			prompt += " OR "
@@ -8281,7 +8281,7 @@ function jacobite_start_shift()
 {
 	G.action_header = ""
 	log_box_ministry(FRANCE, JACOBITE_UPRISINGS)
-	set_transient(R, TRANSIENT_JACOBITES_USED_2)
+	set_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES)
 	//if (!is_ministry_exhausted(FRANCE, JACOBITE_UPRISINGS, 0)) {
 	//	exhaust_ministry(FRANCE, JACOBITE_UPRISINGS, 0)
 	//}
@@ -8309,7 +8309,7 @@ P.ministry_jacobite_uprisings = {
 		V.prompt = ministry_prompt(R, JACOBITE_UPRISINGS, "Shift spaces in Scotland/Ireland with " + say_action_points(0, MIL, false, false), "score " + jacobite_vp_value() + " VP for " + say_action_points(3, MIL)) + say_action_points_left()
 		if (ministry_useful_this_phase(JACOBITE_UPRISINGS, G.subphase)) {
 			if (G.eligible[MIL]) {
-				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
+				if ((!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 0) || has_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES)) && !has_transient(R, TRANSIENT_JACOBITES_SCORE_VP)) {
 					for (const s of [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2]) {
 						if (G.flags[s] !== FRANCE) {
 							if ((G.flags[s] === NONE) || action_points_eligible_major(MIL, space_rules(s, MIL))) { // If we're unflagging, can't use minor action
@@ -8320,7 +8320,7 @@ P.ministry_jacobite_uprisings = {
 				}
 
 				if (!is_ministry_exhausted(R, JACOBITE_UPRISINGS, 1)) {
-					button("jacobite_vp", !has_transient(R, TRANSIENT_JACOBITES_USED_1))
+					button("jacobite_vp", !has_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES))
 				}
 			} else {
 				V.prompt = say_ministry_header() + say_action("This ministry requires [@2] (military action points) to activate.")
@@ -8331,7 +8331,7 @@ P.ministry_jacobite_uprisings = {
 	jacobite_vp() {
 		push_undo()
 		start_ministry_effect()
-		set_transient(R, TRANSIENT_JACOBITES_USED_1)
+		set_transient(R, TRANSIENT_JACOBITES_SCORE_VP)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(-1, MIL)
 		G.action_cost = 3
@@ -8345,7 +8345,7 @@ P.ministry_jacobite_uprisings = {
 	space(s) {
 		push_undo()
 		start_ministry_effect()
-		set_transient(R, TRANSIENT_JACOBITES_USED_2)
+		set_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES)
 		advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 		action_cost_setup(s, MIL)
 		G.action_cost   = action_point_cost(R, s, DIPLO, true) //NB: we use the political space-shifting cost, but charge the player military points
@@ -9121,7 +9121,7 @@ function action_eligible_spaces_mil(region)
 				}
 			}
 
-			if (has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
+			if (has_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES)) {
 				if ([IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(space.num)) {
 					if ((G.flags[space.num] === NONE) || action_points_eligible_major(MIL, space_rules(space.num, MIL))) { // If we're unflagging, can't use minor action
 						action_space(space.num)
@@ -10566,7 +10566,7 @@ function action_cost_setup(s, t, force_type = -1) {
 // Player has clicked a space during action phase, so we're probably reflagging it (but we might be removing conflict or deploying navies)
 function handle_space_click(s, force_type = -1)
 {
-	if (has_transient(G.active, TRANSIENT_JACOBITES_USED_2) && [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s) && (force_type === -1)) {
+	if (has_transient(G.active, TRANSIENT_JACOBITES_SHIFT_SPACES) && [IRELAND_1, IRELAND_2, SCOTLAND_1, SCOTLAND_2].includes(s) && (force_type === -1)) {
 		if (!action_points_available(G.active, s, DIPLO, true, space_rules(s, DIPLO))) {
 			advance_action_round_subphase(ACTION_POINTS_ALREADY_SPENT)
 			action_cost_setup(s, MIL)
@@ -11752,7 +11752,7 @@ P.end_of_action_round = {
 	confirm() {
 		push_undo()
 
-		if (has_transient(R, TRANSIENT_JACOBITES_USED_2)) {
+		if (has_transient(R, TRANSIENT_JACOBITES_SHIFT_SPACES)) {
 			exhaust_ministry(R, JACOBITE_UPRISINGS, 0)
 		}
 
