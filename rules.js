@@ -1,5 +1,7 @@
 "use strict"
 
+/* global console */
+
 const data = require("./data.js")
 
 const ROLES = [ "France", "Britain" ]
@@ -1477,7 +1479,7 @@ function on_view(RR = undefined) {
 	if (RR === FRANCE) {
 		V.hand = [
 			G.hand[FRANCE],
-			G.hand[BRITAIN].map(x => -1),
+			G.hand[BRITAIN].map(_ => -1),
 		]
 		V.ministry = [
 			G.ministry[FRANCE],
@@ -1488,7 +1490,7 @@ function on_view(RR = undefined) {
 	}
 	if (RR === BRITAIN) {
 		V.hand = [
-			G.hand[FRANCE].map(x => -1),
+			G.hand[FRANCE].map(_ => -1),
 			G.hand[BRITAIN],
 		]
 		V.ministry = [
@@ -1500,8 +1502,8 @@ function on_view(RR = undefined) {
 	}
 	if (RR < 0) {
 		V.hand = [
-			G.hand[FRANCE].map(x => -1),
-			G.hand[BRITAIN].map(x => -1),
+			G.hand[FRANCE].map(_ => -1),
+			G.hand[BRITAIN].map(_ => -1),
 		]
 		V.ministry = [
 			G.ministry[FRANCE].map((x) => (G.ministry_revealed[FRANCE][G.ministry[FRANCE].indexOf(x)] ? x : -1)),
@@ -2271,6 +2273,7 @@ P.bid_for_sides = {
 		log ("First bidder: " + say_nation("Player " + (G.active + 1), G.active))
 	},
 	prompt() {
+		var i
 		if (L.final_confirmation) {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm accepting " + L.current_bid + " treaty point" + s(L.current_bid) + " and playing as " + data.flags[1 - L.bid_for_side].name + "?")
 			button("confirm")
@@ -2280,12 +2283,12 @@ P.bid_for_sides = {
 			button("britain")
 		} else if (L.current_bidder === NONE) {
 			V.prompt = bold("BIDDING FOR SIDES: How many treaty points will you bid (give to " + data.flags[1 - L.bid_for_side].name + ") in order to play " + data.flags[L.bid_for_side].name + "?")
-			for (var i = 0; i <= 5; ++i)
+			for (i = 0; i <= 5; ++i)
 				action("bid", i)
 		} else if (L.current_bidder !== R) {
 			V.prompt = bold("BIDDING FOR SIDES: Your opponent bids " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + ". Accept or bid higher?")
 			button ("accept")
-			for (var i = L.current_bid + 1; i < 5; ++i)
+			for (i = L.current_bid + 1; i < 5; ++i)
 				action("bid", i)
 		} else {
 			V.prompt = bold("BIDDING FOR SIDES: Confirm bidding " + L.current_bid + " treaty point" + s(L.current_bid) + " to play " + data.flags[L.bid_for_side].name + "?")
@@ -12853,7 +12856,7 @@ function war_layout_basic_war_tiles()
 {
 	for (var who = FRANCE; who <= BRITAIN; who++) {
 		for (var theater = 1; theater <= data.wars[G.next_war].theaters; theater++) {
-			let tile = draw_basic_war_tile(who, rules_military_planning() ? 0 : theater)
+			draw_basic_war_tile(who, rules_military_planning() ? 0 : theater)
 		}
 	}
 }
@@ -13289,7 +13292,7 @@ function _parse(text) {
 				++p
 			}
 			if (p >= n && x > 0)
-				throw new Error("unterminated quote string " + a + b)
+				throw new Error("unterminated quote string " + q)
 			words.push(s.substring(m, p))
 		}
 
@@ -13691,7 +13694,7 @@ function object_diff(a, b) {
 			}
 		}
 	}
-	for (var key in b) {
+	for (key in b) {
 		if (a[key] === undefined)
 			diff[key] = b[key]
 	}
