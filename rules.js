@@ -1532,7 +1532,7 @@ function on_view(RR = undefined) {
 					((who === RR) || set_has(G.basic_revealed[who], tile)) ? tile : -1
 				)
 				V.theater_bonus[who][theater] = G.theater_bonus[who][theater].map(tile =>
-					((who === RR) || set_has(G.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)) ? tile : -1
+					((who === RR) || set_has(G.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE) || (tile === ATLANTIC_DOMINANCE + 1)) ? tile : -1
 				)
 			}
 		}
@@ -11851,7 +11851,7 @@ function theater_strength(who, theater)
 	}
 
 	for (const t of G.theater_bonus[who][theater]) {
-		if (set_has(G.bonus_revealed[who], t) || (t === ATLANTIC_DOMINANCE)) score += data.bonus_war_tiles[t].val
+		if (set_has(G.bonus_revealed[who], t) || (t === ATLANTIC_DOMINANCE) || (t === ATLANTIC_DOMINANCE + 1)) score += data.bonus_war_tiles[t].val
 	}
 
 	if ((who === BRITAIN) && (G.byng === theater)) score += 2
