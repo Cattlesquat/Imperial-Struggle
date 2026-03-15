@@ -12597,7 +12597,6 @@ P.war_theater_resolve = {
 					L.free_squadrons.shift()
 				}
 			} else if (data.spaces[s].type === TERRITORY) {
-				// FIXE: not used? let cost = conquest_point_cost(s)
 				mark_dirty(s)
 				L.confirming_conquest = true
 			}
