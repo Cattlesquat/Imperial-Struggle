@@ -4896,7 +4896,7 @@ P.event_flow = script (`
 
 
 function event_prompt(who, c, string1, string2 = "", even_if_no_bonus = false) {
-	var header = say_event(c, -1, true) + ": "
+	var header = say_event(c, -1, true) + ": " // FIXME(TOR): pass "who" here?
 
 	var prompt = ""
 	if ((string2 === "") || (string2 === null) || (!is_bit(QUALIFIES_FOR_BONUS) && !even_if_no_bonus)) {
@@ -6126,7 +6126,9 @@ P.event_famine_in_ireland = {
 		theater = display_to_theater(theater)
 		array_delete_item(G.theater_bonus[FRANCE][4], L.displaced_tile)
 		G.theater_bonus[FRANCE][theater].push(L.displaced_tile)
-		let msg = "France displaced a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
+
+		// FIXME(TOR) - USE THIS?
+		// let msg = "France displaced a bonus war tile from Jacobite Rebellion theater to theater " + theater + ": " + data.wars[G.next_war].theater_names[theater] + "."
 
 		if (G.theater_bonus[R][4].length <= 2) { // We're done if Jacobite theater only has two bonus war tiles
 			end()
@@ -7799,8 +7801,6 @@ function ministry_useful_this_phase(m, subphase)
 
 
 function ministry_prompt(who, m, string1, string2 = "") {
-	var header = data.ministries[m].name.toUpperCase() + ": "
-
 	var prompt = ""
 	if ((G.subphase === BEFORE_PICKING_TILE) && !ministry_useful_this_phase(m, G.subphase)) {
 		prompt += "You must pick an investment tile before you can use this ministry's abilities."
@@ -8503,7 +8503,7 @@ function handle_townshend_acts_click(d)
 
 
 function advantage_prompt(who, a, string1 = "") {
-	var header = say_advantage(a, -1, true) + ": "
+	var header = say_advantage(a, -1, true) + ": " // FIXME(TOR): pass "who" here?
 
 	var prompt = ""
 	if (G.subphase === BEFORE_PICKING_TILE) {
@@ -8757,7 +8757,7 @@ function has_advantage_targets(who, a)
 {
 	if (![CENTRAL_EUROPE_CONFLICT, MEDITERRANEAN_INTRIGUE, ALGONQUIN_RAIDS, IROQUOIS_RAIDS, PATRIOT_AGITATION, LETTERS_OF_MARQUE, PIRATE_HAVENS, RAIDS_AND_INCURSIONS, POWER_STRUGGLE, SEPARATIST_WARS].includes(a)) return true
 	set_up_conflict_advantage(a)
-	return check_advantage_targets(-1, false)
+	return check_advantage_targets(-1, false) // FIXME(TOR): pass "who" here instead of -1 ?
 }
 
 
@@ -12023,9 +12023,9 @@ P.war_theater_reveal = {
 
 		V.prompt = msg
 	},
-	theater(t) {
+	theater(_t) {
 		push_undo()
-		t = display_to_theater(t) // Presently unused but it makes me nervous to leave the conversion out in case we change this later
+		// t = display_to_theater(t) // Presently unused but it makes me nervous to leave the conversion out in case we change this later
 		review_step(++G.review_step[R], R)
 		if (Array.isArray(G.active)) {
 			set_delete(G.active, R)
@@ -12597,7 +12597,7 @@ P.war_theater_resolve = {
 					L.free_squadrons.shift()
 				}
 			} else if (data.spaces[s].type === TERRITORY) {
-				let cost = conquest_point_cost(s)
+				// FIXE: not used? let cost = conquest_point_cost(s)
 				mark_dirty(s)
 				L.confirming_conquest = true
 			}
@@ -12653,9 +12653,9 @@ P.war_theater_resolve = {
 			log_br()
 		}
 	},
-	theater(t) {
+	theater(_t) {
 		push_undo()
-		t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
+		// t = display_to_theater(t) // Unused but too scary to leave out in case of future changes
 		L.war_atlantic = false
 		G.theater_bonus[L.war_winner][3].push(ATLANTIC_DOMINANCE + L.war_winner)
 		log (bold(data.flags[L.war_winner].name + " placed Atlantic Dominance marker in theater 3: French & Indian War."))
