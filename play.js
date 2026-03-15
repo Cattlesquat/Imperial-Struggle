@@ -2232,13 +2232,15 @@ function update_war_display() {
 				}
 			}
 
-			// Strength FR
-			update_keyword(`lout-${war_prefix}-strength-fr`, theater, "theater-strength fr")
-			update_text_html(`lout-${war_prefix}-strength-fr`, theater, `<span class="flag"></span><span>${fr_strength}</span>`)
+			if (V.turn !== PEACE_TURN_6) {
+				// Strength FR
+				update_keyword(`lout-${war_prefix}-strength-fr`, theater, "theater-strength fr")
+				update_text_html(`lout-${war_prefix}-strength-fr`, theater, `<span class="flag"></span><span>${fr_strength}</span>`)
 
-			// Strength BR
-			update_keyword(`lout-${war_prefix}-strength-br`, theater, "theater-strength br")
-			update_text_html(`lout-${war_prefix}-strength-br`, theater, `<span class="flag"></span><span>${br_strength}</span>`)
+				// Strength BR
+				update_keyword(`lout-${war_prefix}-strength-br`, theater, "theater-strength br")
+				update_text_html(`lout-${war_prefix}-strength-br`, theater, `<span class="flag"></span><span>${br_strength}</span>`)
+			}
 
 			w = G.next_war
 			for (let margin = 1; margin <= 3; margin++) {
@@ -2293,6 +2295,8 @@ function update_war_display() {
 			}
 		}
 	}
+
+	if (V.turn >= PEACE_TURN_6) return
 
 	// Alliance flags for all wars
 	const war_number = war + 1
