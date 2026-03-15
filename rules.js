@@ -7554,7 +7554,7 @@ P.event_falklands_crisis = {
 				V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(1, MIL) + " for each French flag in Spain", "remove a British squadron from the game")
 				button("confirm")
 			} else {
-				V.prompt = "Remove a British squadron from the game"
+				let msg = "Remove a British squadron from the game"
 				let any = false
 				for (let s = 0; s < NUM_SPACES; s++) {
 					if (data.spaces[s].type !== NAVAL) continue
@@ -7567,9 +7567,10 @@ P.event_falklands_crisis = {
 					any = true
 				}
 				if (!any) {
-					V.prompt += " (None possible)"
+					msg += " (None possible)"
 					button("done")
 				}
+				V.prompt = event_prompt(R, G.played_event, msg)
 			}
 		}
 	},
