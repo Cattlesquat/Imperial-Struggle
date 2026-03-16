@@ -5546,7 +5546,11 @@ P.event_austro_spanish_rivalry = {
 				end()
 			}
 		} else {
-			end()
+			if (!L.unflagged && is_bit(QUALIFIES_FOR_BONUS)) {
+				L.unflagged++
+			} else {
+				end()
+			}
 		}
 	}
 }
