@@ -8890,7 +8890,7 @@ P.advantage_unflag_discount = {
 				msg = "With a minor action you can only unflag spaces that have a conflict marker."
 			} else if (!G.eligible_major[type] && (G.minor[type] <= 0) && (type === data.investments[G.played_tile].minortype)) {
 				msg = "You cannot make a second purchase with a minor action."
-			} else {
+			} else if (!any) {
 				msg = "You do not have eligible connections to any " + L.adv_plural + "."
 			}
 		}
