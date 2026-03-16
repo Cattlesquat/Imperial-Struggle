@@ -9078,6 +9078,7 @@ function action_eligible_spaces_mil(region)
 						if (G.flags[link] !== R) continue
 						if (![ TERRITORY, NAVAL, MARKET ].includes(data.spaces[link].type)) continue // Need a friendly fort, territory, or market
 						if (!set_has(G.controlled, link)) continue                                   // Need it since start of action round
+						if (has_conflict_marker(link)) continue // Not a conflicted market
 						allowed_to_build_fort = true
 						break
 					}
