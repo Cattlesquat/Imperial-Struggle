@@ -4690,6 +4690,7 @@ function event_made_diplo()
 	if (!has_transient(R, TRANSIENT_EVENT_MADE_DIPLO)) {
 		set_transient(R, TRANSIENT_EVENT_MADE_DIPLO)
 		if (has_active_ministry(R, EDMUND_BURKE)) {
+			if (!is_ministry_exhausted(R, EDMUND_BURKE)) exhaust_ministry(R, EDMUND_BURKE)
 			add_contingent(DIPLO, burke_points(R), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
 		}
 	}
