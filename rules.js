@@ -7157,7 +7157,7 @@ P.event_haitian_revolution = {
 	},
 	inactive: "play Haitian Revolution",
 	prompt() {
-		let msg = is_bit(QUALIFIES_FOR_BONUS) ? "Place a conflict marker in a Sugar market in the Caribbean." : "Place 3 conflict markers in Sugar markets in the Caribbean."
+		let msg = !is_bit(QUALIFIES_FOR_BONUS) ? "Place a conflict marker in a Sugar market in the Caribbean." : "Place 3 conflict markers in Sugar markets in the Caribbean."
 		let gauge = (G.conflicts_to_do > 1) ? (L.conflicts_done + "/" + L.conflicts_to_do) : ""
 		let any = false
 		for (let s = 0; s < NUM_SPACES; s++) {
