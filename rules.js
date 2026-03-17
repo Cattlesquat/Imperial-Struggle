@@ -4702,7 +4702,7 @@ function event_made_econ(rule = null, short = null)
 {
 	if (!has_transient(R, TRANSIENT_EVENT_MADE_ECON)) {
 		set_transient(R, TRANSIENT_EVENT_MADE_ECON)
-		if (has_active_ministry(R, NORTH_AMERICAN_TRADE)) {
+		if (has_active_ministry(R, NORTH_AMERICAN_TRADE) && has_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)) {
 			log_box_ministry(R, NORTH_AMERICAN_TRADE)
 			if (rule === null) {
 				add_action_points(ECON, 1)
@@ -9415,7 +9415,7 @@ function do_buy_economic(who)
 	display_action_cost()
 	if (!has_transient(who, TRANSIENT_TILE_MADE_ECON)) {
 		set_transient(who, TRANSIENT_TILE_MADE_ECON)
-		if (has_active_ministry(who, NORTH_AMERICAN_TRADE)) {
+		if (has_active_ministry(who, NORTH_AMERICAN_TRADE) && has_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)) {
 			add_action_points(ECON, 1)
 		}
 	}
