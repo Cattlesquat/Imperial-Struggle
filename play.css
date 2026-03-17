@@ -9,21 +9,64 @@ body.Britain header.your_turn { background-color: salmon }
 #chat_text .France { background-color: skyblue }
 #chat_text .Britain { background-color: salmon }
 
-.panel.br .panel-head { background-color: #c004; }
-.panel.fr .panel-head { background-color: #00c4; }
+header details menu li .hotkey { float: right; width: 16px; text-align: center; color: dimgray; }
+header details menu { min-width: 200px; }
 
-.panel { background-color: #0002; }
-
-.panel-head {
-	background-color: #0002;
-	color: white;
-	font-weight: bold;
-	text-align: center;
+menu li.separator {
+	cursor: default;
+	padding: 0;
+	border-top: 1px solid black;
 }
 
-.flag-string { color: black }
-.flag-string-fr { color: royalblue }
-.flag-string-br { color: crimson }
+.role_stat:hover {
+	text-decoration: underline;
+}
+
+/* BUTTON */
+
+.readybutton {
+	flex: 0 0 auto;
+	white-space: nowrap;
+
+	padding: 1px 10px;
+	vertical-align: middle;
+	border: 2px solid;
+
+	background-color: springgreen;
+	border-color: lightgreen darkgreen darkgreen lightgreen;
+	color: black;
+	outline: 1px solid black;
+
+	line-height: 22px;
+}
+
+.readybutton:enabled:active:hover {
+	border-color: darkgreen lightgreen lightgreen darkgreen;
+	padding: 2px 9px 0px 11px;
+}
+
+.almostbutton {
+	flex: 0 0 auto;
+	white-space: nowrap;
+
+	padding: 1px 10px;
+	vertical-align: middle;
+	border: 2px solid;
+
+	background-color: lightyellow;
+	border-color: yellow gold gold yellow;
+	color: black;
+	outline: 1px solid black;
+
+	line-height: 22px;
+}
+
+.almostbutton:enabled:active:hover {
+	border-color: gold yellow yellow gold;
+	padding: 2px 9px 0px 11px;
+}
+
+/* GAME BOARD & MATS */
 
 #mapwrap {
 	width: 2550px;
@@ -36,6 +79,193 @@ body.Britain header.your_turn { background-color: salmon }
 	background-image: url(boards75/map.avif);
 	background-size: 2550px 1650px;
 }
+
+.board {
+	margin: 12px auto;
+	border: 1px solid black;
+}
+
+.board.war {
+	width: 1100px;
+	height: 850px;
+}
+
+#vp_mobile {
+	display: none;
+	/* same as #prompt in client.css */
+	font-size: 18px;
+	line-height: 22px;
+	margin-top: 11px;
+	margin-bottom: 5px;
+	padding: 0 8px;
+}
+
+#vp_desktop {
+	font-size: 18px;
+	line-height: 22px;
+	text-align: center;
+	padding: 4px;
+	background-color: cornsilk;
+	border-bottom: 1px solid black;
+}
+
+
+.vp-overlay {
+	font-size: 28px;
+	color: #333;
+	font-weight:bold;
+	background-color: #ECD8BB;
+	top: -4px;
+	left: -2px;
+	padding-left: 2px;
+	padding-right: 4px;
+
+	font-family: "Garamond", serif;
+}
+
+#demand_highlight {
+	pointer-events: none;
+	position: absolute;
+	z-index: 1000;
+
+	width: 75px;
+	height: 20px;
+	background-size: 74px 74px;
+	border-width: 4px;
+	border-style: solid;
+	border-color: springgreen;
+
+	left:1352px;
+	top:264px;
+}
+
+/* DEMAND WINNER */
+
+/* FIXME: define in play.js */
+.layout.lout-demand-winner {
+	display: flex;
+	justify-content: center;
+}
+
+.marker.demand-winner-slot, .marker.award-winner-slot {
+	width: 40px;
+	min-height: 20px;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	/* background: rgba(245, 235, 220, 0.85); */
+	padding: 2px 4px;
+}
+
+.marker.award-winner-slot.prestige {
+	pointer-events: none;
+	/* border: 2px solid springgreen; */
+}
+
+.demand-count, .award-count {
+	font-size: 12px;
+	color: #333;
+	margin-left: 2px;
+	font-weight:bold;
+}
+
+/* MAP CUTOUTS */
+
+#map_tip {
+	position: fixed;
+	pointer-events: none;
+	z-index: 1000;
+
+	border: 1px solid black;
+
+	left: 0px;
+	bottom: 25px;
+
+	display: block;
+	background-image: url(boards75/map.avif);
+	background-size: auto;
+	background-repeat: no-repeat;
+	/* background-position: -500px -200px; */
+}
+
+.score-prestige {
+	border: 1px solid black;
+	display: block;
+	background-image: url(boards75/map.avif);
+	background-size: auto;
+	background-repeat: no-repeat;
+
+	background-position: -1332px -555px;
+	width: 70px;
+	height: 70px;
+	margin-top: 0px;
+}
+
+.score-demand-label {
+	border: 1px solid black;
+	display: block;
+	background-image: url(boards75/map.avif);
+	background-size: auto;
+	background-repeat: no-repeat;
+
+	background-position-x: -1109px;
+	width: 72px;
+	height: 20px;
+	margin-top: 0px;
+}
+
+.score-demand-value {
+	border: 1px solid black;
+	display: block;
+	background-image: url(boards75/map.avif);
+	background-size: auto;
+	background-repeat: no-repeat;
+
+	background-position-x: -1109px;
+	width: 77px;
+	height: 20px;
+	margin-top: 0px;
+}
+
+.score-demand-delta-box {
+	border: 1px solid black;
+	display: block;
+	background-image: url(boards75/map.avif);
+	background-size: auto;
+	background-repeat: no-repeat;
+
+	background-position-x: -1180px;
+	background-position-y: -265px;
+	width: 30px;
+	height: 20px;
+	margin-top: 0px;
+}
+
+.d0 { background-position-y: -183px; }
+.d1 { background-position-y: -203px; }
+.d2 { background-position-y: -224px; }
+.d3 { background-position-y: -244px; }
+.d4 { background-position-y: -265px; }
+.d5 { background-position-y: -285px; }
+
+.e0 { background-position-x: -1180px; }
+.e1 { background-position-x: -1266px; }
+.e2 { background-position-x: -1354px; }
+
+
+/* PANELS */
+
+.panel { background-color: #0002; }
+
+.panel-head {
+	background-color: #0002;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+}
+
+.panel.br .panel-head { background-color: #c004; }
+.panel.fr .panel-head { background-color: #00c4; }
 
 #panels {
 	display: grid;
@@ -58,21 +288,14 @@ body.Britain header.your_turn { background-color: salmon }
 }
 
 #all_ministries .panel-body {
-    display: flex;
-    justify-content: center;
-}
-
-.stack-deal {
-    visibility: hidden
+	display: flex;
+	justify-content: center;
 }
 
 #played .panel-body, #advantage_fr .panel-body, #advantage_br .panel-body { width: 252px }
-
 #available_investment_tiles .panel-body { width: 492px; min-height: 328px; }
 #ministry_fr .panel-body, #ministry_br .panel-body { width: 516px }
-
 #events_fr .panel-body, #events_br .panel-body { width: 780px }
-
 #used_investment_tiles .panel-body, #upcoming_investment_tiles .panel-body { width: 368px; }
 
 #events_fr, #events_br {
@@ -83,88 +306,195 @@ body.Britain #advantage_br,
 body.Britain #ministry_br,
 body.Britain #events_br { grid-row: 2 }
 
-.board {
-	margin: 12px auto;
+#advantage_fr .panel-body,
+#advantage_br .panel-body {
+	justify-content: center;
+	gap: 8px;
+}
+
+#used_investment_tiles .panel-body,
+#upcoming_investment_tiles .panel-body {
+	justify-content: center;
+	gap: 8px;
+}
+
+#available_investment_tiles .panel-body {
+	justify-content: center;
+	padding: 24px;
+	gap: 72px 24px;
+}
+
+.remind-player-order {
+	font-size: 18px;
+	color: ghostwhite;
+	min-width: 500px;
+	text-align: center;
+}
+
+/* DIALOGS */
+
+.modal-dialog {
+	max-width: 450px;
+	background-color: floralwhite;
+}
+
+.modal-dialog h3 {
+	font-weight: bold;
+	margin: 0;
+}
+
+#propose_rollback_details, #review_rollback_details {
+	margin: 1em 0;
+}
+
+.dialog {
+	position: absolute;
+	display: grid;
+	grid-template-rows: min-content 1fr min-content;
+	grid-template-columns: 1fr 30px;
 	border: 1px solid black;
+	background-color: white;
+	box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.5);
+	visibility: hidden;
+	z-index: 499;
 }
 
-.board.war {
-	width: 1100px;
-	height: 850px;
+.dialog.show {
+	visibility: visible;
 }
 
-header details menu li .hotkey { float: right; width: 16px; text-align: center; color: dimgray; }
-header details menu { min-width: 200px; }
+.dialog_header {
+	grid-row: 1;
+	grid-column: 1/3;
+	cursor: move;
+	background-color: tan;
+	border-bottom: 1px solid black;
+	padding: 5px 8px;
+}
+
+.dialog_x {
+	grid-row: 1;
+	grid-column: 2;
+	cursor: pointer;
+	margin: 5px 5px;
+	height: 24px;
+	text-align: right;
+}
+
+.dialog_x:hover {
+	background-color: black;
+	color: white;
+}
+
+.dialog_body {
+	grid-row: 2;
+	grid-column: 1/3;
+	margin: 0;
+	font-size: 16px;
+	line-height: 24px;
+	height: 480px;
+	padding: 4px 8px;
+	overflow-y: auto;
+	background-color: #F9EEDC; /* floralwhite was previous */
+}
+
+.dialog_body dl { margin: 0; }
+.dialog_body dd { margin-left: 20px; }
+
+#scoring_summary_dialog { top: 100px; left: 60px; min-width: 280px}
+#final_scoring_summary_dialog { top: 120px; left: 80px; min-width: 280px }
+#event_card_dialog { top: 160px; left: 120px; min-width: 280px }
+#french_ministry_dialog { top: 220px; left: 180px; min-width: 280px }
+#british_ministry_dialog { top: 280px; left: 240px; min-width: 280px }
+
+/* TOOLTIPS */
+
+/* #status - standard tooltip */
+/* #tip - additional tooltip images */
+/* #map_tip - additional tooltip image using map cutout */
+/* #mobile_tip - special tooltip only used for cards, and only on mobile */
+
+/* data-tooltip - behaves like title attribute attached to element */
+
+#status {
+	background-color: #f0dcbd;				   /* #e5c089; */ /* light tan color grabbed from mapboard */
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+#tip {
+	pointer-events: none;
+	position: fixed;
+	z-index: 1000;
+
+	margin: 6px;
+
+	/* display: flex; */
+	/* left: 0px; */
+	/* bottom: 25px; */
+
+	/* right: 240px; */
+	/* top: 60px; */
+
+	/* background: #f0dcbd; &&/
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+#tip .advantage-front,
+#tip .advantage-back {
+	width: 74px;
+	height: 74px;
+	background-size: 74px 74px;
+	margin: 3px;
+	/* border-width: 4px;
+	border-color: #48143a; /* deep purple color grabbed from mapboard frame
+	border-style: double;
+	*/
+}
+
+#mobile_tip {
+	position: fixed;
+	z-index: 500;
+	top: 50px;
+	left: 50px;
+	inset: 0;
+	margin: auto;
+}
+
+[data-tooltip] {
+	position: relative;
+}
+
+[data-tooltip]:after {
+	content: attr(data-tooltip);
+	pointer-events: none;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	z-index: 1000;
+	background-color: oldlace;
+	border: 1px solid black;
+	border-radius: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	width: max-content;
+	opacity: 0; /* Should I just be using display:none ? */
+	-webkit-transition: opacity 0.05s ease-in-out;
+}
+
+[data-tooltip]:hover:after {
+	opacity: 1;
+}
+
+div[data-tooltip]:after {
+	left: 5px!important;
+}
 
 /* LOG */
 
-#log .i {
-	text-indent: 20px;
-}
-
-#log .h1 {
-	margin: 8px 0;
-	background-color: tan;
-}
-
-#log .h2 {
-	margin: 8px 0;
-	background-color: wheat;
-}
-
-#log .h2.br {
-    margin: 8px 0;
-    background-color: salmon;
-}
-
-#log .h2.fr {
-    margin: 8px 0;
-    background-color: skyblue;
-}
-
-
-#log .h1 { font-weight: bold; padding-top:2px; padding-bottom:2px; text-align: center; }
-#log .h2 { padding-top:2px; padding-bottom:2px; text-align: center; }
-#log .h3 { text-align: center; }
-#log .h4 { font-weight: bold; }
-#log .h5 { text-decoration: underline; }
-
-#log .h1 { background-color: tan }
-#log .h2 { background-color: wheat }
-#log .h3 { background-color: wheat }
-
-#log .h1, .h2, .h3 {
-	font-variant-caps: small-caps;
-	border-top: 1px solid black;
-	border-bottom: 1px solid black;
-}
-
-#log .b {
-	font-weight: bold;
-}
-
-#log .strike {
-    text-decoration: line-through;
-}
-#log .small_br {
-	min-height: 5px;
-	height: 5px;
-}
-
-#log .group { 
-    margin: 0 6px 0px 6px; 
-}
-
-#log .header {
-    padding: 4px;
-    margin-top:8px;
-    margin-bottom:0;
-    font-weight: bold;
-    text-align: center;
-}
-
-
-/* HERE TO CHANGE COLORS BRIAN */
 #log {
 	--fr-ministry: hsl(206, 85%, 90%);
 	--fr-ministry-header: hsl(206, 85%, 85%);
@@ -187,21 +517,86 @@ header details menu { min-width: 200px; }
 	--both-advantage: hsl(0, 0%, 75%);
 	--both-advantage-header: hsl(0, 0%, 65%);
 
-    --fr-misc: hsl(198, 66%, 85%); /* hsl(206, 85%, 80%); */
-    --fr-misc-header: skyblue; /* hsl(206, 85%, 70%); */
-    --br-misc: hsl(6, 100%, 80%);
-    --br-misc-header: salmon; /* hsl(355, 70%, 70%); */
-    --both-misc: hsl(0, 0%, 88%);
-    --both-misc-header: hsl(0, 0%, 80%);
+	--fr-misc: hsl(198, 66%, 85%); /* hsl(206, 85%, 80%); */
+	--fr-misc-header: skyblue; /* hsl(206, 85%, 70%); */
+	--br-misc: hsl(6, 100%, 80%);
+	--br-misc-header: salmon; /* hsl(355, 70%, 70%); */
+	--both-misc: hsl(0, 0%, 88%);
+	--both-misc-header: hsl(0, 0%, 80%);
 
-    /*
-    --fr-misc: hsl(206, 85%, 90%);
-    --fr-misc-header: hsl(206, 85%, 85%);
-    --br-misc: hsl(355, 70%, 90%);
-    --br-misc-header: hsl(355, 70%, 85%);
-    --both-misc: hsl(0, 0%, 88%);
-    --both-misc-header: hsl(0, 0%, 80%);
-     */
+	/*
+	--fr-misc: hsl(206, 85%, 90%);
+	--fr-misc-header: hsl(206, 85%, 85%);
+	--br-misc: hsl(355, 70%, 90%);
+	--br-misc-header: hsl(355, 70%, 85%);
+	--both-misc: hsl(0, 0%, 88%);
+	--both-misc-header: hsl(0, 0%, 80%);
+	 */
+}
+
+#log .i {
+	text-indent: 20px;
+}
+
+#log .h1 {
+	margin: 8px 0;
+	background-color: tan;
+}
+
+#log .h2 {
+	margin: 8px 0;
+	background-color: wheat;
+}
+
+#log .h2.br {
+	margin: 8px 0;
+	background-color: salmon;
+}
+
+#log .h2.fr {
+	margin: 8px 0;
+	background-color: skyblue;
+}
+
+#log .h1 { font-weight: bold; padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h2 { padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h3 { text-align: center; }
+#log .h4 { font-weight: bold; }
+#log .h5 { text-decoration: underline; }
+
+#log .h1 { background-color: tan }
+#log .h2 { background-color: wheat }
+#log .h3 { background-color: wheat }
+
+#log .h1, .h2, .h3 {
+	font-variant-caps: small-caps;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+#log .b {
+	font-weight: bold;
+}
+
+#log .strike {
+	text-decoration: line-through;
+}
+
+#log .small_br {
+	min-height: 5px;
+	height: 5px;
+}
+
+#log .group { 
+	margin: 0 6px 0px 6px; 
+}
+
+#log .header {
+	padding: 4px;
+	margin-top:8px;
+	margin-bottom:0;
+	font-weight: bold;
+	text-align: center;
 }
 
 /* Ministry boxes */
@@ -243,7 +638,7 @@ header details menu { min-width: 200px; }
 /* Nested boxes */
 
 #log .header.group.nested {
-    margin-top: 0;
+	margin-top: 0;
 }
 
 #log .group.nested {
@@ -251,7 +646,7 @@ header details menu { min-width: 200px; }
 	border-left: 6px solid var(--parent-color);
 	border-right: 6px solid var(--parent-color);
 	border-bottom: 0;
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 #log .group.nested.parent-fr-ministry { --parent-color: var(--fr-ministry); }
@@ -264,43 +659,323 @@ header details menu { min-width: 200px; }
 #log .group.nested.parent-both-event { --parent-color: var(--both-event); }
 #log .group.nested.parent-both-misc { --parent-color: var(--both-misc); }
 
+/* Tipsy text */
+
+.flag-string { color: black }
+.flag-string-fr { color: royalblue }
+.flag-string-br { color: crimson }
+
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr, .tip-bonus-war-fr, .tip-basic-war-fr {
-    font-style: italic;
-    text-decoration: underline;
-    color: royalblue;
+	font-style: italic;
+	text-decoration: underline;
+	color: royalblue;
 }
 
 .tip-event-uc-fr, .tip-ministry-uc-fr, .tip-advantage-uc-fr, .tip-demand-uc-fr {
-    text-transform: uppercase;
-    text-decoration: underline;
-    color: royalblue;
+	text-transform: uppercase;
+	text-decoration: underline;
+	color: royalblue;
 }
 
 .tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br, .tip-spending-br, .tip.award-br, .tip-investment-br, .tip-space-br, .tip-bonus-war-br, .tip-basic-war-br {
-    font-style: italic;
-    text-decoration: underline;
-    color: crimson;
+	font-style: italic;
+	text-decoration: underline;
+	color: crimson;
 }
 
 .tip-event-uc-br, .tip-ministry-uc-br, .tip-advantage-uc-br, .tip-demand-uc-br {
-    text-transform: uppercase;
-    text-decoration: underline;
-    color: crimson;
+	text-transform: uppercase;
+	text-decoration: underline;
+	color: crimson;
 }
 
 .tip-event, .tip-ministry, .tip-advantage, .tip-demand, .tip-spending, .tip-award, .tip-investment, .tip-space, .tip-bonus-war, .tip-basic-war {
-    font-style: italic;
-    text-decoration: underline;
-    /* color: grey; */
+	font-style: italic;
+	text-decoration: underline;
+	/* color: grey; */
 }
 
 .tip-event-uc, .tip-ministry-uc, .tip-advantage-uc, .tip-demand-uc {
-    text-transform: uppercase;
-    text-decoration: underline;
-    /* color: grey; */
+	text-transform: uppercase;
+	text-decoration: underline;
+	/* color: grey; */
 }
 
-/* TRACKS & LAYOUTS */
+/* LOG, PROMPT, AND TOOLTIP TEXT */
+
+.symbol.econ { background-image: url(images/icon-economic.svg); }
+.symbol.diplo { background-image: url(images/icon-diplomatic.svg); }
+.symbol.mil { background-image: url(images/icon-military.svg); }
+
+#prompt .symbol {
+	display: inline-block;
+	vertical-align: -4px;
+	width: 24px;
+	height: 30px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	margin-top: -4px;
+	margin-bottom: -4px;
+	/*border: 1px solid black;*/
+}
+
+#prompt .symbol.econ {
+	margin-left: -5px;
+	vertical-align: -3px;
+	height: 28px;
+}
+
+#prompt .symbol.mil {
+	margin-left: -5px;
+	margin-right: 2px;
+}
+
+#log .symbol {
+	display: inline-block;
+	vertical-align: -3px;
+	width: 18px;
+	height: 18px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	margin-top: -2px;
+	margin-bottom: -2px;
+	margin-left: -2px;
+	margin-right: -2px;
+	/* border: 1px solid black; */
+}
+
+#log .symbol.econ {
+	height: 17px;
+	vertical-align: -2px;
+}
+
+#log .symbol.diplo {
+	margin-left: 0px;
+	margin-right: -3px;
+}
+
+#log .symbol.mil {
+	/* nothing */
+}
+
+#status .symbol {
+	display: inline-block;
+	vertical-align: -4px;
+	width: 20px;
+	height: 24px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	margin-top: -2px;
+	margin-bottom: -2px;
+	margin-left: -4px;
+	margin-right: -2px;
+	/* border: 1px solid black; */
+}
+
+#status .symbol.econ {
+	height: 22px;
+	vertical-align: -3px;
+}
+
+#status .symbol.diplo {
+	height: 22px;
+	margin-left: 0px;
+	margin-right: -3px;
+}
+
+#status .symbol.mil {
+	/* nothing */
+}
+
+.award-in-log {
+	display: inline-block;
+	margin: 20px 20px 20px 20px;
+}
+
+.demand-in-log {
+	display: inline-block;
+	margin: 8px 8px 8px 8px;
+}
+
+.wartile-in-log {
+	display: inline-block;
+	margin: 1px 1px 1px 1px;
+}
+
+.region {
+	display: block;
+	position: relative;
+	width: 100px;
+	margin-top: -20px;
+}
+
+.region.r0 { /* Europe */
+	margin-left: 1px;
+}
+
+.region.r1 { /* North America */
+	margin-left: -20px;
+}
+
+.region.r2 { /* Caribbean */
+	margin-left: -8px;
+}
+
+.region.r3 { /* India */
+	margin-left: 6px;
+}
+
+
+/* SCORE DIALOG */
+
+.award-in-score {
+	display: inline-block;
+	pointer-events: auto !important;
+	margin: 30px 20px 20px;
+}
+
+.score-region {
+	display: block;
+	position: relative;
+	width: 100px;
+	margin-top: -25px;
+	font-size: 16px;
+}
+
+.score-region-line {
+	display: flex;
+	justify-content: center;
+	min-height: 60px;
+	max-height: 75px;
+}
+
+.score-region-delta {
+	display: flex;
+	position: relative;
+	width: 60px;
+	font-size: 16px;
+}
+
+.score-region-delta.r0, .score-region-delta.r3 {
+	margin-left: 55px;
+	margin-top: 10px;
+}
+
+.score-region-delta.r1, .score-region-delta.r2 {
+	margin-left: -50px;
+	margin-top: 10px;
+}
+
+
+.score-region.r0 { /* Europe */
+	margin-left: -3px;
+}
+
+.score-region.r1 { /* North America */
+	margin-left: -27px;
+}
+
+.score-region.r2 { /* Caribbean */
+	margin-left: -14px;
+}
+
+.score-region.r3 { /* India */
+	margin-left: 5px;
+}
+
+.score-top {
+	min-height: 12px;
+}
+
+.score-below-regions {
+	min-height: 20px;
+}
+
+.score-below-demands {
+	min-height: 10px;
+}
+
+
+.prestige-in-score {
+	display: flex;
+	pointer-events: auto !important;
+	margin: 30px 20px 20px;
+}
+
+.score-prestige-label {
+	display: block;
+	font-size: 16px;
+	margin-top: -8px;
+	margin-left: -90px;
+}
+
+.score-prestige-amount {
+	display: flex;
+	font-size: 16px;
+	margin-top: -8px;
+	margin-left: 100px;
+}
+
+.score-demand {
+	display: flex;
+	margin-left: -7px;
+}
+
+.score-demand-line {
+	display: flex;
+	transform: scale(1.5,1.5);
+	transform-origin: left top;
+}
+
+.score-demand-summary {
+	position: relative;
+}
+
+.score-demand-delta {
+	display: flex;
+	position: relative;
+	margin: 4px 2px 2px 50px;
+
+}
+
+.score-checkbox {
+	left: 20px;
+	position: relative;
+	top: 1px;
+}
+
+/* MINI FLAGS */
+
+.demand-flag, .award-flag, .score-flag {
+	width: 16px;
+	height: 16px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.score-flag {
+	margin-top: 3px;
+	margin-left: 3px;
+}
+
+.alliance-flag {
+	width: 15px;
+	height: 15px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.demand-flag.fr, .award-flag.fr, .score-flag.fr, .alliance-flag.fr {
+	background-image: url(tiles75/square-sm/flag_fr.png);
+}
+
+.demand-flag.br, .award-flag.br, .score-flag.br, .alliance-flag.br {
+	background-image: url(tiles75/square-sm/flag_br.png);
+}
+
+/* LAYOUT */
 
 .layout {
 	gap: 5px;
@@ -312,28 +987,6 @@ header details menu { min-width: 200px; }
 
 .layout.lout-theater-drawn .hex {
 	margin: 0px -10px;
-}
-
-#advantage_fr .panel-body,
-#advantage_br .panel-body {
-	justify-content: center;
-	gap: 8px;
-}
-
-#used_investment_tiles .panel-body,
-#upcoming_investment_tiles .panel-body {
-	justify-content: center;
-	gap: 8px;
-}
-
-#available_investment_tiles .panel-body {
-	justify-content: center;
-	padding: 24px;
-	gap: 72px 24px;
-}
-
-.marker.action-fr, .marker.action-br {
-	margin: 80px auto 0 auto;
 }
 
 .layout.lout-navy .marker.hex.fleet_fr {
@@ -348,29 +1001,26 @@ header details menu { min-width: 200px; }
 	top: 25%;
 }
 
-/* SPACES & PIECES */
+.stack-deal {
+	visibility: hidden
+}
 
-body.shift .marker { opacity: 25% }
+/* SPACES */
+
+/* Keep the auto-rollover-tipped bizarro spaces from being on top of the counters' rollovers */
+.tip-bizarro {
+	z-index: -10
+}
 
 .space {
 	box-sizing: border-box;
 }
 
 .space.navy_box {
-    border-radius: 17px;
-    border: 4px solid transparent;
-    background-size: 92px 92px;
+	border-radius: 17px;
+	border: 4px solid transparent;
+	background-size: 92px 92px;
 }
-
-body[data-noanims="false"] .space.navy_box.action {
-    /* border: 4px solid yellow; */
-    animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.navy_box.action {
-    border: 4px solid yellow;
-}
-
 
 .space.political {
 	transform: rotate(45deg);
@@ -386,105 +1036,6 @@ body[data-noanims="true"] .space.navy_box.action {
 	border: none;
 }
 
-
-body[data-noanims="false"] .space.market.dirty_br,
-body[data-noanims="false"] .space.political.dirty_br,
-body[data-noanims="false"] .space.territory.dirty_br {
-    animation: dirty-pulse-british 4s ease-in-out infinite;
-	/* border: 4px solid crimson; */
-}
-
-body[data-noanims="true"] .space.market.dirty_br,
-body[data-noanims="true"] .space.political.dirty_br,
-body[data-noanims="true"] .space.territory.dirty_br {
-    border: 4px solid crimson;
-}
-
-
-body[data-noanims="false"] .space.market.dirty_fr,
-body[data-noanims="false"] .space.political.dirty_fr,
-body[data-noanims="false"] .space.territory.dirty_fr  {
-    animation: dirty-pulse-french 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.market.dirty_fr,
-body[data-noanims="true"] .space.political.dirty_fr,
-body[data-noanims="true"] .space.territory.dirty_fr  {
-    border: 4px solid royalblue;
-}
-
-
-body[data-noanims="false"] .space.fort.dirty_fr,
-body[data-noanims="false"] .space.naval.dirty_fr {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-french-shape 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.fort.dirty_fr,
-body[data-noanims="true"] .space.naval.dirty_fr {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    border: 4px solid royalblue;
-}
-
-
-body[data-noanims="false"] .space.fort.dirty_br,
-body[data-noanims="false"] .space.naval.dirty_br {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-british-shape 4s ease-in-out infinite;
-}
-
-
-body[data-noanims="true"] .space.fort.dirty_br,
-body[data-noanims="true"] .space.naval.dirty_br {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    border: 4px solid crimson;
-}
-
-/*
-body[data-noanims="false"] .space.fort.dirty_fr,
-body[data-noanims="false"] .space.naval.dirty_fr {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-french-shape 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.fort.dirty_fr,
-body[data-noanims="true"] .space.naval.dirty_fr {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    border: 4px solid royalblue;
-}
-
-
-body[data-noanims="false"] .space.fort.dirty_br,
-body[data-noanims="false"] .space.naval.dirty_br {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-british-shape 4s ease-in-out infinite;
-}
-
-
-body[data-noanims="true"] .space.fort.dirty_br,
-body[data-noanims="true"] .space.naval.dirty_br {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    border: 4px solid crimson;
-}
-
-*/
-
 .space.advantage {
 	background-size: 88px 88px;
 	border-radius: 50%;
@@ -495,170 +1046,17 @@ body[data-noanims="true"] .space.naval.dirty_br {
 	border: 4px solid transparent;
 }
 
-body[data-noanims="false"] .space.theater.action {
-    animation: action-pulse 4s ease-in-out infinite;
+/* MARKERS */
+
+body.shift .marker { opacity: 25% }
+
+/* FIXME is this still needed? */
+.marker.award { pointer-events: none }
+
+/* FIXME: why is there a margin here? */
+.marker.action-fr, .marker.action-br {
+	margin: 80px auto 0 auto;
 }
-
-body[data-noanims="true"] .space.theater.action {
-    border: 4px solid yellow;
-}
-
-body[data-noanims="false"] .huguenots.action {
-    animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .huguenots.action {
-    border: 4px solid yellow;
-}
-
-
-body[data-noanims="false"] .marker.demand.action {
-    animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.action {
-    border: 4px solid yellow;
-}
-
-body[data-noanims="false"] .marker.demand.dirty_br {
-    animation: dirty-pulse-british 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.dirty_br {
-    border: 4px solid crimson;
-}
-
-body[data-noanims="false"] .marker.demand.dirty_fr {
-    animation: dirty-pulse-french 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.dirty_fr {
-    border: 4px solid royalblue;
-}
-
-
-@keyframes action-pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 4px #ffb900, 0 0 12px 4px #ffb900; /* Baseline */
-    }
-    83.5% {
-        box-shadow: 0 0 0 4px #ffff00, 0 0 12px 4px #ffff00; /* ... a slow drift to here, then a quick pulse back */
-    }
-}
-
-@keyframes action-pulse-card {
-    0%, 100% {
-        box-shadow: 0 0 0 3px #ffb900, 0 0 6px 3px #ffb900; /* Baseline */
-    }
-    83.5% {
-        box-shadow: 0 0 0 3px #ffff00, 0 0 6px 3px #ffff00; /* ... a slow drift to here, then a quick pulse back */
-    }
-}
-
-
-@keyframes action-pulse-shape {
-    0%, 100% {
-        background-color: #ffb900;
-    }
-    83.5% {
-        background-color: #ffff00;
-    }
-}
-
-
-@keyframes dirty-pulse-british {
-    0%, 100% {
-        box-shadow: 0 0 0 4px crimson, 0 0 12px 4px crimson; /* Baseline */
-    }
-    83.5% {
-        box-shadow: 0 0 0 4px salmon, 0 0 12px 4px salmon; /* ... a slow drift to here, then a quick pulse back */
-    }
-}
-
-
-@keyframes dirty-pulse-british-shape {
-    0%, 100% {
-        background-color: crimson; /* Baseline */
-    }
-    83.5% {
-        background-color: salmon; /* ... a slow drift to here, then a quick pulse back */
-    }
-}
-
-
-@keyframes dirty-pulse-french {
-    0%, 100% {
-        box-shadow: 0 0 0 4px royalblue, 0 0 12px 4px royalblue; /* Baseline */
-    }
-    83.5% {
-        box-shadow: 0 0 0 4px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
-    }
-}
-
-@keyframes dirty-pulse-french-shape {
-    0%, 100% {
-        background-color: royalblue;
-    }
-    83.5% {
-        background-color: skyblue;
-    }
-}
-
-body[data-noanims="false"] .space.market.action,
-body[data-noanims="false"] .space.political.action,
-body[data-noanims="false"] .space.territory.action {
-	animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.political.action {
-    transform: scale(1.2) rotate(45deg)
-}
-
-body[data-noanims="true"] .space.market.action {
-    transform: scale(1.2)
-}
-
-body[data-noanims="true"] .space.territory.action {
-    transform: scale(1.1)
-}
-
-body[data-noanims="true"] .space.market.action,
-body[data-noanims="true"] .space.political.action,
-body[data-noanims="true"] .space.territory.action {
-    border: 4px solid yellow;
-}
-
-
-body[data-noanims="false"] .space.naval.action,
-body[data-noanims="false"] .space.fort.action  {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
-.space.naval.action,
-.space.fort.action {
-    transform: scale(1.2);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    background-color: yellow;
-}
-
-body[data-noanims="false"] .space.advantage.action {
-    transform: scale(1.2);
-    -webkit-mask: url(images/pentagon.svg) no-repeat center;
-    mask: url(images/pentagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
-.space.advantage.action {
-    transform: scale(1.2);
-    -webkit-mask: url(images/pentagon.svg) no-repeat center;
-    mask: url(images/pentagon.svg) no-repeat center;
-    background-color: yellow;
-}
-
 
 .marker.hex {
 	width: 77px;
@@ -668,10 +1066,10 @@ body[data-noanims="false"] .space.advantage.action {
 
 .marker.hex.fleet_fr,
 .marker.hex.fleet_br {
-    width: 77px;
-    height: 69px;
-    background-size: 77px 69px;
-    pointer-events: none; /* Squadron markers don't get pointer events */
+	width: 77px;
+	height: 69px;
+	background-size: 77px 69px;
+	pointer-events: none; /* Squadron markers don't get pointer events */
 }
 
 .marker.hex-sm {
@@ -708,86 +1106,12 @@ body[data-noanims="false"] .space.advantage.action {
 
 .marker.square-sm.huguenots,
 .marker.square-sm.huguenots_spent {
-    width: 39px;
-    height: 39px;
+	width: 39px;
+	height: 39px;
 }
 
-.card {
-	width: 250px;
-	height: 350px;
-	background-size: 250px 350px;
-	border: 1px solid black;
-	border-radius: 12px;
-}
-
-body[data-noanims="false"] .marker.investment.action {
-    animation: action-pulse 4s ease-in-out infinite;
-	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
-}
-
-.marker.investment.action {
-    box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
-}
-
-
-body[data-noanims="false"] .marker.advantage.action {
-    animation: action-pulse 4s ease-in-out infinite;
-    /* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
-}
-
-.marker.advantage.action {
-    box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
-}
-
-
-body[data-noanims="false"] .card.action {
-    animation: action-pulse-card 4s ease-in-out infinite;
-    /* box-shadow: 0 0 0 3px yellow; */
-}
-
-
-.card.action {
-    box-shadow: 0 0 0 3px yellow;
-}
-
-
-/* COMPONENT OVERLAYS */
-
-.ministry_card:after {
-	position: absolute;
-	text-align: center;
-	font-size: 16px;
-	line-height: 20px;
-	width: 100%;
-	bottom: 0;
-    background-color: linen;
-    border-radius: 0  0 12px 12px;
-}
-
-
-.ministry_card.hidden:after { content: "HIDDEN";
-                              background-color: wheat;}
-.ministry_card.revealed:after { content: "REVEALED"; }
-.ministry_card.exhausted:after { content: "EXHAUSTED";
-                                 background-color: #ffd580; }
-.ministry_card.partial:after { content: "REVEALED";
-                                background: repeating-linear-gradient(
-                                45deg,
-                                linen,
-                                linen 10px,
-                                #ffd580 10px,
-                                #ffd580 20px); }
-
-.ministry_card .exhausted.a1 {
-	position: absolute;
-	top: 55%;
-	right: -8px;
-}
-
-.ministry_card .exhausted.a2 {
-	position: absolute;
-	top: 75%;
-	right: -8px;
+.marker.advantage {
+	z-index: 100;
 }
 
 .advantage .exhausted {
@@ -813,47 +1137,793 @@ body[data-noanims="false"] .card.action {
 	background-color: rgba(0, 0, 0, 0.5 );
 }
 
-/* flags in theater */
+/* CARDS */
+
+.card {
+	width: 250px;
+	height: 350px;
+	background-size: 250px 350px;
+	border: 1px solid black;
+	border-radius: 12px;
+}
+
+.ministry_card:after {
+	position: absolute;
+	text-align: center;
+	font-size: 16px;
+	line-height: 20px;
+	width: 100%;
+	bottom: 0;
+	background-color: linen;
+	border-radius: 0  0 12px 12px;
+}
+
+.ministry_card.hidden:after { content: "HIDDEN"; background-color: wheat;}
+.ministry_card.revealed:after { content: "REVEALED"; }
+.ministry_card.exhausted:after { content: "EXHAUSTED"; background-color: #ffd580; }
+.ministry_card.partial:after {
+	content: "REVEALED";
+	background: repeating-linear-gradient(
+		45deg,
+		linen,
+		linen 10px,
+		#ffd580 10px,
+		#ffd580 20px
+	);
+}
+
+.ministry_card .exhausted.a1 {
+	position: absolute;
+	top: 55%;
+	right: -8px;
+}
+
+.ministry_card .exhausted.a2 {
+	position: absolute;
+	top: 75%;
+	right: -8px;
+}
+
+/* WAR DISPLAY: FLAGS IN THEATER */
 
 .layout[class*="-alliance"] {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	align-items: flex-start;
 }
 
 .alliance-row {
-    display: flex;
-    align-items: center;
-    gap: 1px;
-    min-height: 14px;
+	display: flex;
+	align-items: center;
+	gap: 1px;
+	min-height: 14px;
 }
 
 .alliance-row:has(.alliance-flag) {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .alliance-row:has(.alliance-flag):hover {
-    background-color: rgba(255, 255, 0, 0.3);
+	background-color: rgba(255, 255, 0, 0.3);
 }
 
-.alliance-flag {
-    width: 15px;
-    height: 15px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+.theater-strength, .theater-winner {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: bold;
+	color: black;
 }
 
-.alliance-flag.fr {
-    background-image: url(tiles75/square-sm/flag_fr.png);
+.theater-strength { 
+	font-size: 16px; 
+}
+.theater-winner { 
+	font-size: 14px; 
 }
 
-.alliance-flag.br {
-    background-image: url(tiles75/square-sm/flag_br.png);
+.theater-strength .flag, .theater-winner .flag {
+	width: 18px;
+	height: 18px;
+	background: no-repeat center / contain;
 }
 
-/* BORDERS */
+.theater-margin {
+	pointer-events: none;
+	z-index: 150;
+
+	background-size: 100px 100px;
+	border-width: 4px;
+	border-style: solid;
+}
+
+.theater-margin.fr {
+	border-color: royalblue;
+}
+
+.theater-margin.br {
+	border-color: crimson;
+}
+
+.theater-margin.tie {
+	border-color: springgreen;
+}
+
+
+/* ANIMATION KEYFRAMES */
+
+@keyframes attract-animation {
+	0%, 50% {
+		box-shadow: 0 0 0 4px #c000c0, 0 0 12px 4px #c000c0; /* Baseline */
+	}
+	42% {
+		box-shadow: 0 0 0 4px #FF9966, 0 0 12px 4px #FF9966; /* ... a slow drift to here, then a quick pulse back */
+	}
+	84% {
+		box-shadow: 0 0 0 4px #ffffff, 0 0 12px 4px #ffffff;
+	}
+	100% {
+		box-shadow: 0 0 0 4px #FF9966, 0 0 12px 4px #FF9966; /* Baseline */
+	}
+}
+
+@keyframes action-pulse {
+	0%, 100% {
+		box-shadow: 0 0 0 4px #ffb900, 0 0 12px 4px #ffb900; /* Baseline */
+	}
+	83.5% {
+		box-shadow: 0 0 0 4px #ffff00, 0 0 12px 4px #ffff00; /* ... a slow drift to here, then a quick pulse back */
+	}
+}
+
+@keyframes action-pulse-card {
+	0%, 100% {
+		box-shadow: 0 0 0 3px #ffb900, 0 0 6px 3px #ffb900; /* Baseline */
+	}
+	83.5% {
+		box-shadow: 0 0 0 3px #ffff00, 0 0 6px 3px #ffff00; /* ... a slow drift to here, then a quick pulse back */
+	}
+}
+
+
+@keyframes action-pulse-shape {
+	0%, 100% {
+		background-color: #ffb900;
+	}
+	83.5% {
+		background-color: #ffff00;
+	}
+}
+
+
+@keyframes dirty-pulse-british {
+	0%, 100% {
+		box-shadow: 0 0 0 4px crimson, 0 0 12px 4px crimson; /* Baseline */
+	}
+	83.5% {
+		box-shadow: 0 0 0 4px salmon, 0 0 12px 4px salmon; /* ... a slow drift to here, then a quick pulse back */
+	}
+}
+
+
+@keyframes dirty-pulse-british-shape {
+	0%, 100% {
+		background-color: crimson; /* Baseline */
+	}
+	83.5% {
+		background-color: salmon; /* ... a slow drift to here, then a quick pulse back */
+	}
+}
+
+
+@keyframes dirty-pulse-french {
+	0%, 100% {
+		box-shadow: 0 0 0 4px royalblue, 0 0 12px 4px royalblue; /* Baseline */
+	}
+	83.5% {
+		box-shadow: 0 0 0 4px skyblue, 0 0 12px 4px skyblue; /* ... a slow drift to here, then a quick pulse back */
+	}
+}
+
+@keyframes dirty-pulse-french-shape {
+	0%, 100% {
+		background-color: royalblue;
+	}
+	83.5% {
+		background-color: skyblue;
+	}
+}
+
+.space.attract, .marker.attract, .card.attract {
+	border-color: transparent !important;
+	animation: attract-animation 0.5s ease-in-out infinite !important;
+}
+
+/* HIGHLIGHTS (CARDS) */
+
+body[data-noanims="false"] .card.action {
+	animation: action-pulse-card 4s ease-in-out infinite;
+	/* box-shadow: 0 0 0 3px yellow; */
+}
+
+.card.action {
+	box-shadow: 0 0 0 3px yellow;
+}
+
+/* HIGHLIGHTS (SPACES) */
+
+body[data-noanims="false"] .space.navy_box.action {
+	/* border: 4px solid yellow; */
+	animation: action-pulse 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.navy_box.action {
+	border: 4px solid yellow;
+}
+
+
+body[data-noanims="false"] .space.market.dirty_br,
+body[data-noanims="false"] .space.political.dirty_br,
+body[data-noanims="false"] .space.territory.dirty_br {
+	animation: dirty-pulse-british 4s ease-in-out infinite;
+	/* border: 4px solid crimson; */
+}
+
+body[data-noanims="true"] .space.market.dirty_br,
+body[data-noanims="true"] .space.political.dirty_br,
+body[data-noanims="true"] .space.territory.dirty_br {
+	border: 4px solid crimson;
+}
+
+
+body[data-noanims="false"] .space.market.dirty_fr,
+body[data-noanims="false"] .space.political.dirty_fr,
+body[data-noanims="false"] .space.territory.dirty_fr  {
+	animation: dirty-pulse-french 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.market.dirty_fr,
+body[data-noanims="true"] .space.political.dirty_fr,
+body[data-noanims="true"] .space.territory.dirty_fr  {
+	border: 4px solid royalblue;
+}
+
+
+body[data-noanims="false"] .space.fort.dirty_fr,
+body[data-noanims="false"] .space.naval.dirty_fr {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: dirty-pulse-french-shape 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.fort.dirty_fr,
+body[data-noanims="true"] .space.naval.dirty_fr {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	border: 4px solid royalblue;
+}
+
+
+body[data-noanims="false"] .space.fort.dirty_br,
+body[data-noanims="false"] .space.naval.dirty_br {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+}
+
+
+body[data-noanims="true"] .space.fort.dirty_br,
+body[data-noanims="true"] .space.naval.dirty_br {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	border: 4px solid crimson;
+}
+
+body[data-noanims="false"] .space.theater.action {
+	animation: action-pulse 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.theater.action {
+	border: 4px solid yellow;
+}
+
+body[data-noanims="false"] .huguenots.action {
+	animation: action-pulse 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .huguenots.action {
+	border: 4px solid yellow;
+}
+
+
+body[data-noanims="false"] .marker.demand.action {
+	animation: action-pulse 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .marker.demand.action {
+	border: 4px solid yellow;
+}
+
+body[data-noanims="false"] .marker.demand.dirty_br {
+	animation: dirty-pulse-british 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .marker.demand.dirty_br {
+	border: 4px solid crimson;
+}
+
+body[data-noanims="false"] .marker.demand.dirty_fr {
+	animation: dirty-pulse-french 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .marker.demand.dirty_fr {
+	border: 4px solid royalblue;
+}
+
+body[data-noanims="false"] .space.market.action,
+body[data-noanims="false"] .space.political.action,
+body[data-noanims="false"] .space.territory.action {
+	animation: action-pulse 4s ease-in-out infinite;
+}
+
+body[data-noanims="true"] .space.political.action {
+	transform: scale(1.2) rotate(45deg)
+}
+
+body[data-noanims="true"] .space.market.action {
+	transform: scale(1.2)
+}
+
+body[data-noanims="true"] .space.territory.action {
+	transform: scale(1.1)
+}
+
+body[data-noanims="true"] .space.market.action,
+body[data-noanims="true"] .space.political.action,
+body[data-noanims="true"] .space.territory.action {
+	border: 4px solid yellow;
+}
+
+
+body[data-noanims="false"] .space.naval.action,
+body[data-noanims="false"] .space.fort.action  {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+.space.naval.action,
+.space.fort.action {
+	transform: scale(1.2);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	background-color: yellow;
+}
+
+body[data-noanims="false"] .space.advantage.action {
+	transform: scale(1.2);
+	-webkit-mask: url(images/pentagon.svg) no-repeat center;
+	mask: url(images/pentagon.svg) no-repeat center;
+	animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+.space.advantage.action {
+	transform: scale(1.2);
+	-webkit-mask: url(images/pentagon.svg) no-repeat center;
+	mask: url(images/pentagon.svg) no-repeat center;
+	background-color: yellow;
+}
+
+/* HIGHLIGHTS (MARKERS) */
+
+body[data-noanims="false"] .marker.investment.action {
+	animation: action-pulse 4s ease-in-out infinite;
+	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
+}
+
+.marker.investment.action {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+}
+
+body[data-noanims="false"] .marker.advantage.action {
+	animation: action-pulse 4s ease-in-out infinite;
+	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
+}
+
+.marker.advantage.action {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
+}
+
+body[data-noanims="false"] .marker.conflict.dirty_br:before,
+body[data-noanims="false"] .marker.conflict.plus-one.dirty_br:before,
+body[data-noanims="false"] .marker.damaged.dirty_br:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	/* transform: scale(.75) translateX(-23px) translateY(-27px); */
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+}
+
+.marker.conflict.dirty_br:before, .marker.conflict.plus-one.dirty_br:before, .marker.damaged.dirty_br:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	background-color: crimson;
+}
+
+
+body[data-noanims="false"] .marker.conflict.dirty_fr:before,
+body[data-noanims="false"] .marker.conflict.plus-one.dirty_fr:before,
+body[data-noanims="false"] .marker.damaged.dirty_fr:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: dirty-pulse-french-shape 4s ease-in-out infinite;
+}
+
+.marker.conflict.dirty_fr:before, .marker.conflict.plus-one.dirty_fr:before, .marker.damaged.dirty_fr:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	background-color: royalblue;
+}
+
+/* BR-- this could probably be less brutally scaled with a different piece of art, but it looks pretty good */
+body[data-noanims="false"] .marker.conflict.action:before,
+body[data-noanims="false"] .marker.conflict.plus-one.action:before,
+body[data-noanims="false"] .marker.damaged.action:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.68) translateX(-25px) translateY(-29px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	background-color: yellow;
+}
+
+/* BR - possibly less brutal ways to accomplish this? (But if brute force isn't working, you're not using enough brute force!) */
+body[data-noanims="false"] .marker.war-7yw.br.action:before,
+body[data-noanims="false"] .marker.war-7yw.fr.action:before,
+body[data-noanims="false"] .marker.war-awi.br.action:before,
+body[data-noanims="false"] .marker.war-awi.fr.action:before,
+body[data-noanims="false"] .marker.war-was.br.action:before,
+body[data-noanims="false"] .marker.war-was.fr.action:before,
+body[data-noanims="false"] .marker.war-wss.br.action:before,
+body[data-noanims="false"] .marker.war-wss.fr.action:before,
+body[data-noanims="false"] .marker.war-basic.fr.action:before,
+body[data-noanims="false"] .marker.war-basic.br.action:before,
+body[data-noanims="false"] .marker.war0.action:before,
+body[data-noanims="false"] .marker.war1.action:before,
+body[data-noanims="false"] .marker.war2.action:before,
+body[data-noanims="false"] .marker.war3.action:before,
+body[data-noanims="false"] .marker.war4.action:before,
+body[data-noanims="false"] .marker.war5.action:before,
+body[data-noanims="false"] .marker.war6.action:before,
+body[data-noanims="false"] .marker.war7.action:before,
+body[data-noanims="false"] .marker.war8.action:before,
+body[data-noanims="false"] .marker.war9.action:before,
+body[data-noanims="false"] .marker.war10.action:before,
+body[data-noanims="false"] .marker.war11.action:before,
+body[data-noanims="false"] .marker.war12.action:before,
+body[data-noanims="false"] .marker.war13.action:before,
+body[data-noanims="false"] .marker.war14.action:before,
+body[data-noanims="false"] .marker.war15.action:before,
+body[data-noanims="false"] .marker.war16.action:before,
+body[data-noanims="false"] .marker.war17.action:before,
+body[data-noanims="false"] .marker.war18.action:before,
+body[data-noanims="false"] .marker.war19.action:before,
+body[data-noanims="false"] .marker.war20.action:before,
+body[data-noanims="false"] .marker.war21.action:before,
+body[data-noanims="false"] .marker.war22.action:before,
+body[data-noanims="false"] .marker.war23.action:before,
+body[data-noanims="false"] .marker.war24.action:before,
+body[data-noanims="false"] .marker.war25.action:before,
+body[data-noanims="false"] .marker.war26.action:before,
+body[data-noanims="false"] .marker.war27.action:before,
+body[data-noanims="false"] .marker.war28.action:before,
+body[data-noanims="false"] .marker.war29.action:before,
+body[data-noanims="false"] .marker.war30.action:before,
+body[data-noanims="false"] .marker.war31.action:before,
+body[data-noanims="false"] .marker.war32.action:before,
+body[data-noanims="false"] .marker.war33.action:before,
+body[data-noanims="false"] .marker.war34.action:before,
+body[data-noanims="false"] .marker.war35.action:before,
+body[data-noanims="false"] .marker.war36.action:before,
+body[data-noanims="false"] .marker.war37.action:before,
+body[data-noanims="false"] .marker.war38.action:before,
+body[data-noanims="false"] .marker.war39.action:before,
+body[data-noanims="false"] .marker.war40.action:before,
+body[data-noanims="false"] .marker.war41.action:before,
+body[data-noanims="false"] .marker.war42.action:before,
+body[data-noanims="false"] .marker.war43.action:before,
+body[data-noanims="false"] .marker.war44.action:before,
+body[data-noanims="false"] .marker.war45.action:before,
+body[data-noanims="false"] .marker.war46.action:before,
+body[data-noanims="false"] .marker.war47.action:before,
+body[data-noanims="false"] .marker.war48.action:before,
+body[data-noanims="false"] .marker.war49.action:before,
+body[data-noanims="false"] .marker.war50.action:before,
+body[data-noanims="false"] .marker.war51.action:before,
+body[data-noanims="false"] .marker.war52.action:before,
+body[data-noanims="false"] .marker.war53.action:before,
+body[data-noanims="false"] .marker.war54.action:before,
+body[data-noanims="false"] .marker.war55.action:before,
+body[data-noanims="false"] .marker.war56.action:before,
+body[data-noanims="false"] .marker.war57.action:before,
+body[data-noanims="false"] .marker.war58.action:before,
+body[data-noanims="false"] .marker.war59.action:before,
+body[data-noanims="false"] .marker.war60.action:before,
+body[data-noanims="false"] .marker.war61.action:before,
+body[data-noanims="false"] .marker.war62.action:before,
+body[data-noanims="false"] .marker.war63.action:before,
+body[data-noanims="false"] .marker.war64.action:before,
+body[data-noanims="false"] .marker.war65.action:before,
+body[data-noanims="false"] .marker.war66.action:before,
+body[data-noanims="false"] .marker.war67.action:before,
+body[data-noanims="false"] .marker.war68.action:before,
+body[data-noanims="false"] .marker.war69.action:before,
+body[data-noanims="false"] .marker.war70.action:before,
+body[data-noanims="false"] .marker.war71.action:before,
+body[data-noanims="false"] .marker.war72.action:before,
+body[data-noanims="false"] .marker.war73.action:before,
+body[data-noanims="false"] .marker.war74.action:before,
+body[data-noanims="false"] .marker.war75.action:before,
+body[data-noanims="false"] .marker.war76.action:before,
+body[data-noanims="false"] .marker.war77.action:before,
+body[data-noanims="false"] .marker.war78.action:before,
+body[data-noanims="false"] .marker.war79.action:before,
+body[data-noanims="false"] .marker.war80.action:before,
+body[data-noanims="false"] .marker.war81.action:before,
+body[data-noanims="false"] .marker.war82.action:before,
+body[data-noanims="false"] .marker.war83.action:before,
+body[data-noanims="false"] .marker.war84.action:before,
+body[data-noanims="false"] .marker.war85.action:before,
+body[data-noanims="false"] .marker.war86.action:before,
+body[data-noanims="false"] .marker.war87.action:before,
+body[data-noanims="false"] .marker.war88.action:before,
+body[data-noanims="false"] .marker.war89.action:before,
+body[data-noanims="false"] .marker.war90.action:before,
+body[data-noanims="false"] .marker.war91.action:before,
+body[data-noanims="false"] .marker.war92.action:before,
+body[data-noanims="false"] .marker.war93.action:before,
+body[data-noanims="false"] .marker.war94.action:before,
+body[data-noanims="false"] .marker.war95.action:before,
+body[data-noanims="false"] .marker.war96.action:before,
+body[data-noanims="false"] .marker.war97.action:before,
+body[data-noanims="false"] .marker.war98.action:before,
+body[data-noanims="false"] .marker.war99.action:before,
+body[data-noanims="false"] .marker.war-basic0.action:before,
+body[data-noanims="false"] .marker.war-basic1.action:before,
+body[data-noanims="false"] .marker.war-basic2.action:before,
+body[data-noanims="false"] .marker.war-basic3.action:before,
+body[data-noanims="false"] .marker.war-basic4.action:before,
+body[data-noanims="false"] .marker.war-basic5.action:before,
+body[data-noanims="false"] .marker.war-basic6.action:before,
+body[data-noanims="false"] .marker.war-basic7.action:before,
+body[data-noanims="false"] .marker.war-basic8.action:before,
+body[data-noanims="false"] .marker.war-basic9.action:before,
+body[data-noanims="false"] .marker.war-basic10.action:before,
+body[data-noanims="false"] .marker.war-basic11.action:before,
+body[data-noanims="false"] .marker.war-basic12.action:before,
+body[data-noanims="false"] .marker.war-basic13.action:before,
+body[data-noanims="false"] .marker.war-basic14.action:before,
+body[data-noanims="false"] .marker.war-basic15.action:before,
+body[data-noanims="false"] .marker.war-basic16.action:before,
+body[data-noanims="false"] .marker.war-basic17.action:before,
+body[data-noanims="false"] .marker.war-basic18.action:before,
+body[data-noanims="false"] .marker.war-basic19.action:before,
+body[data-noanims="false"] .marker.war-basic20.action:before,
+body[data-noanims="false"] .marker.war-basic21.action:before,
+body[data-noanims="false"] .marker.war-basic22.action:before,
+body[data-noanims="false"] .marker.war-basic23.action:before,
+body[data-noanims="false"] .marker.war-basic24.action:before,
+body[data-noanims="false"] .marker.war-basic25.action:before,
+body[data-noanims="false"] .marker.war-basic26.action:before,
+body[data-noanims="false"] .marker.war-basic27.action:before,
+body[data-noanims="false"] .marker.war-basic28.action:before,
+body[data-noanims="false"] .marker.war-basic29.action:before,
+body[data-noanims="false"] .marker.war-basic30.action:before,
+body[data-noanims="false"] .marker.war-basic31.action:before
+{
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.83) translateX(-15px) translateY(-20px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	animation: action-pulse-shape 4s ease-in-out infinite;
+}
+
+.marker.war-7yw.br.action:before,
+.marker.war-7yw.fr.action:before,
+.marker.war-awi.br.action:before,
+.marker.war-awi.fr.action:before,
+.marker.war-was.br.action:before,
+.marker.war-was.fr.action:before,
+.marker.war-wss.br.action:before,
+.marker.war-wss.fr.action:before,
+.marker.war-basic.fr.action:before,
+.marker.war-basic.br.action:before,
+.marker.war0.action:before,
+.marker.war1.action:before,
+.marker.war2.action:before,
+.marker.war3.action:before,
+.marker.war4.action:before,
+.marker.war5.action:before,
+.marker.war6.action:before,
+.marker.war7.action:before,
+.marker.war8.action:before,
+.marker.war9.action:before,
+.marker.war10.action:before,
+.marker.war11.action:before,
+.marker.war12.action:before,
+.marker.war13.action:before,
+.marker.war14.action:before,
+.marker.war15.action:before,
+.marker.war16.action:before,
+.marker.war17.action:before,
+.marker.war18.action:before,
+.marker.war19.action:before,
+.marker.war20.action:before,
+.marker.war21.action:before,
+.marker.war22.action:before,
+.marker.war23.action:before,
+.marker.war24.action:before,
+.marker.war25.action:before,
+.marker.war26.action:before,
+.marker.war27.action:before,
+.marker.war28.action:before,
+.marker.war29.action:before,
+.marker.war30.action:before,
+.marker.war31.action:before,
+.marker.war32.action:before,
+.marker.war33.action:before,
+.marker.war34.action:before,
+.marker.war35.action:before,
+.marker.war36.action:before,
+.marker.war37.action:before,
+.marker.war38.action:before,
+.marker.war39.action:before,
+.marker.war40.action:before,
+.marker.war41.action:before,
+.marker.war42.action:before,
+.marker.war43.action:before,
+.marker.war44.action:before,
+.marker.war45.action:before,
+.marker.war46.action:before,
+.marker.war47.action:before,
+.marker.war48.action:before,
+.marker.war49.action:before,
+.marker.war50.action:before,
+.marker.war51.action:before,
+.marker.war52.action:before,
+.marker.war53.action:before,
+.marker.war54.action:before,
+.marker.war55.action:before,
+.marker.war56.action:before,
+.marker.war57.action:before,
+.marker.war58.action:before,
+.marker.war59.action:before,
+.marker.war60.action:before,
+.marker.war61.action:before,
+.marker.war62.action:before,
+.marker.war63.action:before,
+.marker.war64.action:before,
+.marker.war65.action:before,
+.marker.war66.action:before,
+.marker.war67.action:before,
+.marker.war68.action:before,
+.marker.war69.action:before,
+.marker.war70.action:before,
+.marker.war71.action:before,
+.marker.war72.action:before,
+.marker.war73.action:before,
+.marker.war74.action:before,
+.marker.war75.action:before,
+.marker.war76.action:before,
+.marker.war77.action:before,
+.marker.war78.action:before,
+.marker.war79.action:before,
+.marker.war80.action:before,
+.marker.war81.action:before,
+.marker.war82.action:before,
+.marker.war83.action:before,
+.marker.war84.action:before,
+.marker.war85.action:before,
+.marker.war86.action:before,
+.marker.war87.action:before,
+.marker.war88.action:before,
+.marker.war89.action:before,
+.marker.war90.action:before,
+.marker.war91.action:before,
+.marker.war92.action:before,
+.marker.war93.action:before,
+.marker.war94.action:before,
+.marker.war95.action:before,
+.marker.war96.action:before,
+.marker.war97.action:before,
+.marker.war98.action:before,
+.marker.war99.action:before,
+.marker.war-basic0.action:before,
+.marker.war-basic1.action:before,
+.marker.war-basic2.action:before,
+.marker.war-basic3.action:before,
+.marker.war-basic4.action:before,
+.marker.war-basic5.action:before,
+.marker.war-basic6.action:before,
+.marker.war-basic7.action:before,
+.marker.war-basic8.action:before,
+.marker.war-basic9.action:before,
+.marker.war-basic10.action:before,
+.marker.war-basic11.action:before,
+.marker.war-basic12.action:before,
+.marker.war-basic13.action:before,
+.marker.war-basic14.action:before,
+.marker.war-basic15.action:before,
+.marker.war-basic16.action:before,
+.marker.war-basic17.action:before,
+.marker.war-basic18.action:before,
+.marker.war-basic19.action:before,
+.marker.war-basic20.action:before,
+.marker.war-basic21.action:before,
+.marker.war-basic22.action:before,
+.marker.war-basic23.action:before,
+.marker.war-basic24.action:before,
+.marker.war-basic25.action:before,
+.marker.war-basic26.action:before,
+.marker.war-basic27.action:before,
+.marker.war-basic28.action:before,
+.marker.war-basic29.action:before,
+.marker.war-basic30.action:before,
+.marker.war-basic31.action:before
+{
+	content: "";
+	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.83) translateX(-15px) translateY(-20px);
+	-webkit-mask: url(images/hexagon.svg) no-repeat center;
+	mask: url(images/hexagon.svg) no-repeat center;
+	background-color: yellow;
+}
+
+
+/* BEVELED BORDERS */
 
 .square.advantage { background-color: #6c6257; border-color: #8a7f74 #50463c #50463c #8a7f74; box-shadow: 0 0 0 1px #070300; }
 .square.investment { background-color: #906d90; border-color: #b490b4 #6d4c6d #6d4c6d #b490b4; box-shadow: 0 0 0 1px #100012; }
@@ -870,176 +1940,15 @@ body[data-noanims="false"] .card.action {
 .square-sm.flag_spain { background-color: #e09b26; border-color: #ffcb60 #af6d00 #af6d00 #ffcb60; box-shadow: 0 0 0 1px #280000; }
 
 
-/* IMAGES + ACTION OUTLINE */
-
-.symbol.econ { background-image: url(images/icon-economic.svg); }
-.symbol.diplo { background-image: url(images/icon-diplomatic.svg); }
-.symbol.mil { background-image: url(images/icon-military.svg); }
-
-#prompt .symbol {
-    display: inline-block;
-    vertical-align: -4px;
-    width: 24px;
-    height: 30px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    margin-top: -4px;
-    margin-bottom: -4px;
-    /*border: 1px solid black;*/
-}
-
-#prompt .symbol.econ {
-    margin-left: -5px;
-    vertical-align: -3px;
-    height: 28px;
-}
-
-#prompt .symbol.mil {
-    margin-left: -5px;
-    margin-right: 2px;
-}
-
-#log .symbol {
-    display: inline-block;
-    vertical-align: -3px;
-    width: 18px;
-    height: 18px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    margin-top: -2px;
-    margin-bottom: -2px;
-    margin-left: -2px;
-    margin-right: -2px;
-    /* border: 1px solid black; */
-}
-
-#log .symbol.econ {
-    height: 17px;
-    vertical-align: -2px;
-}
-
-#log .symbol.diplo {
-    margin-left: 0px;
-    margin-right: -3px;
-}
-
-#log .symbol.mil {
-}
-
-
-#status .symbol {
-    display: inline-block;
-    vertical-align: -4px;
-    width: 20px;
-    height: 24px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    margin-top: -2px;
-    margin-bottom: -2px;
-    margin-left: -4px;
-    margin-right: -2px;
-    /* border: 1px solid black; */
-}
-
-#status .symbol.econ {
-    height: 22px;
-    vertical-align: -3px;
-}
-
-#status .symbol.diplo {
-    height: 22px;
-    margin-left: 0px;
-    margin-right: -3px;
-}
-
-#status .symbol.mil {
-}
-
-
-body[data-noanims="false"] .marker.conflict.dirty_br:before,
-body[data-noanims="false"] .marker.conflict.plus-one.dirty_br:before,
-body[data-noanims="false"] .marker.damaged.dirty_br:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    /* transform: scale(.75) translateX(-23px) translateY(-27px); */
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-british-shape 4s ease-in-out infinite;
-}
-
-.marker.conflict.dirty_br:before, .marker.conflict.plus-one.dirty_br:before, .marker.damaged.dirty_br:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    background-color: crimson;
-}
-
-
-body[data-noanims="false"] .marker.conflict.dirty_fr:before,
-body[data-noanims="false"] .marker.conflict.plus-one.dirty_fr:before,
-body[data-noanims="false"] .marker.damaged.dirty_fr:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: dirty-pulse-french-shape 4s ease-in-out infinite;
-}
-
-.marker.conflict.dirty_fr:before, .marker.conflict.plus-one.dirty_fr:before, .marker.damaged.dirty_fr:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    background-color: royalblue;
-}
-
-.marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
-.marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
-.marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
-
-/* BR-- this could probably be less brutally scaled with a different piece of art, but it looks pretty good */
-body[data-noanims="false"] .marker.conflict.action:before,
-body[data-noanims="false"] .marker.conflict.plus-one.action:before,
-body[data-noanims="false"] .marker.damaged.action:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
-.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.68) translateX(-25px) translateY(-29px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    background-color: yellow;
-}
-
 /* IMAGES */
 
+/* FIXME - remove redundancy */
+.fr .flag { background-image: url(tiles75/square-sm/flag_fr.png); }
+.br .flag { background-image: url(tiles75/square-sm/flag_br.png); }
+
+.board.war-7yw { background-image: url(boards100/war_1.avif); }
 .board.war-wss { background-image: url(boards100/war_2.avif); }
 .board.war-was { background-image: url(boards100/war_3.avif); }
-.board.war-7yw { background-image: url(boards100/war_1.avif); }
 .board.war-awi { background-image: url(boards100/war_4.avif); }
 
 .marker.fleet_fr { background-image: url(tiles75/hex/fleet_fr.png) }
@@ -1049,8 +1958,6 @@ body[data-noanims="false"] .marker.damaged.action:before {
 .marker.flag_fr { background-image: url(tiles75/square-sm/flag_fr.png) }
 .marker.flag_spain { background-image: url(tiles75/square-sm/flag_spain.png) }
 .marker.flag_usa { background-image: url(tiles75/square-sm/flag_usa.png) }
-
-.marker.award { pointer-events: none }
 
 .marker.award.a0 { background-image: url(tiles75/square-sm/award00_3.png) }
 .marker.award.a1 { background-image: url(tiles75/square-sm/award01_2.png) }
@@ -1160,6 +2067,10 @@ body[data-noanims="false"] .marker.damaged.action:before {
 .marker.conflict { background-image: url(tiles75/hex-sm/conflict.png) }
 .marker.conflict.plus-one { background-image: url(tiles75/hex-sm/conflict_plus_one.png) }
 .marker.damaged { background-image: url(tiles75/hex-sm/fort_damaged.png) }
+
+.marker.conflict.action { background-image: url(tiles75/hex-sm/conflict.png)  /* , url(images/hex-sm-yellow.svg) */ }
+.marker.conflict.plus-one.action { background-image: url(tiles75/hex-sm/conflict_plus_one.png) /* , url(images/hex-sm-yellow.svg) */ }
+.marker.damaged.action { background-image: url(tiles75/hex-sm/fort_damaged.png)  /* , url(images/hex-sm-yellow.svg) */ }
 
 .marker.action_1.br { background-image: url(tiles75/square-sm/action_br_1.png) }
 .marker.action_2.br { background-image: url(tiles75/square-sm/action_br_2.png) }
@@ -1456,7 +2367,6 @@ body[data-noanims="false"] .marker.damaged.action:before {
 .marker.war-basic31 { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png) }
 .marker.war-basic31.action { background-image: url(tiles75/hex/warbasic31_br_neg1flag.png)/* , url(images/hex-sm-yellow.svg) */ }
 
-
 .marker.war-7yw.br { background-image: url(tiles75/hex/war_7yw_br_reverse.png) }
 .marker.war-7yw.br.action { background-image: url(tiles75/hex/war_7yw_br_reverse.png) /* , url(images/hex-sm-yellow.svg) */ }
 .marker.war-7yw.fr { background-image: url(tiles75/hex/war_7yw_fr_reverse.png) }
@@ -1478,142 +2388,20 @@ body[data-noanims="false"] .marker.damaged.action:before {
 .marker.war-basic.fr { background-image: url(tiles75/hex/warbasic_reverse_fr.png) }
 .marker.war-basic.fr.action { background-image: url(tiles75/hex/warbasic_reverse_fr.png)/* , url(images/hex-sm-yellow.svg) */ }
 
-/* BR - possibly less brutal ways to accomplish this? (But if brute force isn't working, you're not using enough brute force!) */
-body[data-noanims="false"] .marker.war-7yw.br.action:before, body[data-noanims="false"] .marker.war-7yw.fr.action:before, body[data-noanims="false"] .marker.war-awi.br.action:before, body[data-noanims="false"] .marker.war-awi.fr.action:before, body[data-noanims="false"] .marker.war-was.br.action:before, body[data-noanims="false"] .marker.war-was.fr.action:before, body[data-noanims="false"] .marker.war-wss.br.action:before, body[data-noanims="false"] .marker.war-wss.fr.action:before, body[data-noanims="false"] .marker.war-basic.fr.action:before, marker.war-basic.br.action:before,
-body[data-noanims="false"] .marker.war0.action:before, body[data-noanims="false"] .marker.war1.action:before, body[data-noanims="false"] .marker.war2.action:before, body[data-noanims="false"] .marker.war3.action:before, body[data-noanims="false"] .marker.war4.action:before, body[data-noanims="false"] .marker.war5.action:before, body[data-noanims="false"] .marker.war6.action:before, body[data-noanims="false"] .marker.war7.action:before, body[data-noanims="false"] .marker.war8.action:before, body[data-noanims="false"] .marker.war9.action:before,
-body[data-noanims="false"] .marker.war10.action:before, body[data-noanims="false"] .marker.war11.action:before, body[data-noanims="false"] .marker.war12.action:before, body[data-noanims="false"] .marker.war13.action:before, body[data-noanims="false"] .marker.war14.action:before, body[data-noanims="false"] .marker.war15.action:before, body[data-noanims="false"] .marker.war16.action:before, body[data-noanims="false"] .marker.war17.action:before, body[data-noanims="false"] .marker.war18.action:before, body[data-noanims="false"] .marker.war19.action:before,
-body[data-noanims="false"] .marker.war20.action:before, body[data-noanims="false"] .marker.war21.action:before, body[data-noanims="false"] .marker.war22.action:before, body[data-noanims="false"] .marker.war23.action:before, body[data-noanims="false"] .marker.war24.action:before, body[data-noanims="false"] .marker.war25.action:before, body[data-noanims="false"] .marker.war26.action:before, body[data-noanims="false"] .marker.war27.action:before, body[data-noanims="false"] .marker.war28.action:before, body[data-noanims="false"] .marker.war29.action:before,
-body[data-noanims="false"] .marker.war30.action:before, body[data-noanims="false"] .marker.war31.action:before, body[data-noanims="false"] .marker.war32.action:before, body[data-noanims="false"] .marker.war33.action:before, body[data-noanims="false"] .marker.war34.action:before, body[data-noanims="false"] .marker.war35.action:before, body[data-noanims="false"] .marker.war36.action:before, body[data-noanims="false"] .marker.war37.action:before, body[data-noanims="false"] .marker.war38.action:before, body[data-noanims="false"] .marker.war39.action:before,
-body[data-noanims="false"] .marker.war40.action:before, body[data-noanims="false"] .marker.war41.action:before, body[data-noanims="false"] .marker.war42.action:before, body[data-noanims="false"] .marker.war43.action:before, body[data-noanims="false"] .marker.war44.action:before, body[data-noanims="false"] .marker.war45.action:before, body[data-noanims="false"] .marker.war46.action:before, body[data-noanims="false"] .marker.war47.action:before, body[data-noanims="false"] .marker.war48.action:before, body[data-noanims="false"] .marker.war49.action:before,
-body[data-noanims="false"] .marker.war50.action:before, body[data-noanims="false"] .marker.war51.action:before, body[data-noanims="false"] .marker.war52.action:before, body[data-noanims="false"] .marker.war53.action:before, body[data-noanims="false"] .marker.war54.action:before, body[data-noanims="false"] .marker.war55.action:before, body[data-noanims="false"] .marker.war56.action:before, body[data-noanims="false"] .marker.war57.action:before, body[data-noanims="false"] .marker.war58.action:before, body[data-noanims="false"] .marker.war59.action:before,
-body[data-noanims="false"] .marker.war60.action:before, body[data-noanims="false"] .marker.war61.action:before, body[data-noanims="false"] .marker.war62.action:before, body[data-noanims="false"] .marker.war63.action:before, body[data-noanims="false"] .marker.war64.action:before, body[data-noanims="false"] .marker.war65.action:before, body[data-noanims="false"] .marker.war66.action:before, body[data-noanims="false"] .marker.war67.action:before, body[data-noanims="false"] .marker.war68.action:before, body[data-noanims="false"] .marker.war69.action:before,
-body[data-noanims="false"] .marker.war70.action:before, body[data-noanims="false"] .marker.war71.action:before, body[data-noanims="false"] .marker.war72.action:before, body[data-noanims="false"] .marker.war73.action:before, body[data-noanims="false"] .marker.war74.action:before, body[data-noanims="false"] .marker.war75.action:before, body[data-noanims="false"] .marker.war76.action:before, body[data-noanims="false"] .marker.war77.action:before, body[data-noanims="false"] .marker.war78.action:before, body[data-noanims="false"] .marker.war79.action:before,
-body[data-noanims="false"] .marker.war80.action:before, body[data-noanims="false"] .marker.war81.action:before, body[data-noanims="false"] .marker.war82.action:before, body[data-noanims="false"] .marker.war83.action:before, body[data-noanims="false"] .marker.war84.action:before, body[data-noanims="false"] .marker.war85.action:before, body[data-noanims="false"] .marker.war86.action:before, body[data-noanims="false"] .marker.war87.action:before, body[data-noanims="false"] .marker.war88.action:before, body[data-noanims="false"] .marker.war89.action:before,
-body[data-noanims="false"] .marker.war90.action:before, body[data-noanims="false"] .marker.war91.action:before, body[data-noanims="false"] .marker.war92.action:before, body[data-noanims="false"] .marker.war93.action:before, body[data-noanims="false"] .marker.war94.action:before, body[data-noanims="false"] .marker.war95.action:before, body[data-noanims="false"] .marker.war96.action:before, body[data-noanims="false"] .marker.war97.action:before, body[data-noanims="false"] .marker.war98.action:before, body[data-noanims="false"] .marker.war99.action:before,
-body[data-noanims="false"] .marker.war-basic0.action:before, body[data-noanims="false"] .marker.war-basic1.action:before, body[data-noanims="false"] .marker.war-basic2.action:before, body[data-noanims="false"] .marker.war-basic3.action:before, body[data-noanims="false"] .marker.war-basic4.action:before, body[data-noanims="false"] .marker.war-basic5.action:before, body[data-noanims="false"] .marker.war-basic6.action:before, body[data-noanims="false"] .marker.war-basic7.action:before, body[data-noanims="false"] .marker.war-basic8.action:before, body[data-noanims="false"] .marker.war-basic9.action:before, body[data-noanims="false"] .marker.war-basic10.action:before, body[data-noanims="false"] .marker.war-basic11.action:before, body[data-noanims="false"] .marker.war-basic12.action:before, body[data-noanims="false"] .marker.war-basic13.action:before, body[data-noanims="false"] .marker.war-basic14.action:before, body[data-noanims="false"] .marker.war-basic15.action:before, body[data-noanims="false"] .marker.war-basic16.action:before, body[data-noanims="false"] .marker.war-basic17.action:before, body[data-noanims="false"] .marker.war-basic18.action:before, body[data-noanims="false"] .marker.war-basic19.action:before, body[data-noanims="false"] .marker.war-basic20.action:before, body[data-noanims="false"] .marker.war-basic21.action:before, body[data-noanims="false"] .marker.war-basic22.action:before, body[data-noanims="false"] .marker.war-basic23.action:before, body[data-noanims="false"] .marker.war-basic24.action:before, body[data-noanims="false"] .marker.war-basic25.action:before, body[data-noanims="false"] .marker.war-basic26.action:before, body[data-noanims="false"] .marker.war-basic27.action:before, body[data-noanims="false"] .marker.war-basic28.action:before, body[data-noanims="false"] .marker.war-basic29.action:before, body[data-noanims="false"] .marker.war-basic30.action:before, body[data-noanims="false"] .marker.war-basic31.action:before
-{
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.83) translateX(-15px) translateY(-20px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
-.marker.war-7yw.br.action:before, .marker.war-7yw.fr.action:before, .marker.war-awi.br.action:before, .marker.war-awi.fr.action:before, .marker.war-was.br.action:before, .marker.war-was.fr.action:before, .marker.war-wss.br.action:before, .marker.war-wss.fr.action:before, .marker.war-basic.fr.action:before, marker.war-basic.br.action:before,
-.marker.war0.action:before, .marker.war1.action:before, .marker.war2.action:before, .marker.war3.action:before, .marker.war4.action:before, .marker.war5.action:before, .marker.war6.action:before, .marker.war7.action:before, .marker.war8.action:before, .marker.war9.action:before,
-.marker.war10.action:before, .marker.war11.action:before, .marker.war12.action:before, .marker.war13.action:before, .marker.war14.action:before, .marker.war15.action:before, .marker.war16.action:before, .marker.war17.action:before, .marker.war18.action:before, .marker.war19.action:before,
-.marker.war20.action:before, .marker.war21.action:before, .marker.war22.action:before, .marker.war23.action:before, .marker.war24.action:before, .marker.war25.action:before, .marker.war26.action:before, .marker.war27.action:before, .marker.war28.action:before, .marker.war29.action:before,
-.marker.war30.action:before, .marker.war31.action:before, .marker.war32.action:before, .marker.war33.action:before, .marker.war34.action:before, .marker.war35.action:before, .marker.war36.action:before, .marker.war37.action:before, .marker.war38.action:before, .marker.war39.action:before,
-.marker.war40.action:before, .marker.war41.action:before, .marker.war42.action:before, .marker.war43.action:before, .marker.war44.action:before, .marker.war45.action:before, .marker.war46.action:before, .marker.war47.action:before, .marker.war48.action:before, .marker.war49.action:before,
-.marker.war50.action:before, .marker.war51.action:before, .marker.war52.action:before, .marker.war53.action:before, .marker.war54.action:before, .marker.war55.action:before, .marker.war56.action:before, .marker.war57.action:before, .marker.war58.action:before, .marker.war59.action:before,
-.marker.war60.action:before, .marker.war61.action:before, .marker.war62.action:before, .marker.war63.action:before, .marker.war64.action:before, .marker.war65.action:before, .marker.war66.action:before, .marker.war67.action:before, .marker.war68.action:before, .marker.war69.action:before,
-.marker.war70.action:before, .marker.war71.action:before, .marker.war72.action:before, .marker.war73.action:before, .marker.war74.action:before, .marker.war75.action:before, .marker.war76.action:before, .marker.war77.action:before, .marker.war78.action:before, .marker.war79.action:before,
-.marker.war80.action:before, .marker.war81.action:before, .marker.war82.action:before, .marker.war83.action:before, .marker.war84.action:before, .marker.war85.action:before, .marker.war86.action:before, .marker.war87.action:before, .marker.war88.action:before, .marker.war89.action:before,
-.marker.war90.action:before, .marker.war91.action:before, .marker.war92.action:before, .marker.war93.action:before, .marker.war94.action:before, .marker.war95.action:before, .marker.war96.action:before, .marker.war97.action:before, .marker.war98.action:before, .marker.war99.action:before,
-.marker.war-basic0.action:before, .marker.war-basic1.action:before, .marker.war-basic2.action:before, .marker.war-basic3.action:before, .marker.war-basic4.action:before, .marker.war-basic5.action:before, .marker.war-basic6.action:before, .marker.war-basic7.action:before, .marker.war-basic8.action:before, .marker.war-basic9.action:before, .marker.war-basic10.action:before, .marker.war-basic11.action:before, .marker.war-basic12.action:before, .marker.war-basic13.action:before, .marker.war-basic14.action:before, .marker.war-basic15.action:before, .marker.war-basic16.action:before, .marker.war-basic17.action:before, .marker.war-basic18.action:before, .marker.war-basic19.action:before, .marker.war-basic20.action:before, .marker.war-basic21.action:before, .marker.war-basic22.action:before, .marker.war-basic23.action:before, .marker.war-basic24.action:before, .marker.war-basic25.action:before, .marker.war-basic26.action:before, .marker.war-basic27.action:before, .marker.war-basic28.action:before, .marker.war-basic29.action:before, .marker.war-basic30.action:before, .marker.war-basic31.action:before
-{
-    content: "";
-    display: flex;
-    height: 100px;
-    width: 100px;
-    transform: scale(.83) translateX(-15px) translateY(-20px);
-    -webkit-mask: url(images/hexagon.svg) no-repeat center;
-    mask: url(images/hexagon.svg) no-repeat center;
-    background-color: yellow;
-}
-
 .marker.exhausted { background-image: url(tiles75/square-sm/exhausted.png) }
 .marker.exhausted.reverse { background-image: url(tiles75/square-sm/exhausted_reverse.png) }
 
-.marker.huguenots       { background-image: url(tiles75/square-sm/new_world_huguenots.png) }
+.marker.huguenots { background-image: url(tiles75/square-sm/new_world_huguenots.png) }
 .marker.huguenots_spent { background-image: url(tiles75/square-sm/new_world_huguenots_spent.png) }
 
-.marker.jacobite_defeat { background-image: url(tiles75/square-sm/jacobite_defeat.png) }
-.marker.jacobite_defeat_reverse { background-image: url(tiles75/square-sm/jacobite_defeat_reverse.png) }
-.marker.jacobite_victory { background-image: url(tiles75/square-sm/jacobite_victory.png) }
-.marker.jacobite_victory_reverse { background-image: url(tiles75/square-sm/jacobite_victory_reverse.png) }
+.marker.jacobite-defeat { background-image: url(tiles75/square-sm/jacobite_defeat.png) }
+.marker.jacobite-defeat.reverse { background-image: url(tiles75/square-sm/jacobite_defeat_reverse.png) }
+.marker.jacobite-victory { background-image: url(tiles75/square-sm/jacobite_victory.png) }
+.marker.jacobite-victory.reverse { background-image: url(tiles75/square-sm/jacobite_victory_reverse.png) }
 .marker.townshend_acts { background-image: url(tiles75/square-sm/townshend_acts.png) }
-.marker.townshend_acts_reverse { background-image: url(tiles75/square-sm/townshend_acts_reverse.png) }
-
+.marker.townshend_acts.reverse { background-image: url(tiles75/square-sm/townshend_acts_reverse.png) }
 .marker.treaty_points_br_reverse { background-image: url(tiles75/square-sm/treaty_points_br_reverse.png) }
 .marker.treaty_points_fr_reverse { background-image: url(tiles75/square-sm/treaty_points_fr_reverse.png) }
-
-.theater-strength, .theater-winner {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-weight: bold;
-	color: black;
-}
-
-.theater-strength { 
-    font-size: 16px; 
-}
-.theater-winner { 
-    font-size: 14px; 
-}
-
-.theater-strength .flag, .theater-winner .flag {
-	width: 18px;
-	height: 18px;
-	background: no-repeat center / contain;
-}
-
-.fr .flag { background-image: url(tiles75/square-sm/flag_fr.png); }
-.br .flag { background-image: url(tiles75/square-sm/flag_br.png); }
-
-.jacobite-victory {
-    background-image: url(tiles75/square-sm/jacobite_victory.png);
-}
-
-.jacobite-defeat {
-    background-image: url(tiles75/square-sm/jacobite_defeat.png);
-}
-/*
-tiles75/square-sm/exhausted.png
-tiles75/square-sm/exhausted_reverse.png
-tiles75/square-sm/jacobite_defeat.png
-tiles75/square-sm/jacobite_defeat_reverse.png
-tiles75/square-sm/jacobite_victory.png
-tiles75/square-sm/jacobite_victory_reverse.png
-tiles75/square-sm/new_world_huguenots.png
-tiles75/square-sm/new_world_huguenots_spent.png
-tiles75/square-sm/townshend_acts.png
-tiles75/square-sm/townshend_acts_reverse.png
-tiles75/square-sm/treaty_points_br_reverse.png
-tiles75/square-sm/treaty_points_fr_reverse.png
-
-tiles75/square/investment00_4e_2d.png
-tiles75/square/investment01_4e_2d.png
-tiles75/square/investment02_4e_2m.png
-tiles75/square/investment03_4e_2m.png
-tiles75/square/investment04_3e_2d.png
-tiles75/square/investment05_3e_2m.png
-tiles75/square/investment06_2e_2d.png
-tiles75/square/investment07_2e_2m.png
-tiles75/square/investment08_4d_2e.png
-tiles75/square/investment09_4d_2e.png
-tiles75/square/investment10_4d_2m.png
-tiles75/square/investment11_4d_2m.png
-tiles75/square/investment12_3d_2e.png
-tiles75/square/investment13_3d_2m.png
-tiles75/square/investment14_2d_2e.png
-tiles75/square/investment15_2d_2m.png
-tiles75/square/investment16_4m_2e.png
-tiles75/square/investment17_4m_2e.png
-tiles75/square/investment18_4m_2d.png
-tiles75/square/investment19_4m_2d.png
-tiles75/square/investment20_3m_2e.png
-tiles75/square/investment21_3m_2d.png
-tiles75/square/investment22_2m_2e.png
-tiles75/square/investment23_2m_2d.png
-tiles75/square/investment_reverse.png
-
-
-*/
 
 .card.event_card.deck { background-image: url(cards100/deck_1.avif) }
 .card.event_card.c1 { background-image: url(cards100/event_01.avif) }
@@ -1687,711 +2475,60 @@ tiles75/square/investment_reverse.png
 .card.ministry_card.c25 { background-image: url(cards100/ministry_25.avif) }
 .card.ministry_card.c26 { background-image: url(cards100/ministry_26.avif) }
 
-
-#status {
-    background-color: #f0dcbd;                   /* #e5c089; */ /* light tan color grabbed from mapboard */
-    border-width: 1px;
-    border-color: black;
-    border-style: solid;
-}
-
-
-#tip {
-    pointer-events: none;
-    position: fixed;
-    z-index: 1000;
-
-	margin: 6px;
-
-    /* display: flex; */
-    /* left: 0px; */
-    /* bottom: 25px; */
-
-    /* right: 240px; */
-    /* top: 60px; */
-
-    /* background: #f0dcbd; &&/
-    border-width: 1px;
-    border-color: black;
-    border-style: solid;
-}
-
-#tip .advantage-front,
-#tip .advantage-back {
-    width: 74px;
-    height: 74px;
-    background-size: 74px 74px;
-    margin: 3px;
-    /* border-width: 4px;
-    border-color: #48143a; /* deep purple color grabbed from mapboard frame
-    border-style: double;
-    */
-}
-
-
-#tooltip {
-	display: none;
-	pointer-events: none;
-	position: fixed;
-	z-index: 600;
-    left: 0px;
-    bottom: 23px;
-    border-width: 1px;
-    border-color: black;
-    border-style: solid;
-}
-
-#tooltip.show {
-	display: flex;
-	/* gap: 10px; */
-    background: #f0dcbd; /* light tan color grabbed from mapboard */
-}
-
-#tooltip .advantage-front,
-#tooltip .advantage-back {
-	width: 74px;
-	height: 74px;
-	background-size: 74px 74px;
-    margin: 3px;
-        /* border-width: 4px;
-        border-color: #48143a; /* deep purple color grabbed from mapboard frame
-        border-style: double;
-        */
-
-}
-
-.marker.advantage {
-	z-index: 100;
-}
-
-
-menu li.separator {
-    cursor: default;
-    padding: 0;
-    border-top: 1px solid black;
-}
-
-.role_stat:hover {
-    text-decoration: underline;
-}
-
-
-.theater-margin {
-    pointer-events: none;
-    z-index: 150;
-
-    background-size: 100px 100px;
-    border-width: 4px;
-    border-style: solid;
-}
-
-.theater-margin.fr {
-    border-color: royalblue;
-}
-
-.theater-margin.br {
-    border-color: crimson;
-}
-
-.theater-margin.tie {
-    border-color: springgreen;
-}
-
-
-
-#demand_highlight {
-    pointer-events: none;
-    position: absolute;
-    z-index: 1000;
-
-    width: 75px;
-    height: 20px;
-    background-size: 74px 74px;
-    border-width: 4px;
-    border-style: solid;
-    border-color: springgreen;
-
-    left:1352px;
-    top:264px;
-}
-
-.layout.lout-demand-winner {
-    display: flex;
-    justify-content: center;
-}
-
-.marker.demand-winner-slot, .marker.award-winner-slot {
-    width: 40px;
-    min-height: 20px;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-    /* background: rgba(245, 235, 220, 0.85); */
-    padding: 2px 4px;
-}
-
-.demand-flag, .award-flag, .score-flag {
-    width: 16px;
-    height: 16px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.score-flag {
-    margin-top: 3px;
-    margin-left: 3px;
-}
-
-.demand-flag.fr, .award-flag.fr, .score-flag.fr {
-    background-image: url(tiles75/square-sm/flag_fr.png);
-}
-
-.demand-flag.br, .award-flag.br, .score-flag.br {
-    background-image: url(tiles75/square-sm/flag_br.png);
-}
-
-.marker.award-winner-slot.prestige {
-    pointer-events: none;
-    /* border: 2px solid springgreen; */
-}
-
-#vp_mobile {
-	display: none;
-	/* same as #prompt in client.css */
-	font-size: 18px;
-	line-height: 22px;
-	margin-top: 11px;
-	margin-bottom: 5px;
-	padding: 0 8px;
-}
-
-#vp_desktop {
-	font-size: 18px;
-	line-height: 22px;
-	text-align: center;
-	padding: 4px;
-	background-color: cornsilk;
-	border-bottom: 1px solid black;
-}
-
-
-.vp-overlay {
-    font-size: 28px;
-    color: #333;
-    font-weight:bold;
-    background-color: #ECD8BB;
-    top: -4px;
-    left: -2px;
-    padding-left: 2px;
-    padding-right: 4px;
-
-    font-family: "Garamond", serif;
-}
-
-.demand-count, .award-count {
-    font-size: 12px;
-    color: #333;
-    margin-left: 2px;
-    font-weight:bold;
-}
-
-#map_tip {
-    position: fixed;
-    pointer-events: none;
-    z-index: 1000;
-
-    border: 1px solid black;
-
-    left: 0px;
-    bottom: 25px;
-
-    display: block;
-    background-image: url(boards75/map.avif);
-    background-size: auto;
-    background-repeat: no-repeat;
-    /* background-position: -500px -200px; */
-}
-
-
-[data-tooltip] {
-    position: relative;
-}
-
-[data-tooltip]:after {
-    content: attr(data-tooltip);
-    pointer-events: none;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    background-color: oldlace;
-    border: 1px solid black;
-    border-radius: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    width: max-content;
-    opacity: 0; /* Should I just be using display:none ? */
-    -webkit-transition: opacity 0.05s ease-in-out;
-}
-
-[data-tooltip]:hover:after {
-    opacity: 1;
-}
-
-div[data-tooltip]:after {
-    left: 5px!important;
-}
-
-
-/* Animations */
-
-.space.attract, .marker.attract, .card.attract {
-    border-color: transparent !important;
-    animation: attract-animation 0.5s ease-in-out infinite !important;
-}
-
-
-@keyframes attract-animation {
-    0%, 50% {
-        box-shadow: 0 0 0 4px #c000c0, 0 0 12px 4px #c000c0; /* Baseline */
-    }
-    42% {
-        box-shadow: 0 0 0 4px #FF9966, 0 0 12px 4px #FF9966; /* ... a slow drift to here, then a quick pulse back */
-    }
-    84% {
-        box-shadow: 0 0 0 4px #ffffff, 0 0 12px 4px #ffffff;
-    }
-    100% {
-        box-shadow: 0 0 0 4px #FF9966, 0 0 12px 4px #FF9966; /* Baseline */
-    }
-}
-
-
-/* DIALOGS */
-
-.modal-dialog {
-    max-width: 450px;
-    background-color: floralwhite;
-}
-
-.modal-dialog h3 {
-    font-weight: bold;
-    margin: 0;
-}
-
-#propose_rollback_details, #review_rollback_details {
-    margin: 1em 0;
-}
-
-.dialog {
-    position: absolute;
-    display: grid;
-    grid-template-rows: min-content 1fr min-content;
-    grid-template-columns: 1fr 30px;
-    border: 1px solid black;
-    background-color: white;
-    box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.5);
-    visibility: hidden;
-    z-index: 499;
-}
-
-.dialog.show {
-    visibility: visible;
-}
-
-.dialog_header {
-    grid-row: 1;
-    grid-column: 1/3;
-    cursor: move;
-    background-color: tan;
-    border-bottom: 1px solid black;
-    padding: 5px 8px;
-}
-
-.dialog_x {
-    grid-row: 1;
-    grid-column: 2;
-    cursor: pointer;
-    margin: 5px 5px;
-    height: 24px;
-    text-align: right;
-}
-
-.dialog_x:hover {
-    background-color: black;
-    color: white;
-}
-
-.dialog_body {
-    grid-row: 2;
-    grid-column: 1/3;
-    margin: 0;
-    font-size: 16px;
-    line-height: 24px;
-    height: 480px;
-    padding: 4px 8px;
-    overflow-y: auto;
-    background-color: #F9EEDC; /* floralwhite was previous */
-}
-
-.dialog_body dl { margin: 0; }
-.dialog_body dd { margin-left: 20px; }
-
-#scoring_summary_dialog { top: 100px; left: 60px; min-width: 280px}
-#final_scoring_summary_dialog { top: 120px; left: 80px; min-width: 280px }
-#event_card_dialog { top: 160px; left: 120px; min-width: 280px }
-#french_ministry_dialog { top: 220px; left: 180px; min-width: 280px }
-#british_ministry_dialog { top: 280px; left: 240px; min-width: 280px }
-
-/* Keep the auto-rollover-tipped bizarro spaces from being on top of the counters' rollovers */
-.tip-bizarro {
-    z-index: -10
-}
-
-.hotkey {
-    hidden: false;
-}
-
-.award-in-log {
-    display: inline-block;
-    margin: 20px 20px 20px 20px;
-}
-
-.demand-in-log {
-    display: inline-block;
-    margin: 8px 8px 8px 8px;
-}
-
-.wartile-in-log {
-    display: inline-block;
-    margin: 1px 1px 1px 1px;
-}
-
-.region {
-    display: block;
-    position: relative;
-    width: 100px;
-    margin-top: -20px;
-}
-
-.region.r0 { /* Europe */
-    margin-left: 1px;
-}
-
-.region.r1 { /* North America */
-    margin-left: -20px;
-}
-
-.region.r2 { /* Caribbean */
-    margin-left: -8px;
-}
-
-.region.r3 { /* India */
-    margin-left: 6px;
-}
-
-
-.award-in-score {
-    display: inline-block;
-    pointer-events: auto !important;
-    margin: 30px 20px 20px;
-}
-
-.score-region {
-    display: block;
-    position: relative;
-    width: 100px;
-    margin-top: -25px;
-    font-size: 16px;
-}
-
-.score-region-line {
-    display: flex;
-    justify-content: center;
-    min-height: 60px;
-    max-height: 75px;
-}
-
-.score-region-delta {
-    display: flex;
-    position: relative;
-    width: 60px;
-    font-size: 16px;
-}
-
-.score-region-delta.r0, .score-region-delta.r3 {
-    margin-left: 55px;
-    margin-top: 10px;
-}
-
-.score-region-delta.r1, .score-region-delta.r2 {
-    margin-left: -50px;
-    margin-top: 10px;
-}
-
-
-.score-region.r0 { /* Europe */
-    margin-left: -3px;
-}
-
-.score-region.r1 { /* North America */
-    margin-left: -27px;
-}
-
-.score-region.r2 { /* Caribbean */
-    margin-left: -14px;
-}
-
-.score-region.r3 { /* India */
-    margin-left: 5px;
-}
-
-.score-top {
-    min-height: 12px;
-}
-
-.score-below-regions {
-    min-height: 20px;
-}
-
-.score-below-demands {
-    min-height: 10px;
-}
-
-
-
-.score-prestige {
-    border: 1px solid black;
-    display: block;
-    background-image: url(boards75/map.avif);
-    background-size: auto;
-    background-repeat: no-repeat;
-
-    background-position: -1332px -555px;
-    width: 70px;
-    height: 70px;
-    margin-top: 0px;
-}
-
-.prestige-in-score {
-    display: flex;
-    pointer-events: auto !important;
-    margin: 30px 20px 20px;
-}
-
-.score-prestige-label {
-    display: block;
-    font-size: 16px;
-    margin-top: -8px;
-    margin-left: -90px;
-}
-
-.score-prestige-amount {
-    display: flex;
-    font-size: 16px;
-    margin-top: -8px;
-    margin-left: 100px;
-}
-
-.score-demand {
-    display: flex;
-    margin-left: -7px;
-}
-
-.score-demand-line {
-    display: flex;
-    transform: scale(1.5,1.5);
-    transform-origin: left top;
-}
-
-.score-demand-label {
-    border: 1px solid black;
-    display: block;
-    background-image: url(boards75/map.avif);
-    background-size: auto;
-    background-repeat: no-repeat;
-
-    background-position-x: -1109px;
-    width: 72px;
-    height: 20px;
-    margin-top: 0px;
-}
-
-.score-demand-summary {
-    position: relative;
-}
-
-.score-demand-value {
-    border: 1px solid black;
-    display: block;
-    background-image: url(boards75/map.avif);
-    background-size: auto;
-    background-repeat: no-repeat;
-
-    background-position-x: -1109px;
-    width: 77px;
-    height: 20px;
-    margin-top: 0px;
-}
-
-.score-demand-delta-box {
-    border: 1px solid black;
-    display: block;
-    background-image: url(boards75/map.avif);
-    background-size: auto;
-    background-repeat: no-repeat;
-
-    background-position-x: -1180px;
-    background-position-y: -265px;
-    width: 30px;
-    height: 20px;
-    margin-top: 0px;
-}
-
-.score-demand-delta {
-    display: flex;
-    position: relative;
-    margin: 4px 2px 2px 50px;
-
-}
-
-
-
-.score-checkbox {
-    left: 20px;
-    position: relative;
-    top: 1px;
-}
-
-
-.d0 { background-position-y: -183px; }
-.d1 { background-position-y: -203px; }
-.d2 { background-position-y: -224px; }
-.d3 { background-position-y: -244px; }
-.d4 { background-position-y: -265px; }
-.d5 { background-position-y: -285px; }
-
-.e0 { background-position-x: -1180px; }
-.e1 { background-position-x: -1266px; }
-.e2 { background-position-x: -1354px; }
-
-
-.remind-player-order {
-    font-size: 18px;
-    color: ghostwhite;
-    min-width: 500px;
-    text-align: center;
-}
-
-
-#mobile_tip {
-    position: fixed;
-    z-index: 500;
-    top: 50px;
-    left: 50px;
-    inset: 0;
-    margin: auto;
-}
-
-
+/* MOBILE */
 
 @media (max-width: 400px) {
-    #vp_mobile { display: block }
-    #vp_desktop { display: none }
-    #status, #tip, #map_tip { display: none }
+	#vp_mobile { display: block }
+	#vp_desktop { display: none }
+	#status, #tip, #map_tip { display: none }
 }
 
 
 @media (max-width: 800px) {
-    /* Other modules had this, but it was wrecking the IS side-by-side panels
-    .panel {
-        min-width: calc(1650px - 8px);
-    }
-    */
+	/* Other modules had this, but it was wrecking the IS side-by-side panels
+	.panel {
+		min-width: calc(1650px - 8px);
+	}
+	*/
 
-    #vp_mobile { display: block }
-    #vp_desktop { display: none }
-    #status, #tip, #map_tip { display: none }
+	#vp_mobile { display: block }
+	#vp_desktop { display: none }
+	#status, #tip, #map_tip { display: none }
 
-    #tip {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        inset: 0;
-        margin: auto;
-    }
+	#tip {
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		inset: 0;
+		margin: auto;
+	}
 
-    #tooltip {
-        inset: 0;
-        margin: auto;
-    }
+	#tooltip {
+		inset: 0;
+		margin: auto;
+	}
 
-    .dialog {
-        position: static;
-        grid-column: 1;
-        grid-row: 2/4;
-        display: none;
-        width: auto;
-        box-shadow: none;
-        border: none;
-    }
-    .dialog_body {
-        height: auto;
-    }
-    .dialog.show {
-        display: grid;
-    }
+	.dialog {
+		position: static;
+		grid-column: 1;
+		grid-row: 2/4;
+		display: none;
+		width: auto;
+		box-shadow: none;
+		border: none;
+	}
+	.dialog_body {
+		height: auto;
+	}
+	.dialog.show {
+		display: grid;
+	}
 
-    #scoring_summary_dialog { top: 100px; left: 0px; }
-    #final_scoring_summary_dialog { top: 100px; left: 0px; }
-    #event_card_dialog { top: 100px; left: 0px; }
-    #french_ministry_dialog { top: 100px; left: 0px; }
-    #british_ministry_dialog { top: 100px; left: 0px; }
-}
-
-/* BUTTON */
-
-.readybutton {
-    flex: 0 0 auto;
-    white-space: nowrap;
-
-    padding: 1px 10px;
-    vertical-align: middle;
-    border: 2px solid;
-
-    background-color: springgreen;
-    border-color: lightgreen darkgreen darkgreen lightgreen;
-    color: black;
-    outline: 1px solid black;
-
-    line-height: 22px;
-}
-
-.readybutton:enabled:active:hover {
-    border-color: darkgreen lightgreen lightgreen darkgreen;
-    padding: 2px 9px 0px 11px;
-}
-
-.almostbutton {
-    flex: 0 0 auto;
-    white-space: nowrap;
-
-    padding: 1px 10px;
-    vertical-align: middle;
-    border: 2px solid;
-
-    background-color: lightyellow;
-    border-color: yellow gold gold yellow;
-    color: black;
-    outline: 1px solid black;
-
-    line-height: 22px;
-}
-
-.almostbutton:enabled:active:hover {
-    border-color: gold yellow yellow gold;
-    padding: 2px 9px 0px 11px;
+	#scoring_summary_dialog { top: 100px; left: 0px; }
+	#final_scoring_summary_dialog { top: 100px; left: 0px; }
+	#event_card_dialog { top: 100px; left: 0px; }
+	#french_ministry_dialog { top: 100px; left: 0px; }
+	#british_ministry_dialog { top: 100px; left: 0px; }
 }
 
