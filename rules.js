@@ -8409,7 +8409,7 @@ P.ministry_charles_hanbury_williams = {
 
 P.ministry_choiseul = {
 	prompt() {
-		V.prompt = ministry_prompt(R, CHOISEUL, "Gain an extra " + say_action(1, MIL) + " usable for Bonus War Tiles or deplying squadrons only", "build discounted a squadron") + say_action_points_left()
+		V.prompt = ministry_prompt(R, CHOISEUL, "Gain an extra " + say_action(1, MIL) + " usable for Bonus War Tiles or deploying squadrons only", "build discounted a squadron") + say_action_points_left()
 		if (ministry_useful_this_phase(CHOISEUL, G.subphase)) {
 			button ("military_point", G.eligible[MIL] && (action_points_eligible_major(MIL, active_rules()) || G.minor[MIL]) && !is_ministry_exhausted(R, CHOISEUL, 0))
 			button("build_squadron", !is_ministry_exhausted(R, CHOISEUL, 1) && (G.subphase >= PICKED_TILE_OPTION_TO_PASS) && G.eligible[MIL] && (squadrons_in_region(R, REGION_NORTH_AMERICA) > 0))
