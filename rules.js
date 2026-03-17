@@ -422,6 +422,7 @@ const TRANSIENT_EVENT_MADE_DIPLO            = 11
 const TRANSIENT_TILE_MADE_DIPLO             = 12
 const TRANSIENT_EVENT_MADE_ECON             = 13
 const TRANSIENT_BOUGHT_EVENT                = 14
+const TRANSIENT_TILE_MADE_ECON              = 15
 
 
 /* TILES & CARDS */
@@ -4536,6 +4537,7 @@ function selected_a_tile(tile)
 	G.action_point_regions = [ [], [], [] ]
 
 	if (G.eligible_major[DIPLO]) set_transient(G.active, TRANSIENT_TILE_MADE_DIPLO)
+	if (G.eligible_major[ECON]) set_transient(G.active, TRANSIENT_TILE_MADE_ECON)
 
 	// Ministries that increase action points right away
 
@@ -9370,7 +9372,7 @@ function do_buy_diplomatic(who)
 	G.bought_action_points = DIPLO
 	log (bold(data.flags[who].name + " has bought " + say_action_points(1, DIPLO) + " (for " + say_action_points(2, MIL) + ")."))
 	display_action_cost()
-	if (!has_transient(who, TRANSIENT_TILE_MADE_DIPLO) && !has_transient(who, TRANSIENT_EVENT_MADE_DIPLO)) {
+	if (!has_transient(who, TRANSIENT_TILE_MADE_DIPLO)) {
 		set_transient(who, TRANSIENT_TILE_MADE_DIPLO)
 		if (has_active_ministry(who, EDMUND_BURKE)) {
 			add_contingent(DIPLO, burke_points(who), RULE_EUROPE_BURKE, SHORT_EUROPE_BURKE, true)
@@ -9411,6 +9413,12 @@ function do_buy_economic(who)
 	G.bought_action_points = ECON
 	log (bold(data.flags[who].name + " has bought " + say_action_points(1, ECON) + " (for " + say_action_points(2, MIL) + ")."))
 	display_action_cost()
+	if (!has_transient(who, TRANSIENT_TILE_MADE_ECON)) {
+		set_transient(who, TRANSIENT_TILE_MADE_ECON)
+		if (has_active_ministry(who, NORTH_AMERICAN_TRADE)) {
+			add_action_points(ECON, 1)
+		}
+	}
 }
 
 
