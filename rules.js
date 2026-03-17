@@ -8703,7 +8703,7 @@ function set_up_conflict_advantage(a)
 			L.adv_market_type = FURS
 			break
 		case MEDITERRANEAN_INTRIGUE:
-			L.adv_string = "in Spain or Austria."
+			L.adv_string = "in Spain, Austria, or Sardinia."
 			// unique code
 			break
 		case CENTRAL_EUROPE_CONFLICT:
@@ -8738,7 +8738,7 @@ function check_advantage_targets(who, mark_action)
 				break
 
 			case MEDITERRANEAN_INTRIGUE:
-				if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4].includes(s)) continue
+				if (![SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4, SARDINIA].includes(s)) continue
 				break
 
 			case CENTRAL_EUROPE_CONFLICT:

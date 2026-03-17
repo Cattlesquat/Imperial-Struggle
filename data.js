@@ -759,7 +759,7 @@ data.advantages = [
 	{ "num":  1, "name": "Central Europe Conflict",	req: [ GERMAN_STATES_2, BAVARIA ],      "desc": "Place a conflict marker in an alliance space in Europe" },
 	{ "num":  2, "name": "German Diplomacy",	    req: [ PRUSSIA_4 ],                     "desc": "Pay one [@1] total to unflag Russia, Sweden, or Bavaria" },
 	{ "num":  3, "name": "Italy Influence",		    req: [ AUSTRIA_3, SARDINIA ],           "desc": "Pay one [@1] total to unflag a space in Spain or Austria" },
-	{ "num":  4, "name": "Mediterranean Intrigue",	req: [ SAVOY, SPAIN_4 ],                "desc": "Place a conflict marker in Spain or Austria" },
+	{ "num":  4, "name": "Mediterranean Intrigue",	req: [ SAVOY, SPAIN_4 ],                "desc": "Place a conflict marker in Spain, Austria, or Sardinia" },
 	{ "num":  5, "name": "Naval Bastion",		    req: [ GIBRALTAR ],                     "desc": "Pay [@2] to return an enemy squadron to the Navy Box" },
 	{ "num":  6, "name": "Silesia Negotiations",	req: [ AUSTRIA_2 ],                     "desc": "Pay one [@1] total to unflag a space in Prussia or the German States" },
 	{ "num":  7, "name": "Algonquin Raids",		    req: [ ALGONQUIN ],                     "desc": "Place a conflict marker in a fur market" },
