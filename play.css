@@ -954,6 +954,14 @@ div[data-tooltip]:after {
 	background-position: center;
 }
 
+.theater-flag {
+	width: 18px;
+	height: 18px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 .score-flag {
 	margin-top: 3px;
 	margin-left: 3px;
@@ -967,11 +975,11 @@ div[data-tooltip]:after {
 	background-position: center;
 }
 
-.demand-flag.fr, .award-flag.fr, .score-flag.fr, .alliance-flag.fr {
+.demand-flag.fr, .award-flag.fr, .score-flag.fr, .alliance-flag.fr, .theater-flag.fr {
 	background-image: url(tiles75/square-sm/flag_fr.png);
 }
 
-.demand-flag.br, .award-flag.br, .score-flag.br, .alliance-flag.br {
+.demand-flag.br, .award-flag.br, .score-flag.br, .alliance-flag.br, .theater-flag.br {
 	background-image: url(tiles75/square-sm/flag_br.png);
 }
 
@@ -1186,7 +1194,7 @@ body.shift .marker { opacity: 25% }
 
 /* WAR DISPLAY: FLAGS IN THEATER */
 
-.layout[class*="-alliance"] {
+.alliance-row-group {
 	display: flex;
 	flex-direction: column;
 	gap: 1px;
@@ -1221,12 +1229,6 @@ body.shift .marker { opacity: 25% }
 }
 .theater-winner { 
 	font-size: 14px; 
-}
-
-.theater-strength .flag, .theater-winner .flag {
-	width: 18px;
-	height: 18px;
-	background: no-repeat center / contain;
 }
 
 .theater-margin {
@@ -1941,10 +1943,6 @@ body[data-noanims="false"] .marker.war-basic31.action:before
 
 
 /* IMAGES */
-
-/* FIXME - remove redundancy */
-.fr .flag { background-image: url(tiles75/square-sm/flag_fr.png); }
-.br .flag { background-image: url(tiles75/square-sm/flag_br.png); }
 
 .board.war-7yw { background-image: url(boards100/war_1.avif); }
 .board.war-wss { background-image: url(boards100/war_2.avif); }
