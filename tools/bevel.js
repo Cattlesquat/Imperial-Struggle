@@ -17,3 +17,6 @@ b(".marker.flag_fr", "#306e8e")
 b(".marker.flag_br", "#964c40")
 b(".marker.flag_usa", "#b383a7")
 b(".marker.flag_spain", "#e09b26")
+
+b(".readybutton", "#00ff7f")
+b(".almostbutton", "#f0e68c")

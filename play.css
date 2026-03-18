@@ -22,48 +22,38 @@ menu li.separator {
 	text-decoration: underline;
 }
 
-/* BUTTON */
+/* COLORED BUTTONS */
 
-.readybutton {
-	flex: 0 0 auto;
-	white-space: nowrap;
-
-	padding: 1px 10px;
-	vertical-align: middle;
-	border: 2px solid;
-
+#military_upgrade_button,
+#end_action_round_button
+{
 	background-color: springgreen;
-	border-color: lightgreen darkgreen darkgreen lightgreen;
-	color: black;
-	outline: 1px solid black;
-
-	line-height: 22px;
+	border-color: #61ffa8 #00c446 #00c446 #61ffa8;
 }
 
-.readybutton:enabled:active:hover {
-	border-color: darkgreen lightgreen lightgreen darkgreen;
-	padding: 2px 9px 0px 11px;
+#military_upgrade_button:enabled:active:hover,
+#end_action_round_button:enabled:active:hover
+{
+	border-color: #00c446 #61ffa8 #61ffa8 #00c446;
 }
 
-.almostbutton {
-	flex: 0 0 auto;
-	white-space: nowrap;
-
-	padding: 1px 10px;
-	vertical-align: middle;
-	border: 2px solid;
-
-	background-color: lightyellow;
-	border-color: yellow gold gold yellow;
-	color: black;
-	outline: 1px solid black;
-
-	line-height: 22px;
+#confirm_end_action_round_2_button,
+#confirm_end_action_round_bank_button,
+#confirm_end_action_round_halley_button,
+#confirm_end_action_round_walpole_button,
+#confirm_end_action_round_huguenots_button
+{
+	background-color: khaki;
+	border-color: #ffffa8 #b5ab51 #b5ab51 #ffffa8;
 }
 
-.almostbutton:enabled:active:hover {
-	border-color: gold yellow yellow gold;
-	padding: 2px 9px 0px 11px;
+#confirm_end_action_round_2_button:enabled:active:hover,
+#confirm_end_action_round_bank_button:enabled:active:hover,
+#confirm_end_action_round_halley_button:enabled:active:hover,
+#confirm_end_action_round_walpole_button:enabled:active:hover,
+#confirm_end_action_round_huguenots_button:enabled:active:hover
+{
+	border-color: #b5ab51 #ffffa8 #ffffa8 #b5ab51;
 }
 
 /* GAME BOARD & MATS */
