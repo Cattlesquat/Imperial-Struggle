@@ -8123,7 +8123,7 @@ P.ministry_edmond_halley = {
 function cardinal_ministers_value()
 {
 	let raw_value = 0
-	for (const s of [SAVOY, SARDINIA, AUSTRIA_2, AUSTRIA_4, SPAIN_2, SPAIN_4, MINORCA]) {
+	for (const s of [SAVOY, SARDINIA, AUSTRIA_2, AUSTRIA_4, SPAIN_2, SPAIN_4]) {
 		if (G.flags[s] !== FRANCE) continue
 		if (has_conflict_marker(s)) continue
 		raw_value++
