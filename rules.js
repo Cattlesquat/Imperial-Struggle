@@ -3754,15 +3754,14 @@ P.scoring_phase = function () {
 
 		award_vp(winner, 2)
 
-		// Tracking if anybody won ALL the scorings
-		if (G.won_all_scorings < 0) {
-			G.won_all_scorings = winner
-		} else if (winner !== G.won_all_scorings) {
-			G.won_all_scorings = NONE
-		}
+		//if (G.won_all_scorings < 0) {
+		//	G.won_all_scorings = winner
+		//} else if (winner !== G.won_all_scorings) {
+		//	G.won_all_scorings = NONE
+		//}
 	} else {
 		log_box_begin(NONE, "Scoring: PRESTIGE " + "\n" + "TIE! No score.")
-		G.won_all_scorings = NONE
+		//G.won_all_scorings = NONE
 	}
 	log_box_end()
 
@@ -4702,7 +4701,7 @@ function event_made_econ(rule = null, short = null)
 {
 	if (!has_transient(R, TRANSIENT_EVENT_MADE_ECON)) {
 		set_transient(R, TRANSIENT_EVENT_MADE_ECON)
-		if (has_active_ministry(R, NORTH_AMERICAN_TRADE) && has_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)) {
+		if (has_active_ministry(R, NORTH_AMERICAN_TRADE) && has_transient(R, TRANSIENT_NORTH_AMERICAN_TRADE)) {
 			log_box_ministry(R, NORTH_AMERICAN_TRADE)
 			if (rule === null) {
 				add_action_points(ECON, 1)
