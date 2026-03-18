@@ -3554,7 +3554,7 @@ function say_action_points(space = true, brackets = true) {
 
 				tell += G.major[i] //+ " major"
 				if (G.minor[i]) {
-					tell += shortest ? "M," : " Major, " // only explicitly say Major if we also have Minor
+					tell += shortest ? "M" : " Major" // only explicitly say Major if we also have Minor
 				}
 
 				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
@@ -3593,7 +3593,9 @@ function say_action_points(space = true, brackets = true) {
 				for (let rule of active_rules_list()) {
 					let amount = rule.amount //get_contingent(i, rule.rule)
 					if (any_contingent(i, rule.rule)) {
-						if (need_comma) tell += ", "
+						if (need_comma) {
+							tell += ", "
+						}
 						if (!told_name[i]) {
 							tell += names[i] + (!longest ? "" : ": ")
 							told_name[i] = true
