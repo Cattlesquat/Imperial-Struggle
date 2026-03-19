@@ -6949,35 +6949,53 @@ P.event_salon_d_hercule = {
 P.event_bengal_famine = {
 	_begin() {
 		L.conflicts_done = 0
+		L.confirming = false
 	},
 	inactive: "find some food, fast",
 	prompt() {
-		let msg = "Place up to 2 conflict markers in markets or political spaces in India "
-		let gauge = parens(L.conflicts_done + "/2")
-		msg += gauge
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button ("confirm")
+		} else {
+			let msg = "Place up to 2 conflict markers in markets or political spaces in India "
+			let gauge = parens(L.conflicts_done + "/2")
+			msg += gauge
 
-		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].region !== REGION_INDIA) continue
-			if (!can_have_conflict_marker(s)) continue
-			if (has_conflict_marker(s)) continue
-			action_space(s)
-			any = true
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_INDIA) continue
+				if (!can_have_conflict_marker(s)) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
+			}
+
+			if (!any) {
+				msg += " (None possible)"
+			}
+
+			V.prompt = event_prompt(R, G.played_event, msg)
+
+			button("pass")
 		}
-
-		if (!any) {
-			msg += " (None possible)"
-		}
-
-		V.prompt = event_prompt(R, G.played_event, msg)
-
-		button("pass")
+	},
+	confirm() {
+		push_undo()
+		add_conflict_marker(L.space)
+		L.conflicts_done++
+		L.confirming = false
+		if (L.conflicts_done >= 2) end()
 	},
 	space(s) {
 		push_undo()
-		add_conflict_marker(s)
-		L.conflicts_done++
-		if (L.conflicts_done >= 2) end()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			add_conflict_marker(s)
+			L.conflicts_done++
+			if (L.conflicts_done >= 2) end()
+		}
 	},
 	pass() {
 		push_undo()
@@ -6986,13 +7004,33 @@ P.event_bengal_famine = {
 }
 
 
+function father_le_loutre(s)
+{
+	add_conflict_marker(s)
+	if (is_bit(QUALIFIES_FOR_BONUS)) {
+		if (R === BRITAIN) {
+			add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+		} else {
+			add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+			event_made_econ(RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
+		}
+	}
+	end()
+}
+
 
 // BR: Place a Conflict marker in a Fish market. Bonus: 2 Mil in North America
 // FR: Place a Conflict marker in a BR-flagged market. Bonus: 2 Econ in North America
 P.event_father_le_loutre = {
+	_begin() {
+		L.confirming = false
+	},
 	inactive: "play Father le Loutre",
 	prompt() {
-		if (R === BRITAIN) {
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else if (R === BRITAIN) {
 			let msg = "Place a conflict marker in a Fish market"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -7024,18 +7062,19 @@ P.event_father_le_loutre = {
 			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON) + " in North America")
 		}
 	},
+	confirm() {
+		push_undo()
+		L.confirming = false
+		father_le_loutre(L.space)
+	},
 	space(s) {
 		push_undo()
-		add_conflict_marker(s)
-		if (is_bit(QUALIFIES_FOR_BONUS)) {
-			if (R === BRITAIN) {
-				add_contingent(MIL, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
-			} else {
-				add_contingent(ECON, 2, RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
-				event_made_econ(RULE_NORTH_AMERICA, SHORT_NORTH_AMERICA)
-			}
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			father_le_loutre(s)
 		}
-		end()
 	},
 	done() {
 		push_undo()
