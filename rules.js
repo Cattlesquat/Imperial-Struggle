@@ -2576,16 +2576,25 @@ P.award_phase = function () {
 		shuffle(G.award_chits)
 	}
 
+	let msg = "AWARD PHASE: Review new award chits ("
+	let any = false
+
 	// Deal one per region
 	let codes = "~a"
 	for (let region = 0; region < NUM_REGIONS; region++) {
 		let chit = G.award_chits.pop()
 		G.awards[region] = chit
 		codes += chit
+
+		if (any) msg += "; "
+		any = true
+		msg += data.regions[region].name + ": " + data.awards[chit].name
 	}
 	log(codes) // Displays the awards in the log
 
-	review_push ("AWARD PHASE: Review new award chits.")
+	msg += ")."
+
+	review_push (msg)
 	end()
 }
 
@@ -2599,16 +2608,25 @@ P.global_demand_phase = function () {
 		global_demand_chits.push(i)
 	shuffle(global_demand_chits)
 
+	let msg = "GLOBAL DEMAND PHASE: Review new global demands ("
+	let any = false
+
 	G.global_demand = []
 	let codes = "~d"
 	for (let i = 0; i < 3; i++) {
 		let chit = global_demand_chits.pop()
 		G.global_demand.push(chit)
 		codes += chit
+
+		if (any) msg += ", "
+		any = true
+		msg += say_demand(chit)
 	}
 	log(codes) // Displays the demands in the log
 
-	review_push ("GLOBAL DEMAND PHASE: Review new global demands.")
+	msg += ")."
+
+	review_push (msg)
 	end()
 }
 
