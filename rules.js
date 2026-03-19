@@ -7266,41 +7266,60 @@ P.event_haitian_revolution = {
 	_begin() {
 		L.conflicts_to_do = is_bit(QUALIFIES_FOR_BONUS) ? 3 : 1
 		L.conflicts_done  = 0
+		L.confirming = false
 	},
 	inactive: "play Haitian Revolution",
 	prompt() {
-		let msg = !is_bit(QUALIFIES_FOR_BONUS) ? "Place a conflict marker in a Sugar market in the Caribbean." : "Place 3 conflict markers in Sugar markets in the Caribbean."
-		let gauge = (G.conflicts_to_do > 1) ? (L.conflicts_done + "/" + L.conflicts_to_do) : ""
-		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].region !== REGION_CARIBBEAN) continue
-			if (data.spaces[s].type !== MARKET) continue
-			if (data.spaces[s].market !== SUGAR) continue
-			if (has_conflict_marker(s)) continue
-			action_space(s)
-			any = true
-		}
-		if (!any) {
-			if (L.conflicts_done > 0) {
-				gauge = "DONE - no more eligible spaces"
-			} else {
-				gauge = "None possible"
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else {
+			let msg = !is_bit(QUALIFIES_FOR_BONUS) ? "Place a conflict marker in a Sugar market in the Caribbean." : "Place 3 conflict markers in Sugar markets in the Caribbean."
+			let gauge = (G.conflicts_to_do > 1) ? (L.conflicts_done + "/" + L.conflicts_to_do) : ""
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+				if (data.spaces[s].type !== MARKET) continue
+				if (data.spaces[s].market !== SUGAR) continue
+				if (has_conflict_marker(s)) continue
+				action_space(s)
+				any = true
 			}
-			button("done")
-		}
+			if (!any) {
+				if (L.conflicts_done > 0) {
+					gauge = "DONE - no more eligible spaces"
+				} else {
+					gauge = "None possible"
+				}
+				button("done")
+			}
 
-		if (gauge !== "") {
-			msg += " " + parens(gauge)
+			if (gauge !== "") {
+				msg += " " + parens(gauge)
+			}
+			msg += " Conflict markers placed by this end cost an extra " + say_action_points(1, MIL) + " to remove"
+			V.prompt = event_prompt(R, G.played_event, msg)
 		}
-		msg += " Conflict markers placed by this end cost an extra " + say_action_points(1, MIL) + " to remove"
-		V.prompt = event_prompt (R, G.played_event, msg)
+	},
+	confirm() {
+		L.confirming = false
+		L.conflicts_done++
+		add_conflict_marker(L.space, CONFLICT_PLUS_ONE)
+		if (L.conflicts_done >= L.conflicts_to_do) {
+			end()
+		}
 	},
 	space(s) {
 		push_undo()
-		L.conflicts_done++
-		add_conflict_marker(s, CONFLICT_PLUS_ONE)
-		if (L.conflicts_done >= L.conflicts_to_do) {
-			end()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			L.conflicts_done++
+			add_conflict_marker(s, CONFLICT_PLUS_ONE)
+			if (L.conflicts_done >= L.conflicts_to_do) {
+				end()
+			}
 		}
 	},
 	done() {
@@ -7324,9 +7343,15 @@ function neuf_soeurs_bonus()
 // BR: Place one conflict marker in the Northern Colonies sub-region. Bonus: If there are more BR than FR flags in North America, Score 3 VP.
 // FR: Activate an advantage you control outside Europe (ignore Exhaustion). Bonus: 2 Diplo
 P.event_loge_des_neuf_soeurs = {
+	_begin() {
+		L.confirming = false
+	},
 	inactive: "count to nine",
 	prompt() {
-		if (R === BRITAIN) {
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else if (R === BRITAIN) {
 			let msg = "Place a conflict marker in the Northern Colonies sub-region"
 			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
@@ -7360,11 +7385,23 @@ P.event_loge_des_neuf_soeurs = {
 			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, DIPLO))
 		}
 	},
-	space(s) {
+	confirm() {
 		push_undo()
-		add_conflict_marker(s)
+		L.confirming = false
+		add_conflict_marker(L.space)
 		neuf_soeurs_bonus()
 		end()
+	},
+	space(s) {
+		push_undo()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			add_conflict_marker(s)
+			neuf_soeurs_bonus()
+			end()
+		}
 	},
 	advantage(a) {
 		push_undo()
@@ -7589,10 +7626,14 @@ P.event_stamp_act = {
 	_begin() {
 		L.conflicts_done = 0
 		L.conflicts_to_do = is_bit(QUALIFIES_FOR_BONUS) ? 3 : 1
+		L.confirming = false
 	},
 	inactive: "find out what Boston thinks about taxes",
 	prompt() {
-		if (R === BRITAIN) {
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else if (R === BRITAIN) {
 			V.prompt = event_prompt(R, G.played_event, "Reduce your debt by 2", "gain " + say_action_points(2, ECON))
 			button("confirm")
 		} else {
@@ -7621,12 +7662,24 @@ P.event_stamp_act = {
 	},
 	space(s) {
 		push_undo()
-		add_conflict_marker(s)
-		L.conflicts_done++
-		if (L.conflicts_done >= L.conflicts_to_do) end()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			add_conflict_marker(s)
+			L.conflicts_done++
+			if (L.conflicts_done >= L.conflicts_to_do) end()
+		}
 	},
 	confirm() {
-		this.done()
+		if (L.confirming) {
+			L.confirming = false
+			add_conflict_marker(L.space)
+			L.conflicts_done++
+			if (L.conflicts_done >= L.conflicts_to_do) end()
+		} else {
+			this.done()
+		}
 	},
 	done() {
 		push_undo()
@@ -8890,18 +8943,35 @@ P.advantage_place_conflict = {
 		L.adv_market_only = false
 		L.adv_market_type = -1
 		set_up_conflict_advantage(a)
+		L.confirming = false
 	},
 	inactive() {
 		return "place a conflict with the " + data.advantages[G.active_advantage].name + " advantage"
 	},
 	prompt() {
-		V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict " + L.adv_string)
-		if (!check_advantage_targets(NONE, true)) V.prompt += " (None eligible)"
+		if (L.confirming) {
+			V.prompt = advantage_prompt(R, G.active_advantage, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else {
+			V.prompt = advantage_prompt(R, G.active_advantage, "Place a Conflict " + L.adv_string)
+			if (!check_advantage_targets(NONE, true)) V.prompt += " (None eligible)"
+		}
+	},
+	confirm() {
+		push_undo()
+		L.confirming = false
+		add_conflict_marker(L.space)
+		end()
 	},
 	space(s) {
 		push_undo()
-		add_conflict_marker(s)
-		end()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			add_conflict_marker(s)
+			end()
+		}
 	}
 }
 
