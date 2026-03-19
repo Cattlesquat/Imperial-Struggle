@@ -8991,8 +8991,8 @@ function action_points_available(who, s, type, allow_debt_and_trps, rules = [])
 
 		if (eligible_minor) {
 			let burke = get_contingent(DIPLO, RULE_EUROPE_BURKE, false)
-			if (burke > 0) {
-				// Don't combine Edmund Burke diplo-major points with minor actions
+			if ((burke > 0) && is_entirely_in_europe(DIPLO) && ((s < 0) || (data.spaces[s].region !== REGION_EUROPE))) {
+				// If we're considering our first action outside Europe, don't combine Edmund Burke diplo-major points with minor actions
 				return Math.max(
 					action_points_major(type, rules, eligible_minor) + G.committed[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0),
 					action_points_major(type, rules, eligible_minor) + G.committed[type] + (allow_debt_and_trps ? available_debt_plus_trps(who) : 0) + (eligible_minor ? G.minor[type] - burke : 0)
