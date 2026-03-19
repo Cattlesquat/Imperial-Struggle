@@ -403,6 +403,7 @@ const LAST_EVENT_BY_BRITAIN       = 27
 const DONT_EXHAUST_ADVANTAGE      = 28
 const MUST_PLACE_IN_NORTH_AMERICA = 29
 const SKIPPED_EVENT               = 30
+const ACTION_ENTIRELY_MINOR       = 31
 
 
 // TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
@@ -4532,7 +4533,8 @@ function selected_a_tile(tile)
 	// For each flavor of action points (though we only care about ECON and DIPLO), track how many different regions we've spent that flavor of points on during this tile.
 	// This is for charging the "region switching" action point penalty
 	// <br><b>
-	// G.action_point_regions[ECON][...] </b> gets pushed all the regions we've spent ECON points in this round
+	// G.action_point_regions[ECON][...] </b> is a set containing all the regions we've spent ECON points in this round. Value has +NUM_REGIONS added if it was all minor action points.
+	// <b>set_has(G.action_points[ECON], REGION_EUROPE) || set_has(G.action_points[ECON], REGION_EUROPE + NUM_REGIONS)</b>
 	G.action_point_regions = [ [], [], [] ]
 
 	if (G.eligible_major[DIPLO]) set_transient(G.active, TRANSIENT_TILE_MADE_DIPLO)
@@ -9233,7 +9235,7 @@ function is_entirely_in_europe(type)
 {
 	if (has_transient(R, TRANSIENT_BOUGHT_EVENT)) return false
 	for (const r of [ REGION_NORTH_AMERICA, REGION_CARIBBEAN, REGION_INDIA ]) {
-		if (set_has(G.action_point_regions[type], r)) return false
+		if (set_has(G.action_point_regions[type], r)) return false // We don't check +NUM_REGIONS values for Burke, he only cares about major actions
 	}
 	return true
 }
@@ -9243,11 +9245,11 @@ function is_entirely_in_europe(type)
 function charge_region_switching_penalty(type, region)
 {
 	if (type === MIL) return false
-	if (set_has(G.action_point_regions[type], region)) return false // We've already spent this type of points in this region, so don't charge again
+	if (set_has(G.action_point_regions[type], region) || set_has(G.action_point_regions[type], region + NUM_REGIONS)) return false // We've already spent this type of points in this region, so don't charge again
 
 	for (var r = 0; r < NUM_REGIONS; r++) {
 		if (r === region) continue
-		if (set_has(G.action_point_regions[type], r)) return true   // We've spent this type of points in a different region this round, so the region-switching penalty applies
+		if (set_has(G.action_point_regions[type], r) || set_has(G.action_point_regions[type], r + NUM_REGIONS)) return true   // We've spent this type of points in a different region this round, so the region-switching penalty applies
 	}
 
 	return false // This is the first region we've spent points on this time, so no charge
@@ -10486,6 +10488,7 @@ function action_cost_setup(s, t, force_type = -1) {
 
 	// Have we committed to a minor action
 	clear_bit(ACTION_MINOR)
+	clear_bit(ACTION_ENTIRELY_MINOR)
 
 	// Is this action eligible to be a minor one (e.g. not removing enemy flag, and we have minor action points available)
 	set_bit(ELIGIBLE_MINOR, eligible_for_minor_action(s, G.active) && (G.minor[G.action_type] > 0))
@@ -10928,6 +10931,8 @@ function pay_action_cost() {
 			cost_string += "  MinorDrain: " + (prev_cost - G.action_cost)
 			prev_cost = G.action_cost
 		}
+
+		if (G.action_cost === 0) set_bit(ACTION_ENTIRELY_MINOR)
 	}
 
 	if (is_bit(BUYING_WAR_TILE) && is_bit(MUST_PLACE_IN_NORTH_AMERICA)) {
@@ -11105,7 +11110,7 @@ function do_reflag_space(repair_if_damaged = true) {
 	}
 
 	reflag_space(G.active_space, whom, silent)
-	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region) // We've now used this flavor of action point in this region
+	set_add(G.action_point_regions[G.action_type], data.spaces[G.active_space].region + (is_bit(ACTION_ENTIRELY_MINOR) ? NUM_REGIONS : 0)) // We've now used this flavor of action point in this region. If it was entirely minor action points, add NUM_REGIONS (we distinguish for Burke calculations)
 
 	log_br() // Leave a blank line
 }
