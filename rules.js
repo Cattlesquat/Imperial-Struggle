@@ -4955,6 +4955,7 @@ P.event_carnatic_war = {
 		L.cant_do_bonus    = false
 		L.space            = -1
 		L.deciding         = false // Unfortunately "cotton markets in India" can qualify for both parts of the event, meaning player needs to decide which when clicking on them
+		L.confirming       = false
 	},
 	inactive: "to get all Carnatic about it",
 	prompt() {
@@ -4962,6 +4963,9 @@ P.event_carnatic_war = {
 			V.prompt = event_prompt(R, G.played_event, "Choose shift market or place conflict marker for " + data.spaces[L.space].name)
 			button("shift_market")
 			button("place_conflict_marker")
+		} else if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm you really want to place a conflict marker there?")
+			button("confirm")
 		} else {
 			var any_conflictable = false
 			for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
@@ -5004,6 +5008,11 @@ P.event_carnatic_war = {
 	conflict(s) {
 		this.space(s)
 	},
+	confirm() {
+		add_conflict_marker(L.space)
+		L.conflicts_placed++
+		L.confirming = false
+	},
 	space(s) {
 		push_undo()
 		L.space = s
@@ -5012,8 +5021,12 @@ P.event_carnatic_war = {
 			is_bit(QUALIFIES_FOR_BONUS) && !L.done_bonus && !L.cant_do_bonus && (data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
 			L.deciding = true
 		} else if ((can_have_conflict_marker(s) && !has_conflict_marker(s)) && (L.conflicts_placed < carnatic_conflicts(R))) {
-			add_conflict_marker(s)
-			L.conflicts_placed++
+			if (G.flags[s] === R) {
+				L.confirming = true
+			} else {
+				add_conflict_marker(s)
+				L.conflicts_placed++
+			}
 		} else if ((data.spaces[s].type === MARKET) && (data.spaces[s].market === COTTON) && (G.flags[s] !== R)) {
 			reflag_space(s, (G.flags[s] === NONE) ? G.active : NONE)
 			L.done_bonus = true
