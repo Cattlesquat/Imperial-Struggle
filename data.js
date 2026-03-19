@@ -477,7 +477,7 @@ data.wars[WAR_7YW].theater[3] = { "region": REGION_NORTH_AMERICA, "keyword": -1,
 data.wars[WAR_7YW].theater[4] = { "region": REGION_EUROPE,        "keyword": -1,         "conflicts": false, "naval": false, "margin": [1,3,5], "vp": [2,3,4], "cp": [0,0,0], "trp": [0,0,1], "unflag": [0,0,0], "additional": [ ]	}
 
 data.wars[WAR_AWI].theater = []
-data.wars[WAR_AWI].theater[1] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,2,4], "vp": [2,3,4], "cp": [0,1,2], "trp": [0,1,2], "unflag": [0,0,0], "france_margin": [1,3,5], "france_vp": [2,3,4], "france_trp": [2,2,3], "additional": [ ] }
+data.wars[WAR_AWI].theater[1] = { "region": REGION_NORTH_AMERICA, "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,2,4], "vp": [2,3,4], "cp": [0,1,2], "trp": [0,1,2], "unflag": [0,0,0], "france_margin": [1,3,5], "france_vp": [2,3,4], "france_trp": [2,2,3], "additional": [ SAN_AGUSTIN ] }
 data.wars[WAR_AWI].theater[2] = { "region": REGION_INDIA,         "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,3],   "vp": [0,0],   "cp": [1,2],   "trp": [1,3],   "unflag": [0,0,0], "additional": [ ] }
 data.wars[WAR_AWI].theater[3] = { "region": REGION_CARIBBEAN,     "keyword": -1,         "conflicts": true,  "naval": true,  "margin": [1,2,4], "vp": [0,0,0], "cp": [1,1,2], "trp": [0,1,2], "unflag": [0,1,1], "additional": [ HUDSON_BAY, ACADIA ] }
 
