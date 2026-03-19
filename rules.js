@@ -5449,6 +5449,7 @@ P.event_austro_spanish_rivalry = {
 			L.conflicts_placed = 0
 			L.picked_bonus_tile = -1
 			L.theater = 0
+			L.confirming = false
 		} else {
 			L.unflagged = 0
 		}
@@ -5457,7 +5458,10 @@ P.event_austro_spanish_rivalry = {
 	prompt() {
 		if (R === BRITAIN) {
 			let msg = ""
-			if (!L.conflicts_placed) {
+			if (L.confirming) {
+				msg += "That space belongs to you. Confirm you really want to place a conflict marker there?"
+				button("confirm")
+			} else if (!L.conflicts_placed) {
 				msg = "Place 1 conflict marker in Spain"
 				let any = false
 				for (let s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4] ) {
@@ -5513,9 +5517,14 @@ P.event_austro_spanish_rivalry = {
 	space(s) {
 		push_undo()
 		if (R === BRITAIN) {
-			add_conflict_marker(s)
-			L.conflicts_placed++
-			if (!is_bit(QUALIFIES_FOR_BONUS)) end()
+			if (G.flags[s] === R) {
+				L.confirming = true
+				L.space      = s
+			} else {
+				add_conflict_marker(s)
+				L.conflicts_placed++
+				if (!is_bit(QUALIFIES_FOR_BONUS)) end()
+			}
 		} else {
 			reflag_space(s, NONE)
 			L.unflagged++
@@ -5527,19 +5536,27 @@ P.event_austro_spanish_rivalry = {
 		L.theater = display_to_theater(t)
 	},
 	confirm() {
-		clear_undo() // No going back once we've effectively revealed a war tile
+		if (L.confirming) {
+			push_undo()
+			add_conflict_marker(L.space)
+			L.conflicts_placed++
+			L.confirming = false
+			if (!is_bit(QUALIFIES_FOR_BONUS)) end()
+		} else {
+			clear_undo() // No going back once we've effectively revealed a war tile
 
-		log ("French bonus war tile removed from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
+			log("French bonus war tile removed from theater " + L.theater + ": " + data.wars[G.next_war].theater_names[L.theater])
 
-		// Randomize the choice without disrupting owner's present tile order
-		let choices = G.theater_bonus[1 - G.active][L.theater].slice()
-		shuffle(choices)
+			// Randomize the choice without disrupting owner's present tile order
+			let choices = G.theater_bonus[1 - G.active][L.theater].slice()
+			shuffle(choices)
 
-		L.picked_bonus_tile = choices[0]
-		array_delete_item(G.theater_bonus[1 - G.active][L.theater], L.picked_bonus_tile)
-		G.bonus_war[1 - G.active].push(L.picked_bonus_tile)
-		shuffle(G.bonus_war[1 - G.active])
-		end()
+			L.picked_bonus_tile = choices[0]
+			array_delete_item(G.theater_bonus[1 - G.active][L.theater], L.picked_bonus_tile)
+			G.bonus_war[1 - G.active].push(L.picked_bonus_tile)
+			shuffle(G.bonus_war[1 - G.active])
+			end()
+		}
 	},
 	diplomatic2() {
 		push_undo()
@@ -6218,30 +6235,49 @@ P.event_caribbean_slave_unrest = {
 	_begin() {
 		L.conflicts_done  = 0
 		L.conflicts_to_do = 1 + (is_bit(QUALIFIES_FOR_BONUS) ? 1 : 0)
+		L.confirming = false
 	},
 	inactive: "incite some unrest",
 	prompt() {
-		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (data.spaces[s].region !== REGION_CARIBBEAN) continue
-			if (data.spaces[s].type !== MARKET) continue
-			if (has_conflict_marker(s)) continue
-			any = true
-			action_space(s)
-		}
-		let gauge = ((any || (L.conflicts_done >= L.conflicts_to_do)) ? L.conflicts_done + "/" + L.conflicts_to_do : "DONE")
-		V.prompt = event_prompt(R, G.played_event, "Place " + L.conflicts_to_do + " conflict marker" + s(L.conflicts_to_do) + " in " + ((L.conflicts_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge))
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
+		} else {
+			let any = false
+			for (let s = 0; s < NUM_SPACES; s++) {
+				if (data.spaces[s].region !== REGION_CARIBBEAN) continue
+				if (data.spaces[s].type !== MARKET) continue
+				if (has_conflict_marker(s)) continue
+				any = true
+				action_space(s)
+			}
+			let gauge = ((any || (L.conflicts_done >= L.conflicts_to_do)) ? L.conflicts_done + "/" + L.conflicts_to_do : "DONE")
+			V.prompt = event_prompt(R, G.played_event, "Place " + L.conflicts_to_do + " conflict marker" + s(L.conflicts_to_do) + " in " + ((L.conflicts_to_do !== 1) ? "markets" : "a market") + " in the Caribbean " + parens(gauge))
 
-		if (!any || (L.conflicts_done >= L.conflicts_to_do)) {
-			button ("done")
+			if (!any || (L.conflicts_done >= L.conflicts_to_do)) {
+				button("done")
+			}
+		}
+	},
+	confirm() {
+		L.confirming = false
+		add_conflict_marker(L.space)
+		L.conflicts_done++
+		if (L.conflicts_done >= L.conflicts_to_do) {
+			end()
 		}
 	},
 	space(s) {
 		push_undo()
-		add_conflict_marker(s)
-		L.conflicts_done++
-		if (L.conflicts_done >= L.conflicts_to_do) {
-			end()
+		if (G.flags[s] === R) {
+			L.confirming = true
+			L.space = s
+		} else {
+			add_conflict_marker(s)
+			L.conflicts_done++
+			if (L.conflicts_done >= L.conflicts_to_do) {
+				end()
+			}
 		}
 	},
 	done() {
@@ -6439,6 +6475,19 @@ P.event_le_beau_monde = {
 }
 
 
+function hyder_ali(s)
+{
+	add_conflict_marker(s)
+	L.conflicts_done++
+	if (L.conflicts_done >= 2) {
+		if (is_bit(QUALIFIES_FOR_BONUS)) {
+			add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
+			event_made_econ(RULE_INDIA, SHORT_INDIA)
+		}
+		end()
+	}
+}
+
 // Take control of one Local Alliance space in India OR place 2 Conflict markers in unprotected spaces in India. Bonus: 2 Econ in India
 P.event_hyder_ali = {
 	_begin() {
@@ -6446,53 +6495,59 @@ P.event_hyder_ali = {
 		L.taking_control = false
 		L.placing_conflicts = false
 		L.conflicts_done = 0
+		L.confirming = false
 	},
 	inactive: "ally with Hyder Ali",
 	prompt() {
 		let msg = ""
-		if (!L.taking_control && !L.placing_conflicts) {
-			msg = "Take control of one Local Alliance space in India, or place two conflict markers in unprotected spaces in India"
-			button("take_control")
-			button("place_conflicts")
-		} else if (L.taking_control) {
-			msg = "Take control of one Local Alliance space in India"
-			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== REGION_INDIA) continue
-				if (data.spaces[s].type === POLITICAL) {
-					if (G.flags[s] === R) continue
-					action_space(s)
-				}
-			}
-			//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path (exception for Fuzzer)
-			if (globalThis.RTT_FUZZER) {
-				button("done")
-			}
+		if (L.confirming) {
+			V.prompt = event_prompt(R, G.played_event, data.spaces[L.space].name + " belongs to you. Confirm placing a conflict marker there anyway?")
+			button("confirm")
 		} else {
-			msg = "Place two conflict markers in unprotected spaces in India"
-			let any = false
-			for (let s = 0; s < NUM_SPACES; s++) {
-				if (data.spaces[s].region !== REGION_INDIA) continue
-				if (has_conflict_marker(s)) continue
-				if (data.spaces[s].type === POLITICAL) {
-					action_space(s)
-					any = true
-				} else if (data.spaces[s].type === MARKET) {
-					if ((G.flags[s] === NONE) || !is_protected(s)) {
+			if (!L.taking_control && !L.placing_conflicts) {
+				msg = "Take control of one Local Alliance space in India, or place two conflict markers in unprotected spaces in India"
+				button("take_control")
+				button("place_conflicts")
+			} else if (L.taking_control) {
+				msg = "Take control of one Local Alliance space in India"
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].region !== REGION_INDIA) continue
+					if (data.spaces[s].type === POLITICAL) {
+						if (G.flags[s] === R) continue
 						action_space(s)
-						any = true
 					}
 				}
-			}
-			if (!any) {
-				msg += " (None possible)"
-				button("done")
+				//NB - no option to pass if there isn't a space -- requires player to undo & go the conflict path (exception for Fuzzer)
+				if (globalThis.RTT_FUZZER) {
+					button("done")
+				}
 			} else {
-				let gauge = L.conflicts_done + "/2"
-				msg += " " + parens(gauge)
+				msg = "Place two conflict markers in unprotected spaces in India"
+				let any = false
+				for (let s = 0; s < NUM_SPACES; s++) {
+					if (data.spaces[s].region !== REGION_INDIA) continue
+					if (has_conflict_marker(s)) continue
+					if (data.spaces[s].type === POLITICAL) {
+						action_space(s)
+						any = true
+					} else if (data.spaces[s].type === MARKET) {
+						if ((G.flags[s] === NONE) || !is_protected(s)) {
+							action_space(s)
+							any = true
+						}
+					}
+				}
+				if (!any) {
+					msg += " (None possible)"
+					button("done")
+				} else {
+					let gauge = L.conflicts_done + "/2"
+					msg += " " + parens(gauge)
+				}
 			}
-		}
 
-		V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON) + " in India")
+			V.prompt = event_prompt(R, G.played_event, msg, "gain " + say_action_points(2, ECON) + " in India")
+		}
 	},
 	take_control() {
 		push_undo()
@@ -6512,16 +6567,18 @@ P.event_hyder_ali = {
 			}
 			end()
 		} else {
-			add_conflict_marker(s)
-			L.conflicts_done++
-			if (L.conflicts_done >= 2) {
-				if (is_bit(QUALIFIES_FOR_BONUS)) {
-					add_contingent(ECON, 2, RULE_INDIA, SHORT_INDIA)
-					event_made_econ(RULE_INDIA, SHORT_INDIA)
-				}
-				end()
+			if (G.flags[s] === R) {
+				L.confirming = true
+				L.space = s
+			} else {
+				hyder_ali(s)
 			}
 		}
+	},
+	confirm() {
+		push_undo()
+		L.confirming = false
+		hyder_ali(L.space)
 	},
 	done() {
 		if (is_bit(QUALIFIES_FOR_BONUS)) {
