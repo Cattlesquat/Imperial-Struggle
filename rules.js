@@ -7930,6 +7930,7 @@ P.confirm_reveal_ministry = {
 	},
 	dont_exhaust_ministry() {
 		push_undo()
+		G.has_required_ministry = FALSE
 		end()
 	}
 }
@@ -9550,13 +9551,13 @@ P.construct_squadron_flow = script(`
 
 	// Possible option to flip relevant ministry
 	if ((L.info.ministry !== undefined) && (G.prepicked_advantage === -1)) {
-	eval {
-		if (G.prepicked_ministry === L.info.ministry) {
+		eval {
+			if (G.prepicked_ministry === L.info.ministry) {
 				G.has_required_ministry = TRUE
-		} else {
-			require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost, true)
+			} else {
+				require_ministry_unexhausted(R, L.info.ministry, "To reduce cost of squadron by 2", L.info.ministry_ability, G.action_points_available_debt >= G.action_cost, true)				
+			}
 		}
-	}
 		if (G.has_required_ministry) {
 			eval {
 				G.action_cost = (L.info.ability !== undefined) ? 0 : 2
@@ -9565,6 +9566,11 @@ P.construct_squadron_flow = script(`
 				exhaust_ministry(R, L.info.ministry, L.info.ministry_ability)
 				log(say_ministry(L.info.ministry, R) + " reduces squadron construction cost by 2.")
 				log_box_end(LOG_BOX_MINISTRY)
+			}
+		} else {
+			eval {
+				G.action_cost = (L.info.ability !== undefined) ? 2 : 4
+				L.min_cost    = (L.info.ability !== undefined) ? 2 : 4
 			}
 		}
 		if (!G.has_required_ministry && (G.action_points_available_debt < L.min_cost)) {
