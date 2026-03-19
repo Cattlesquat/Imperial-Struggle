@@ -2413,6 +2413,7 @@ function update_war_display() {
 			for (let s of [ SPAIN_1, SPAIN_3]) {
 				let flag = V.flags[s]
 				if (flag !== FRANCE && flag !== BRITAIN) continue
+				if (has_conflict_marker(s)) continue
 
 				if (flag === FRANCE && !alliances["_Spain"].fr.includes(s)) alliances["_Spain"].fr.push(s)
 				if (flag === BRITAIN && !alliances["_Spain"].br.includes(s)) alliances["_Spain"].br.push(s)
