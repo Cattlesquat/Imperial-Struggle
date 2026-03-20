@@ -1288,7 +1288,6 @@ body.shift .marker { opacity: 25% }
 	}
 }
 
-
 @keyframes dirty-pulse-british {
 	0%, 100% {
 		box-shadow: 0 0 0 4px crimson, 0 0 12px 4px crimson; /* Baseline */
@@ -1334,305 +1333,173 @@ body.shift .marker { opacity: 25% }
 
 /* HIGHLIGHTS (CARDS) */
 
-body[data-noanims="false"] .card.action {
-	animation: action-pulse-card 4s ease-in-out infinite;
-	/* box-shadow: 0 0 0 3px yellow; */
-}
-
 .card.action {
 	box-shadow: 0 0 0 3px yellow;
 }
 
+body[data-noanims="false"] {
+	& .card.action {
+		animation: action-pulse-card 4s ease-in-out infinite;
+	}
+}
+
 /* HIGHLIGHTS (SPACES) */
 
-body[data-noanims="false"] .space.navy_box.action {
-	/* border: 4px solid yellow; */
-	animation: action-pulse 4s ease-in-out infinite;
-}
+/*
 
-body[data-noanims="true"] .space.navy_box.action {
-	border: 4px solid yellow;
-}
+	space: action, dirty_br, dirty_fr
+		fort - hexagon (1.2)
+		naval - hexagon (1.2)
+		advantage - pentagon (1.2)
+		political - diamond (45deg)
+		market - circle (1.2)
+		territory - square (1.1)
 
+*/
 
-body[data-noanims="false"] .space.market.dirty_br,
-body[data-noanims="false"] .space.political.dirty_br,
-body[data-noanims="false"] .space.territory.dirty_br {
-	animation: dirty-pulse-british 4s ease-in-out infinite;
-	/* border: 4px solid crimson; */
-}
-
-body[data-noanims="true"] .space.market.dirty_br,
-body[data-noanims="true"] .space.political.dirty_br,
-body[data-noanims="true"] .space.territory.dirty_br {
-	border: 4px solid crimson;
-}
-
-
-body[data-noanims="false"] .space.market.dirty_fr,
-body[data-noanims="false"] .space.political.dirty_fr,
-body[data-noanims="false"] .space.territory.dirty_fr  {
-	animation: dirty-pulse-french 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.market.dirty_fr,
-body[data-noanims="true"] .space.political.dirty_fr,
-body[data-noanims="true"] .space.territory.dirty_fr  {
-	border: 4px solid royalblue;
-}
-
-
-body[data-noanims="false"] .space.fort.dirty_fr,
-body[data-noanims="false"] .space.naval.dirty_fr {
+.space.fort,
+.space.naval {
 	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
 	mask: url(images/hexagon.svg) no-repeat center;
-	animation: dirty-pulse-french-shape 4s ease-in-out infinite;
 }
 
-body[data-noanims="true"] .space.fort.dirty_fr,
-body[data-noanims="true"] .space.naval.dirty_fr {
+.space.advantage {
 	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	border: 4px solid royalblue;
+	mask: url(images/pentagon.svg) no-repeat center;
 }
 
-
-body[data-noanims="false"] .space.fort.dirty_br,
-body[data-noanims="false"] .space.naval.dirty_br {
-	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+.space.political {
+	transform: rotate(45deg)
 }
 
-
-body[data-noanims="true"] .space.fort.dirty_br,
-body[data-noanims="true"] .space.naval.dirty_br {
-	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	border: 4px solid crimson;
-}
-
-body[data-noanims="false"] .space.theater.action {
-	animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.theater.action {
-	border: 4px solid yellow;
-}
-
-body[data-noanims="false"] .huguenots.action {
-	animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .huguenots.action {
-	border: 4px solid yellow;
-}
-
-
-body[data-noanims="false"] .marker.demand.action {
-	animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.action {
-	border: 4px solid yellow;
-}
-
-body[data-noanims="false"] .marker.demand.dirty_br {
-	animation: dirty-pulse-british 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.dirty_br {
-	border: 4px solid crimson;
-}
-
-body[data-noanims="false"] .marker.demand.dirty_fr {
-	animation: dirty-pulse-french 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .marker.demand.dirty_fr {
-	border: 4px solid royalblue;
-}
-
-body[data-noanims="false"] .space.market.action,
-body[data-noanims="false"] .space.political.action,
-body[data-noanims="false"] .space.territory.action {
-	animation: action-pulse 4s ease-in-out infinite;
-}
-
-body[data-noanims="true"] .space.political.action {
-	transform: scale(1.2) rotate(45deg)
-}
-
-body[data-noanims="true"] .space.market.action {
+.space.market {
 	transform: scale(1.2)
 }
 
-body[data-noanims="true"] .space.territory.action {
+.space.territory {
 	transform: scale(1.1)
 }
 
-body[data-noanims="true"] .space.market.action,
-body[data-noanims="true"] .space.political.action,
-body[data-noanims="true"] .space.territory.action {
-	border: 4px solid yellow;
+.space.action {
+	box-shadow: 0 0 0 4px yellow;
 }
 
-
-body[data-noanims="false"] .space.naval.action,
-body[data-noanims="false"] .space.fort.action  {
-	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	animation: action-pulse-shape 4s ease-in-out infinite;
+.space.dirty_br {
+	box-shadow: 0 0 0 4px crimson;
 }
 
+.space.dirty_fr  {
+	box-shadow: 0 0 0 4px royalblue;
+}
+
+.space.fort.action,
 .space.naval.action,
-.space.fort.action {
-	transform: scale(1.2);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	background-color: yellow;
-}
-
-body[data-noanims="false"] .space.advantage.action {
-	transform: scale(1.2);
-	-webkit-mask: url(images/pentagon.svg) no-repeat center;
-	mask: url(images/pentagon.svg) no-repeat center;
-	animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
 .space.advantage.action {
-	transform: scale(1.2);
-	-webkit-mask: url(images/pentagon.svg) no-repeat center;
-	mask: url(images/pentagon.svg) no-repeat center;
+	border: none;
 	background-color: yellow;
+}
+
+body[data-noanims="false"] {
+
+	& .space.dirty_br { animation: dirty-pulse-british 4s ease-in-out infinite }
+	& .space.dirty_fr { animation: dirty-pulse-french 4s ease-in-out infinite }
+	& .space.action { animation: action-pulse 4s ease-in-out infinite }
+
+	& .space.fort.dirty_br,
+	& .space.naval.dirty_br,
+	& .space.advantage.dirty_br {
+		animation: dirty-pulse-british-shape 4s ease-in-out infinite;
+	}
+
+	& .space.fort.dirty_fr,
+	& .space.naval.dirty_fr,
+	& .space.advantage.dirty_fr {
+		animation: dirty-pulse-french-shape 4s ease-in-out infinite;
+	}
+
+	& .space.fort.action,
+	& .space.naval.action,
+	& .space.advantage.action {
+		animation: action-pulse-shape 4s ease-in-out infinite;
+	}
+
 }
 
 /* HIGHLIGHTS (MARKERS) */
 
-body[data-noanims="false"] .marker.investment.action {
-	animation: action-pulse 4s ease-in-out infinite;
-	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
+.marker.square.dirty_br, .marker.square-sm.dirty_br {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px crimson;
 }
 
-.marker.investment.action {
+.marker.square.dirty_fr, .marker.square-sm.dirty_fr {
+	box-shadow: 0 0 0 1px black, 0 0 0 4px royalblue;
+}
+
+.marker.square.action, .marker.square-sm.action {
 	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
 }
 
-body[data-noanims="false"] .marker.advantage.action {
-	animation: action-pulse 4s ease-in-out infinite;
-	/* box-shadow: 0 0 0 1px black, 0 0 0 4px yellow; */
+/* old style drop-shadow highlight instead of :before with mask hack
+.marker.hex.action, .marker.hex-sm.action {
+	filter:
+		drop-shadow(0 -3px 0 yellow)
+		drop-shadow(0 3px 0 yellow)
+		drop-shadow(-3px 0 0 yellow)
+		drop-shadow(3px 0 0 yellow)
+	;
 }
+*/
 
-.marker.advantage.action {
-	box-shadow: 0 0 0 1px black, 0 0 0 4px yellow;
-}
-
-body[data-noanims="false"] .marker.conflict.dirty_br:before,
-body[data-noanims="false"] .marker.conflict.plus-one.dirty_br:before,
-body[data-noanims="false"] .marker.damaged.dirty_br:before {
+.marker.hex.action:before {
+	position: absolute;
+	display: block;
 	content: "";
-	display: flex;
+	height: 100px;
+	width: 100px;
+	transform: scale(.83) translateX(-15px) translateY(-20px);
+	mask: url(images/hexagon.svg) no-repeat center;
+}
+
+.marker.hex-sm.dirty_br:before, .marker.hex-sm.dirty_fr:before, .marker.hex-sm.action:before {
+	display: block;
+	content: "";
 	height: 100px;
 	width: 100px;
 	transform: scale(.68) translateX(-25px) translateY(-29px);
-	/* transform: scale(.75) translateX(-23px) translateY(-27px); */
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
 	mask: url(images/hexagon.svg) no-repeat center;
-	animation: dirty-pulse-british-shape 4s ease-in-out infinite;
 }
 
-.marker.conflict.dirty_br:before, .marker.conflict.plus-one.dirty_br:before, .marker.damaged.dirty_br:before {
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.68) translateX(-25px) translateY(-29px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
+.marker.hex.dirty_br:before, .marker.hex-sm.dirty_br:before {
 	background-color: crimson;
 }
 
-
-body[data-noanims="false"] .marker.conflict.dirty_fr:before,
-body[data-noanims="false"] .marker.conflict.plus-one.dirty_fr:before,
-body[data-noanims="false"] .marker.damaged.dirty_fr:before {
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.68) translateX(-25px) translateY(-29px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	animation: dirty-pulse-french-shape 4s ease-in-out infinite;
-}
-
-.marker.conflict.dirty_fr:before, .marker.conflict.plus-one.dirty_fr:before, .marker.damaged.dirty_fr:before {
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.68) translateX(-25px) translateY(-29px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
+.marker.hex.dirty_fr:before, .marker.hex-sm.dirty_fr:before {
 	background-color: royalblue;
 }
 
-/* BR-- this could probably be less brutally scaled with a different piece of art, but it looks pretty good */
-body[data-noanims="false"] .marker.conflict.action:before,
-body[data-noanims="false"] .marker.conflict.plus-one.action:before,
-body[data-noanims="false"] .marker.damaged.action:before {
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.68) translateX(-25px) translateY(-29px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	animation: action-pulse-shape 4s ease-in-out infinite;
-}
-
-.marker.conflict.action:before, .marker.conflict.plus-one.action:before, .marker.damaged.action:before {
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.68) translateX(-25px) translateY(-29px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
+.marker.hex.action:before, .marker.hex-sm.action:before {
 	background-color: yellow;
 }
 
-body[data-noanims="false"] .marker.bonus_war.action:before,
-body[data-noanims="false"] .marker.basic_war.action:before
-{
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.83) translateX(-15px) translateY(-20px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	animation: action-pulse-shape 4s ease-in-out infinite;
-}
+body[data-noanims="false"] {
 
-.marker.bonus_war.action:before,
-.marker.basic_war.action:before
-{
-	content: "";
-	display: flex;
-	height: 100px;
-	width: 100px;
-	transform: scale(.83) translateX(-15px) translateY(-20px);
-	-webkit-mask: url(images/hexagon.svg) no-repeat center;
-	mask: url(images/hexagon.svg) no-repeat center;
-	background-color: yellow;
-}
+	& .marker.square.dirty_br { animation: dirty-pulse-british 4s ease-in-out infinite }
+	& .marker.square.dirty_fr { animation: dirty-pulse-french 4s ease-in-out infinite }
+	& .marker.square.action { animation: action-pulse 4s ease-in-out infinite }
 
+	& .marker.square-sm.dirty_br { animation: dirty-pulse-british 4s ease-in-out infinite }
+	& .marker.square-sm.dirty_fr { animation: dirty-pulse-french 4s ease-in-out infinite }
+	& .marker.square-sm.action { animation: action-pulse 4s ease-in-out infinite }
+
+	& .marker.hex.dirty_br:before { animation: dirty-pulse-british-shape 4s ease-in-out infinite }
+	& .marker.hex.dirty_fr:before { animation: dirty-pulse-french-shape 4s ease-in-out infinite }
+	& .marker.hex.action:before { animation: action-pulse-shape 4s ease-in-out infinite }
+
+	& .marker.hex-sm.dirty_br:before { animation: dirty-pulse-british-shape 4s ease-in-out infinite }
+	& .marker.hex-sm.dirty_fr:before { animation: dirty-pulse-french-shape 4s ease-in-out infinite }
+	& .marker.hex-sm.action:before { animation: action-pulse-shape 4s ease-in-out infinite }
+
+}
 
 /* BEVELED BORDERS */
 
