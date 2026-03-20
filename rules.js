@@ -5647,12 +5647,14 @@ P.event_tax_reform = {
 function score_northern_war()
 {
 	if ((G.flags[GERMAN_STATES_1] === BRITAIN) && (G.flags[GERMAN_STATES_2] === BRITAIN)) {
-		award_vp(BRITAIN, 2, false, "German States all BR-flagged")
+		if (!has_conflict_marker(GERMAN_STATES_1) && !has_conflict_marker(GERMAN_STATES_2)) {
+			award_vp(BRITAIN, 2, false, "German States all BR-flagged")
+		}
 	}
 }
 
 
-// BR: Shift a politicial space in the German States. If both are now BR-flagged, score 2 VP. Bonus: 1 Diplo
+// BR: Shift a political space in the German States. If both are now BR-flagged, score 2 VP. Bonus: 1 Diplo
 // FR: Shift Russia. If it's already FR-flagged, score 2 VP instead. Bonus: 1 Diplo
 P.event_great_northern_war = {
 	_begin() {
@@ -5735,7 +5737,9 @@ P.event_great_northern_war = {
 			if (!L.shifted_space) {
 				L.shifted_space = true
 				if (G.flags[RUSSIA] === FRANCE) {
-					award_vp(FRANCE, 2, false, "Russia already FR-flagged")
+					if (!has_conflict_marker(RUSSIA)) {
+						award_vp(FRANCE, 2, false, "Russia already FR-flagged")
+					}
 				} else if (G.flags[RUSSIA] === NONE) {
 					reflag_space(RUSSIA, FRANCE)
 				} else {
@@ -5756,6 +5760,7 @@ function score_vatican_politics() {
 	let any = false
 	for (let s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4, AUSTRIA_1, AUSTRIA_2, AUSTRIA_3, AUSTRIA_4 ]) {
 		if (G.flags[s] !== BRITAIN) continue
+		if (has_conflict_marker(s)) continue
 		any = true
 		break
 	}
@@ -6044,7 +6049,7 @@ P.event_alberonis_ambition = {
 			L.econ_amount = is_bit(QUALIFIES_FOR_BONUS) ? 3 : 2
 		} else {
 			L.shifted_alliance = false
-			L.savoy_sardinia = ((G.flags[SAVOY] === FRANCE) && (G.flags[SARDINIA] === FRANCE))
+			L.savoy_sardinia = ((G.flags[SAVOY] === FRANCE) && (G.flags[SARDINIA] === FRANCE)) && !has_conflict_marker(SAVOY) && !has_conflict_marker(SARDINIA)
 		}
 	},
 	inactive: "tame Alberoni's ambition",
@@ -6676,7 +6681,7 @@ function score_corsican_crisis(who)
 	} else {
 		let any = false
 		for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
-			if (G.flags[s] === BRITAIN) {
+			if ((G.flags[s] === BRITAIN) && !has_conflict_marker(s)) {
 				any = true
 				break
 			}
@@ -7200,6 +7205,7 @@ function nootka_bonus()
 		let score = 0
 		for (const s of [ SPAIN_1, SPAIN_3 ]) {
 			if (G.flags[s] !== BRITAIN) continue
+			if (has_conflict_marker(s)) continue
 			score += 2
 			reflag_space(s, NONE)
 		}
@@ -7802,6 +7808,7 @@ P.event_falklands_crisis = {
 			let any = false
 			for (const s of [SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4]) {
 				if (G.flags[s] !== BRITAIN) continue
+				if (has_conflict_marker(s)) continue
 				any = true
 				break
 			}
@@ -7950,7 +7957,7 @@ P.ministry_flow = script (`
 
 	eval {
 		clear_bit(MINISTRY_MANUALLY_CLICKED)
-			log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
+		log_box_end(LOG_BOX_MINISTRY)     // only end it if it's a Ministry box, not if we're embedded in somebody else's box
 	}
 `)
 
