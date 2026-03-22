@@ -425,27 +425,28 @@ body.Britain #events_br { grid-row: 2 }
 
 [data-tooltip]:after {
 	content: attr(data-tooltip);
-	pointer-events: none;
 	position: absolute;
-	top: 20px;
-	left: 20px;
-	z-index: 1000;
+	pointer-events: none;
 	background-color: oldlace;
 	border: 1px solid black;
 	border-radius: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 0 5px;
 	width: max-content;
-	opacity: 0; /* Should I just be using display:none ? */
-	-webkit-transition: opacity 0.05s ease-in-out;
+	display: none;
 }
 
 [data-tooltip]:hover:after {
-	opacity: 1;
+	display: block;
+}
+
+span[data-tooltip]:after {
+	top: 20px;
+	left: 20px;
 }
 
 div[data-tooltip]:after {
-	left: 5px!important;
+	top: 20px;
+	left: 5px;
 }
 
 /* LOG */
