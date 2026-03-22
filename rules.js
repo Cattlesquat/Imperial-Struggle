@@ -11510,12 +11510,14 @@ function check_event_skip()
 /* 5.0 Action Rounds - This is the main place player makes choices during his action round. */
 P.action_round_core = {
 	_begin() {
+		G.action_header = ""
 		clear_bit(BUYING_WAR_TILE)
 		clear_bit(SKIPPED_EVENT)
 		L.clicked_upgrade = false
 		if (globalThis.RTT_FUZZER) G.fail = [ 0, 0, 0, 0 ]
 	},
 	_resume() {
+		G.action_header = ""
 		log_box_end()
 		clear_bit(BUYING_WAR_TILE)
 		delete G.ministry_required_because
@@ -11523,6 +11525,7 @@ P.action_round_core = {
 		delete G.action_string
 	},
 	_end() {
+		G.action_header = ""
 		clear_bit(BUYING_WAR_TILE)
 		clear_bit(SKIPPED_EVENT)
 		L.clicked_upgrade = false
