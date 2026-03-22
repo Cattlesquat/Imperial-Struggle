@@ -152,6 +152,8 @@ const space_type_class = [
 ]
 
 function find_layout_node(name) {
+	if (name in layout.spaces)
+		return layout.spaces[name]
 	for (var g in layout.nodes) {
 		var rect = layout.nodes[g][name]
 		if (rect)
@@ -796,22 +798,12 @@ function on_init() {
 			continue
 		}
 
-		if (s.type === POLITICAL)
-			rect = resize_rect(rect, 66, 66)
-		else if (s.type === MARKET)
-			rect = resize_rect(rect, 80, 80)
-		else if (s.type === TERRITORY)
-			rect = resize_rect(rect, 80, 80)
-		else if (s.type === NAVAL || s.type === FORT)
-			rect = resize_rect(rect, 92, 92)
+		if (s.type === POLITICAL) rect = resize_rect(rect, 124, 124)
+		else if (s.type === MARKET) rect = resize_rect(rect, 110, 110)
+		else if (s.type === TERRITORY) rect = resize_rect(rect, 142, 142)
+		else if (s.type === NAVAL || s.type === FORT) rect = resize_rect(rect, 118, 118)
 
-		let space_rect = rect.slice()  //BR// I want a separate copy, not the same array
-		if (s.type === TERRITORY) {	   //BR// Territory clickbox extends above the space
-			space_rect[1] -= 20
-			space_rect[3] += 28
-		}
-
-		define_space("space", s.num, space_rect)
+		define_space("space", s.num, rect)
 			.keyword(space_type_class[s.type])
 			.tooltip(space_tooltip)
 			.tooltip_image(space_tooltip_image)
@@ -870,8 +862,7 @@ function on_init() {
 			if ((s.region === REGION_NORTH_AMERICA) || (s.region === REGION_CARIBBEAN)) {
 				rect = translate_rect(rect, 35, 75) // Huguenot markers displayed at center of territory
 				rect = resize_rect(rect, 51, 51) // fit to the counters
-				define_space("huguenots", s.num, rect)
-				define_layout("huguenot-space", s.num, rect)
+				define_layout("lout-huguenots", s.num, rect)
 			}
 		}
 	}
@@ -999,7 +990,7 @@ function on_init() {
 	for (a of data.advantages) {
 		var rect = find_layout_node(a.name)
 		define_layout("lout-advantage", a.num, resize_rect(rect, 88, 88))
-		define_space("advantage", a.num, resize_rect(rect, 88, 88))
+		define_space("advantage", a.num, resize_rect(rect, 112, 112))
 			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
 		let marker = define_marker("advantage", a.num)
@@ -1651,7 +1642,7 @@ function on_update() {
 				populate_generic("lout-space", s.num, "marker square-sm flag_usa")
 
 			if ((s.type === TERRITORY) && V.huguenots.includes(s.num)) {
-				populate("huguenot-space", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
+				populate("lout-huguenots", s.num, (V.huguenots_spent.includes(s.num) ? "huguenots_spent" : "huguenots"), s.num)
 			}
 		}
 		let dirty = set_has(V.dirty, s.num)

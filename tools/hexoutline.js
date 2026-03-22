@@ -17,7 +17,7 @@ function poly(xc, yc, r, n, sides, a) {
 	for (var i = 0; i < n; ++i) {
 		var x = Math.sin(a) * r + xc
 		var y = Math.cos(a) * r + yc
-		pts.push([x,y].join(","))
+		pts.push([x.toFixed(1),y.toFixed(1)].join(","))
 		a += da
 	}
 	return pts.join(" ")

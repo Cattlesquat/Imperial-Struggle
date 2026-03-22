@@ -1012,36 +1012,71 @@ div[data-tooltip]:after {
 
 .space {
 	box-sizing: border-box;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 .space.navy_box {
 	border-radius: 17px;
 	border: 4px solid transparent;
-	background-size: 92px 92px;
 }
 
-.space.political {
-	transform: rotate(45deg);
+.space.navy_box.action {
+	border-color: yellow;
+	box-shadow: 0 0 0 1px black, 0 0 0 1px inset black;
 }
 
-.space.market {
-	border-radius: 50%;
-}
+.space.naval { border-radius: 50% }
+.space.fort { border-radius: 50% }
+.space.political { border-radius: 50% }
+.space.territory { border-radius: 50% }
+.space.market { border-radius: 50% }
+.space.advantage { border-radius: 50% }
 
-.space.naval, .space.fort {
-	background-size: 92px 92px;
-	border-radius: 50%;
-	border: none;
-}
+.space.naval.dirty_br { background-image: url(images/space_hexagon_dirty_br.svg); }
+.space.fort.dirty_br { background-image: url(images/space_hexagon_dirty_br.svg); }
+.space.political.dirty_br { background-image: url(images/space_diamond_dirty_br.svg); }
+.space.territory.dirty_br { background-image: url(images/space_square_dirty_br.svg); }
+.space.market.dirty_br { background-image: url(images/space_circle_dirty_br.svg); }
+.space.advantage.dirty_br { background-image: url(images/space_pentagon_dirty_br.svg); }
 
-.space.advantage {
-	background-size: 88px 88px;
-	border-radius: 50%;
-}
+.space.naval.dirty_fr { background-image: url(images/space_hexagon_dirty_fr.svg); }
+.space.fort.dirty_fr { background-image: url(images/space_hexagon_dirty_fr.svg); }
+.space.political.dirty_fr { background-image: url(images/space_diamond_dirty_fr.svg); }
+.space.territory.dirty_fr { background-image: url(images/space_square_dirty_fr.svg); }
+.space.market.dirty_fr { background-image: url(images/space_circle_dirty_fr.svg); }
+.space.advantage.dirty_fr { background-image: url(images/space_pentagon_dirty_fr.svg); }
 
-.space.theater {
-	border-radius: 17px;
-	border: 4px solid transparent;
+.space.naval.action { background-image: url(images/space_hexagon_action.svg); }
+.space.fort.action { background-image: url(images/space_hexagon_action.svg); }
+.space.political.action { background-image: url(images/space_diamond_action.svg); }
+.space.territory.action { background-image: url(images/space_square_action.svg); }
+.space.market.action { background-image: url(images/space_circle_action.svg); }
+.space.advantage.action { background-image: url(images/space_pentagon_action.svg); }
+
+body[data-noanims="false"] {
+
+	& .space.naval.dirty_br { background-image: url(images/space_hexagon_dirty_br_pulse.svg); }
+	& .space.fort.dirty_br { background-image: url(images/space_hexagon_dirty_br_pulse.svg); }
+	& .space.political.dirty_br { background-image: url(images/space_diamond_dirty_br_pulse.svg); }
+	& .space.territory.dirty_br { background-image: url(images/space_square_dirty_br_pulse.svg); }
+	& .space.market.dirty_br { background-image: url(images/space_circle_dirty_br_pulse.svg); }
+	& .space.advantage.dirty_br { background-image: url(images/space_pentagon_dirty_br_pulse.svg); }
+
+	& .space.naval.dirty_fr { background-image: url(images/space_hexagon_dirty_fr_pulse.svg); }
+	& .space.fort.dirty_fr { background-image: url(images/space_hexagon_dirty_fr_pulse.svg); }
+	& .space.political.dirty_fr { background-image: url(images/space_diamond_dirty_fr_pulse.svg); }
+	& .space.territory.dirty_fr { background-image: url(images/space_square_dirty_fr_pulse.svg); }
+	& .space.market.dirty_fr { background-image: url(images/space_circle_dirty_fr_pulse.svg); }
+	& .space.advantage.dirty_fr { background-image: url(images/space_pentagon_dirty_fr_pulse.svg); }
+
+	& .space.naval.action { background-image: url(images/space_hexagon_action_pulse.svg); }
+	& .space.fort.action { background-image: url(images/space_hexagon_action_pulse.svg); }
+	& .space.political.action { background-image: url(images/space_diamond_action_pulse.svg); }
+	& .space.territory.action { background-image: url(images/space_square_action_pulse.svg); }
+	& .space.market.action { background-image: url(images/space_circle_action_pulse.svg); }
+	& .space.advantage.action { background-image: url(images/space_pentagon_action_pulse.svg); }
+
 }
 
 /* MARKERS */
@@ -1102,12 +1137,6 @@ body.shift .marker { opacity: 25% }
 	pointer-events: none; /* make flags invisible to the cursor */
 }
 
-.marker.square-sm.huguenots,
-.marker.square-sm.huguenots_spent {
-	width: 39px;
-	height: 39px;
-}
-
 .marker.advantage {
 	z-index: 100;
 }
@@ -1143,6 +1172,16 @@ body.shift .marker { opacity: 25% }
 	background-size: 250px 350px;
 	border: 1px solid black;
 	border-radius: 12px;
+}
+
+.card.action {
+	box-shadow: 0 0 0 3px yellow;
+}
+
+body[data-noanims="false"] {
+	& .card.action {
+		animation: action-pulse-card 4s ease-in-out infinite;
+	}
 }
 
 .ministry_card:after {
@@ -1329,100 +1368,6 @@ body.shift .marker { opacity: 25% }
 .space.attract, .marker.attract, .card.attract {
 	border-color: transparent !important;
 	animation: attract-animation 0.5s ease-in-out infinite !important;
-}
-
-/* HIGHLIGHTS (CARDS) */
-
-.card.action {
-	box-shadow: 0 0 0 3px yellow;
-}
-
-body[data-noanims="false"] {
-	& .card.action {
-		animation: action-pulse-card 4s ease-in-out infinite;
-	}
-}
-
-/* HIGHLIGHTS (SPACES) */
-
-/*
-
-	space: action, dirty_br, dirty_fr
-		fort - hexagon (1.2)
-		naval - hexagon (1.2)
-		advantage - pentagon (1.2)
-		political - diamond (45deg)
-		market - circle (1.2)
-		territory - square (1.1)
-
-*/
-
-.space.fort,
-.space.naval {
-	transform: scale(1.2);
-	mask: url(images/hexagon.svg) no-repeat center;
-}
-
-.space.advantage {
-	transform: scale(1.2);
-	mask: url(images/pentagon.svg) no-repeat center;
-}
-
-.space.political {
-	transform: rotate(45deg)
-}
-
-.space.market {
-	transform: scale(1.2)
-}
-
-.space.territory {
-	transform: scale(1.1)
-}
-
-.space.action {
-	box-shadow: 0 0 0 4px yellow;
-}
-
-.space.dirty_br {
-	box-shadow: 0 0 0 4px crimson;
-}
-
-.space.dirty_fr  {
-	box-shadow: 0 0 0 4px royalblue;
-}
-
-.space.fort.action,
-.space.naval.action,
-.space.advantage.action {
-	border: none;
-	background-color: yellow;
-}
-
-body[data-noanims="false"] {
-
-	& .space.dirty_br { animation: dirty-pulse-british 4s ease-in-out infinite }
-	& .space.dirty_fr { animation: dirty-pulse-french 4s ease-in-out infinite }
-	& .space.action { animation: action-pulse 4s ease-in-out infinite }
-
-	& .space.fort.dirty_br,
-	& .space.naval.dirty_br,
-	& .space.advantage.dirty_br {
-		animation: dirty-pulse-british-shape 4s ease-in-out infinite;
-	}
-
-	& .space.fort.dirty_fr,
-	& .space.naval.dirty_fr,
-	& .space.advantage.dirty_fr {
-		animation: dirty-pulse-french-shape 4s ease-in-out infinite;
-	}
-
-	& .space.fort.action,
-	& .space.naval.action,
-	& .space.advantage.action {
-		animation: action-pulse-shape 4s ease-in-out infinite;
-	}
-
 }
 
 /* HIGHLIGHTS (MARKERS) */
