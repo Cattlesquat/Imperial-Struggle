@@ -101,16 +101,15 @@ menu li.separator {
 
 
 .vp-overlay {
-	font-size: 28px;
-	color: #333;
-	font-weight:bold;
+	position: absolute;
+	inset: 8px;
+	border-radius: 5px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 27px;
+	font-family: var(--font-normal);
 	background-color: #ECD8BB;
-	top: -4px;
-	left: -2px;
-	padding-left: 2px;
-	padding-right: 4px;
-
-	font-family: "Garamond", serif;
 }
 
 #demand_highlight {
