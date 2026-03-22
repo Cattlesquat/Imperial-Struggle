@@ -2515,7 +2515,7 @@ function _tip_blur_spending() {
 
 function _tip_focus_award(a, who)
 {
-	world.tip.setAttribute("class", "square-sm marker award a" + a)
+	world.tip.setAttribute("class", "square-sm marker black award a" + a)
 	position_tip_image()
 	world.tip.hidden = is_mobile()
 
