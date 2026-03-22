@@ -848,7 +848,6 @@ function on_init() {
 				}
 			}
 			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
-			//define_space("conflict-space", s.num, conflict_rect)
 			define_layout("conflict-space", s.num, conflict_rect).keyword("grav-nw")
 		}
 
@@ -862,7 +861,7 @@ function on_init() {
 			let damaged_rect = rect.slice()
 			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
-			define_space("fortdamaged", s.num, damaged_rect).tooltip(space_tooltip).tooltip_image(space_tooltip_image)
+			define_layout("lout-damaged", s.num, damaged_rect)
 		}
 
 		define_layout("lout-space", s.num, rect)
@@ -938,8 +937,6 @@ function on_init() {
 			.keyword("demand-winner-slot")
 	}
 	define_layout("lout-demand-winner", 0, find_layout_node("Demand_winner"))
-	define_layout("lout-navy", undefined, find_layout_node("Navy Box"))
-	define_space("navy_box", 0, find_layout_node("Navy Box")).tooltip(() => bizarro_space_tooltip(NAVY_BOX))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
 
 	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))
@@ -947,7 +944,6 @@ function on_init() {
 	define_layout("lout-award", REGION_CARIBBEAN, find_layout_node("Award Caribbean"))
 	define_layout("lout-award", REGION_INDIA, find_layout_node("Award India"))
 
-	//define_thing("tip-navy").layout(find_layout_node("Navy Box")).tooltip("Navy Box")
 	//define_thing("tip-award", REGION_EUROPE).layout(find_layout_node("Award Europe")).tooltip(award_tooltip)
 	//define_thing("tip-award", REGION_NORTH_AMERICA).layout(find_layout_node("Award North America")).tooltip(award_tooltip)
 	//define_thing("tip-award", REGION_CARIBBEAN).layout(find_layout_node("Award Caribbean")).tooltip(award_tooltip)
@@ -968,8 +964,9 @@ function on_init() {
 
 	define_stack("stack-deal", undefined, find_layout_node("Deal Tiles"))
 
-	define_stack("lout-navy-fr", undefined, find_layout_node("Navy Box Britain"), 8, -8, 0, -50)
-	define_stack("lout-navy-br", undefined, find_layout_node("Navy Box France"), 8, -8, 0, -50)
+	define_space("navy_box", 0, find_layout_node("Navy Box")).tooltip(() => bizarro_space_tooltip(NAVY_BOX))
+	define_stack("lout-navy", FRANCE, find_layout_node("Navy Box Britain"), 8, -8, 0, -50)
+	define_stack("lout-navy", BRITAIN, find_layout_node("Navy Box France"), 8, -8, 0, -50)
 
 	for (i = 0; i < 4; ++i) {
 		define_marker("action-br", i, `square-sm action_${i + 1} br`).tooltip(bold("Britain Action Round " + (i + 1)))
@@ -1629,22 +1626,11 @@ function on_update() {
 		let total = 0
 		for (let sq = NUM_SQUADRONS - 1; sq >= 0; sq--) { // Count backwards so that when one leaves the navy box it will be the "top one in the stack"
 			if (V.squadrons[who][sq] !== SPACE_NAVY_BOX) continue
-			populate("lout-navy" + ((who === FRANCE) ? "-fr" : "-br"), (who === FRANCE) ? "squadron-fr" : "squadron-br", sq)
+			populate("lout-navy", who, (who === FRANCE) ? "squadron-fr" : "squadron-br", sq)
 			total++
 			if (total >= V.navy_box[who]) break
-			//document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(index - 2) * -10}px; margin-left:${index * 10}px`
 		}
 	}
-
-	//for (i = 0; i < V.navy_box[FRANCE]; i++) {
-	//	populate("lout-navy", "squadron-fr-navy", i)
-	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
-	//}
-
-	//for (i = 0; i < V.navy_box[BRITAIN]; i++) {
-	//	populate("lout-navy", "squadron-br-navy", i)
-	//	document.querySelector(".layout.lout-navy").lastChild.style.cssText = `margin-top:${(i - 2) * -10}px; margin-left:${i * 10}px`
-	//}
 
 	for (s of data.spaces) {
 		if (s.type === NAVAL) {
@@ -1829,7 +1815,7 @@ function on_update() {
 	for (s = 0; s < NUM_SPACES; s++) {
 		if (data.spaces[s].type !== FORT) continue
 		if (is_damaged_fort(s)) {
-			populate("fortdamaged", s, "damaged", s)
+			populate("lout-damaged", s, "damaged", s)
 		}
 	}
 
