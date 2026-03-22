@@ -9080,9 +9080,9 @@ P.advantage_unflag_discount = {
 				if (data.spaces[s].type !== space_type) continue
 				if (G.flags[s] !== 1 - G.active) continue
 				any_flagged = true
+				if (!has_conflict_marker(s)) any_non_conflict = true
 				if ((type === ECON) && !allowed_to_shift_market(s, R)) continue
 				if (!is_shift_allowed(s, R, true, space_rules(s, type))) continue
-				if (!has_conflict_marker(s)) any_non_conflict = true
 				if (!action_points_eligible_major(type, space_rules(s, type)) && !eligible_for_minor_action(s, R)) continue
 
 				if (G.active_advantage === GERMAN_DIPLOMACY) {
@@ -9103,7 +9103,7 @@ P.advantage_unflag_discount = {
 			} else if (!G.eligible_major[type] && (G.minor[type] <= 0) && (type === data.investments[G.played_tile].minortype)) {
 				msg = "You cannot make a second purchase with a minor action."
 			} else if (!any) {
-				msg = "You do not have eligible connections to any " + L.adv_plural + "."
+				msg = "You do not have eligible connections to any unflaggable " + L.adv_plural + "."
 			}
 		}
 		V.prompt = advantage_prompt(R, G.active_advantage, msg)
