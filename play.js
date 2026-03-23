@@ -1,5 +1,224 @@
 "use strict"
 
+const layout_nodes = {
+	"Demand": [1111,323,324,61],
+	"Demand_winner":[1120, 375, 324, 25],
+	"Deal Tiles": [1250,0,324,61],
+	"record track 0": [2083,1302,58,58],
+	"record track 1": [2143,1302,58,58],
+	"record track 2": [2201,1302,58,58],
+	"record track 3": [2261,1302,58,58],
+	"record track 4": [2321,1302,58,58],
+	"record track 5": [2380,1302,58,58],
+	"record track 6": [2439,1302,58,58],
+	"record track -7": [2084,1242,58,58],
+	"record track -6": [2143,1242,58,58],
+	"record track -5": [2202,1242,58,58],
+	"record track -4": [2262,1242,58,58],
+	"record track -3": [2321,1242,58,58],
+	"record track -2": [2380,1242,58,58],
+	"record track -1": [2439,1242,58,58],
+	"record track 7": [2143,1363,58,58],
+	"record track 8": [2202,1363,58,58],
+	"record track 9": [2261,1363,58,58],
+	"record track 10": [2321,1363,58,58],
+	"record track 11": [2380,1363,58,58],
+	"record track 12": [2439,1363,58,58],
+	"record track 13": [2142,1422,58,58],
+	"record track 14": [2200,1422,58,58],
+	"record track 15": [2260,1422,58,58],
+	"record track 16": [2320,1422,58,58],
+	"record track 17": [2379,1422,58,58],
+	"record track 18": [2438,1422,58,58],
+	"record track 19": [2142,1483,58,58],
+	"record track 20": [2201,1483,58,58],
+	"record track 21": [2261,1483,58,58],
+	"record track 22": [2320,1483,58,58],
+	"record track 23": [2379,1483,58,58],
+	"record track 24": [2438,1483,58,58],
+	"record track 25": [2143,1542,58,58],
+	"record track 26": [2201,1542,58,58],
+	"record track 27": [2261,1542,58,58],
+	"record track 28": [2320,1542,58,58],
+	"record track 29": [2379,1542,58,58],
+	"record track 30": [2438,1542,58,58],
+	"record track 31": [2142,1601,58,58],
+	"record track 32": [2200,1601,58,58],
+	"record track 33": [2260,1601,58,58],
+	"record track 34": [2320,1601,58,58],
+	"record track 35": [2378,1601,58,58],
+	"record track 36": [2437,1601,58,58],
+	"Navy Box": [887,836,282,138],
+	"Navy Box France": [925,875,60,60],
+	"Navy Box Britain": [1050,875,60,60],
+	"Turn 5": [126,1180,58,101],
+	"Turn 4": [125,1281,58,101],
+	"Turn 3": [126,1383,58,101],
+	"Turn 2": [126,1485,58,56],
+	"Turn 1": [126,1546,58,56],
+	"War 4": [47,1129,78,104],
+	"War 3": [47,1233,78,102],
+	"War 2": [48,1334,78,102],
+	"War 1": [48,1493,78,104],
+	"Turn 6": [125,1079,58,101],
+	"Initiative": [251,1502,75,75],
+	"Award North America": [669,48,118,119],
+	"Award_winner North America": [669, 132, 118, 25],
+	"Award_winner North America Left": [684, 95, 40, 25],
+	"Award_winner North America Right": [757, 95, 40, 25],
+	"Award India": [1437,888,118,119],
+	"Award_winner India": [1437, 972, 118, 25],
+	"Award_winner India Left": [1451, 935, 40, 25],
+	"Award_winner India Right": [1526, 935, 40, 25],
+	"Award Europe": [1307,530,118,119],
+	"Award_winner Europe": [1321, 562, 40, 25],
+	"Award_winner Europe Left": [1321, 562, 40, 25],
+	"Award_winner Europe Right": [1395, 562, 40, 25],
+	"Award_winner Europe Prestige": [1321, 592, 40, 25],
+	"Award_winner Europe Prestige Left": [1321, 592, 40, 25],
+	"Award_winner Europe Prestige Right": [1393, 592, 40, 25],
+	"Award Caribbean": [1100,1238,118,119],
+	"Award_winner Caribbean": [1100, 1317, 118, 25],
+	"Award_winner Caribbean Left": [1114, 1284, 40, 25],
+	"Award_winner Caribbean Right": [1188, 1284, 40, 25],
+
+	"Ireland_1": [1492,242,65,65],
+	"Ireland_2": [1583,243,65,65],
+	"Scotland_1": [1695,126,65,65],
+	"Scotland_2": [1787,127,65,65],
+	"Denmark": [2024,55,65,65],
+	"Prussia_1": [2068,193,65,65],
+	"Prussia_2": [2161,193,65,65],
+	"Prussia_3": [2068,301,65,65],
+	"Prussia_4": [2161,301,65,65],
+	"Sweden": [2317,150,65,65],
+	"Russia": [2409,264,65,65],
+	"Dutch_1": [1846,294,65,65],
+	"Dutch_2": [1937,294,65,65],
+	"German_States_1": [2008,466,65,65],
+	"German_States_2": [2101,467,65,65],
+	"Bavaria": [2218,466,65,65],
+	"Austria_1": [2334,495,65,65],
+	"Austria_2": [2426,495,65,65],
+	"Austria_3": [2333,587,65,65],
+	"Austria_4": [2426,587,65,65],
+	"Sardinia": [2189,803,65,65],
+	"Savoy": [1989,611,65,65],
+	"Spain_1": [1523,578,65,65],
+	"Spain_2": [1615,578,65,65],
+	"Spain_3": [1523,669,65,65],
+	"Spain_4": [1615,669,65,65],
+	"Gibraltar": [1306,670,77,77],
+	"Minorca": [1306,780,77,77],
+	"Biscay": [1300,396,88,77],
+	"Balearic": [1394,396,88,77],
+	"Algonquin": [132,150,65,65],
+	"Hudson Bay": [331,70,77,77],
+	"York Factory": [257,156,76,76],
+	"Quebec & Montreal": [429,107,77,77],
+	"Gulf of St. Lawrence": [952,158,76,76],
+	"Cabot Strait": [927,256,88,77],
+	"Louisbourg": [1038,362,88,77],
+	"Acadia": [922,384,77,77],
+	"Northeast Channel": [820,439,76,76],
+	"Halifax": [796,324,88,77],
+	"Georges Bank": [732,508,76,76],
+	"Atlantic Passage": [619,589,88,77],
+	"Gulf of Maine": [609,429,88,77],
+	"Mass. Bay": [472,396,76,76],
+	"Northern Colonies": [261,660,77,77],
+	"Chesapeake": [223,772,76,76],
+	"Hudson Valley": [266,496,76,76],
+	"Albany": [315,396,76,76],
+	"Cumberland": [93,710,76,76],
+	"Ohio Forks": [27,609,88,77],
+	"Allegheny": [124,532,76,76],
+	"Niagara": [81,452,76,76],
+	"Oswego": [221,382,76,76],
+	"Champlain Valley": [337,272,88,77],
+	"Ile aux Noix": [440,212,76,76],
+	"Cataraqui": [213,259,76,76],
+	"Iroquois": [80,910,65,65],
+	"Sons of Liberty": [507,634,65,65],
+	"USA_Prestige_2": [1003,602,65,65],
+	"USA_Prestige_3": [1096,602,65,65],
+	"Asiento": [782,781,77,77],
+	"Privateers": [937,1139,65,65],
+	"Buccaneers": [528,1545,65,65],
+	"Carolinas": [698,691,77,77],
+	"Georgia": [591,723,76,76],
+	"San Agustin": [565,825,77,77],
+	"Panzacola": [450,905,76,76],
+	"Bahamas Run West": [528,1068,76,76],
+	"Bahamas Run North": [712,918,76,76],
+	"Caicos": [679,1147,76,76],
+	"Bahamas Run": [635,1044,88,77],
+	"St. Domingue": [754,1252,77,77],
+	"Port de Paix": [664,1250,76,76],
+	"Puerto Principe": [550,1185,76,76],
+	"Puerto Rico": [855,1283,76,76],
+	"Antigua": [898,1379,76,76],
+	"Martinique": [986,1445,76,76],
+	"St. Lucia": [962,1548,76,76],
+	"Antilles Channel": [855,1489,88,77],
+	"Guadeloupe": [1089,1381,77,77],
+	"Barbados": [1084,1536,77,77],
+	"Havana": [400,1215,76,76],
+	"Gulf of Cazones": [481,1257,88,77],
+	"Santiago": [559,1314,76,76],
+	"Jamaica": [452,1422,77,77],
+	"Cayman Passage": [313,1362,76,76],
+	"Cuba Passage East": [437,1109,76,76],
+	"Cuba Passage": [332,1124,88,77],
+	"St. James": [270,941,76,76],
+	"Louisiana": [325,848,77,77],
+	"Maratha": [1799,731,65,65],
+	"Nizam": [1409,1198,65,65],
+	"Mysore": [1408,1491,65,65],
+	"Malacca Route": [2254,1110,76,76],
+	"Hooghly River": [2026,986,88,77],
+	"Chandernagore": [2044,881,77,77],
+	"Plassey": [1936,791,76,76],
+	"West Bengal": [1812,859,76,76],
+	"Midnapore": [1870,1038,76,76],
+	"Calcutta": [2074,1106,77,77],
+	"Kurpa": [1558,1084,76,76],
+	"Arcot": [1644,1160,88,77],
+	"Vellore": [1544,1207,76,76],
+	"Kanchipuram": [1774,1278,76,76],
+	"Madras": [1957,1222,77,77],
+	"Pondicherry": [1957,1392,77,77],
+	"Karaikal": [1933,1513,76,76],
+	"Vandavasi": [1749,1419,88,77],
+	"Tiruchirappalli": [1614,1470,76,76],
+	"Calicut": [1333,1329,76,76],
+	"Mangalore": [1279,1073,76,76],
+	"Malabar Coast": [1243,1206,88,77],
+	"Baltic Trade": [1908,119,80,80],
+	"Central Europe Conflict": [2281,364,80,80],
+	"German Diplomacy": [2288,263,80,80],
+	"Italy Influence": [2177,646,80,80],
+	"Mediterranean Intrigue": [1788,592,80,80],
+	"Naval Bastion": [1406,661,80,80],
+	"Silesia Negotiations": [2418,382,80,80],
+	"Algonquin Raids": [45,249,80,80],
+	"Fur Trade": [224,46,80,80],
+	"Iroquois Raids": [47,1009,80,80],
+	"Patriot Agitation": [370,692,80,80],
+	"Wheat": [135,800,80,80],
+	"Fruit": [444,786,80,80],
+	"Letters of Marque": [1083,1100,80,80],
+	"Pirate Havens": [664,1555,80,80],
+	"Rum": [985,1242,80,80],
+	"Slaving Contracts": [866,721,80,80],
+	"Power Struggle": [1533,1545,80,80],
+	"Raids & Incursions": [1702,826,80,80],
+	"Separatist Wars": [1486,1318,80,80],
+	"Silk": [1767,952,80,80],
+	"Textiles": [1703,1539,80,80],
+	"Navy Box": [883,833,290,144],
+}
+
 const war_layout = {
 	war_7yw_theater_drawn: [353, 0, 667, 93],
 	war_7yw_theater_1_france: [57, 132, 152, 152],
@@ -99,7 +318,7 @@ const war_layout = {
 	war_was_theater_1_alliances: [500, 122, 50, 152],
 	war_was_theater_2_alliances: [1022, 142, 50, 152],
 	war_was_theater_3_alliances: [500, 471, 50, 152],
-	war_was_theater_4_alliances: [1022, 454, 50, 152], 
+	war_was_theater_4_alliances: [1022, 454, 50, 152],
 
 	// 7YW - Strength
 	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
@@ -155,13 +374,8 @@ const space_type_class = [
 ]
 
 function find_layout_node(name) {
-	if (name in layout.spaces)
-		return layout.spaces[name]
-	for (var g in layout.nodes) {
-		var rect = layout.nodes[g][name]
-		if (rect)
-			return rect
-	}
+	if (name in layout_nodes)
+		return layout_nodes[name]
 	return null
 }
 
@@ -2035,7 +2249,7 @@ const TILE_POSITIONS = {
 
 function agencement_theater_tiles(element) {
 	let children = element.children
-	let count = children.length 
+	let count = children.length
 	if (count === 0 || count > 4)
 		return
 	
@@ -2736,7 +2950,7 @@ function escape_square_brackets(text) {
 				case "b":
 					className = "tip-basic-war"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_basic_war_tile(${value}, ${who})"
 						onmouseleave="_tip_blur_basic_war_tile()"
@@ -2745,7 +2959,7 @@ function escape_square_brackets(text) {
 				case "B":
 					className = "tip-bonus-war"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_bonus_war_tile(${value}, ${who})"
 						onmouseleave="_tip_blur_bonus_war_tile()"
@@ -2754,14 +2968,14 @@ function escape_square_brackets(text) {
 				case "F":
 					className = "flag-string"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						>${escape_typography(msg)}</span>`
 					break
 				case "i":
 					className = "tip-investment"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_investment(${value}, ${who})"
 						onmouseleave="_tip_blur_investment()"
@@ -2771,7 +2985,7 @@ function escape_square_brackets(text) {
 				case "I":
 					className = "tip-investment"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_investment(${value}, ${who})"
 						onmouseleave="_tip_blur_investment()"
@@ -2781,7 +2995,7 @@ function escape_square_brackets(text) {
 				case "W":
 					className = "tip-award"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_award(${value}, ${who})"
 						onmouseleave="_tip_blur_award()"
@@ -2792,7 +3006,7 @@ function escape_square_brackets(text) {
 					className = "tip-space"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					msg = data.spaces[value].name
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_space(${who}, ${value})"
 						onmouseleave="_tip_blur_space()"
@@ -2810,7 +3024,7 @@ function escape_square_brackets(text) {
 					className = "flag-string"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					whom = ((who === FRANCE) || (who === BRITAIN)) ? roles[who].user_name : "Observer"
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						>${escape_typography(whom)}</span>`
 					break
@@ -2818,7 +3032,7 @@ function escape_square_brackets(text) {
 				default:
 					className = "tip-spending"
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
-					tooltip_text = `<span 
+					tooltip_text = `<span
 						class="${className}"
 						onmouseenter="_tip_focus_spending(${who})"
 						onmouseleave="_tip_blur_spending()"
@@ -3107,7 +3321,7 @@ function log_awards(codes)
 	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
 		var chit = awards[region]
 
-		msg += `<span class="a${chit} award marker black square-sm award-in-log" style="pointer-events: auto;"                  
+		msg += `<span class="a${chit} award marker black square-sm award-in-log" style="pointer-events: auto;"
 				onmouseenter="_tip_focus_award(${chit}, ${NONE})"
 				onmouseleave="_tip_blur_award()"
 				onmousedown="_tip_click_light('award',${chit})"
@@ -3133,11 +3347,11 @@ function log_demands(codes)
 	let msg = "<div style=\"display: flex; justify-content: center;\">"
 	for (var i = 0; i < 3; i++) {
 		var chit = global_demand[i]
-		msg += `<span class="${data.demands[chit].name.toLowerCase()} demand marker square-sm demand-in-log" 
-          onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
-		  onmouseleave="_tip_blur_demand()"
-		  onmousedown="_tip_click_light('demand',${chit})"
-        ></span>`
+		msg += `<span class="${data.demands[chit].name.toLowerCase()} demand marker square-sm demand-in-log"
+				onmouseenter="_tip_focus_demand('${chit}', 'marker demand small-sm ${data.demands[chit].name.toLowerCase()}')"
+				onmouseleave="_tip_blur_demand()"
+				onmousedown="_tip_click_light('demand',${chit})"
+			></span>`
 	}
 	msg += "</div>"
 	return msg
@@ -3171,7 +3385,7 @@ function log_war_tiles(codes)
 	for (const tile of basic) {
 		who = (tile < NUM_BASE_WAR_TILES) ? FRANCE : BRITAIN
 		whom = (who === FRANCE) ? "fr" : "br"
-		msg += `<span class="basic_war marker hex ${whom} war-basic${tile} revealed wartile-in-log" 
+		msg += `<span class="basic_war marker hex ${whom} war-basic${tile} revealed wartile-in-log"
 				onmouseenter="_tip_focus_basic_war_tile('${tile}', '${who}')"
 				onmouseleave="_tip_blur_basic_war_tile()"
 				></span>`
@@ -3183,17 +3397,17 @@ function log_war_tiles(codes)
 	}
 	for (const tile of bonus) {
 		if (tile === ATLANTIC_DOMINANCE + who) {
-			msg += `<span class="hex-sm atlantic-dominance marker ${whom} revealed wartile-in-log" 
+			msg += `<span class="hex-sm atlantic-dominance marker ${whom} revealed wartile-in-log"
 				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></span>`
 		} else if (tile === BYNG) {
-			msg += `<span class="hex-sm byng marker ${whom} revealed wartile-in-log" 
+			msg += `<span class="hex-sm byng marker ${whom} revealed wartile-in-log"
 				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></span>`
 		} else {
-			msg += `<span class="bonus_war marker hex ${whom} war${tile} revealed wartile-in-log" 
+			msg += `<span class="bonus_war marker hex ${whom} war${tile} revealed wartile-in-log"
 				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></span>`
@@ -4229,7 +4443,7 @@ function show_card_list(id, params) {
 						flagdiv = `<div class="score-flag ${flag}"></div>`
 					}
 
-					msg += `<div class="a${chit} award marker black square-sm award-in-score"                  
+					msg += `<div class="a${chit} award marker black square-sm award-in-score"
 					onmouseenter="_tip_focus_award(${chit}, ${NONE})"
 					onmouseleave="_tip_blur_award()"
 					onmousedown="_tip_click_light('award',${chit})"
