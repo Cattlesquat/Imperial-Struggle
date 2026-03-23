@@ -2128,17 +2128,6 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
-	for (let ix = 0; ix < V.log_length; ix++) {
-		let logline = world.log.children[ix]
-		if (!logline) continue
-		if (logline.innerHTML.startsWith("~a")) {
-			logline.innerHTML = log_awards(logline.innerHTML)
-		} else if (logline.innerHTML.startsWith("~d")) {
-			logline.innerHTML = log_demands(logline.innerHTML)
-		} else if (logline.innerHTML.startsWith("~w")) {
-			logline.innerHTML = log_war_tiles(logline.innerHTML)
-		}
-	}
 
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
 		log_partially_hidden = true
@@ -3283,7 +3272,9 @@ function on_log(text, ix) {
 			text = text.substring(1)
 			break
 		case "~":
-			p.innerHTML = text // award/demand codes -- save for processing later in on_update() when we have latest view
+			if (text[1] === "a") p.innerHTML = log_awards(text)
+			if (text[1] === "d") p.innerHTML = log_demands(text)
+			if (text[1] === "w") p.innerHTML = log_war_tiles(text)
 			return p
 	}
 
