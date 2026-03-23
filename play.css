@@ -685,11 +685,11 @@ div[data-tooltip]:after {
 #status .symbol.econ { background-image: url(images/icon-econ.20.png) }
 #status .symbol.mil { background-image: url(images/icon-mil.20.png) }
 
-/* FANCY LOG FORMATTING */
+/* FANCY LOG TABLES */
 
 #log div:has(.award-table) { padding: 6px }
 #log div:has(.demand-table) { padding: 6px }
-#log div:has(.wartile-table) { padding: 6px 0 }
+#log div:has(.wartile-table) { padding: 0 }
 
 .award-table {
 	display: grid;
@@ -715,7 +715,11 @@ div[data-tooltip]:after {
 .wartile-table {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-around;
+	justify-content: center;
+
+	& .marker {
+		margin: 0px -10px;
+	}
 }
 
 /* SCORE DIALOG */

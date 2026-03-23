@@ -3380,48 +3380,49 @@ function log_war_tiles(codes)
 		}
 	} while (codes[index] === ',')
 
-	let msg = "<div style=\"display: flex; justify-content: center;\">"
-	let who = NONE
-	let whom = ""
-	let wrap = 0
+	let msg = []
+	msg.push(`<div class="wartile-table">`)
+
+	let who, whom
 	for (const tile of basic) {
-		who = (tile < NUM_BASE_WAR_TILES) ? FRANCE : BRITAIN
+		who = data.basic_war_tiles[tile].side
 		whom = (who === FRANCE) ? "fr" : "br"
-		msg += `<span class="basic_war marker hex ${whom} war-basic${tile} revealed wartile-in-log"
-				onmouseenter="_tip_focus_basic_war_tile('${tile}', '${who}')"
-				onmouseleave="_tip_blur_basic_war_tile()"
-				></span>`
-		if (++wrap >= 2) {
-			wrap = 0
-			msg += "</div>"
-			msg += "<div style=\"display: flex; justify-content: center;\">"
-		}
+		msg.push(`<div class="marker hex basic_war ${whom} war-basic${tile}"
+			onmouseenter="_tip_focus_basic_war_tile(${tile},${who})"
+			onmouseleave="_tip_blur_basic_war_tile()"
+			></div>`
+		)
 	}
 	for (const tile of bonus) {
-		if (tile === ATLANTIC_DOMINANCE + who) {
-			msg += `<span class="hex-sm atlantic-dominance marker ${whom} revealed wartile-in-log"
-				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+		who = data.bonus_war_tiles[tile].side
+		whom = (who === FRANCE) ? "fr" : "br"
+		if (tile === BYNG)
+			msg.push(`<div class="marker hex-sm byng ${whom}"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile},${who})"
 				onmouseleave="_tip_blur_bonus_war_tile()"
-				></span>`
-		} else if (tile === BYNG) {
-			msg += `<span class="hex-sm byng marker ${whom} revealed wartile-in-log"
-				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+				></div>`
+			)
+		else if (tile === ATLANTIC_DOMINANCE + FRANCE)
+			msg.push(`<div class="marker hex-sm atlantic-dominance fr"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile},0)"
 				onmouseleave="_tip_blur_bonus_war_tile()"
-				></span>`
-		} else {
-			msg += `<span class="bonus_war marker hex ${whom} war${tile} revealed wartile-in-log"
-				onmouseenter="_tip_focus_bonus_war_tile('${tile}', '${who}')"
+				></div>`
+			)
+		else if (tile === ATLANTIC_DOMINANCE + BRITAIN)
+			msg.push(`<div class="marker hex-sm atlantic-dominance br"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile},1)"
 				onmouseleave="_tip_blur_bonus_war_tile()"
-				></span>`
-		}
-		if (++wrap >= 2) {
-			wrap = 0
-			msg += "</div>"
-			msg += "<div style=\"display: flex; justify-content: center;\">"
-		}
+				></div>`
+			)
+		else
+			msg.push(`<div class="marker hex bonus_war war${tile}"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile},${who})"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></div>`
+			)
 	}
-	msg += "</div>"
-	return msg
+	msg.push("</div>")
+	return msg.join("")
 }
 
 
