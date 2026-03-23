@@ -711,7 +711,6 @@ function on_init() {
 	init_preference_checkbox("downanddirty", false)
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("redsies", false)
-	init_preference_checkbox("tipsies", true)
 	init_preference_checkbox("allwars", false)
 	init_preference_checkbox("scoresies", false, on_dialog_refresh)
 	init_preference_checkbox("eventsies", true)
@@ -2853,20 +2852,11 @@ function escape_tip_class_sub_function(text, re, log_className, tip_className, n
 }
 
 function position_tip_image_imp() {
-	let tipsies = get_preference("tipsies", true)
-	if (tipsies) {
-		world.tip.style.left = "0px"
-		world.tip.style.bottom = world.status.offsetHeight + "px"
-		world.tip.style.display = "flex"
-		world.tip.style.right = ""
-		world.tip.style.top = ""
-	} else {
-		world.tip.style.left = ""
-		world.tip.style.bottom = ""
-		world.tip.style.display = "block"
-		world.tip.style.right = "240px"
-		world.tip.style.top = "60px"
-	}
+	world.tip.style.left = "0px"
+	world.tip.style.bottom = world.status.offsetHeight + "px"
+	world.tip.style.display = "flex"
+	world.tip.style.right = ""
+	world.tip.style.top = ""
 }
 
 function position_tip_image() {
