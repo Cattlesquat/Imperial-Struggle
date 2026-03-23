@@ -794,6 +794,7 @@ function on_init() {
 
 
 	for (s of data.spaces) {
+		let layout_rect, conflict_rect, damaged_rect, huguenot_rect
 		let rect = find_layout_node(s.layout ?? s.name)
 		if (!rect) {
 			console.error("no layout for " + s.name)
@@ -810,8 +811,19 @@ function on_init() {
 			.tooltip(space_tooltip)
 			.tooltip_image(space_tooltip_image)
 
+		if (s.type === TERRITORY) {
+			layout_rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces
+		} else if (s.type === MARKET) {
+			layout_rect = translate_rect(rect, 0, -3) // Move every market flag position up a bit
+		} else if (s.type === FORT) {
+			layout_rect = translate_rect(rect, -1, -12) // Move every fort flag position up a bunchy (uncover the fort number)
+		} else {
+			layout_rect = rect
+		}
+		define_layout("lout-space", s.num, layout_rect)
+
 		if ((s.type === POLITICAL) || (s.type === MARKET)) {
-			let conflict_rect = rect.slice()
+			conflict_rect = rect
 			if (s.type === MARKET) {
 				if ([NORTHEAST_CHANNEL, OSWEGO].includes(s.num)) {
 					conflict_rect = translate_rect(conflict_rect, -65, -40) // upper left
@@ -842,29 +854,20 @@ function on_init() {
 				}
 			}
 			conflict_rect = resize_rect(conflict_rect, 35, 35)     // fit to the counters, at least approximately
-			define_layout("conflict-space", s.num, conflict_rect).keyword("grav-nw")
+			define_layout("lout-conflict", s.num, conflict_rect).keyword("grav-nw")
 		}
 
-		if (s.type === TERRITORY) {
-			rect = translate_rect(rect, 0, -38) //BR// Territory markers displayed above the spaces
-		} else if (s.type === MARKET) {
-			rect = translate_rect(rect, 0, -3) // Move every market flag position up a bit
-		} else if (s.type === FORT) {
-			rect = translate_rect(rect, -1, -12) // Move every fort flag position up a bunchy (uncover the fort number)
-
-			let damaged_rect = rect.slice()
-			damaged_rect = translate_rect(damaged_rect, 40, 37) // Damaged markers
+		if (s.type === FORT) {
+			damaged_rect = translate_rect(layout_rect, 40, 37) // Damaged markers
 			damaged_rect = resize_rect(damaged_rect, 35, 35)     // fit to the counters, at least approximately
 			define_layout("lout-damaged", s.num, damaged_rect)
 		}
 
-		define_layout("lout-space", s.num, rect)
-
 		if (s.type === TERRITORY) {
 			if ((s.region === REGION_NORTH_AMERICA) || (s.region === REGION_CARIBBEAN)) {
-				rect = translate_rect(rect, 35, 75) // Huguenot markers displayed at center of territory
-				rect = resize_rect(rect, 51, 51) // fit to the counters
-				define_layout("lout-huguenots", s.num, rect)
+				huguenot_rect = translate_rect(layout_rect, 35, 75) // Huguenot markers displayed at center of territory
+				huguenot_rect = resize_rect(huguenot_rect, 35, 35) // fit to the counters
+				define_layout("lout-huguenots", s.num, huguenot_rect)
 			}
 		}
 	}
@@ -1790,7 +1793,7 @@ function on_update() {
 	}
 
 	map_for_each(V.conflicts, (s, n) => {
-		populate("conflict-space", s, "conflict", s)
+		populate("lout-conflict", s, "conflict", s)
 		update_keyword("conflict", s, "plus-one", n > 1)
 
 		let dirty = Array.isArray(V.dirty_conflict) && set_has(V.dirty_conflict, s)
