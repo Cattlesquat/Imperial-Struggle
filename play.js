@@ -899,26 +899,16 @@ function mention_verbosity()
 }
 
 
-
-
-function rebuild_ui()
-{
-	// WARNING: we reach into client.js innards here to reformat the log messages! ... and prompt!
-	update_log(0, game_log.length)
-	update_header()
-}
-
-// When player roles are swapped
-function on_pie()
-{
-	rebuild_ui()
-}
-
-
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
 	update_favicon("favicon1.png")
+
+	create_window("scoring_summary_dialog", "Scoring Summary", update_scoring_summary_dialog)
+	create_window("final_scoring_summary_dialog", "Final Scoring Summary", update_final_scoring_summary_dialog)
+	create_window("event_card_dialog", "Event Cards", update_event_card_dialog, true)
+	create_window("french_ministry_dialog", "French Ministry", update_french_ministry_dialog, true)
+	create_window("british_ministry_dialog", "British Ministry", update_british_ministry_dialog, true)
 
 	init_preference_checkbox("noanims", false)
 	init_preference_checkbox("noflipsies", false)
@@ -2148,7 +2138,6 @@ function on_update() {
 	}
 
 	update_debt_display()
-	refresh_visible_dialogs()
 
 	end_update()
 
@@ -2718,7 +2707,7 @@ function _tip_blur_spending() {
 }
 
 
-function _tip_focus_award(a, who)
+function _tip_focus_award(a)
 {
 	world.tip.setAttribute("class", "square-sm marker black award a" + a)
 	position_tip_image()
@@ -2738,7 +2727,7 @@ function _tip_blur_award() {
 }
 
 
-function _tip_focus_investment(i, who)
+function _tip_focus_investment(i)
 {
 	world.tip.setAttribute("class", "square marker investment i" + i)
 	position_tip_image()
@@ -2754,8 +2743,9 @@ function _tip_blur_investment() {
 }
 
 
-function _tip_focus_basic_war_tile(t, who)
+function _tip_focus_basic_war_tile(t)
 {
+	var who = data.basic_war_tiles[t].side
 	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war-basic" + t)
 	position_tip_image()
 	world.tip.hidden = is_mobile()
@@ -2770,8 +2760,9 @@ function _tip_blur_basic_war_tile() {
 }
 
 
-function _tip_focus_bonus_war_tile(t, who)
+function _tip_focus_bonus_war_tile(t)
 {
+	var who = data.bonus_war_tiles[t].side
 	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war" + t)
 	position_tip_image()
 	world.tip.hidden = is_mobile()
@@ -2941,7 +2932,7 @@ function escape_square_brackets(text) {
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span
 						class="${className}"
-						onmouseenter="_tip_focus_basic_war_tile(${value}, ${who})"
+						onmouseenter="_tip_focus_basic_war_tile(${value})"
 						onmouseleave="_tip_blur_basic_war_tile()"
 						>${escape_typography(msg)}</span>`
 					break
@@ -2950,7 +2941,7 @@ function escape_square_brackets(text) {
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span
 						class="${className}"
-						onmouseenter="_tip_focus_bonus_war_tile(${value}, ${who})"
+						onmouseenter="_tip_focus_bonus_war_tile(${value})"
 						onmouseleave="_tip_blur_bonus_war_tile()"
 						>${escape_typography(msg)}</span>`
 					break
@@ -2966,7 +2957,7 @@ function escape_square_brackets(text) {
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span
 						class="${className}"
-						onmouseenter="_tip_focus_investment(${value}, ${who})"
+						onmouseenter="_tip_focus_investment(${value})"
 						onmouseleave="_tip_blur_investment()"
 						onmousedown="_tip_click_light('investment',${value})"
 						>${say_investment_tile(value)}</span>`
@@ -2976,7 +2967,7 @@ function escape_square_brackets(text) {
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span
 						class="${className}"
-						onmouseenter="_tip_focus_investment(${value}, ${who})"
+						onmouseenter="_tip_focus_investment(${value})"
 						onmouseleave="_tip_blur_investment()"
 						onmousedown="_tip_click_light('investment',${value})"
 						>${escape_typography(msg)}</span>`
@@ -2986,7 +2977,7 @@ function escape_square_brackets(text) {
 					className += ((who === FRANCE) ? "-fr" : (who === BRITAIN) ? "-br" : "")
 					tooltip_text = `<span
 						class="${className}"
-						onmouseenter="_tip_focus_award(${value}, ${who})"
+						onmouseenter="_tip_focus_award(${value})"
 						onmouseleave="_tip_blur_award()"
 						onmousedown="_tip_click_light('award',${value})"
 						>${escape_typography(msg)}</span>`
@@ -3041,19 +3032,6 @@ function escape_square_brackets(text) {
 }
 
 
-function demand_name(d) {
-	return data.demands[d].name.toLowerCase() // Eventually different treatments by era, but for now...
-}
-
-function escape_tip_class_sub_function(text, re, log_className, tip_className, names, func) {
-	return text.replace(re, (m, x) => `<span
-		class="${log_className}"
-		onmouseenter="_tip_focus_class('${tip_className.replace("$1", func(x))}')"
-		onmouseleave="_tip_blur_class()"
-		>${escape_typography(names[x])}</span>`
-	)
-}
-
 function position_tip_image_imp() {
 	world.tip.style.left = "0px"
 	world.tip.style.bottom = world.status.offsetHeight + "px"
@@ -3068,20 +3046,9 @@ function position_tip_image() {
 }
 
 
-function _tip_focus_class(name) {
-	world.tip.setAttribute("class", name)
-	position_tip_image()
-	world.tip.hidden = false
-}
-
-function _tip_blur_class(action, id) {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-}
-
-
-function _tip_focus_demand(d, name) {
-	world.tip.setAttribute("class", name)
+function _tip_focus_demand(d) {
+	var name = data.demands[d].name.toLowerCase()
+	world.tip.setAttribute("class", "square-sm marker demand " + name)
 	position_tip_image()
 	world.tip.hidden = is_mobile()
 	world.status.innerHTML = demand_tooltip(d)
@@ -3098,7 +3065,7 @@ function _tip_blur_demand(action, id) {
 function escape_demand(text, re, log_className, tip_className, names) {
 	return text.replace(re, (m, x) => `<span
 		class="${log_className}"
-		onmouseenter="_tip_focus_demand('${x}', '${tip_className.replace("$1", demand_name(x))}')"
+		onmouseenter="_tip_focus_demand(${x})"
 		onmouseleave="_tip_blur_demand()"
 		onmousedown="_tip_click_light('demand',${x})"
 		>${escape_typography(names[x])}</span>`
@@ -3314,7 +3281,7 @@ function log_awards(codes)
 		msg.push(`<div>`)
 		msg.push(`<div class="award-title">${data.regions[region].name}</div>`)
 		msg.push(`<div class="marker square-sm black award a${chit}"
-			onmouseenter="_tip_focus_award(${chit}, ${NONE})"
+			onmouseenter="_tip_focus_award(${chit})"
 			onmouseleave="_tip_blur_award()"
 			onmousedown="_tip_click_light('award',${chit})"
 			></div>`
@@ -3379,7 +3346,7 @@ function log_war_tiles(codes)
 		who = data.basic_war_tiles[tile].side
 		whom = (who === FRANCE) ? "fr" : "br"
 		msg.push(`<div class="marker hex basic_war ${whom} war-basic${tile}"
-			onmouseenter="_tip_focus_basic_war_tile(${tile},${who})"
+			onmouseenter="_tip_focus_basic_war_tile(${tile})"
 			onmouseleave="_tip_blur_basic_war_tile()"
 			></div>`
 		)
@@ -3389,25 +3356,25 @@ function log_war_tiles(codes)
 		whom = (who === FRANCE) ? "fr" : "br"
 		if (tile === BYNG)
 			msg.push(`<div class="marker hex-sm byng ${whom}"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile},${who})"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></div>`
 			)
 		else if (tile === ATLANTIC_DOMINANCE + FRANCE)
 			msg.push(`<div class="marker hex-sm atlantic-dominance fr"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile},0)"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></div>`
 			)
 		else if (tile === ATLANTIC_DOMINANCE + BRITAIN)
 			msg.push(`<div class="marker hex-sm atlantic-dominance br"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile},1)"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></div>`
 			)
 		else
 			msg.push(`<div class="marker hex bonus_war war${tile}"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile},${who})"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
 				onmouseleave="_tip_blur_bonus_war_tile()"
 				></div>`
 			)
@@ -3417,28 +3384,10 @@ function log_war_tiles(codes)
 }
 
 
-function toggle_dialog(id)
-{
-	if (document.getElementById(id).classList.contains("show")) {
-		hide_dialog(id)
-	} else {
-		show_card_list(id, null)
-	}
-}
-
-function refresh_visible_dialogs()
-{
-	for (const dialog of [ "scoring_summary_dialog", "final_scoring_summary_dialog", "british_ministry_dialog", "french_ministry_dialog", "event_card_dialog"]) {
-		if (!document.getElementById(dialog).classList.contains("show")) continue
-		show_card_list(dialog, null)
-	}
-}
-
-
 // A preference has changed that only needs to refresh active dialogs (not the whole document)
 function on_dialog_refresh(name, value) {
 	//BR// In theory check name of what preference changed, etc, but at the moment we only have one
-	show_card_list("scoring_summary_dialog", null)
+	update_window_content("scoring_summary_dialog", update_scoring_summary_dialog())
 }
 
 // Hotkeys
@@ -3452,37 +3401,35 @@ window.addEventListener("keydown", function (evt) {
 	switch (evt.key) {
 		case "s":
 		case "S":
-			toggle_dialog("scoring_summary_dialog")
+			toggle_window("scoring_summary_dialog")
 			evt.preventDefault()
 			break
 
 		case "T":
 		case "t":
 			set_preference_checkbox("scoresies", false)
-			on_dialog_refresh("scoresies", get_preference("scoresies", false))
-			var input = document.querySelector(`input[name="scoresies"]`)
-			input.checked = get_preference("scoresies", false)
+			evt.preventDefault()
 			break
 
 		case "y":
 		case "Y":
-			toggle_dialog("final_scoring_summary_dialog")
+			toggle_window("final_scoring_summary_dialog")
 			evt.preventDefault()
 			break
 
 		case "f":
 		case "F":
-			toggle_dialog("french_ministry_dialog")
+			toggle_window("french_ministry_dialog")
 			evt.preventDefault()
 			break
 		case "b":
 		case "B":
-			toggle_dialog("british_ministry_dialog")
+			toggle_window("british_ministry_dialog")
 			evt.preventDefault()
 			break
 		case "e":
 		case "E":
-			toggle_dialog("event_card_dialog")
+			toggle_window("event_card_dialog")
 			evt.preventDefault()
 			break
 		case "l":
@@ -3568,11 +3515,6 @@ window.addEventListener("keydown", function (evt) {
 			break
 
 		case "Escape": // ESC - hide any dialogs, restore approximate "default state"
-			hide_dialog("scoring_summary_dialog")
-			hide_dialog("final_scoring_summary_dialog")
-			hide_dialog("french_ministry_dialog")
-			hide_dialog("british_ministry_dialog")
-			hide_dialog("event_card_dialog")
 			document.querySelector("aside").hidden = is_mobile() // Show the log (unless mobile, in which case hide it)
 			document.body.classList.remove("hide-markers")
 			set_preference_checkbox("allwars", false)
@@ -3823,7 +3765,6 @@ function format_ministry_info(c) {
 	return escape_text(text)
 }
 
-
 function say_flag_color(who, string)
 {
 	return escape_square_brackets("[F" + (((who === FRANCE) || (who === USA)) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
@@ -3833,31 +3774,37 @@ function format_prestige_info()
 {
 	let winner = prestige_winner()
 	let delta = prestige_flag_delta()
-	let leader = ""
+	let msg = ""
 
 	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta)
+		msg = say_flag_color(winner, "+" + delta)
 	} else {
-		leader = "+0"
+		msg = "+0"
 	}
-
-	return leader + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
+	msg = msg + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
+	msg = `<span
+		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
+		onmouseleave="_tip_blur_award()"
+		>${msg}</span>`
+	return msg
 }
-
 
 function format_final_prestige_info()
 {
 	let winner = prestige_winner()
 	let delta = prestige_flag_delta()
-	let leader = ""
+	let msg = ""
 
 	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
+		msg = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
 	} else {
-		leader = "+0 Prestige: +0 VP"
+		msg = "+0 Prestige: +0 VP"
 	}
-
-	return leader
+	msg = `<span
+		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
+		onmouseleave="_tip_blur_award()"
+		>${msg}</span>`
+	return msg
 }
 
 
@@ -3898,8 +3845,15 @@ function format_award_info(r, a)
 
 	let msg = data.regions[r].name + ": " + data.awards[a].name
 
+	msg = `<span
+		onmouseenter="_tip_focus_award(${a})"
+		onmouseleave="_tip_blur_award()"
+		onmousedown="_tip_click_light('award',${a})">${msg}</span>`
+
 	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
+
+
 
 function format_demand_info(d)
 {
@@ -3918,9 +3872,35 @@ function format_demand_info(d)
 		leader = "+0"
 	}
 
+	msg = `<span
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})">${msg}</span>`
+
 	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
+function format_demand_info_flags(d)
+{
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		let flag = winner === FRANCE ? "fr" : "br"
+		return say_flag_color(winner, "+" + delta) + `<div class="score-flag ${flag}"></div>`
+	}
+	return "+0"
+}
+
+function format_demand_info_table(d, era)
+{
+	let awards = data.demands[d].awards[era]
+	let msg = awards.vp + " VP"
+	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
+	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
+	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
+	return msg
+}
 
 function format_final_demand_info(d)
 {
@@ -3932,6 +3912,11 @@ function format_final_demand_info(d)
 	} else {
 		leader = "+0 " + data.demands[d].name
 	}
+
+	leader = `<span
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})">${leader}</span>`
 
 	return leader
 }
@@ -4162,462 +4147,376 @@ function debt_award() {
 	return Math.min(4, Math.floor(debt_delta() / 2))
 }
 
-
-
-function on_reply(q, params)
-{
-	if (q === "event_cards") {
-		toggle_dialog("event_card_dialog")
-	} else if (q === "french_ministry") {
-		toggle_dialog("french_ministry_dialog")
-	} else if (q === "british_ministry") {
-		toggle_dialog("british_ministry_dialog")
-	} else if (q === "scoring_summary") {
-		toggle_dialog("scoring_summary_dialog")
-	} else if (q === "final_scoring_summary") {
-		toggle_dialog("final_scoring_summary_dialog")
-	}
-}
-
 function is_observing()
 {
 	return (R !== FRANCE) && (R !== BRITAIN)
 }
 
+function update_event_card_dialog() {
+	var c, text = []
 
-function show_card_list(id, params) {
-	show_dialog(id, (body) => {
-		let dl = document.createElement("dl")
-		let append_header = (text) => {
-			let header = document.createElement("dt")
-			header.textContent = text
-			dl.appendChild(header)
-		}
-		let append_card = (c) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
-			p.onmouseenter = () => _tip_focus_event(NONE, c, "card event_card c" + c)
-			p.onmouseleave = () => _tip_blur_event()
-			p.onmousedown = () => _tip_focus_event_mobile(NONE, c, "card event_card c" + c)
-			p.innerHTML = format_card_info(c)
-			dl.appendChild(p)
-		}
+	text.push("<dl>")
 
-		let append_ministry = (m) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			//p.className = (c <= HIGHEST_AP_CARD) ? "cardtip ap-card" : "cardtip cp-card"
-			p.onmouseenter = () => _tip_focus_ministry(NONE, m, "card ministry_card c" + m)
-			p.onmouseleave = () => _tip_blur_ministry()
-			p.onmousedown = () => _tip_focus_ministry_mobile(NONE, m, "card ministry_card c" + m)
-			p.innerHTML = format_ministry_info(m)
-			dl.appendChild(p)
-		}
+	text.push(`<dt>Played Event Cards (${V.played_events.length})`)
+	for (c of V.played_events)
+		text.push("<dd>" + format_card_info(c))
 
-		let append_prestige = () => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
-			p.onmouseleave = () => _tip_blur_award()
-			p.innerHTML = format_prestige_info()
-			dl.appendChild(p)
-		}
+	text.push(`<dt>Discarded Event Cards (${V.discard_pile.length})`)
+	for (c of V.discard_pile)
+		text.push("<dd>" + format_card_info(c))
 
-		let append_final_prestige = () => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
-			p.onmouseleave = () => _tip_blur_award()
-			p.innerHTML = format_final_prestige_info()
-			dl.appendChild(p)
-		}
+	if (is_observing)
+		text.push(`<dt>Player Hands or Deck (${V.deck.length})`)
+	else
+		text.push(`<dt>Opponent's Hand or Deck (${V.deck.length})`)
+	for (c of V.deck)
+		for (c of V.deck)
+			text.push("<dd>" + format_card_info(c))
 
-		let append_debt = () => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_award(REGION_EUROPE)
-			p.onmouseleave = () => _tip_blur_award()
-			p.innerHTML = format_debt_info()
-			dl.appendChild(p)
-		}
+	if (!is_observing()) {
+		text.push(`<dt>Your Hand (${V.hand[R].length})`)
+		for (c of V.hand[R])
+			text.push("<dd>" + format_card_info(c))
+	}
 
+	if (current_era() < EMPIRE_ERA) {
+		text.push(`<dt>Empire Era (not yet in play) (15)`)
+		for (c = SUCCESSION_ERA_CARDS + 1; c <= EMPIRE_ERA_CARDS; c++)
+			text.push("<dd>" + format_card_info(c))
+	}
 
-		let append_region = (r, a) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_award(a)
-			p.onmouseleave = () => _tip_blur_award()
-			p.innerHTML = format_award_info(r, a)
-			dl.appendChild(p)
-		}
+	if (current_era() < REVOLUTION_ERA) {
+		text.push(`<dt>Revolution Era (not yet in play) (11)`)
+		for (c = EMPIRE_ERA_CARDS + 1; c <= REVOLUTION_ERA_CARDS; c++)
+			text.push("<dd>" + format_card_info(c))
+	}
 
-		let append_space = (s) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_space(s)
-			p.onmouseleave = () => _tip_blur_space()
-			p.innerHTML = format_space_info(s)
-			dl.appendChild(p)
-		}
+	text.push("</dl>")
 
-		let append_demand = (d) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_demand(d)
-			p.onmouseleave = () => _tip_blur_demand()
-			p.innerHTML = format_demand_info(d)
-			dl.appendChild(p)
-		}
-
-		let append_final_demand = (d) => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.onmouseenter = () => _tip_focus_demand(d)
-			p.onmouseleave = () => _tip_blur_demand()
-			p.innerHTML = format_final_demand_info(d)
-			dl.appendChild(p)
-		}
-
-		let append_results = () => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.innerHTML = format_results_info()
-			dl.appendChild(p)
-		}
-
-		let append_final_scoring_results = () => {
-			let p = document.createElement("dd")
-			p.className = "cardtip"
-			p.innerHTML = format_final_scoring_results_info()
-			dl.appendChild(p)
-		}
-
-		if (id === "event_card_dialog") {
-			append_header(`Played Event Cards (${V.played_events.length})`)
-			V.played_events.forEach(append_card)
-			append_header(`Discarded Event Cards (${V.discard_pile.length})`)
-			V.discard_pile.forEach(append_card)
-			append_header(is_observing() ? `Player Hands or Deck (${V.deck.length})` : `Opponent's Hand or Deck (${V.deck.length})`)
-			V.deck.forEach(append_card)
-			if (!is_observing()) {
-				append_header(`Your Hand (${V.hand[R].length})`)
-				V.hand[R].forEach(append_card)
-			}
-			if (current_era() < EMPIRE_ERA) {
-				append_header(`Empire Era (not yet in play) (15)`)
-				for (let c = SUCCESSION_ERA_CARDS + 1; c <= EMPIRE_ERA_CARDS; c++) {
-					append_card(c)
-				}
-			}
-			if (current_era() < REVOLUTION_ERA) {
-				append_header(`Revolution Era (not yet in play) (11)`)
-				for (let c = EMPIRE_ERA_CARDS + 1; c <= REVOLUTION_ERA_CARDS; c++) {
-					append_card(c)
-				}
-			}
-		} else if ((id === "french_ministry_dialog") || (id === "british_ministry_dialog")) {
-			let who = (id === "french_ministry_dialog") ? FRANCE : BRITAIN
-			append_header("Current Available Ministries")
-			for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-				if (data.ministries[m].side !== who) continue
-				if (!data.ministries[m].era.includes(current_era())) continue
-				if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
-				append_ministry(m)
-			}
-
-			if (current_era() === SUCCESSION_ERA) {
-				append_header("Empire Era Ministries (not yet in play)")
-				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-					if (data.ministries[m].side !== who) continue
-					if (data.ministries[m].era.includes(current_era())) continue
-					if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
-					append_ministry(m)
-				}
-			}
-
-			if (current_era() < REVOLUTION_ERA) {
-				append_header("Revolution Era Ministries (not yet in play)")
-				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-					if (data.ministries[m].side !== who) continue
-					if (data.ministries[m].era.includes(current_era())) continue
-					if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
-					if (!data.ministries[m].era.includes(REVOLUTION_ERA)) continue
-					append_ministry(m)
-				}
-			}
-
-			if (is_bit(JACOBITES_NEVER) && (who === FRANCE)) {
-				append_header("Removed From Game")
-				append_ministry(JACOBITE_UPRISINGS)
-			}
-
-			if (current_era() === REVOLUTION_ERA) {
-				append_header("Empire Era Ministries (out of play)")
-				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-					if (data.ministries[m].side !== who) continue
-					if (data.ministries[m].era.includes(current_era())) continue
-					if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
-					append_ministry(m)
-				}
-			}
-
-			if (current_era() !== SUCCESSION_ERA) {
-				append_header("Succession Era Ministries (out of play)")
-				for (let m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-					if (data.ministries[m].side !== who) continue
-					if (data.ministries[m].era.includes(current_era())) continue
-					if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
-					if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
-					if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
-					append_ministry(m)
-				}
-			}
-		} else if (id === "scoring_summary_dialog") {
-			let do_text_only = get_preference("scoresies")
-			if (do_text_only) {
-				append_header("Prestige")
-				append_prestige()
-
-				append_header("Regions")
-				for (let r = 0; r < NUM_REGIONS; r++) {
-					var a = V.awards[r]
-					append_region(r, a)
-				}
-
-				append_header("Global Demand")
-				let era = current_era()
-				for (let d = 0; d < NUM_DEMANDS; d++) {
-					if (!V.global_demand.includes(d)) continue
-					append_demand(d)
-				}
-
-				let header = document.createElement("dt")
-				header.innerHTML = "<br/>"
-				dl.appendChild(header)
-
-			} else {
-
-				let p = document.createElement("dd")
-				p.className = "score-top"
-				dl.appendChild(p)
-
-				let msg = `<div class="score-region-line">`
-				msg += `<div class="score-prestige"
-						onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]}, ${NONE})"
-						onmouseleave="_tip_blur_award()"
-						onmousedown="_tip_click_light('award',${V.awards[REGION_EUROPE]})">`
-				msg += `<div class="prestige-in-score">`
-				msg += `<div class="score-prestige-label">Prestige</div>`
-				msg += `<div class="score-prestige-amount">${format_prestige_info()}`
-				let who = prestige_winner()
-				let flag = (who === FRANCE) ? "fr" : "br"
-				if (who !== NONE) {
-					msg += `<div class="score-flag ${flag}"></div>`
-				}
-				msg += `</div>`
-				msg += "</div>"
-				msg += "</div>"
-				msg += "</div>"
-				p = document.createElement("dc")
-				p.className = "prestige-summary"
-				p.innerHTML = msg
-				dl.appendChild(p)
-
-				let wrap = 0
-				msg = `<div class="score-region-line">`
-				let regions = 0
-				for (const region of [REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA]) {
-					var chit = V.awards[region]
-
-					let who = region_flag_winner(region)
-					let flag = (who === FRANCE) ? "fr" : "br"
-					let flagdiv = ""
-					if (who !== NONE) {
-						flagdiv = `<div class="score-flag ${flag}"></div>`
-					}
-
-					msg += `<div class="a${chit} award marker black square-sm award-in-score"
-					onmouseenter="_tip_focus_award(${chit}, ${NONE})"
-					onmouseleave="_tip_blur_award()"
-					onmousedown="_tip_click_light('award',${chit})"
-					><div class="score-region r${region}">${data.regions[region].name}</div>
-					<div class="score-region-delta r${region}">${format_award_info(region, chit)}${flagdiv}
-					</div>
-					</div>`
-					regions++
-					if (++wrap >= 2 && regions <= 2) {
-						wrap = 0
-						msg += "</div>"
-						msg += `<div class="score-region-line">`
-					}
-				}
-				msg += "</div>"
-				p = document.createElement("dc")
-				p.className = "region-summary"
-				p.innerHTML = msg
-				dl.appendChild(p)
-
-				p = document.createElement("dd")
-				p.className = "score-below-regions"
-				dl.appendChild(p)
-
-				append_header("Global Demand")
-				let era = current_era()
-				for (let d = 0; d < NUM_DEMANDS; d++) {
-					if (!V.global_demand.includes(d)) continue
-
-					msg = `<div class="score-demand"
-							onmouseenter="_tip_focus_award(${chit}, ${NONE})"
-							onmouseleave="_tip_blur_award()"
-							onmousedown="_tip_click_light('award',${chit})"
-							>`
-
-					msg += `<div class="score-demand-line">`
-					msg += `<div class = "score-demand-label d${d}"></div>`
-					msg += `<div class = "score-demand-value d${d} e${era}"></div>`
-					msg += `<div class = "score-demand-delta-box">`
-					msg += `</div>`
-					msg += `</div>`
-
-					msg += `<div class="score-demand-delta">${format_demand_info(d)}`
-
-					let who = demand_flag_winner(d)
-					let flag = (who === FRANCE) ? "fr" : "br"
-					if (who !== NONE) {
-						msg += `<div class="score-flag ${flag}"></div>`
-					}
-
-					msg += "</div>"
-					msg += "</div>"
-
-					p = document.createElement("dc")
-					p.className = "score-demand-summary"
-					p.innerHTML = msg
-					dl.appendChild(p)
-				}
-
-				p = document.createElement("dd")
-				p.className = "score-below-demands"
-				dl.appendChild(p)
-			}
-
-			append_header("Projected Results")
-			append_results()
-		} else if (id === "final_scoring_summary_dialog") {
-
-
-			let winner = prestige_winner()
-			append_header("Prestige")
-			append_final_prestige()
-
-			append_header("Debt")
-			append_debt()
-
-			append_header("Global Demand")
-			for (let d = 0; d < NUM_DEMANDS; d++) {
-				append_final_demand(d)
-			}
-
-			let any = false
-			for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-				if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
-					if (!any) {
-						append_header("Conquests")
-						any = true
-					}
-					append_space(s)
-				}
-			}
-
-			for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-				if (G.flags[s] === BRITAIN) {
-					if (!any) {
-						append_header("Conquests")
-						any = true
-					}
-					append_space(s)
-				}
-			}
-
-			let header = document.createElement("dt")
-			header.innerHTML = "<br/>"
-			dl.appendChild(header)
-
-			append_header("Projected Results")
-			append_final_scoring_results()
-		}
-
-		body.appendChild(dl)
-	})
+	return text.join("")
 }
 
+function update_ministry_dialog(who) {
+	var m, text = []
 
-function show_dialog(id, dialog_generator) {
-	document.getElementById(id).classList.add("show")
-	let body = document.getElementById(id).querySelector(".dialog_body")
-	body.replaceChildren()
-	if (dialog_generator) {
-		dialog_generator(body)
+	text.push("<dl>")
+
+	text.push("<dt>Current Available Ministries")
+	for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+		if (data.ministries[m].side !== who) continue
+		if (!data.ministries[m].era.includes(current_era())) continue
+		if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
+		text.push("<dd>" + format_ministry_info(m))
 	}
-	if (!is_mobile()) dragElement(document.getElementById(id))
+
+	if (current_era() === SUCCESSION_ERA) {
+		text.push("<dt>Empire Era Ministries (not yet in play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (current_era() < REVOLUTION_ERA) {
+		text.push("<dt>Revolution Era Ministries (not yet in play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			if (!data.ministries[m].era.includes(REVOLUTION_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (is_bit(JACOBITES_NEVER) && (who === FRANCE)) {
+		text.push("<dt>Removed From Game")
+		text.push("<dd>" + format_ministry_info(m))
+	}
+
+	if (current_era() === REVOLUTION_ERA) {
+		text.push("<dt>Empire Era Ministries (out of play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (current_era() !== SUCCESSION_ERA) {
+		text.push("<dt>Succession Era Ministries (out of play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
+			if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	text.push("</dl>")
+
+	return text.join("")
 }
 
-
-//BR// Makes an element/dialog draggable by the player
-function dragElement(e) {
-	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
-	var the_e = e
-	if (document.getElementById(e.id + "header")) {
-		document.getElementById(e.id + "header").onmousedown = dragMouseDown  // Drag by the header if it exists
-	} else {
-		e.onmousedown = dragMouseDown                                                  // Otherwise drag by the whole element
-	}
-
-	function dragMouseDown(e) {
-		e.preventDefault()
-		pos3 = e.clientX
-		pos4 = e.clientY
-		document.onmouseup = closeDragElement
-		document.onmousemove = elementDrag
-	}
-
-	function elementDrag(e) {
-		e.preventDefault()
-
-		pos1 = pos3 - e.clientX
-		pos2 = pos4 - e.clientY
-		pos3 = e.clientX
-		pos4 = e.clientY
-
-		// set the element's new position
-
-		the_e.style.position = "absolute"
-		the_e.style.top = (the_e.offsetTop - pos2) + "px"
-		the_e.style.left = (the_e.offsetLeft - pos1) + "px"
-	}
-
-	function closeDragElement() {
-		// stop moving when mouse button is released
-		document.onmouseup = null
-		document.onmousemove = null
-	}
+function update_british_ministry_dialog() {
+	return update_ministry_dialog(BRITAIN)
 }
 
-function hide_dialog(id) {
-	document.getElementById(id).classList.remove("show")
-	_tip_blur_mobile_tip()
+function update_french_ministry_dialog() {
+	return update_ministry_dialog(FRANCE)
 }
 
-function toggle_dialog_collapse(id) {
-	let dialog_body = document.getElementById(id).querySelector(".dialog_body")
-	let dialog_x = document.getElementById(id).querySelector(".dialog_x")
-	if (dialog_body.className.includes("hide")) {
-		dialog_body.classList.remove("hide")
-		dialog_x.textContent = "A"
-	} else {
-		dialog_body.classList.add("hide")
-		dialog_x.textContent = "V"
+function update_scoring_summary_dialog() {
+	if (V.bidding_for_sides) return "..."
+	if (get_preference("scoresies"))
+		return update_scoring_summary_dialog_text()
+	return update_scoring_summary_dialog_fancy()
+}
+
+function update_scoring_summary_dialog_text() {
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_prestige_info())
+
+	text.push("<dt>Regions")
+	for (var r = 0; r < NUM_REGIONS; r++) {
+		var a = V.awards[r]
+		text.push("<dd>" + format_award_info(r, a))
 	}
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++) {
+		if (!V.global_demand.includes(d))
+			continue
+		text.push("<dd>" + format_demand_info(d))
+	}
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_results_info(d))
+
+	text.push("</dl>")
+	return text.join("")
 }
 
+function format_winner_delta(winner, delta) {
+	if (winner === FRANCE)
+		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag fr"></div></div>`
+	if (winner === BRITAIN)
+		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag br"></div></div>`
+	return `<div class="score-flags">+0</div>`
+}
+
+function format_award_chit(a) {
+	return `<div class="marker square-sm black award a${a}"
+		onmouseenter="_tip_focus_award(${a})"
+		onmouseleave="_tip_blur_award()"
+		onmousedown="_tip_click_light('award',${a})"
+		></div>`
+}
+
+function format_demand_chit(d) {
+	var name = data.demands[d].name.toLowerCase()
+	return `<div class="square-sm marker demand ${name}"
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})"
+		></div>`
+}
+
+function format_region_score_summary(r) {
+	var a = V.awards[r]
+	return (`
+		<div class="score-row">
+			${format_award_chit(a)}
+			<div>${data.regions[r].name}</div>
+			${format_winner_delta(region_flag_winner(r), region_flag_delta(r))}
+		</div>
+	`)
+}
+
+function format_demand_score_summary(d, era) {
+	return (`
+		<div class="score-row">
+			${format_demand_chit(d)}
+			<div>${format_demand_info_table(d, era)}</div>
+			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
+		</div>
+	`)
+}
+
+function format_final_demand_score_summary(d, era) {
+	return (`
+		<div class="score-row">
+			${format_demand_chit(d)}
+			<div>1 VP</div>
+			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
+		</div>
+	`)
+}
+
+function format_prestige_score_summary() {
+	return (`
+		<div class="score-row">
+			<img style="display:block" src="images/award_2vp.png" width=47 height=47>
+			<div>2 VP</div>
+			${format_winner_delta(prestige_winner(), prestige_flag_delta())}
+		</div>
+	`)
+}
+
+function update_scoring_summary_dialog_fancy() {
+	var text = []
+	text.push(`
+		<div class="score-summary">
+			<div class="score-summary-1">
+				<div>Regions</div>
+				<div class="score-table-awards">
+					${format_region_score_summary(REGION_NORTH_AMERICA)}
+					${format_region_score_summary(REGION_CARIBBEAN)}
+					${format_region_score_summary(REGION_EUROPE)}
+					${format_region_score_summary(REGION_INDIA)}
+				</div>
+			</div>
+			<div class="score-summary-2">
+				<div>Prestige &amp; Global Demand</div>
+				<div class="score-table-demands">
+					${format_prestige_score_summary()}
+	`)
+
+	for (var d = 0; d < NUM_DEMANDS; d++)
+		if (V.global_demand.includes(d))
+			text.push(format_demand_score_summary(d, current_era()))
+
+	text.push(`
+				</div>
+			</div>
+			<div class="score-summary-3">
+				<dl>
+					<dt>Projected Results
+					<dd>${format_results_info()}
+				</dl>
+			</div>
+		</div>
+	`)
+
+	return text.join("")
+}
+
+function update_final_scoring_summary_dialog()
+{
+	if (V.bidding_for_sides) return "..."
+	if (get_preference("scoresies"))
+		return update_final_scoring_summary_dialog_text()
+	return update_final_scoring_summary_dialog_fancy()
+}
+
+function update_final_scoring_summary_dialog_text()
+{
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_final_prestige_info())
+
+	text.push("<dt>Debt")
+	text.push("<dd>" + format_debt_info())
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++)
+		text.push("<dd>" + format_final_demand_info(d))
+
+	let any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_final_scoring_results_info())
+
+	text.push("</dl>")
+	return text.join("")
+}
+
+function update_final_scoring_summary_dialog_fancy()
+{
+	var text = []
+
+	text.push(`
+		<div class="score-summary">
+			<div class="score-summary-2">
+				<div>Prestige &amp; Global Demand</div>
+				<div class="score-table-demands">
+					${format_prestige_score_summary()}
+					${format_final_demand_score_summary(0)}
+					${format_final_demand_score_summary(1)}
+					${format_final_demand_score_summary(2)}
+					${format_final_demand_score_summary(3)}
+					${format_final_demand_score_summary(4)}
+					${format_final_demand_score_summary(5)}
+				</div>
+			</div>
+			<div class="score-summary-1">
+				<dl>
+					<dt>Debt
+					<dd>${format_debt_info()}
+					<br>
+					<br>
+	`)
+
+	let any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	text.push(`
+				</dl>
+			</div>
+			<div class="score-summary-3">
+				<dl>
+					<dt>Projected Results
+					<dd>${format_final_scoring_results_info()}
+				</dl>
+			</div>
+		</div>
+	`)
+
+	return text.join("")
+}

@@ -169,71 +169,6 @@ menu li.separator {
 	/* background-position: -500px -200px; */
 }
 
-.score-prestige {
-	border: 1px solid black;
-	display: block;
-	background-image: url(boards75/map.avif);
-	background-size: auto;
-	background-repeat: no-repeat;
-
-	background-position: -1332px -555px;
-	width: 70px;
-	height: 70px;
-	margin-top: 0px;
-}
-
-.score-demand-label {
-	border: 1px solid black;
-	display: block;
-	background-image: url(boards75/map.avif);
-	background-size: auto;
-	background-repeat: no-repeat;
-
-	background-position-x: -1109px;
-	width: 72px;
-	height: 20px;
-	margin-top: 0px;
-}
-
-.score-demand-value {
-	border: 1px solid black;
-	display: block;
-	background-image: url(boards75/map.avif);
-	background-size: auto;
-	background-repeat: no-repeat;
-
-	background-position-x: -1109px;
-	width: 77px;
-	height: 20px;
-	margin-top: 0px;
-}
-
-.score-demand-delta-box {
-	border: 1px solid black;
-	display: block;
-	background-image: url(boards75/map.avif);
-	background-size: auto;
-	background-repeat: no-repeat;
-
-	background-position-x: -1180px;
-	background-position-y: -265px;
-	width: 30px;
-	height: 20px;
-	margin-top: 0px;
-}
-
-.d0 { background-position-y: -183px; }
-.d1 { background-position-y: -203px; }
-.d2 { background-position-y: -224px; }
-.d3 { background-position-y: -244px; }
-.d4 { background-position-y: -265px; }
-.d5 { background-position-y: -285px; }
-
-.e0 { background-position-x: -1180px; }
-.e1 { background-position-x: -1266px; }
-.e2 { background-position-x: -1354px; }
-
-
 /* PANELS */
 
 .panel { background-color: #0002; }
@@ -314,79 +249,29 @@ body.Britain #events_br { grid-row: 2 }
 
 /* DIALOGS */
 
-.modal-dialog {
-	max-width: 450px;
-	background-color: floralwhite;
+.window {
+	background-color: #f9eedc;
 }
 
-.modal-dialog h3 {
-	font-weight: bold;
-	margin: 0;
-}
-
-#propose_rollback_details, #review_rollback_details {
-	margin: 1em 0;
-}
-
-.dialog {
-	position: absolute;
-	display: grid;
-	grid-template-rows: min-content 1fr min-content;
-	grid-template-columns: 1fr 30px;
-	border: 1px solid black;
-	background-color: white;
-	box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.5);
-	visibility: hidden;
-	z-index: 499;
-}
-
-.dialog.show {
-	visibility: visible;
-}
-
-.dialog_header {
-	grid-row: 1;
-	grid-column: 1/3;
-	cursor: move;
+.window-head {
 	background-color: tan;
-	border-bottom: 1px solid black;
-	padding: 5px 8px;
 }
 
-.dialog_x {
-	grid-row: 1;
-	grid-column: 2;
-	cursor: pointer;
-	margin: 5px 5px;
-	height: 24px;
-	text-align: right;
-}
-
-.dialog_x:hover {
-	background-color: black;
-	color: white;
-}
-
-.dialog_body {
-	grid-row: 2;
-	grid-column: 1/3;
-	margin: 0;
+.window-body {
 	font-size: 16px;
 	line-height: 24px;
-	height: 480px;
 	padding: 4px 8px;
-	overflow-y: auto;
-	background-color: #F9EEDC; /* floralwhite was previous */
 }
 
-.dialog_body dl { margin: 0; }
-.dialog_body dd { margin-left: 20px; }
+.window-body dl { margin: 0; }
+.window-body dd { margin-left: 20px; }
 
-#scoring_summary_dialog { top: 100px; left: 60px; min-width: 280px}
-#final_scoring_summary_dialog { top: 120px; left: 80px; min-width: 280px }
-#event_card_dialog { top: 160px; left: 120px; min-width: 280px }
-#french_ministry_dialog { top: 220px; left: 180px; min-width: 280px }
-#british_ministry_dialog { top: 280px; left: 240px; min-width: 280px }
+#scoring_summary_dialog { left: 20px; top: 60px; }
+#final_scoring_summary_dialog { left: 40px; top: 80px; }
+
+#event_card_dialog { left: 60px; top: 100px; height: 500px; }
+#french_ministry_dialog { left: 80px; top: 120px; height: 500px; }
+#british_ministry_dialog { left: 100px; top: 140px; height: 500px; }
 
 /* TOOLTIPS */
 
@@ -701,6 +586,13 @@ div[data-tooltip]:after {
 		text-align: center;
 	}
 
+	& .award-cell {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+	}
+
 	& .marker {
 		margin: 2px auto;
 	}
@@ -722,122 +614,56 @@ div[data-tooltip]:after {
 	}
 }
 
-/* SCORE DIALOG */
+/* FANCY SCORING SUMMARY */
 
-.award-in-score {
-	display: inline-block;
-	pointer-events: auto !important;
-	margin: 30px 20px 20px;
+.score-summary {
+	display: grid;
+	grid-template-columns: auto auto;
+	gap: 20px;
+	padding: 12px;
 }
 
-.score-region {
-	display: block;
-	position: relative;
-	width: 100px;
-	margin-top: -25px;
-	font-size: 16px;
+.score-summary-1 { grid-row: 1; grid-column: 1; }
+.score-summary-2 { grid-row: 1 / 3; grid-column: 2; }
+.score-summary-3 { grid-row: 2; grid-column: 1; }
+
+.score-table-demands {
+	& > div:nth-child(odd) { background-color: #0002; }
+	& > div:nth-child(even) { background-color: #0001; }
 }
 
-.score-region-line {
+.score-table-awards {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	& > div:nth-child(1) { background-color: #0002; }
+	& > div:nth-child(2) { background-color: #0001; }
+	& > div:nth-child(3) { background-color: #0001; }
+	& > div:nth-child(4) { background-color: #0002; }
+}
+
+.score-row {
+	display: grid;
+	grid-template-columns: auto 1fr max-content;
+	align-items: center;
+	padding: 6px;
+	gap: 12px;
+}
+
+.score-delta {
 	display: flex;
-	justify-content: center;
-	min-height: 60px;
-	max-height: 75px;
+	flex-wrap: wrap;
+	justify-content: end;
 }
 
-.score-region-delta {
-	display: flex;
-	position: relative;
-	width: 60px;
-	font-size: 16px;
-}
-
-.score-region-delta.r0, .score-region-delta.r3 {
-	margin-left: 55px;
-	margin-top: 10px;
-}
-
-.score-region-delta.r1, .score-region-delta.r2 {
-	margin-left: -50px;
-	margin-top: 10px;
-}
-
-
-.score-region.r0 { /* Europe */
-	margin-left: -3px;
-}
-
-.score-region.r1 { /* North America */
-	margin-left: -27px;
-}
-
-.score-region.r2 { /* Caribbean */
-	margin-left: -14px;
-}
-
-.score-region.r3 { /* India */
-	margin-left: 5px;
-}
-
-.score-top {
-	min-height: 12px;
-}
-
-.score-below-regions {
-	min-height: 20px;
-}
-
-.score-below-demands {
-	min-height: 10px;
-}
-
-
-.prestige-in-score {
-	display: flex;
-	pointer-events: auto !important;
-	margin: 30px 20px 20px;
-}
-
-.score-prestige-label {
-	display: block;
-	font-size: 16px;
-	margin-top: -8px;
-	margin-left: -90px;
-}
-
-.score-prestige-amount {
-	display: flex;
-	font-size: 16px;
-	margin-top: -8px;
-	margin-left: 100px;
-}
-
-.score-demand {
-	display: flex;
-	margin-left: -7px;
-}
-
-.score-demand-line {
-	display: flex;
-	transform: scale(1.5,1.5);
-	transform-origin: left top;
-}
-
-.score-demand-summary {
-	position: relative;
-}
-
-.score-demand-delta {
-	display: flex;
-	position: relative;
-	margin: 4px 2px 2px 50px;
-
-}
-
-.score-checkbox {
-	left: 20px;
-	position: relative;
-	top: 1px;
+@media (max-width: 800px) {
+	.score-summary {
+		grid-template-columns: auto;
+		max-width: 500px;
+		margin: auto;
+	}
+	.score-summary-1 { grid-row: 1; grid-column: 1; }
+	.score-summary-2 { grid-row: 2; grid-column: 1; }
+	.score-summary-3 { grid-row: 3; grid-column: 1; }
 }
 
 /* MINI FLAGS */
@@ -2624,12 +2450,6 @@ body[data-noanims="false"] {
 
 
 @media (max-width: 800px) {
-	/* Other modules had this, but it was wrecking the IS side-by-side panels
-	.panel {
-		min-width: calc(1650px - 8px);
-	}
-	*/
-
 	#vp_mobile { display: block }
 	#vp_desktop { display: none }
 	#status, #tip, #map_tip { display: none }
@@ -2647,27 +2467,5 @@ body[data-noanims="false"] {
 		inset: 0;
 		margin: auto;
 	}
-
-	.dialog {
-		position: static;
-		grid-column: 1;
-		grid-row: 2/4;
-		display: none;
-		width: auto;
-		box-shadow: none;
-		border: none;
-	}
-	.dialog_body {
-		height: auto;
-	}
-	.dialog.show {
-		display: grid;
-	}
-
-	#scoring_summary_dialog { top: 100px; left: 0px; }
-	#final_scoring_summary_dialog { top: 100px; left: 0px; }
-	#event_card_dialog { top: 100px; left: 0px; }
-	#french_ministry_dialog { top: 100px; left: 0px; }
-	#british_ministry_dialog { top: 100px; left: 0px; }
 }
 

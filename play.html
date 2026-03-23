@@ -17,36 +17,6 @@
 </head>
 <body data-noanims="true">
 
-<div id="event_card_dialog" class="dialog">
-	<div class="dialog_header">Event Cards</div>
-	<div class="dialog_x" onclick="hide_dialog('event_card_dialog')">&#x274c;</div>
-	<div class="dialog_body"></div>
-</div>
-
-<div id="french_ministry_dialog" class="dialog">
-	<div class="dialog_header">French Ministry</div>
-	<div class="dialog_x" onclick="hide_dialog('french_ministry_dialog')">&#x274c;</div>
-	<div class="dialog_body"></div>
-</div>
-
-<div id="british_ministry_dialog" class="dialog">
-	<div class="dialog_header">British Ministry</div>
-	<div class="dialog_x" onclick="hide_dialog('british_ministry_dialog')">&#x274c;</div>
-	<div class="dialog_body"></div>
-</div>
-
-<div id="scoring_summary_dialog" class="dialog">
-	<div class="dialog_header">Scoring Summary <label class="score-checkbox"><input type=checkbox name="scoresies">Text</label></div>
-	<div class="dialog_x" onclick="hide_dialog('scoring_summary_dialog')">&#x274c;</div>
-	<div class="dialog_body"></div>
-</div>
-
-<div id="final_scoring_summary_dialog" class="dialog">
-	<div class="dialog_header">Final Scoring Summary</div>
-	<div class="dialog_x" onclick="hide_dialog('final_scoring_summary_dialog')">&#x274c;</div>
-	<div class="dialog_body"></div>
-</div>
-
 <div id="tip" hidden></div>
 <div id="mobile_tip" hidden onmousedown="_tip_blur_mobile_tip()" style="position:absolute; top: 50px; left: 50px;"></div>
 <div id="map_tip" hidden></div>
@@ -60,8 +30,9 @@
 				<li><label><input type=checkbox name="noflipsies">Don't flip exhausted advantage tiles</label>
 				<li><label><input type=checkbox name="downanddirty">Show unclaimed advantages face-down</label>
 				<li><label><input type=checkbox name="tracksies">Track map changes with colored outlines</label>
-				<li><label><input type=checkbox name="redsies">Use red to track changes (even by France)</label></li>
-				<li><label><input type=checkbox name="eventsies">Warn if you skip playing an event when eligible</label></li>
+				<li><label><input type=checkbox name="redsies">Use red to track changes (even by France)</label>
+				<li><label><input type=checkbox name="eventsies">Warn if you skip playing an event when eligible</label>
+				<li><label><input type=checkbox name="scoresies">Plain text summary windows</label>
 				<li class="separator">
 				<li class="disabled">Log & Prompt Verbosity
 				<li><label for="short"><input type="radio" id="short" name="actionverbosity" value="short">Brief</label>
@@ -74,20 +45,20 @@
 		<details id="info_menu">
 			<summary><img src="/images/wooden-sign.svg"></summary>
 			<menu>
-				<li onclick="toggle_dialog('event_card_dialog')">
+				<li onclick="toggle_window('event_card_dialog')">
 					<div class="hotkey">E</div>
 					<div>Inspect Event Cards</div>
-				<li onclick="toggle_dialog('french_ministry_dialog')">
+				<li onclick="toggle_window('french_ministry_dialog')">
 					<div class="hotkey">F</div>
 					<div>Inspect French Ministry</div>
-				<li onclick="toggle_dialog('british_ministry_dialog')">
+				<li onclick="toggle_window('british_ministry_dialog')">
 					<div class="hotkey">B</div>
 					<div>Inspect British Ministry</div>
 				<li class="separator">
-				<li onclick="toggle_dialog('scoring_summary_dialog')">
+				<li onclick="toggle_window('scoring_summary_dialog')">
 					<div class="hotkey">S</div>
 					<div>Scoring Summary</div>
-				<li onclick="toggle_dialog('final_scoring_summary_dialog')">
+				<li onclick="toggle_window('final_scoring_summary_dialog')">
 					<div class="hotkey">Y</div>
 					<div>Final Scoring Summary</div>
 				<li class="separator">

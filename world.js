@@ -103,6 +103,7 @@ const world = {
 	keyword_list: [],
 	text_list: [],
 	log_boxes: [],
+	window_list: [],
 	focus: null,
 	mouse_focus: false,
 	last_focus: null,
@@ -969,6 +970,16 @@ function end_update() {
 		}
 	}
 
+	for (thing of world.window_list) {
+		if (thing.auto_update && !thing.element.hidden) {
+			var text = thing.auto_update()
+			if (text instanceof Element)
+				thing.body.replaceChildren(text)
+			else
+				thing.body.innerHTML = text
+		}
+	}
+
 	_animate_end()
 }
 
@@ -1114,13 +1125,128 @@ function update_overlay_position(action, id, x, y, grav_x=0.5, grav_y=0.5, top=1
 function update_overlay_text(action, id, text) {
 	var thing = lookup_thing(action, id)
 	assert(thing.my_overlay, "not an overlay")
-	return thing.my_overlay_head.textContent = text
+	thing.my_overlay_head.textContent = text
 }
 
 function update_overlay_text_html(action, id, text) {
 	var thing = lookup_thing(action, id)
 	assert(thing.my_overlay, "not an overlay")
-	return thing.my_overlay_head.innerHTML = text
+	thing.my_overlay_head.innerHTML = text
+}
+
+/* WINDOWS */
+
+function create_window(html_id, title, auto_update, should_resize) {
+	var element = document.createElement("div")
+	element.id = html_id
+	element.className = "window"
+	element.hidden = true
+
+	var wind_head = document.createElement("div")
+	wind_head.className = "window-head"
+	wind_head.innerHTML = title
+	element.append(wind_head)
+	drag_element_with_mouse(element, wind_head)
+
+	var wind_close = document.createElement("div")
+	wind_close.className = "window-close"
+	wind_close.textContent = "\u2716"
+	wind_close.onclick = function () { element.hidden = true }
+	element.append(wind_close)
+
+	var wind_body = document.createElement("div")
+	wind_body.className = "window-body"
+	element.append(wind_body)
+
+	if (should_resize) {
+		var wind_resize = document.createElement("div")
+		wind_resize.className = "window-resize"
+		element.append(wind_resize)
+		resize_element_with_mouse(element, wind_resize)
+	}
+
+	document.body.append(element)
+
+	world.window_list.push({
+		element,
+		head: wind_head,
+		body: wind_body,
+		auto_update: auto_update,
+	})
+}
+
+document.body.addEventListener("keydown", function (e) {
+	if (e.key === "Escape") {
+		for (var wind of world.window_list) {
+			if (!wind.element.hidden) {
+				e.preventDefault()
+				wind.element.hidden = true
+			}
+		}
+	}
+})
+
+window.addEventListener("resize", function (e) {
+	if (window.innerWidth < 800) {
+		for (var wind of world.window_list) {
+			wind.element.style.top = null
+			wind.element.style.left = null
+			wind.element.style.width = null
+			wind.element.style.height = null
+		}
+	}
+})
+
+function lookup_window(html_id) {
+	for (var wind of world.window_list)
+		if (wind.element.id === html_id)
+			return wind
+	throw new Error(`cannot find window: ${html_id}`)
+}
+
+function show_window(html_id) {
+	var wind = lookup_window(html_id)
+
+	// close other windows if mobile
+	if (window.innerWidth < 800) {
+		for (var other of world.window_list)
+			if (other !== wind)
+				other.element.hidden = true
+	}
+
+	// auto-update when window is shown
+	if (wind.auto_update && wind.element.hidden) {
+		var text = wind.auto_update()
+		if (text instanceof Element)
+			wind.body.replaceChildren(text)
+		else
+			wind.body.innerHTML = text
+	}
+
+	wind.element.hidden = false
+}
+
+function hide_window(html_id) {
+	lookup_window(html_id).element.hidden = true
+}
+
+function toggle_window(html_id) {
+	if (lookup_window(html_id).element.hidden)
+		show_window(html_id)
+	else
+		hide_window(html_id)
+}
+
+function update_window_title(html_id, title) {
+	lookup_window(html_id).head.innerHTML = title
+}
+
+function update_window_content(html_id, body) {
+console.log("body", body)
+	if (body instanceof Element)
+		lookup_window(html_id).body.replaceChildren(body)
+	else
+		lookup_window(html_id).body.innerHTML = body
 }
 
 /* LOG FORMATTING */
