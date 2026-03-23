@@ -4578,8 +4578,10 @@ function selected_a_tile(tile)
 			if (G.major[ECON]) G.major[ECON]++
 			if (G.minor[ECON]) G.minor[ECON]++
 			if (G.major[ECON] || G.minor[ECON]) {
-				log("North American Trade added " + say_action_points(1, ECON) + " (France more combined Fur and Fish markets).")
-				//log("North American Trade adds 1 Economic action point (France controls more combined Fur and Fish markets).")
+				log_box_ministry(G.active, NORTH_AMERICAN_TRADE)
+				log(say_action_points(1, ECON) + " (France more combined Fur and Fish markets)")
+				log_box_end(LOG_BOX_MINISTRY)
+				//log("North American Trade added " + say_action_points(1, ECON) + " (France more combined Fur and Fish markets).")
 			}
 		}
 	}
@@ -9626,7 +9628,9 @@ function do_buy_economic(who)
 	if (!has_transient(who, TRANSIENT_TILE_MADE_ECON)) {
 		set_transient(who, TRANSIENT_TILE_MADE_ECON)
 		if (has_active_ministry(who, NORTH_AMERICAN_TRADE) && has_transient(who, TRANSIENT_NORTH_AMERICAN_TRADE)) {
+			log_box_ministry(who, NORTH_AMERICAN_TRADE)
 			add_action_points(ECON, 1)
+			log_box_end(LOG_BOX_MINISTRY)
 		}
 	}
 }
