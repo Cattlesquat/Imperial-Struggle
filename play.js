@@ -2713,22 +2713,23 @@ function escape_square_brackets(text) {
 			switch (type) {
 				case "a":
 					let verbose = get_preference("actionverbosity", "medium")
-                    if (verbose === "long") {
+					if (verbose === "long") {
 						tooltip_text = " " + data.action_points[value].name + " action point" + escape_typography(msg)
 					} else {
 						tooltip_text = ""
 					}
 					break
 				case "@":
-					className = "symbol"
 					switch (value) {
-						case ECON: className += " econ"; break
-						case DIPLO: className += " diplo"; break
-						case MIL: className += " mil"; break
+						case ECON: tooltip_text = '<img class="symbol" draggable="false" src="images/icon-economic.svg">'; break
+						case DIPLO: tooltip_text = '<img class="symbol" draggable="false" src="images/icon-diplomatic.svg">'; break
+						case MIL: tooltip_text = '<img class="symbol" draggable="false" src="images/icon-military.svg">'; break
 					}
-					tooltip_text = `<span 
-						class="${className}"
-						>${escape_typography(msg)}</span>`
+					switch (value) {
+						case ECON: tooltip_text = '<span class="symbol econ"></span>'; break
+						case DIPLO: tooltip_text = '<span class="symbol diplo"></span>'; break
+						case MIL: tooltip_text = '<span class="symbol mil"></span>'; break
+					}
 					break
 				case "b":
 					className = "tip-basic-war"

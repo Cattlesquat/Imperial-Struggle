@@ -402,6 +402,8 @@ body.Britain #events_br { grid-row: 2 }
 	border-width: 1px;
 	border-color: black;
 	border-style: solid;
+	font-size: 16px;
+	line-height: 24px;
 }
 
 #tip {
@@ -658,91 +660,32 @@ div[data-tooltip]:after {
 	/* color: grey; */
 }
 
-/* LOG, PROMPT, AND TOOLTIP TEXT */
+/* ECON/DIPLO/MILITARY SYMBOLS */
 
-.symbol.econ { background-image: url(images/icon-economic.svg); }
-.symbol.diplo { background-image: url(images/icon-diplomatic.svg); }
-.symbol.mil { background-image: url(images/icon-military.svg); }
-
-#prompt .symbol {
+.symbol {
 	display: inline-block;
-	vertical-align: -4px;
-	width: 24px;
-	height: 30px;
-	background-size: cover;
+	vertical-align: bottom;
+	background-size: contain;
 	background-repeat: no-repeat;
-	margin-top: -4px;
-	margin-bottom: -4px;
-	/*border: 1px solid black;*/
+	background-position: center;
 }
 
-#prompt .symbol.econ {
-	margin-left: -5px;
-	vertical-align: -3px;
-	height: 28px;
-}
+#prompt .symbol { width: 22px; height: 22px; vertical-align: -5px; }
+#prompt .symbol.diplo { width: 26px; background-image: url(images/icon-diplo.22.png) }
+#prompt .symbol.econ { background-image: url(images/icon-econ.22.png) }
+#prompt .symbol.mil { background-image: url(images/icon-mil.22.png) }
 
-#prompt .symbol.mil {
-	margin-left: -5px;
-	margin-right: 2px;
-}
+#log .symbol { width: 18px; height: 18px; vertical-align: -4px;}
+#log .symbol.diplo { width: 22px; background-image: url(images/icon-diplo.18.png) }
+#log .symbol.econ { background-image: url(images/icon-econ.18.png) }
+#log .symbol.mil { background-image: url(images/icon-mil.18.png) }
 
-#log .symbol {
-	display: inline-block;
-	vertical-align: -3px;
-	width: 18px;
-	height: 18px;
-	background-size: cover;
-	background-repeat: no-repeat;
-	margin-top: -2px;
-	margin-bottom: -2px;
-	margin-left: -2px;
-	margin-right: -2px;
-	/* border: 1px solid black; */
-}
+#status .symbol { width: 20px; height: 20px; vertical-align: -4px; }
+#status .symbol.diplo { width: 24px; background-image: url(images/icon-diplo.20.png) }
+#status .symbol.econ { background-image: url(images/icon-econ.20.png) }
+#status .symbol.mil { background-image: url(images/icon-mil.20.png) }
 
-#log .symbol.econ {
-	height: 17px;
-	vertical-align: -2px;
-}
-
-#log .symbol.diplo {
-	margin-left: 0px;
-	margin-right: -3px;
-}
-
-#log .symbol.mil {
-	/* nothing */
-}
-
-#status .symbol {
-	display: inline-block;
-	vertical-align: -4px;
-	width: 20px;
-	height: 24px;
-	background-size: cover;
-	background-repeat: no-repeat;
-	margin-top: -2px;
-	margin-bottom: -2px;
-	margin-left: -4px;
-	margin-right: -2px;
-	/* border: 1px solid black; */
-}
-
-#status .symbol.econ {
-	height: 22px;
-	vertical-align: -3px;
-}
-
-#status .symbol.diplo {
-	height: 22px;
-	margin-left: 0px;
-	margin-right: -3px;
-}
-
-#status .symbol.mil {
-	/* nothing */
-}
+/* FANCY LOG FORMATTING */
 
 .award-in-log {
 	display: inline-block;
@@ -781,7 +724,6 @@ div[data-tooltip]:after {
 .region.r3 { /* India */
 	margin-left: 6px;
 }
-
 
 /* SCORE DIALOG */
 
