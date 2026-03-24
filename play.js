@@ -916,7 +916,9 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("redsies", false)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox("scoresies", false, on_dialog_refresh)
+	init_preference_checkbox("scoresies", false, function () {
+		update_window_content("scoring_summary_dialog", update_scoring_summary_dialog())
+	})
 	init_preference_checkbox("eventsies", true)
 
 	init_preference_radio("actionverbosity", "medium", function () {
@@ -3305,7 +3307,6 @@ function log_demands(codes)
 	for (var i = 0; i < 3; i++) {
 		var chit = global_demand[i]
 		var name = data.demands[chit].name.toLowerCase()
-		console.log("LOG_DEMANDS", chit, name)
 		msg.push(`<div class="marker square-sm demand ${name}"
 			onmouseenter="_tip_focus_demand('${chit}', 'marker square-sm demand ${name}')"
 			onmouseleave="_tip_blur_demand()"
@@ -3383,12 +3384,6 @@ function log_war_tiles(codes)
 	return msg.join("")
 }
 
-
-// A preference has changed that only needs to refresh active dialogs (not the whole document)
-function on_dialog_refresh(name, value) {
-	//BR// In theory check name of what preference changed, etc, but at the moment we only have one
-	update_window_content("scoring_summary_dialog", update_scoring_summary_dialog())
-}
 
 // Hotkeys
 window.addEventListener("keydown", function (evt) {
