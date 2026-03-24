@@ -848,9 +848,7 @@ function on_init() {
 	init_preference_checkbox("tracksies", true)
 	init_preference_checkbox("redsies", false)
 	init_preference_checkbox("allwars", false)
-	init_preference_checkbox("scoresies", false, function () {
-		update_window_content("scoring_summary_dialog", update_scoring_summary_dialog())
-	})
+	init_preference_checkbox("scoresies", false)
 	init_preference_checkbox("eventsies", true)
 
 	init_preference_radio("actionverbosity", "medium", function () {
@@ -3186,6 +3184,8 @@ function say_flag_color(who, string)
 	return escape_square_brackets("[F" + (((who === FRANCE) || (who === USA)) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
 }
 
+/* WINDOW: PLAIN TEXT SUMMARIES */
+
 function format_prestige_info()
 {
 	let winner = prestige_winner()
@@ -3290,27 +3290,6 @@ function format_demand_info(d)
 	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
-function format_demand_info_flags(d)
-{
-	let winner = demand_flag_winner(d)
-	let delta = demand_flag_delta(d)
-	if (winner !== NONE) {
-		let flag = winner === FRANCE ? "fr" : "br"
-		return say_flag_color(winner, "+" + delta) + `<div class="score-flag ${flag}"></div>`
-	}
-	return "+0"
-}
-
-function format_demand_info_table(d, era)
-{
-	let awards = data.demands[d].awards[era]
-	let msg = awards.vp + " VP"
-	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
-	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
-	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
-	return msg
-}
-
 function format_final_demand_info(d)
 {
 	let winner = demand_flag_winner(d)
@@ -3329,6 +3308,83 @@ function format_final_demand_info(d)
 
 	return leader
 }
+
+function update_scoring_summary_dialog_text() {
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_prestige_info())
+
+	text.push("<dt>Regions")
+	for (var r = 0; r < NUM_REGIONS; r++) {
+		var a = V.awards[r]
+		text.push("<dd>" + format_award_info(r, a))
+	}
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++) {
+		if (!V.global_demand.includes(d))
+			continue
+		text.push("<dd>" + format_demand_info(d))
+	}
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_results_info(d))
+
+	text.push("</dl>")
+	return text.join("")
+}
+
+function format_scoring_conquests() {
+	var text = []
+	var any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
+			if (!any)
+				any = true
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			if (!any)
+				any = true
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+	if (!any)
+		text.push("<dd>None")
+	return text.join("")
+}
+
+function update_final_scoring_summary_dialog_text()
+{
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_final_prestige_info())
+
+	text.push("<dt>Debt")
+	text.push("<dd>" + format_debt_info())
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++)
+		text.push("<dd>" + format_final_demand_info(d))
+
+	text.push("<dt>Conquests")
+	text.push(format_scoring_conquests())
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_final_scoring_results_info())
+
+	text.push("</dl>")
+	return text.join("")
+}
+
+
+/* WINDOW: SUMMARY - PRELIMINARY RESULTS */
 
 function format_results_info()
 {
@@ -3705,6 +3761,16 @@ function format_prestige_score_summary() {
 	`)
 }
 
+function format_demand_info_table(d, era)
+{
+	let awards = data.demands[d].awards[era]
+	let msg = awards.vp + " VP"
+	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
+	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
+	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
+	return msg
+}
+
 function format_demand_score_summary(d, era) {
 	return (`
 		<div class="score-row">
@@ -3730,33 +3796,6 @@ function update_scoring_summary_dialog() {
 	if (get_preference("scoresies"))
 		return update_scoring_summary_dialog_text()
 	return update_scoring_summary_dialog_fancy()
-}
-
-function update_scoring_summary_dialog_text() {
-	var text = []
-	text.push("<dl>")
-
-	text.push("<dt>Prestige")
-	text.push("<dd>" + format_prestige_info())
-
-	text.push("<dt>Regions")
-	for (var r = 0; r < NUM_REGIONS; r++) {
-		var a = V.awards[r]
-		text.push("<dd>" + format_award_info(r, a))
-	}
-
-	text.push("<dt>Global Demand")
-	for (var d = 0; d < NUM_DEMANDS; d++) {
-		if (!V.global_demand.includes(d))
-			continue
-		text.push("<dd>" + format_demand_info(d))
-	}
-
-	text.push("<dt>Projected Results")
-	text.push("<dd>" + format_results_info(d))
-
-	text.push("</dl>")
-	return text.join("")
 }
 
 function update_scoring_summary_dialog_fancy() {
@@ -3807,49 +3846,6 @@ function update_final_scoring_summary_dialog()
 	return update_final_scoring_summary_dialog_fancy()
 }
 
-function update_final_scoring_summary_dialog_text()
-{
-	var text = []
-	text.push("<dl>")
-
-	text.push("<dt>Prestige")
-	text.push("<dd>" + format_final_prestige_info())
-
-	text.push("<dt>Debt")
-	text.push("<dd>" + format_debt_info())
-
-	text.push("<dt>Global Demand")
-	for (var d = 0; d < NUM_DEMANDS; d++)
-		text.push("<dd>" + format_final_demand_info(d))
-
-	let any = false
-	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-		if (G.flags[s] === BRITAIN) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	text.push("<dt>Projected Results")
-	text.push("<dd>" + format_final_scoring_results_info())
-
-	text.push("</dl>")
-	return text.join("")
-}
-
 function update_final_scoring_summary_dialog_fancy()
 {
 	var text = []
@@ -3874,30 +3870,8 @@ function update_final_scoring_summary_dialog_fancy()
 					<dd>${format_debt_info()}
 					<br>
 					<br>
-	`)
-
-	let any = false
-	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-		if (G.flags[s] === BRITAIN) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	text.push(`
+					<dt>Conquests
+					${format_scoring_conquests()}
 				</dl>
 			</div>
 			<div class="score-summary-3">
