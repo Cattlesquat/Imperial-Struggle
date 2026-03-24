@@ -1840,7 +1840,7 @@ function on_update() {
 	confirm_action_button("confirm_pass_usa", "Pass", "You have not converted all eligible territories to USA flags. Confirm passing early?")
 	confirm_action_button("confirm_pass_usa_forts", "Pass", "You have not removed flags from all eligible forts. Confirm passing early?")
 
-	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war(); } )
+	action_button_imp("military_upgrade", "Military Upgrade", evt => { send_action("military_upgrade"); scroll_to_war() } )
 
 	action_button("buy_diplomatic", (is_mobile() || shortest) ? "Buy Diplo" : "Buy Diplomatic")
 	action_button("buy_economic", (is_mobile() || shortest) ? "Buy Econ" : "Buy Economic")
@@ -2049,7 +2049,7 @@ function agencement_theater_tiles(element) {
 
 function theater_tier(war, winner, theater, delta)
 {
-	var margin;
+	var margin
 	if ((winner === FRANCE) && (data.wars[war].theater[theater].france_margin !== undefined)) {
 		margin = data.wars[war].theater[theater].france_margin
 	} else {
@@ -3099,7 +3099,7 @@ function say_action_points(space = true, brackets = true) {
 		}
 	}
 
-	var need_comma = false;
+	var need_comma = false
 	var early = [ false, false, false ]
 	var tell = ""
 	var told_name = [ false, false, false ]
@@ -3974,20 +3974,6 @@ window.addEventListener("keydown", function (evt) {
 			scroll_to_map()
 			evt.preventDefault()
 			break
-
-		/*
-		case "h":
-		case "H":
-			window.location.href = "/games/active"
-			evt.preventDefault()
-			break
-
-		case "n":
-		case "N":
-			window.location.href = "/games/next"
-			evt.preventDefault()
-			break
-		 */
 
 		case "m":
 		case "M":
