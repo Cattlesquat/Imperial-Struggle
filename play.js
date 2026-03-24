@@ -8,6 +8,10 @@ const space_type_class = [
 	"fort",
 ]
 
+function center_rect(xc, yc, w, h) {
+	return [xc - w / 2, yc - h / 2, w, h]
+}
+
 // Returns true if we're playing this on a mobile platform e.g. phone
 function is_mobile() {
 	return ("ontouchstart" in window) || (window.innerWidth < 800)
@@ -18,10 +22,6 @@ function attract(e) {
 	window.setTimeout(() => e.classList.remove("attract"), 1500)
 }
 
-function center_rect(xc, yc, w, h) {
-	return [xc - w / 2, yc - h / 2, w, h]
-}
-
 function scroll_to_war() {
 	scroll_into_view(document.getElementById("war"))
 }
@@ -30,10 +30,11 @@ function scroll_to_map() {
 	scroll_into_view(document.getElementById("top"))
 }
 
-var Whole //BR// Hack to let me scroll to this specific element
-function scroll_to_debt()
+function scroll_to_debt(who)
 {
-	scroll_into_view(Whole.element)
+	var e = lookup_thing("debt", who).element
+	scroll_into_view(e)
+	attract(e)
 }
 
 function scroll_to_cards() {
@@ -811,7 +812,7 @@ function bonus_war_tooltip(t, who) {
 
 function set_available_debt_tooltips() {
 	roles[FRANCE].stat.addEventListener("click", function () {
-		scroll_to_debt()
+		scroll_to_debt(FRANCE)
 	})
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(FRANCE)
@@ -821,7 +822,7 @@ function set_available_debt_tooltips() {
 	})
 
 	roles[BRITAIN].stat.addEventListener("click", function () {
-		scroll_to_debt()
+		scroll_to_debt(BRITAIN)
 	})
 	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(BRITAIN)
@@ -1006,12 +1007,6 @@ function on_init() {
 		}
 	}
 
-	// FIXME - icky hack
-	let whole_track_rect = [ 2084, 1242, 413, 417 ]
-	Whole = define_layout("general-track-whole", 0, whole_track_rect)
-	Whole.element.style.setProperty("pointer-events", "none")
-	// FIXME
-
 	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
 		define_stack("general-track", i,
 			resize_rect(find_layout_node("record track " + i), 49, 49),
@@ -1028,7 +1023,7 @@ function on_init() {
 		if (s.layout.includes("record track")) continue
 		var rect = find_layout_node(s.layout ?? s.name)
 		if (!rect) {
-			console.log("No layout for Bizarro Space: " + s.name)
+			// console.log("No layout for Bizarro Space: " + s.name)
 			continue
 		}
 
@@ -3904,7 +3899,8 @@ window.addEventListener("keydown", function (evt) {
 
 		case "d":
 		case "D":
-			scroll_to_debt()
+			scroll_to_debt(FRANCE)
+			scroll_to_debt(BRITAIN)
 			evt.preventDefault()
 			break
 
