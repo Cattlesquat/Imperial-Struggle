@@ -1,370 +1,5 @@
 "use strict"
 
-const layout_nodes = {
-	"Demand": [1111,323,324,61],
-	"Demand_winner":[1120, 375, 324, 25],
-	"Deal Tiles": [1250,0,324,61],
-	"record track 0": [2083,1302,58,58],
-	"record track 1": [2143,1302,58,58],
-	"record track 2": [2201,1302,58,58],
-	"record track 3": [2261,1302,58,58],
-	"record track 4": [2321,1302,58,58],
-	"record track 5": [2380,1302,58,58],
-	"record track 6": [2439,1302,58,58],
-	"record track -7": [2084,1242,58,58],
-	"record track -6": [2143,1242,58,58],
-	"record track -5": [2202,1242,58,58],
-	"record track -4": [2262,1242,58,58],
-	"record track -3": [2321,1242,58,58],
-	"record track -2": [2380,1242,58,58],
-	"record track -1": [2439,1242,58,58],
-	"record track 7": [2143,1363,58,58],
-	"record track 8": [2202,1363,58,58],
-	"record track 9": [2261,1363,58,58],
-	"record track 10": [2321,1363,58,58],
-	"record track 11": [2380,1363,58,58],
-	"record track 12": [2439,1363,58,58],
-	"record track 13": [2142,1422,58,58],
-	"record track 14": [2200,1422,58,58],
-	"record track 15": [2260,1422,58,58],
-	"record track 16": [2320,1422,58,58],
-	"record track 17": [2379,1422,58,58],
-	"record track 18": [2438,1422,58,58],
-	"record track 19": [2142,1483,58,58],
-	"record track 20": [2201,1483,58,58],
-	"record track 21": [2261,1483,58,58],
-	"record track 22": [2320,1483,58,58],
-	"record track 23": [2379,1483,58,58],
-	"record track 24": [2438,1483,58,58],
-	"record track 25": [2143,1542,58,58],
-	"record track 26": [2201,1542,58,58],
-	"record track 27": [2261,1542,58,58],
-	"record track 28": [2320,1542,58,58],
-	"record track 29": [2379,1542,58,58],
-	"record track 30": [2438,1542,58,58],
-	"record track 31": [2142,1601,58,58],
-	"record track 32": [2200,1601,58,58],
-	"record track 33": [2260,1601,58,58],
-	"record track 34": [2320,1601,58,58],
-	"record track 35": [2378,1601,58,58],
-	"record track 36": [2437,1601,58,58],
-	"Navy Box": [887,836,282,138],
-	"Navy Box France": [925,875,60,60],
-	"Navy Box Britain": [1050,875,60,60],
-	"Turn 5": [126,1180,58,101],
-	"Turn 4": [125,1281,58,101],
-	"Turn 3": [126,1383,58,101],
-	"Turn 2": [126,1485,58,56],
-	"Turn 1": [126,1546,58,56],
-	"War 4": [47,1129,78,104],
-	"War 3": [47,1233,78,102],
-	"War 2": [48,1334,78,102],
-	"War 1": [48,1493,78,104],
-	"Turn 6": [125,1079,58,101],
-	"Initiative": [251,1502,75,75],
-	"Award North America": [669,48,118,119],
-	"Award_winner North America": [669, 132, 118, 25],
-	"Award_winner North America Left": [684, 95, 40, 25],
-	"Award_winner North America Right": [757, 95, 40, 25],
-	"Award India": [1437,888,118,119],
-	"Award_winner India": [1437, 972, 118, 25],
-	"Award_winner India Left": [1451, 935, 40, 25],
-	"Award_winner India Right": [1526, 935, 40, 25],
-	"Award Europe": [1307,530,118,119],
-	"Award_winner Europe": [1321, 562, 40, 25],
-	"Award_winner Europe Left": [1321, 562, 40, 25],
-	"Award_winner Europe Right": [1395, 562, 40, 25],
-	"Award_winner Europe Prestige": [1321, 592, 40, 25],
-	"Award_winner Europe Prestige Left": [1321, 592, 40, 25],
-	"Award_winner Europe Prestige Right": [1393, 592, 40, 25],
-	"Award Caribbean": [1100,1238,118,119],
-	"Award_winner Caribbean": [1100, 1317, 118, 25],
-	"Award_winner Caribbean Left": [1114, 1284, 40, 25],
-	"Award_winner Caribbean Right": [1188, 1284, 40, 25],
-
-	"Ireland_1": [1492,242,65,65],
-	"Ireland_2": [1583,243,65,65],
-	"Scotland_1": [1695,126,65,65],
-	"Scotland_2": [1787,127,65,65],
-	"Denmark": [2024,55,65,65],
-	"Prussia_1": [2068,193,65,65],
-	"Prussia_2": [2161,193,65,65],
-	"Prussia_3": [2068,301,65,65],
-	"Prussia_4": [2161,301,65,65],
-	"Sweden": [2317,150,65,65],
-	"Russia": [2409,264,65,65],
-	"Dutch_1": [1846,294,65,65],
-	"Dutch_2": [1937,294,65,65],
-	"German_States_1": [2008,466,65,65],
-	"German_States_2": [2101,467,65,65],
-	"Bavaria": [2218,466,65,65],
-	"Austria_1": [2334,495,65,65],
-	"Austria_2": [2426,495,65,65],
-	"Austria_3": [2333,587,65,65],
-	"Austria_4": [2426,587,65,65],
-	"Sardinia": [2189,803,65,65],
-	"Savoy": [1989,611,65,65],
-	"Spain_1": [1523,578,65,65],
-	"Spain_2": [1615,578,65,65],
-	"Spain_3": [1523,669,65,65],
-	"Spain_4": [1615,669,65,65],
-	"Gibraltar": [1306,670,77,77],
-	"Minorca": [1306,780,77,77],
-	"Biscay": [1300,396,88,77],
-	"Balearic": [1394,396,88,77],
-	"Algonquin": [132,150,65,65],
-	"Hudson Bay": [331,70,77,77],
-	"York Factory": [257,156,76,76],
-	"Quebec & Montreal": [429,107,77,77],
-	"Gulf of St. Lawrence": [952,158,76,76],
-	"Cabot Strait": [927,256,88,77],
-	"Louisbourg": [1038,362,88,77],
-	"Acadia": [922,384,77,77],
-	"Northeast Channel": [820,439,76,76],
-	"Halifax": [796,324,88,77],
-	"Georges Bank": [732,508,76,76],
-	"Atlantic Passage": [619,589,88,77],
-	"Gulf of Maine": [609,429,88,77],
-	"Mass. Bay": [472,396,76,76],
-	"Northern Colonies": [261,660,77,77],
-	"Chesapeake": [223,772,76,76],
-	"Hudson Valley": [266,496,76,76],
-	"Albany": [315,396,76,76],
-	"Cumberland": [93,710,76,76],
-	"Ohio Forks": [27,609,88,77],
-	"Allegheny": [124,532,76,76],
-	"Niagara": [81,452,76,76],
-	"Oswego": [221,382,76,76],
-	"Champlain Valley": [337,272,88,77],
-	"Ile aux Noix": [440,212,76,76],
-	"Cataraqui": [213,259,76,76],
-	"Iroquois": [80,910,65,65],
-	"Sons of Liberty": [507,634,65,65],
-	"USA_Prestige_2": [1003,602,65,65],
-	"USA_Prestige_3": [1096,602,65,65],
-	"Asiento": [782,781,77,77],
-	"Privateers": [937,1139,65,65],
-	"Buccaneers": [528,1545,65,65],
-	"Carolinas": [698,691,77,77],
-	"Georgia": [591,723,76,76],
-	"San Agustin": [565,825,77,77],
-	"Panzacola": [450,905,76,76],
-	"Bahamas Run West": [528,1068,76,76],
-	"Bahamas Run North": [712,918,76,76],
-	"Caicos": [679,1147,76,76],
-	"Bahamas Run": [635,1044,88,77],
-	"St. Domingue": [754,1252,77,77],
-	"Port de Paix": [664,1250,76,76],
-	"Puerto Principe": [550,1185,76,76],
-	"Puerto Rico": [855,1283,76,76],
-	"Antigua": [898,1379,76,76],
-	"Martinique": [986,1445,76,76],
-	"St. Lucia": [962,1548,76,76],
-	"Antilles Channel": [855,1489,88,77],
-	"Guadeloupe": [1089,1381,77,77],
-	"Barbados": [1084,1536,77,77],
-	"Havana": [400,1215,76,76],
-	"Gulf of Cazones": [481,1257,88,77],
-	"Santiago": [559,1314,76,76],
-	"Jamaica": [452,1422,77,77],
-	"Cayman Passage": [313,1362,76,76],
-	"Cuba Passage East": [437,1109,76,76],
-	"Cuba Passage": [332,1124,88,77],
-	"St. James": [270,941,76,76],
-	"Louisiana": [325,848,77,77],
-	"Maratha": [1799,731,65,65],
-	"Nizam": [1409,1198,65,65],
-	"Mysore": [1408,1491,65,65],
-	"Malacca Route": [2254,1110,76,76],
-	"Hooghly River": [2026,986,88,77],
-	"Chandernagore": [2044,881,77,77],
-	"Plassey": [1936,791,76,76],
-	"West Bengal": [1812,859,76,76],
-	"Midnapore": [1870,1038,76,76],
-	"Calcutta": [2074,1106,77,77],
-	"Kurpa": [1558,1084,76,76],
-	"Arcot": [1644,1160,88,77],
-	"Vellore": [1544,1207,76,76],
-	"Kanchipuram": [1774,1278,76,76],
-	"Madras": [1957,1222,77,77],
-	"Pondicherry": [1957,1392,77,77],
-	"Karaikal": [1933,1513,76,76],
-	"Vandavasi": [1749,1419,88,77],
-	"Tiruchirappalli": [1614,1470,76,76],
-	"Calicut": [1333,1329,76,76],
-	"Mangalore": [1279,1073,76,76],
-	"Malabar Coast": [1243,1206,88,77],
-	"Baltic Trade": [1908,119,80,80],
-	"Central Europe Conflict": [2281,364,80,80],
-	"German Diplomacy": [2288,263,80,80],
-	"Italy Influence": [2177,646,80,80],
-	"Mediterranean Intrigue": [1788,592,80,80],
-	"Naval Bastion": [1406,661,80,80],
-	"Silesia Negotiations": [2418,382,80,80],
-	"Algonquin Raids": [45,249,80,80],
-	"Fur Trade": [224,46,80,80],
-	"Iroquois Raids": [47,1009,80,80],
-	"Patriot Agitation": [370,692,80,80],
-	"Wheat": [135,800,80,80],
-	"Fruit": [444,786,80,80],
-	"Letters of Marque": [1083,1100,80,80],
-	"Pirate Havens": [664,1555,80,80],
-	"Rum": [985,1242,80,80],
-	"Slaving Contracts": [866,721,80,80],
-	"Power Struggle": [1533,1545,80,80],
-	"Raids & Incursions": [1702,826,80,80],
-	"Separatist Wars": [1486,1318,80,80],
-	"Silk": [1767,952,80,80],
-	"Textiles": [1703,1539,80,80],
-	"Navy Box": [883,833,290,144],
-}
-
-const war_layout = {
-	war_7yw_theater_drawn: [353, 0, 667, 93],
-	war_7yw_theater_1_france: [57, 132, 152, 152],
-	war_7yw_theater_1_britain: [225, 132, 152, 152],
-	war_7yw_theater_2_france: [579, 132, 152, 152],
-	war_7yw_theater_2_britain: [747, 132, 152, 152],
-	war_7yw_theater_3_france: [57, 503, 152, 152],
-	war_7yw_theater_3_britain: [225, 503, 152, 152],
-	war_7yw_theater_4_france: [579, 503, 152, 152],
-	war_7yw_theater_4_britain: [747, 503, 152, 152],
-	war_wss_theater_drawn: [240, 0, 667, 93],
-	war_wss_theater_1_france: [57, 132, 152, 152],
-	war_wss_theater_1_britain: [225, 132, 152, 152],
-	war_wss_theater_2_france: [579, 132, 152, 152],
-	war_wss_theater_2_britain: [747, 132, 152, 152],
-	war_wss_theater_3_france: [57, 504, 152, 152],
-	war_wss_theater_3_britain: [225, 504, 152, 152],
-	war_wss_theater_4_france: [579, 503, 152, 152],
-	war_wss_theater_4_britain: [747, 503, 152, 152],
-	war_was_theater_drawn: [233, 0, 667, 93],
-	war_was_theater_1_france: [57, 116, 152, 152],
-	war_was_theater_1_britain: [225, 116, 152, 152],
-	war_was_theater_2_france: [578, 116, 152, 152],
-	war_was_theater_2_britain: [746, 116, 152, 152],
-	war_was_theater_3_france: [57, 445, 152, 152],
-	war_was_theater_3_britain: [225, 445, 152, 152],
-	war_was_theater_4_france: [578, 439, 152, 152],
-	war_was_theater_4_britain: [746, 439, 152, 152],
-	war_awi_theater_drawn: [227, 0, 667, 93],
-	war_awi_theater_1_france: [57, 132, 152, 152],
-	war_awi_theater_1_britain: [225, 132, 152, 152],
-	war_awi_theater_2_france: [579, 132, 152, 152],
-	war_awi_theater_2_britain: [747, 132, 152, 152],
-	war_awi_theater_3_france: [579, 443, 152, 152],
-	war_awi_theater_3_britain: [747, 443, 152, 152],
-	war_awi_theater_4_france: [577, 132, 152, 152],
-	war_awi_theater_4_britain: [747, 132, 152, 152],
-
-	war_wss_theater_1: [35, 75, 508, 361],
-	war_wss_theater_2: [556, 75, 508, 361],
-	war_wss_theater_3: [35, 446, 508, 361],
-	war_wss_theater_4: [556, 446, 508, 361],
-
-	war_was_theater_1: [35, 65, 508, 324],
-	war_was_theater_2: [556, 65, 508, 324],
-	war_was_theater_3: [35, 398, 508, 302],
-	war_was_theater_4: [556, 398, 508, 420],
-
-	war_7yw_theater_1: [35, 75, 508, 361],
-	war_7yw_theater_2: [556, 75, 508, 361],
-	war_7yw_theater_3: [35, 446, 508, 361],
-	war_7yw_theater_4: [556, 446, 508, 361],
-
-	war_awi_theater_1: [35, 75, 508, 467],
-	war_awi_theater_2: [556, 75, 508, 299],
-	war_awi_theater_3: [556, 386, 508, 426],
-
-	// WSS - Strength
-	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
-	war_wss_theater_1_strength_br: [480, 400, 50, 25],
-	war_wss_theater_2_strength_fr: [560, 400, 50, 25],
-	war_wss_theater_2_strength_br: [1015, 400, 50, 25],
-	war_wss_theater_3_strength_fr: [42, 770, 50, 25],
-	war_wss_theater_3_strength_br: [480, 770, 50, 25],
-	war_wss_theater_4_strength_fr: [560, 770, 50, 25],
-	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
-
-	// WSS - Winner
-	war_wss_theater_1_winner: [290, 94, 60, 25],
-	war_wss_theater_2_winner: [690, 94, 60, 25],
-	war_wss_theater_3_winner: [340, 464, 60, 25],
-	war_wss_theater_4_winner: [850, 464, 60, 25],
-
-	// WSS - Alliances
-	war_wss_theater_1_alliances: [500, 142, 50, 152],
-	war_wss_theater_2_alliances: [1022, 160, 50, 152],
-	war_wss_theater_3_alliances: [500, 527, 50, 152],
-	war_wss_theater_4_alliances: [1022, 519, 50, 152],
-
-	// WAS - Strength
-	war_was_theater_1_strength_fr: [42, 360, 50, 25],
-	war_was_theater_1_strength_br: [490, 360, 50, 25],
-	war_was_theater_2_strength_fr: [560, 360, 50, 25],
-	war_was_theater_2_strength_br: [1015, 360, 50, 25],
-	war_was_theater_3_strength_fr: [40, 670, 50, 25],
-	war_was_theater_3_strength_br: [492, 670, 50, 25],
-	war_was_theater_4_strength_fr: [560, 815, 50, 25],
-	war_was_theater_4_strength_br: [1030, 815, 50, 25],
-
-	// WAS - Winner
-	war_was_theater_1_winner: [295, 82, 60, 25],
-	war_was_theater_2_winner: [865, 82, 60, 25],
-	war_was_theater_3_winner: [335, 413, 60, 25],
-	war_was_theater_4_winner: [865, 413, 60, 25],
-
-	// WAS - Alliances
-	war_was_theater_1_alliances: [500, 122, 50, 152],
-	war_was_theater_2_alliances: [1022, 142, 50, 152],
-	war_was_theater_3_alliances: [500, 471, 50, 152],
-	war_was_theater_4_alliances: [1022, 454, 50, 152],
-
-	// 7YW - Strength
-	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
-	war_7yw_theater_1_strength_br: [490, 405, 50, 25],
-	war_7yw_theater_2_strength_fr: [560, 405, 50, 25],
-	war_7yw_theater_2_strength_br: [1015, 405, 50, 25],
-	war_7yw_theater_3_strength_fr: [42, 775, 50, 25],
-	war_7yw_theater_3_strength_br: [480, 775, 50, 25],
-	war_7yw_theater_4_strength_fr: [560, 775, 50, 25],
-	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
-
-	// 7YW - Winner
-	war_7yw_theater_1_winner: [355, 94, 60, 25],
-	war_7yw_theater_2_winner: [875, 94, 60, 25],
-	war_7yw_theater_3_winner: [355, 465, 60, 25],
-	war_7yw_theater_4_winner: [810, 465, 60, 25],
-
-	// 7YW - Alliances
-	war_7yw_theater_1_alliances: [518, 147, 50, 152],
-	war_7yw_theater_2_alliances: [1022, 150, 50, 152],
-	war_7yw_theater_3_alliances: [533, 514, 50, 152],
-	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
-
-	// AWI - Strength
-	war_awi_theater_1_strength_fr: [36,  508, 50, 25],
-	war_awi_theater_1_strength_br: [495, 508, 50, 25],
-	war_awi_theater_2_strength_fr: [560,  343, 50, 25],
-	war_awi_theater_2_strength_br: [1015, 343, 50, 25],
-	war_awi_theater_3_strength_fr: [560, 780, 50, 25],
-	war_awi_theater_3_strength_br: [1010, 780, 50, 25],
-
-	// AWI - Winner
-	war_awi_theater_1_winner: [355, 93, 60, 25],
-	war_awi_theater_2_winner: [780, 93, 60, 25],
-	war_awi_theater_3_winner: [780, 404, 60, 25],
-
-	// AWI - Alliances
-	war_awi_theater_1_alliances: [502,  144, 50, 152],
-	war_awi_theater_2_alliances: [1037, 164, 50, 152],
-	war_awi_theater_3_alliances: [1032, 442, 50, 152],
-	war_awi_theater_4_alliances: [1022, 510, 50, 152],
-}
-
-// Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
-const layout_theater_drawn = [700, 0, 400, 70]
-
 const space_type_class = [
 	"political",
 	"market",
@@ -373,16 +8,93 @@ const space_type_class = [
 	"fort",
 ]
 
-function find_layout_node(name) {
-	if (name in layout_nodes)
-		return layout_nodes[name]
-	return null
+// Returns true if we're playing this on a mobile platform e.g. phone
+function is_mobile() {
+	return ("ontouchstart" in window)
+}
+
+function attract(e) {
+	e.classList.add("attract")
+	window.setTimeout(() => e.classList.remove("attract"), 1500)
 }
 
 function center_rect(xc, yc, w, h) {
 	return [xc - w / 2, yc - h / 2, w, h]
 }
 
+function scroll_to_war() {
+	scroll_into_view(document.getElementById("war"))
+}
+
+function scroll_to_map() {
+	scroll_into_view(document.getElementById("top"))
+}
+
+var Whole //BR// Hack to let me scroll to this specific element
+function scroll_to_debt()
+{
+	scroll_into_view(Whole.element)
+}
+
+function scroll_to_cards() {
+	if (R !== BRITAIN) {
+		scroll_into_view(document.getElementById("ministry_fr"))
+	} else {
+		scroll_into_view(document.getElementById("ministry_br"))
+	}
+}
+
+function mention_verbosity()
+{
+	if (is_mobile()) return
+
+	if (V.prompt.includes("(Verbosity")) {
+		let index = V.prompt.indexOf("<b><i>      (Verbosity")
+		V.prompt = V.prompt.slice(0, index)
+	}
+
+	V.prompt += "<b><i>      (Verbosity changed to: " + say_verbosity() + ")</i></b>"
+}
+
+function say_verbosity()
+{
+	let verbose = get_preference("actionverbosity", "medium")
+	if (verbose === "short")
+		return "Brief"
+	if (verbose === "long")
+		return "Verbose"
+	return "Normal"
+}
+
+/* GAME STATE */
+
+function is_observing()
+{
+	return (R !== FRANCE) && (R !== BRITAIN)
+}
+
+function is_digit(c) {
+	return (c >= '0') && (c <= '9')
+}
+
+function is_bit(b) {
+	return !!bit_get(V.bitflags ?? [ 0 ], b)
+}
+
+function bit_get(bits, index)
+{
+	var w = index >> 5
+	var b = index & 31
+	return ((bits[w] >> b) & 1) > 0
+}
+
+// Ministry is active if it's one of the player's ministry cards AND it has been revealed
+function has_active_ministry(who, m)
+{
+	if (!G.ministry[who].includes(m)) return false
+	let idx = G.ministry[who].indexOf(m)
+	return G.ministry_revealed[who][idx]
+}
 
 function has_conflict_marker(s) {
 	return get_conflict_marker(s) > 0
@@ -394,6 +106,18 @@ function get_conflict_marker(s) {
 
 function is_damaged_fort(s) {
 	return set_has(V.damaged_forts, s)
+}
+
+// True if ministry is presently exhausted
+// Some ministries have more than one separately exhaustible ability (in which case can pass a different "ability" number)
+function is_ministry_exhausted(who, m, ability = 0) {
+	if (!V.ministry[who].includes(m)) return false
+	var idx = V.ministry[who].indexOf(m)
+	return set_has(V.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
+}
+
+function is_advantage_exhausted(a) {
+	return !!(V.adv_exhaust & (1 << a))
 }
 
 function region_flag_winner(region) {
@@ -424,6 +148,296 @@ function demand_flag_winner(demand) {
 
 function demand_flag_delta(demand) {
 	return Math.abs(V.demand_flag_count[FRANCE][demand] - V.demand_flag_count[BRITAIN][demand])
+}
+
+function debt_winner() {
+	if (available_debt(FRANCE) > available_debt(BRITAIN) + 1) return FRANCE
+	if (available_debt(BRITAIN) > available_debt(FRANCE) + 1) return BRITAIN
+	return NONE
+}
+
+function debt_delta() {
+	return Math.abs(available_debt(FRANCE) - available_debt(BRITAIN))
+}
+
+function debt_award() {
+	return Math.min(4, Math.floor(debt_delta() / 2))
+}
+
+function available_debt(who) {
+	return G.debt_limit[who] - G.debt[who]
+}
+
+function available_debt_plus_trps(who) {
+	return available_debt(who) + G.treaty_points[who]
+}
+
+function get_advantage_region(a) {
+	return data.spaces[data.advantages[a].req[0]].region
+}
+
+function has_advantage(who, a) {
+	for (var s of data.advantages[a].req)
+		if (V.flags[s] !== who)
+			return false
+	return true
+}
+
+function whose_advantage(a) {
+	if (has_advantage(FRANCE, a)) return FRANCE
+	if (has_advantage(BRITAIN, a)) return BRITAIN
+	return NONE
+}
+
+function is_advantage_conflicted(a)
+{
+	for (var s of data.advantages[a].req) {
+		if (has_conflict_marker(s)) return true
+	}
+	return false
+}
+
+function is_ministry_fully_exhausted(who, m) {
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (!is_ministry_exhausted(who, m, i)) return false
+	}
+	return true
+}
+
+function is_ministry_partially_exhausted(who, m) {
+	for (let i = 0; i < data.ministries[m].abilities; i++) {
+		if (is_ministry_exhausted(who, m, i)) return true
+	}
+	return false
+}
+
+function next_peace_turn(turn)
+{
+	if (turn < PEACE_TURN_2) return PEACE_TURN_2
+	if (turn < PEACE_TURN_3) return PEACE_TURN_3
+	if (turn < PEACE_TURN_4) return PEACE_TURN_4
+	if (turn < PEACE_TURN_5) return PEACE_TURN_5
+	if (turn < PEACE_TURN_6) return PEACE_TURN_6
+	return GAME_OVER
+}
+
+function current_era() {
+	if (V.turn < PEACE_TURN_3) return SUCCESSION_ERA
+	if (V.turn < PEACE_TURN_5) return EMPIRE_ERA
+	return REVOLUTION_ERA
+}
+
+/* TOOLTIP ON FOCUS */
+
+function position_tip_image() {
+	// postpone actual positioning until browser has laid out everything else
+	setTimeout(position_tip_image_imp, 0)
+}
+
+function position_tip_image_imp() {
+	world.tip.style.left = "0px"
+	world.tip.style.bottom = world.status.offsetHeight + "px"
+	world.tip.style.display = "flex"
+	world.tip.style.right = ""
+	world.tip.style.top = ""
+}
+
+function advantage_tooltip_image(a, onoff) {
+	if (onoff) {
+		on_focus_advantage_tip(a)
+	} else {
+		on_blur_advantage_tip()
+	}
+}
+
+function on_focus_advantage_tip(a) {
+	world.tip.hidden = is_mobile()
+
+	// Show BOTH sides of the marker
+	world.tip.innerHTML = `
+		<div class="marker square advantage a${a} reverse advantage-back"></div>
+		<div class="marker square advantage a${a} advantage-front"></div>	`
+}
+
+function on_blur_advantage_tip() {
+	world.tip.hidden = true
+	world.tip.innerHTML = ""
+}
+
+function _tip_focus_demand(d) {
+	var name = data.demands[d].name.toLowerCase()
+	world.tip.setAttribute("class", "square-sm marker demand " + name)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+	world.status.innerHTML = demand_tooltip(d)
+	demand_tooltip_image(d, true)
+}
+
+function _tip_blur_demand(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+	demand_tooltip_image(0, false)
+}
+
+function _tip_focus_event(who, c, name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+	world.status.innerHTML = event_tooltip(c, who)
+}
+
+function _tip_blur_event(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function _tip_focus_event_mobile(who, c, name) {
+	world.mobile_tip.setAttribute("class", name)
+	world.mobile_tip.hidden = !is_mobile()
+}
+
+function _tip_focus_ministry_mobile(who, m, name) {
+	world.mobile_tip.setAttribute("class", name)
+	world.mobile_tip.hidden = !is_mobile()
+}
+
+function _tip_blur_mobile_tip() {
+	world.mobile_tip.removeAttribute("class")
+	world.mobile_tip.hidden = true
+}
+
+function _tip_focus_spending(who) {
+	world.status.innerHTML = available_debt_tooltip(who)
+}
+
+function _tip_blur_spending() {
+	world.status.innerHTML = ""
+}
+
+function _tip_focus_award(a)
+{
+	world.tip.setAttribute("class", "square-sm marker black award a" + a)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+
+	for (let region = 0; region < NUM_REGIONS; region++) {
+		if (V.awards[region] === a) {
+			world.status.innerHTML = award_tooltip(region)
+		}
+	}
+}
+
+function _tip_blur_award() {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function _tip_focus_investment(i)
+{
+	world.tip.setAttribute("class", "square marker investment i" + i)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+
+	world.status.innerHTML = investment_tooltip(i)
+}
+
+function _tip_blur_investment() {
+	world.tip.removeAttribute("class")
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+function _tip_focus_basic_war_tile(t)
+{
+	var who = data.basic_war_tiles[t].side
+	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war-basic" + t)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+
+	world.status.innerHTML = basic_war_tooltip(t, who)
+}
+
+function _tip_blur_basic_war_tile() {
+	world.tip.removeAttribute("class")
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+function _tip_focus_bonus_war_tile(t)
+{
+	var who = data.bonus_war_tiles[t].side
+	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war" + t)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+
+	world.status.innerHTML = bonus_war_tooltip(t, who)
+}
+
+function _tip_blur_bonus_war_tile() {
+	world.tip.removeAttribute("class")
+	world.status.innerHTML = ""
+	world.tip.hidden = true
+}
+
+function _tip_focus_ministry(who, m, name) {
+	world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+	world.status.innerHTML = ministry_tooltip(m, who)
+}
+
+function _tip_blur_ministry(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+function _tip_focus_advantage(who, a, name) {
+	//world.tip.setAttribute("class", name)
+	position_tip_image()
+	world.tip.hidden = is_mobile()
+	world.status.innerHTML = advantage_tooltip(a)
+
+	// Show BOTH sides of the marker
+	world.tip.innerHTML = `
+		<div class="marker square advantage a${a} reverse advantage-back"></div>
+		<div class="marker square advantage a${a} advantage-front"></div>		`
+}
+
+function _tip_blur_advantage(action, id) {
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.tip.innerHTML = ""
+	world.status.innerHTML = ""
+}
+
+function _tip_focus_space(who, s, name) {
+	world.tip.hidden = is_mobile()
+	space_tooltip_image(s, true)
+	position_tip_image()
+	world.status.innerHTML = space_tooltip(s)
+}
+
+function _tip_blur_space(action, id) {
+	world.map_tip.hidden = true
+	world.tip.removeAttribute("class")
+	world.tip.hidden = true
+	world.map_tip.hidden = true
+	world.status.innerHTML = ""
+}
+
+/* TOOLTIPS */
+
+function set_fallback_tips(fallbacks, tip) {
+	var menter = function () { world.status.innerHTML = tip }
+	var mleave = function () { world.status.innerHTML = "" }
+	for (const f of fallbacks) {
+		f.onmouseenter = menter
+		f.onmouseleave = mleave
+	}
 }
 
 function space_tooltip(s) {
@@ -480,7 +494,6 @@ function space_tooltip(s) {
 	return bold(data.spaces[s].name) + " " + italic("(" + typename + ((value > 0) ? ": " + value : "") + ")") + ((other !== "") ? ": " + other : "")
 }
 
-
 function space_tooltip_image(s, onoff)
 {
 	if (onoff && !is_mobile()) {
@@ -504,7 +517,6 @@ function space_tooltip_image(s, onoff)
 	}
 }
 
-
 function bizarro_space_tooltip(bs) {
 
 	if ((bs >= AWARD_EUROPE) && (bs <= AWARD_INDIA)) {
@@ -518,14 +530,6 @@ function bizarro_space_tooltip(bs) {
 	return bold(data.bizarro_spaces[bs].name)
 }
 
-
-function current_era() {
-	if (V.turn < PEACE_TURN_3) return SUCCESSION_ERA
-	if (V.turn < PEACE_TURN_5) return EMPIRE_ERA
-	return REVOLUTION_ERA
-}
-
-
 function demand_tooltip(demand) {
 	var awards = data.demands[demand].awards[current_era()]
 	var awards_string = awards.vp + " VP"
@@ -534,7 +538,6 @@ function demand_tooltip(demand) {
 	awards_string += " for most flagged " + data.demands[demand].name + " markets. "
 	return bold(data.demands[demand].name) + ": " + italic(awards_string) + bold(data.flags[demand_flag_winner(demand)].name2) + " +" + demand_flag_delta(demand)
 }
-
 
 const demand_columns = [ "1177px", "1264px", "1351px"]
 const demand_rows = [ "178px", "198px", "219px", "239px", "260px", "280px"]
@@ -563,25 +566,6 @@ function demand_tooltip_image(d, onoff) {
 	} else {
 		world.demand_highlight.hidden = true
 	}
-}
-
-
-function say_event_effect(label, effect, bonus) {
-
-	let text = ""
-	if (label !== "") {
-		text += bold(italic(escape_square_brackets(label)))
-		text += ": "
-	}
-	if (effect !== "") {
-		text += escape_square_brackets(effect)
-	}
-
-	if (bonus !== "") {
-		text += italic(" (" + escape_square_brackets(bonus) + ")")
-	}
-
-	return text
 }
 
 function event_tooltip(c, who) {
@@ -616,7 +600,23 @@ function event_tooltip(c, who) {
 	return msg.trim()
 }
 
+function say_event_effect(label, effect, bonus) {
 
+	let text = ""
+	if (label !== "") {
+		text += bold(italic(escape_square_brackets(label)))
+		text += ": "
+	}
+	if (effect !== "") {
+		text += escape_square_brackets(effect)
+	}
+
+	if (bonus !== "") {
+		text += italic(" (" + escape_square_brackets(bonus) + ")")
+	}
+
+	return text
+}
 
 function ministry_tooltip(m, who) {
 	let msg = bold(data.ministries[m].name)
@@ -642,7 +642,6 @@ function ministry_tooltip(m, who) {
 
 	return msg
 }
-
 
 function advantage_tooltip(a) {
 	let msg = bold(data.advantages[a].name) + ": " + italic(escape_square_brackets(data.advantages[a].desc) + ".")
@@ -701,7 +700,6 @@ function available_debt_tooltip(who) {
 	return msg
 }
 
-
 function game_turn_tooltip(x) {
 	let tip = bold ("Current Game Turn: ")
 	if (data.turns[G.turn].war) {
@@ -749,9 +747,6 @@ function jacobite_defeat_tooltip() {
 	return bold("Jacobite Defeat: ") + "No more Jacobite Uprisings for rest of game."
 }
 
-
-
-
 function basic_war_tooltip(t, who) {
 	let msg = bold(data.flags[who].adj + " Basic War Tile: ")
 	let msg2 = ""
@@ -783,7 +778,6 @@ function basic_war_tooltip(t, who) {
 	return msg
 }
 
-
 function bonus_war_tooltip(t, who) {
 	let msg = bold(data.flags[who].adj + " Bonus War Tile: ")
 	let msg2 = ""
@@ -813,53 +807,7 @@ function bonus_war_tooltip(t, who) {
 	return msg
 }
 
-
-
-function pad(s, condition = true) {
-	if (!condition) return s
-	return " " + s + " "
-}
-
-function parens(s, condition = true) {
-	if (!condition) return s
-	return "(" + s + ")"
-}
-
-function bold(s, condition = true) {
-	if (!condition) return s
-	return "<b>" + s + "</b>"
-}
-
-function italic(s, condition = true) {
-	if (!condition) return s
-	return "<i>" + s + "</i>"
-}
-
-function strike(s, condition = true) {
-	if (!condition) return s
-	return "<s>" + s + "</s>"
-}
-
-
-// Returns an "s" if the amount is anything but 1; returns "" if amount is one
-function s(amount) {
-	if (amount !== 1) return "s"
-	return ""
-}
-
-// Returns "a " if the amount is exactly 1; returns "" if amount is any other value
-function a(amount) {
-	if (amount === 1) return "a "
-	return ""
-}
-
-// Returns "an " if the amount is exactly 1; returns "" if amount is any other value
-function an(amount) {
-	if (amount === 1) return "an "
-	return ""
-}
-
-
+/* ON INIT */
 
 function set_available_debt_tooltips() {
 	var id = roles[FRANCE].stat.my_id
@@ -881,23 +829,6 @@ function set_available_debt_tooltips() {
 		world.status.innerHTML = ""
 	})
 }
-
-
-var Whole //BR// Hack to let me scroll to this specific element
-
-
-function mention_verbosity()
-{
-	if (is_mobile()) return
-
-	if (V.prompt.includes("(Verbosity")) {
-		let index = V.prompt.indexOf("<b><i>      (Verbosity")
-		V.prompt = V.prompt.slice(0, index)
-	}
-
-	V.prompt += escape_square_brackets("[v]")
-}
-
 
 function on_init() {
 	var i, a, s, x, y, w, h, lout
@@ -997,7 +928,6 @@ function on_init() {
 	define_marker("jacobite-victory", 3, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)
 	define_marker("jacobite-defeat", 1, "square-sm jacobite-defeat").tooltip(jacobite_defeat_tooltip)
 
-
 	for (s of data.spaces) {
 		let layout_rect, conflict_rect, damaged_rect, huguenot_rect
 		let rect = find_layout_node(s.layout ?? s.name)
@@ -1077,9 +1007,11 @@ function on_init() {
 		}
 	}
 
+	// FIXME - icky hack
 	let whole_track_rect = [ 2084, 1242, 413, 417 ]
 	Whole = define_layout("general-track-whole", 0, whole_track_rect)
 	Whole.element.style.setProperty("pointer-events", "none")
+	// FIXME
 
 	for (i = -7; i <= 36; ++i) { //NB: Yup, it's -7 through 36, inclusive! Whee!
 		define_stack("general-track", i,
@@ -1459,161 +1391,11 @@ function on_init() {
 	document.querySelector("#toolbar").append(vp)
 }
 
-
-// Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
-function get_squadron_token(who, s, match = 0)
-{
-	let matches = 0
-
-	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
-		if (V.squadrons[who][sq] === s) {
-			if (matches >= match) return sq
-			matches++
-		}
-	}
-	console.error ("No squadron found for space: " + s)
-
-	upconvert_squadrons()
-	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
-		if (V.squadrons[who][sq] === s) return sq
-	}
-
-	return 0
-}
-
-
-
-// True if ministry is presently exhausted
-// Some ministries have more than one separately exhaustible ability (in which case can pass a different "ability" number)
-function is_ministry_exhausted(who, m, ability = 0) {
-	if (!V.ministry[who].includes(m)) return false
-	var idx = V.ministry[who].indexOf(m)
-	return set_has(V.ministry_exhausted[who], idx + (ability * NUM_MINISTRY_CARDS))
-}
-
-function is_advantage_exhausted(a) {
-	return !!(V.adv_exhaust & (1 << a))
-}
-
-function get_advantage_region(a) {
-	return data.spaces[data.advantages[a].req[0]].region
-}
-
-function has_advantage(who, a) {
-	for (var s of data.advantages[a].req)
-		if (V.flags[s] !== who)
-			return false
-	return true
-}
-
-function whose_advantage(a) {
-	if (has_advantage(FRANCE, a)) return FRANCE
-	if (has_advantage(BRITAIN, a)) return BRITAIN
-	return NONE
-}
-
-function is_advantage_conflicted(a)
-{
-	for (var s of data.advantages[a].req) {
-		if (has_conflict_marker(s)) return true
-	}
-	return false
-}
-
-
-
-function is_ministry_fully_exhausted(who, m) {
-	for (let i = 0; i < data.ministries[m].abilities; i++) {
-		if (!is_ministry_exhausted(who, m, i)) return false
-	}
-	return true
-}
-
-function is_ministry_partially_exhausted(who, m) {
-	for (let i = 0; i < data.ministries[m].abilities; i++) {
-		if (is_ministry_exhausted(who, m, i)) return true
-	}
-	return false
-}
-
-
-function available_debt(who) {
-	return G.debt_limit[who] - G.debt[who]
-}
-
-function available_debt_plus_trps(who) {
-	return available_debt(who) + G.treaty_points[who]
-}
-
-function update_debt_display() {
-	for (let who = FRANCE; who <= BRITAIN; who++) {
-		if (V.bidding_for_sides) {
-			roles[who].name.textContent = "Player " + (who+1)
-			roles[who].stat.textContent = ""
-		} else {
-			roles[who].name.textContent = data.flags[who].name
-			roles[who].stat.innerHTML = available_debt(who) + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
-		}
-	}
-
-	let msg = bold("VP: " + V.vp)
-	document.getElementById("vp_mobile").innerHTML = msg
-	document.getElementById("vp_desktop").innerHTML = msg
-}
-
-function scroll_log_to_end() {
-	let div = document.getElementById("log")
-	div.scrollTop = div.scrollHeight
-}
-
-
-function scroll_to_war() {
-	scroll_into_view(document.getElementById("war"))
-}
-
-function scroll_to_map() {
-	scroll_into_view(document.getElementById("top"))
-}
-
-function scroll_to_debt()
-{
-	scroll_into_view(Whole.element)
-}
-
-function scroll_to_cards() {
-	if (R !== BRITAIN) {
-		scroll_into_view(document.getElementById("ministry_fr"))
-	} else {
-		scroll_into_view(document.getElementById("ministry_br"))
-	}
-	//scroll_into_view(document.getElementById("panels-top"))
-}
-
-
-function next_peace_turn(turn)
-{
-	if (turn < PEACE_TURN_2) return PEACE_TURN_2
-	if (turn < PEACE_TURN_3) return PEACE_TURN_3
-	if (turn < PEACE_TURN_4) return PEACE_TURN_4
-	if (turn < PEACE_TURN_5) return PEACE_TURN_5
-	if (turn < PEACE_TURN_6) return PEACE_TURN_6
-	return GAME_OVER
-}
-
-function say_verbosity()
-{
-	let verbose = get_preference("actionverbosity", "medium")
-	if (verbose === "short") {
-		return "Brief"
-	} else if (verbose === "long") {
-		return "Verbose"
-	}
-	return "Normal"
-}
-
+/* ON UPDATE */
 
 var skipped_event = true // Don't warn when first refreshing or coming back
 
+var log_partially_hidden = false
 
 function on_update() {
 	var i, r, s, a
@@ -1695,7 +1477,7 @@ function on_update() {
 		let delta = region_flag_delta(r)
 		let fr_count = V.flag_count[FRANCE][r]
 		let br_count = V.flag_count[BRITAIN][r]
-		
+
 		let html_left = ""
 		let html_right = ""
 		if (winner !== NONE) {
@@ -1703,7 +1485,7 @@ function on_update() {
 			html_left += `<span class="award-flag ${flag_class}"></span>`
 			html_right += `<span class="award-count">+${delta}</span>`
 		}
-		
+
 		update_text_html("award-winner-left", r, html_left)
 		update_text_html("award-winner-right", r, html_right)
 	}
@@ -1802,7 +1584,7 @@ function on_update() {
 	if (jacobite_count > 0) {
 		let offset = (jacobite_count - 1) * 2.5
 		update_position("lout-jacobite", undefined, 1750 + offset, 230 + offset)
-		
+
 		for (let i = 0; i < V.jacobite_victory; i++) {
 			populate("lout-jacobite", "jacobite-victory", i)
 		}
@@ -1910,7 +1692,6 @@ function on_update() {
 		let bb = data.investments[b].majortype * 100 + (5 - data.investments[b].majorval) * 10 + data.investments[b].minortype
 		return aa - bb
 	})
-
 
 	populate_with_list("panel-available-investments", "investment", V.inv_avail)
 
@@ -2120,7 +1901,6 @@ function on_update() {
 	action_button("done", "Done")
 	action_button("undo", "Undo")
 
-
 	if (V.log_hide_after && (V.log_hide_after[R] >= 0)) {
 		log_partially_hidden = true
 		for (let ix = 0; ix < V.log_length; ix++) {
@@ -2157,6 +1937,44 @@ function on_update() {
 	}
 }
 
+function update_debt_display() {
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		if (V.bidding_for_sides) {
+			roles[who].name.textContent = "Player " + (who+1)
+			roles[who].stat.textContent = ""
+		} else {
+			roles[who].name.textContent = data.flags[who].name
+			roles[who].stat.innerHTML = available_debt(who) + " Debt + " + V.treaty_points[who] + " TRP" + s(V.treaty_points[who])
+		}
+	}
+
+	let msg = bold("VP: " + V.vp)
+	document.getElementById("vp_mobile").innerHTML = msg
+	document.getElementById("vp_desktop").innerHTML = msg
+}
+
+/* SQUADRON TOKEN MANAGEMENT */
+
+// Returns which squadron token a player has at a particular space (or first one from navy box or unbuilt). Used only to animate squadrons between spaces.
+function get_squadron_token(who, s, match = 0)
+{
+	let matches = 0
+
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		if (V.squadrons[who][sq] === s) {
+			if (matches >= match) return sq
+			matches++
+		}
+	}
+	console.error ("No squadron found for space: " + s)
+
+	upconvert_squadrons()
+	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
+		if (V.squadrons[who][sq] === s) return sq
+	}
+
+	return 0
+}
 
 function upconvert_squadrons()
 {
@@ -2182,9 +2000,7 @@ function upconvert_squadrons()
 	}
 }
 
-
-var log_partially_hidden = false
-
+/* WAR DISPLAY UPDATE (TODO - CLEAN UP) */
 
 const war_display = [
 	$("#war_wss"),
@@ -2208,16 +2024,6 @@ const war_reverse = [
 	]
 ]
 
-
-function set_fallback_tips(fallbacks, tip) {
-	var menter = function () { world.status.innerHTML = tip }
-	var mleave = function () { world.status.innerHTML = "" }
-	for (const f of fallbacks) {
-		f.onmouseenter = menter
-		f.onmouseleave = mleave
-	}
-}
-
 /* Basic/Bonus war tiles placement */
 /* Here to change the value depending on how many tiles are present */
 const TILE_POSITIONS = {
@@ -2232,7 +2038,7 @@ function agencement_theater_tiles(element) {
 	let count = children.length
 	if (count === 0 || count > 4)
 		return
-	
+
 	let positions = TILE_POSITIONS[count]
 	for (let i = 0; i < count; i++) {
 		children[i].style.position = "absolute"
@@ -2240,8 +2046,6 @@ function agencement_theater_tiles(element) {
 		children[i].style.top = positions[i][1] + "px"
 	}
 }
-
-
 
 function theater_tier(war, winner, theater, delta)
 {
@@ -2258,9 +2062,6 @@ function theater_tier(war, winner, theater, delta)
 
 	return -1
 }
-
-
-
 
 function update_war_display() {
 	var player, theater, offset
@@ -2485,7 +2286,7 @@ function update_war_display() {
 
 	function build_flag_row(c, name) {
 		let row = `<div class="alliance-row">`
-		
+
 		for (let s of c.fr) {
 			let space_name = data.spaces[s].name
 			row += `<span class="alliance-flag fr" data-tooltip="${space_name}"
@@ -2500,7 +2301,7 @@ function update_war_display() {
 				onmouseleave="_tip_blur_light('space',${s})"
 				onmousedown="_tip_click_light('space',${s})"></span>`
 		}
-		
+
 		row += `</div>`
 		return row
 	}
@@ -2508,22 +2309,22 @@ function update_war_display() {
 	for (let theater = 1; theater <= num_war_theaters; theater++) {
 		let theater_data = data.wars[war_number].theater[theater]
 		let ministry_keyword = theater_data.keyword
-		
+
 		let minister = { fr: false, br: false }
 		let alliances = {}
 		let conflicts = {}
-		
+
 		// Ministry keyword
 		if (ministry_keyword > 0) {
 			if (V.active_keywords && V.active_keywords[FRANCE].includes(ministry_keyword)) minister.fr = true
 			if (V.active_keywords && V.active_keywords[BRITAIN].includes(ministry_keyword)) minister.br = true
 		}
-		
+
 		// Scan all spaces for alliances and conflicts
 		for (let s = 0; s < NUM_SPACES; s++) {
 			let space = data.spaces[s]
 			let flag = V.flags[s]
-			
+
 			// Alliances
 			if (space.alliance) {
 				for (const a of space.alliance) {
@@ -2552,21 +2353,21 @@ function update_war_display() {
 					} else {
 						name = space.name.split(" - ")[0].replace(/\s*\(\d+\)$/, "").trim()
 					}
-					
+
 					if (!alliances[name]) {
 						alliances[name] = { fr: [], br: [], type: space.type }
 					}
-					
+
 					// flag no count if conflict or damaged
 					if (flag !== FRANCE && flag !== BRITAIN) continue
 					if (has_conflict_marker(s) || is_damaged_fort(s)) continue
-					
+
 					// Add space to array (avoid duplicates)
 					if (flag === FRANCE && !alliances[name].fr.includes(s)) alliances[name].fr.push(s)
 					if (flag === BRITAIN && !alliances[name].br.includes(s)) alliances[name].br.push(s)
 				}
 			}
-				
+
 			// Conflict markers
 			let region_match = space.region === theater_data.region
 			if (war_number === WAR_7YW && theater === 3 && space.region === REGION_CARIBBEAN) {
@@ -2596,7 +2397,7 @@ function update_war_display() {
 				if (flag === BRITAIN && !alliances["_Spain"].br.includes(s)) alliances["_Spain"].br.push(s)
 			}
 		}
-		
+
 		// Build HTML
 		let flag_html = ""
 
@@ -2615,16 +2416,16 @@ function update_war_display() {
 			if (minister.br) flag_html += `<span class="alliance-flag br" data-tooltip="${keyword_name}"></span>`
 			flag_html += `</div>`
 		}
-		
+
 		// 2. Alliances
 		// Sort order: political (0), conflicts (1), forts (2), naval (3)
-		const SORT_ORDER = { [TERRITORY]: 0, [POLITICAL]: 0, [-1]: 1, [FORT]: 2, [NAVAL]: 3 }	
-		
+		const SORT_ORDER = { [TERRITORY]: 0, [POLITICAL]: 0, [-1]: 1, [FORT]: 2, [NAVAL]: 3 }
+
 		let alliance_names = Object.keys(alliances).sort((a, b) => {
 			let orderA = SORT_ORDER[alliances[a].type] ?? 4
 			let orderB = SORT_ORDER[alliances[b].type] ?? 4
 			if (orderA !== orderB) return orderA - orderB
-			
+
 			// Special sort for 7YW theater 1 & 3
 			if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
 				const regionOrder = { "_Squadrons (Caribbean)": 0, "_Squadrons": 1, "_Squadrons (N. Amer.)": 2 }
@@ -2632,17 +2433,251 @@ function update_war_display() {
 					return regionOrder[a] - regionOrder[b]
 				}
 			}
-			
+
 			return a.localeCompare(b)
 		})
-		
+
 		for (let name of alliance_names) {
 			flag_html += build_flag_row(alliances[name], name)
 		}
-		
+
 		update_text_html(`lout-${war_prefix}-alliance`, theater, flag_html)
 	}
 }
+
+/* TEXT FORMATTING */
+
+// Returns an "s" if the amount is anything but 1; returns "" if amount is one
+function s(amount) {
+	if (amount !== 1) return "s"
+	return ""
+}
+
+// Returns "a " if the amount is exactly 1; returns "" if amount is any other value
+function a(amount) {
+	if (amount === 1) return "a "
+	return ""
+}
+
+// Returns "an " if the amount is exactly 1; returns "" if amount is any other value
+function an(amount) {
+	if (amount === 1) return "an "
+	return ""
+}
+
+function parens(s, condition = true) {
+	if (!condition) return s
+	return "(" + s + ")"
+}
+
+function bold(s, condition = true) {
+	if (!condition) return s
+	return "<b>" + s + "</b>"
+}
+
+function italic(s, condition = true) {
+	if (!condition) return s
+	return "<i>" + s + "</i>"
+}
+
+function strike(s, condition = true) {
+	if (!condition) return s
+	return "<s>" + s + "</s>"
+}
+
+/* ESCAPE CODES: LOG & PROMPT FORMATTING */
+
+function on_prompt(text) {
+	if (text === null) {
+		console.error("V.prompt is NULL")
+		return "V.prompt is NULL"
+	}
+	return escape_text(text)
+}
+
+const log_box_keywords = ["fr", "br", "both"]
+const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
+
+function on_log(text, ix) {
+	if (typeof text !== "string") text = String(text)  // instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
+
+	var p = document.createElement("div")
+	update_log_boxes(ix)
+
+	if (text.startsWith("=br")) {
+		text = text.substring(3)
+		p.className = "h2 br"
+	}
+
+	if (text.startsWith("=fr")) {
+		text = text.substring(3)
+		p.className = "h2 fr"
+	}
+
+	switch (text[0]) {
+		case "{":
+			p.classList.add("header")
+			let keyword = log_box_keywords[text[1]] + "-" + log_box_types[text[2]]
+			open_log_box(ix, keyword)
+			text = text.substring(3)
+			break
+		case "}":
+			close_log_box(ix)
+			text = text.substring(1)
+			break
+		case ">":
+			p.className = "i"
+			text = text.substring(1)
+			break
+		case "#":
+			p.className = "h1"
+			text = text.substring(1)
+			break
+		case "=":
+			p.className = "h2"
+			text = text.substring(1)
+			break
+		case "~":
+			if (text[1] === "a") p.innerHTML = log_awards(text)
+			if (text[1] === "d") p.innerHTML = log_demands(text)
+			if (text[1] === "w") p.innerHTML = log_war_tiles(text)
+			return p
+	}
+
+	if (text.match(/^\.h1/)) {
+		text = text.substring(4)
+		p.className = 'h1'
+	}
+	if (text.match(/^\.h2/)) {
+		text = text.substring(4)
+		p.className = 'h2'
+	}
+	if (text.match(/^\.h3/)) {
+		text = text.substring(4)
+		p.className = "h3"
+	}
+
+	apply_log_boxes(ix, p, "group")
+
+	p.innerHTML = escape_text(text)
+	return p
+}
+
+function log_awards(codes)
+{
+	let awards = []
+	awards[REGION_EUROPE] = codes[2] - '0' // Starts at 2  (0 and 1 are the ~a)
+	awards[REGION_NORTH_AMERICA] = codes[3] - '0'
+	awards[REGION_CARIBBEAN] = codes[4] - '0'
+	awards[REGION_INDIA] = codes[5] - '0'
+
+	let msg = []
+	msg.push("<div class=award-table>")
+	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
+		var chit = awards[region]
+		msg.push(`<div>`)
+		msg.push(`<div class="award-title">${data.regions[region].name}</div>`)
+		msg.push(`<div class="marker square-sm black award a${chit}"
+			onmouseenter="_tip_focus_award(${chit})"
+			onmouseleave="_tip_blur_award()"
+			onmousedown="_tip_click_light('award',${chit})"
+			></div>`
+		)
+		msg.push(`</div>`)
+	}
+	msg.push(`</div>`)
+	return msg.join("")
+}
+
+function log_demands(codes)
+{
+	let global_demand = []
+	global_demand.push(codes[2] - '0') // Starts at 2  (0 and 1 are the ~d)
+	global_demand.push(codes[3] - '0')
+	global_demand.push(codes[4] - '0')
+
+	let msg = []
+	msg.push(`<div class=demand-table>`)
+	for (var i = 0; i < 3; i++) {
+		var chit = global_demand[i]
+		var name = data.demands[chit].name.toLowerCase()
+		msg.push(`<div class="marker square-sm demand ${name}"
+			onmouseenter="_tip_focus_demand('${chit}', 'marker square-sm demand ${name}')"
+			onmouseleave="_tip_blur_demand()"
+			onmousedown="_tip_click_light('demand',${chit})"
+			></div>`
+		)
+	}
+	msg.push("</div>")
+	return msg.join("")
+}
+
+function log_war_tiles(codes)
+{
+	let basic = []
+	let bonus = []
+	let index = 1 // Starts at 2, but we need a +1 at the beginning to make the loop work
+	codes += "X" // terminate with something
+
+	// Example encoding: ~wb00,B10,B20
+	do {
+		index++
+		let key = codes[index++]
+		let value = codes[index++] - '0'
+		value = value*10 + (codes[index++] - '0')
+		if (key === 'b') {
+			basic.push(value)
+		} else {
+			bonus.push(value)
+		}
+	} while (codes[index] === ',')
+
+	let msg = []
+	msg.push(`<div class="wartile-table">`)
+
+	let who, whom
+	for (const tile of basic) {
+		who = data.basic_war_tiles[tile].side
+		whom = (who === FRANCE) ? "fr" : "br"
+		msg.push(`<div class="marker hex basic_war ${whom} war-basic${tile}"
+			onmouseenter="_tip_focus_basic_war_tile(${tile})"
+			onmouseleave="_tip_blur_basic_war_tile()"
+			></div>`
+		)
+	}
+	for (const tile of bonus) {
+		who = data.bonus_war_tiles[tile].side
+		whom = (who === FRANCE) ? "fr" : "br"
+		if (tile === BYNG)
+			msg.push(`<div class="marker hex-sm byng ${whom}"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></div>`
+			)
+		else if (tile === ATLANTIC_DOMINANCE + FRANCE)
+			msg.push(`<div class="marker hex-sm atlantic-dominance fr"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></div>`
+			)
+		else if (tile === ATLANTIC_DOMINANCE + BRITAIN)
+			msg.push(`<div class="marker hex-sm atlantic-dominance br"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></div>`
+			)
+		else
+			msg.push(`<div class="marker hex bonus_war war${tile}"
+				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
+				onmouseleave="_tip_blur_bonus_war_tile()"
+				></div>`
+			)
+	}
+	msg.push("</div>")
+	return msg.join("")
+}
+
+/* ESCAPE CODES: BASIC TEXT */
 
 const event_card_names = data.cards.map(x => x?.name)
 const ministry_card_names = data.ministries.map(x => x?.name)
@@ -2699,146 +2734,7 @@ function escape_text(text) {
 	return escape_typography(text)
 }
 
-
-function _tip_focus_spending(who) {
-	world.status.innerHTML = available_debt_tooltip(who)
-}
-
-function _tip_blur_spending() {
-	world.status.innerHTML = ""
-}
-
-
-function _tip_focus_award(a)
-{
-	world.tip.setAttribute("class", "square-sm marker black award a" + a)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-
-	for (let region = 0; region < NUM_REGIONS; region++) {
-		if (V.awards[region] === a) {
-			world.status.innerHTML = award_tooltip(region)
-		}
-	}
-}
-
-function _tip_blur_award() {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.status.innerHTML = ""
-}
-
-
-function _tip_focus_investment(i)
-{
-	world.tip.setAttribute("class", "square marker investment i" + i)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-
-	world.status.innerHTML = investment_tooltip(i)
-}
-
-function _tip_blur_investment() {
-	world.tip.removeAttribute("class")
-	world.status.innerHTML = ""
-	world.tip.hidden = true
-}
-
-
-function _tip_focus_basic_war_tile(t)
-{
-	var who = data.basic_war_tiles[t].side
-	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war-basic" + t)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-
-	world.status.innerHTML = basic_war_tooltip(t, who)
-}
-
-function _tip_blur_basic_war_tile() {
-	world.tip.removeAttribute("class")
-	world.status.innerHTML = ""
-	world.tip.hidden = true
-}
-
-
-function _tip_focus_bonus_war_tile(t)
-{
-	var who = data.bonus_war_tiles[t].side
-	world.tip.setAttribute("class", "hex marker " + (who ? "br" : "fr") + " war" + t)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-
-	world.status.innerHTML = bonus_war_tooltip(t, who)
-}
-
-function _tip_blur_bonus_war_tile() {
-	world.tip.removeAttribute("class")
-	world.status.innerHTML = ""
-	world.tip.hidden = true
-}
-
-
-function is_digit(c) {
-	return (c >= '0') && (c <= '9')
-}
-
-
-// Returns true if we're playing this on a mobile platform e.g. phone
-function is_mobile() {
-	return ("ontouchstart" in window)
-}
-
-
-function is_bit(b) {
-	return !!bit_get(V.bitflags ?? [ 0 ], b)
-}
-
-
-function bit_get(bits, index)
-{
-	var w = index >> 5
-	var b = index & 31
-	return ((bits[w] >> b) & 1) > 0
-}
-
-
-
-function say_action_points_brief(num, type, plus = false, force_num = true)
-{
-	let msg = plus ? "+" : ""
-	let doing_num = ((num > 0) || force_num || plus)
-	msg += "[@" + type + "]"
-	if (doing_num)	msg += num
-	return msg
-}
-
-
-function say_investment_tile(tile)
-{
-	let msg = `<span style="text-decoration: none; display: inline-block">` // No underline among the baked-in symbols - looks terrible
-	msg += escape_square_brackets(say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype))
-
-	let verbose = get_preference("actionverbosity", "medium")
-	if (verbose === "long") {
-		msg += " " + data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name
-	}
-	msg += `</span>`
-
-	var major = data.investments[tile].majorval
-
-	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
-	if (major === 3) {
-		msg += "<br/>"
-		msg += (verbose === "short") ? "Event" : "Event allowed"
-	} else if (major === 2) {
-		msg += "<br/>"
-		msg += (verbose === "short") ? "Event + Military" : "Event allowed + Military Upgrade"
-	}
-
-	return msg
-}
-
+/* ESCAPE CODES: SQUARE BRACKETS */
 
 function escape_square_brackets(text) {
 	let runaway = 0
@@ -2995,9 +2891,6 @@ function escape_square_brackets(text) {
 						onmousedown="_tip_click_light('space',${value})"
 						>${escape_typography(msg)}</span>`
 					break
-				case "v":
-					tooltip_text = "<b><i>      (Verbosity changed to: " + say_verbosity() + ")</i></b>"
-					break
 				case "V":
 					tooltip_text = `${escape_typography(msg)}`
 					scroll_to_war()
@@ -3033,78 +2926,34 @@ function escape_square_brackets(text) {
 	return text
 }
 
+/* ESCAPE CODES: INVESTMENT TILE */
 
-function position_tip_image_imp() {
-	world.tip.style.left = "0px"
-	world.tip.style.bottom = world.status.offsetHeight + "px"
-	world.tip.style.display = "flex"
-	world.tip.style.right = ""
-	world.tip.style.top = ""
+function say_investment_tile(tile)
+{
+	let msg = `<span style="text-decoration: none; display: inline-block">` // No underline among the baked-in symbols - looks terrible
+	msg += escape_square_brackets(say_action_points_brief(data.investments[tile].majorval, data.investments[tile].majortype) + " / " + say_action_points_brief(data.investments[tile].minorval, data.investments[tile].minortype))
+
+	let verbose = get_preference("actionverbosity", "medium")
+	if (verbose === "long") {
+		msg += " " + data.action_points[data.investments[tile].majortype].name + " / " + data.action_points[data.investments[tile].minortype].name
+	}
+	msg += `</span>`
+
+	var major = data.investments[tile].majorval
+
+	//BR// Maybe we'll copy the "dagger" and "snake" icons the actual tiles use? But for now at least...
+	if (major === 3) {
+		msg += "<br/>"
+		msg += (verbose === "short") ? "Event" : "Event allowed"
+	} else if (major === 2) {
+		msg += "<br/>"
+		msg += (verbose === "short") ? "Event + Military" : "Event allowed + Military Upgrade"
+	}
+
+	return msg
 }
 
-function position_tip_image() {
-	// postpone actual positioning until browser has laid out everything else
-	setTimeout(position_tip_image_imp, 0)
-}
-
-
-function _tip_focus_demand(d) {
-	var name = data.demands[d].name.toLowerCase()
-	world.tip.setAttribute("class", "square-sm marker demand " + name)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-	world.status.innerHTML = demand_tooltip(d)
-	demand_tooltip_image(d, true)
-}
-
-function _tip_blur_demand(action, id) {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.status.innerHTML = ""
-	demand_tooltip_image(0, false)
-}
-
-function escape_demand(text, re, log_className, tip_className, names) {
-	return text.replace(re, (m, x) => `<span
-		class="${log_className}"
-		onmouseenter="_tip_focus_demand(${x})"
-		onmouseleave="_tip_blur_demand()"
-		onmousedown="_tip_click_light('demand',${x})"
-		>${escape_typography(names[x])}</span>`
-	)
-}
-
-
-function _tip_focus_event(who, c, name) {
-	world.tip.setAttribute("class", name)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-	world.status.innerHTML = event_tooltip(c, who)
-}
-
-function _tip_blur_event(action, id) {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.status.innerHTML = ""
-}
-
-
-function _tip_focus_event_mobile(who, c, name) {
-	world.mobile_tip.setAttribute("class", name)
-	world.mobile_tip.hidden = !is_mobile()
-}
-
-function _tip_focus_ministry_mobile(who, m, name) {
-	world.mobile_tip.setAttribute("class", name)
-	world.mobile_tip.hidden = !is_mobile()
-}
-
-function _tip_blur_mobile_tip() {
-	world.mobile_tip.removeAttribute("class")
-	world.mobile_tip.hidden = true
-}
-
-
+/* ESCAPE CODES: CARDS & TILES */
 
 function escape_event(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
@@ -3114,20 +2963,6 @@ function escape_event(text, re, log_className, tip_className, names, who) {
 		onmousedown="_tip_click_light('event_card',${x})"
 		>${escape_typography(names[x])}</span>`
 	)
-}
-
-
-function _tip_focus_ministry(who, m, name) {
-	world.tip.setAttribute("class", name)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-	world.status.innerHTML = ministry_tooltip(m, who)
-}
-
-function _tip_blur_ministry(action, id) {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.status.innerHTML = ""
 }
 
 function escape_ministry(text, re, log_className, tip_className, names, who) {
@@ -3140,26 +2975,15 @@ function escape_ministry(text, re, log_className, tip_className, names, who) {
 	)
 }
 
-
-function _tip_focus_advantage(who, a, name) {
-	//world.tip.setAttribute("class", name)
-	position_tip_image()
-	world.tip.hidden = is_mobile()
-	world.status.innerHTML = advantage_tooltip(a)
-
-	// Show BOTH sides of the marker
-	world.tip.innerHTML = `		
-		<div class="marker square advantage a${a} reverse advantage-back"></div>
-		<div class="marker square advantage a${a} advantage-front"></div>		`
+function escape_demand(text, re, log_className, tip_className, names) {
+	return text.replace(re, (m, x) => `<span
+		class="${log_className}"
+		onmouseenter="_tip_focus_demand(${x})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${x})"
+		>${escape_typography(names[x])}</span>`
+	)
 }
-
-function _tip_blur_advantage(action, id) {
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.tip.innerHTML = ""
-	world.status.innerHTML = ""
-}
-
 
 function escape_advantage(text, re, log_className, tip_className, names, who) {
 	return text.replace(re, (m, x) => `<span
@@ -3171,221 +2995,933 @@ function escape_advantage(text, re, log_className, tip_className, names, who) {
 	)
 }
 
+/* ESCAPE CODES: ACTION POINTS */
 
-function _tip_focus_space(who, s, name) {
-	world.tip.hidden = is_mobile()
-	space_tooltip_image(s, true)
-	position_tip_image()
-	world.status.innerHTML = space_tooltip(s)
-}
-
-function _tip_blur_space(action, id) {
-	world.map_tip.hidden = true
-	world.tip.removeAttribute("class")
-	world.tip.hidden = true
-	world.map_tip.hidden = true
-	world.status.innerHTML = ""
-}
-
-
-
-function on_prompt(text) {
-	if (text === null) {
-		console.error("V.prompt is NULL")
-		return "V.prompt is NULL"
-	}
-	return escape_text(text)
-}
-
-
-const log_box_keywords = ["fr", "br", "both"]
-const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
-
-function on_log(text, ix) {
-	if (typeof text !== "string") text = String(text)  // instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
-
-	var p = document.createElement("div")
-	update_log_boxes(ix)
-
-	if (text.startsWith("=br")) {
-		text = text.substring(3)
-		p.className = "h2 br"
-	}
-
-	if (text.startsWith("=fr")) {
-		text = text.substring(3)
-		p.className = "h2 fr"
-	}
-
-	switch (text[0]) {
-		case "{":
-			p.classList.add("header")
-			let keyword = log_box_keywords[text[1]] + "-" + log_box_types[text[2]]
-			open_log_box(ix, keyword)
-			text = text.substring(3)
-			break
-		case "}":
-			close_log_box(ix)
-			text = text.substring(1)
-			break
-		case ">":
-			p.className = "i"
-			text = text.substring(1)
-			break
-		case "#":
-			p.className = "h1"
-			text = text.substring(1)
-			break
-		case "=":
-			p.className = "h2"
-			text = text.substring(1)
-			break
-		case "~":
-			if (text[1] === "a") p.innerHTML = log_awards(text)
-			if (text[1] === "d") p.innerHTML = log_demands(text)
-			if (text[1] === "w") p.innerHTML = log_war_tiles(text)
-			return p
-	}
-
-	if (text.match(/^\.h1/)) {
-		text = text.substring(4)
-		p.className = 'h1'
-	}
-	if (text.match(/^\.h2/)) {
-		text = text.substring(4)
-		p.className = 'h2'
-	}
-	if (text.match(/^\.h3/)) {
-		text = text.substring(4)
-		p.className = "h3"
-	}
-
-	apply_log_boxes(ix, p, "group")
-
-	//p.setAttribute("id", ix) // So we can find it later
-	p.innerHTML = escape_text(text)
-	return p
-}
-
-
-function log_awards(codes)
+function say_action_points_brief(num, type, plus = false, force_num = true)
 {
-	let awards = []
-	awards[REGION_EUROPE] = codes[2] - '0' // Starts at 2  (0 and 1 are the ~a)
-	awards[REGION_NORTH_AMERICA] = codes[3] - '0'
-	awards[REGION_CARIBBEAN] = codes[4] - '0'
-	awards[REGION_INDIA] = codes[5] - '0'
-
-	let msg = []
-	msg.push("<div class=award-table>")
-	for (const region of [ REGION_NORTH_AMERICA, REGION_EUROPE, REGION_CARIBBEAN, REGION_INDIA ]) {
-		var chit = awards[region]
-		msg.push(`<div>`)
-		msg.push(`<div class="award-title">${data.regions[region].name}</div>`)
-		msg.push(`<div class="marker square-sm black award a${chit}"
-			onmouseenter="_tip_focus_award(${chit})"
-			onmouseleave="_tip_blur_award()"
-			onmousedown="_tip_click_light('award',${chit})"
-			></div>`
-		)
-		msg.push(`</div>`)
-	}
-	msg.push(`</div>`)
-	return msg.join("")
+	let msg = plus ? "+" : ""
+	let doing_num = ((num > 0) || force_num || plus)
+	msg += "[@" + type + "]"
+	if (doing_num)	msg += num
+	return msg
 }
 
-
-function log_demands(codes)
-{
-	let global_demand = []
-	global_demand.push(codes[2] - '0') // Starts at 2  (0 and 1 are the ~d)
-	global_demand.push(codes[3] - '0')
-	global_demand.push(codes[4] - '0')
-
-	let msg = []
-	msg.push(`<div class=demand-table>`)
-	for (var i = 0; i < 3; i++) {
-		var chit = global_demand[i]
-		var name = data.demands[chit].name.toLowerCase()
-		msg.push(`<div class="marker square-sm demand ${name}"
-			onmouseenter="_tip_focus_demand('${chit}', 'marker square-sm demand ${name}')"
-			onmouseleave="_tip_blur_demand()"
-			onmousedown="_tip_click_light('demand',${chit})"
-			></div>`
-		)
-	}
-	msg.push("</div>")
-	return msg.join("")
-}
-
-
-function log_war_tiles(codes)
-{
-	let basic = []
-	let bonus = []
-	let index = 1 // Starts at 2, but we need a +1 at the beginning to make the loop work
-	codes += "X" // terminate with something
-
-	// Example encoding: ~wb00,B10,B20
-	do {
-		index++
-		let key = codes[index++]
-		let value = codes[index++] - '0'
-		value = value*10 + (codes[index++] - '0')
-		if (key === 'b') {
-			basic.push(value)
+// True if ANY contingent action points of the specified type (ECON, DIPLO, MIL) theoretically available based on array of rules we're eligible for (or a single rule). Even if we've spent it all we can still use debt/TRPs in that category.
+function any_contingent(type, rules) {
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.contingent.length; i++) {
+					if (G.contingent[i].type !== type) continue
+					if (G.contingent[i].rule !== rule) continue
+					return true
+				}
+			}
 		} else {
-			bonus.push(value)
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
+				return true
+			}
 		}
-	} while (codes[index] === ',')
-
-	let msg = []
-	msg.push(`<div class="wartile-table">`)
-
-	let who, whom
-	for (const tile of basic) {
-		who = data.basic_war_tiles[tile].side
-		whom = (who === FRANCE) ? "fr" : "br"
-		msg.push(`<div class="marker hex basic_war ${whom} war-basic${tile}"
-			onmouseenter="_tip_focus_basic_war_tile(${tile})"
-			onmouseleave="_tip_blur_basic_war_tile()"
-			></div>`
-		)
 	}
-	for (const tile of bonus) {
-		who = data.bonus_war_tiles[tile].side
-		whom = (who === FRANCE) ? "fr" : "br"
-		if (tile === BYNG)
-			msg.push(`<div class="marker hex-sm byng ${whom}"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
-				onmouseleave="_tip_blur_bonus_war_tile()"
-				></div>`
-			)
-		else if (tile === ATLANTIC_DOMINANCE + FRANCE)
-			msg.push(`<div class="marker hex-sm atlantic-dominance fr"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
-				onmouseleave="_tip_blur_bonus_war_tile()"
-				></div>`
-			)
-		else if (tile === ATLANTIC_DOMINANCE + BRITAIN)
-			msg.push(`<div class="marker hex-sm atlantic-dominance br"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
-				onmouseleave="_tip_blur_bonus_war_tile()"
-				></div>`
-			)
-		else
-			msg.push(`<div class="marker hex bonus_war war${tile}"
-				onmouseenter="_tip_focus_bonus_war_tile(${tile})"
-				onmouseleave="_tip_blur_bonus_war_tile()"
-				></div>`
-			)
-	}
-	msg.push("</div>")
-	return msg.join("")
+	return false
 }
 
+// Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
+function get_contingent(type, rules)
+{
+	let amount = 0
+	if ((rules !== undefined) && (rules !== null)) {
+		if (rules.constructor === Array) {
+			for (let rule of rules) {
+				for (let i = 0; i < G.contingent.length; i++) {
+					if (G.contingent[i].type !== type) continue
+					if (G.contingent[i].rule !== rule) continue
+					amount += G.contingent[i].amount
+				}
+			}
+		} else {
+			for (let i = 0; i < G.contingent.length; i++) {
+				if (G.contingent[i].type !== type) continue
+				if (G.contingent[i].rule !== rules) continue
+				amount += G.contingent[i].amount
+			}
+		}
+	}
+	return amount
+}
 
-// Hotkeys
+function action_points_eligible(type, rules = []) {
+	return G.eligible[type] || any_contingent(type, rules)
+}
+
+// Returns a list of all presently-active contingent action point rules
+function active_rules() {
+	let rules = []
+	for (const contingency of G.contingent) {
+		rules.push(contingency.rule)
+	}
+	return rules
+}
+
+function active_rules_list() {
+	let rules = []
+	for (const contingency of G.contingent) {
+		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
+	}
+	return rules
+}
+
+function is_action_phase()
+{
+	if (V === undefined) return false
+	return V.subphase !== NOT_ACTION_PHASE
+}
+
+function say_action_points(space = true, brackets = true) {
+
+	if (!is_action_phase()) return ""
+	if (G.subphase < PICKED_TILE_OPTION_TO_PASS) return ""
+
+	let verbose = get_preference("actionverbosity", "medium")
+	let names = []
+	let shortest = (verbose === "short")
+	let longest = (verbose === "long")
+	for (i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+		names[i] = escape_square_brackets("[@" + i + "]")
+		if (verbose === "short") {
+			//names[i] = "" // data.action_points[i].letter
+		} else if (verbose === "long") {
+			names[i] += " " + data.action_points[i].name
+		} else {
+			//names[i] = data.action_points[i].short
+		}
+	}
+
+	var need_comma = false;
+	var early = [ false, false, false ]
+	var tell = ""
+	var told_name = [ false, false, false ]
+	for (var level = MAJOR; level <= MINOR; level++) {
+		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
+			if (G.eligible === undefined) continue
+			if (!action_points_eligible(i, active_rules())) continue
+			if ((level === MAJOR) && G.eligible_major[i]) {
+
+				if (need_comma) {
+					tell += ", "
+				}
+				tell += names[i] + (!longest ? "" : ": ")
+				told_name[i] = true
+				need_comma = true
+
+				tell += G.major[i] //+ " major"
+				if (G.minor[i]) {
+					tell += shortest ? "M" : " Major" // only explicitly say Major if we also have Minor
+				}
+
+				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
+			}
+
+			if ((level === MAJOR) === early[i]) {
+				if (data.investments[V.played_tile].minortype === i) {
+					if (level === MINOR) {
+						if (need_comma) {
+							tell += ", "
+						}
+						tell += names[i] + (!longest ? "" : ": ")
+						told_name[i] = true
+					} else if (need_comma) {
+						tell += ", "
+					}
+
+					tell += G.minor[i] + (shortest ? "m" : " Minor")
+					need_comma = true
+				}
+
+				if (G.committed[i] > 0) {
+					if (need_comma) {
+						tell += ", "
+					}
+
+					if (!told_name[i]) {
+						tell += names[i] + (!longest ? "" : ": ")
+						told_name[i] = true
+					}
+
+					tell += G.committed[i] + " Bonus"
+					need_comma = true
+				}
+
+				for (let rule of active_rules_list()) {
+					let amount = rule.amount //get_contingent(i, rule.rule)
+					if (any_contingent(i, rule.rule)) {
+						if (need_comma) {
+							tell += ", "
+						}
+						if (!told_name[i]) {
+							tell += names[i] + (!longest ? "" : ": ")
+							told_name[i] = true
+						}
+						tell += amount + " " + (shortest ? rule.short : rule.rule)
+						need_comma = true
+					}
+				}
+			}
+		}
+	}
+
+	if (tell === "") return tell
+	//if (brackets) tell = "(" + tell + ")"
+	if (space) tell = " " + tell
+	tell = italic(tell)
+
+	if (is_mobile()) {
+		tell = "<div>" + tell + "</div>" // On mobile we don't let the amount of action points fold up
+	}
+
+	return tell
+
+	//console.log (get_preference("actionverbosity", "medium"))
+}
+
+/* WINDOW: FORMATTING HELPERS */
+
+function say_flag_color(who, string)
+{
+	return escape_square_brackets("[F" + (((who === FRANCE) || (who === USA)) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
+}
+
+function format_prestige_info()
+{
+	let winner = prestige_winner()
+	let delta = prestige_flag_delta()
+	let msg = ""
+
+	if (winner !== NONE) {
+		msg = say_flag_color(winner, "+" + delta)
+	} else {
+		msg = "+0"
+	}
+	msg = msg + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
+	msg = `<span
+		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
+		onmouseleave="_tip_blur_award()"
+		>${msg}</span>`
+	return msg
+}
+
+function format_final_prestige_info()
+{
+	let winner = prestige_winner()
+	let delta = prestige_flag_delta()
+	let msg = ""
+
+	if (winner !== NONE) {
+		msg = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
+	} else {
+		msg = "+0 Prestige: +0 VP"
+	}
+	msg = `<span
+		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
+		onmouseleave="_tip_blur_award()"
+		>${msg}</span>`
+	return msg
+}
+
+function format_debt_info() {
+	let winner = debt_winner()
+	let delta = debt_delta()
+	let award = debt_award()
+	let leader = ""
+
+	if ((winner !== NONE)) {
+		leader = say_flag_color(winner, "+" + delta + " Available Debt: +" + award + " VP")
+	} else {
+		leader = "+0 Available Debt: +0 VP"
+	}
+
+	return leader
+}
+
+function format_space_info(s)
+{
+	return say_flag_color(G.flags[s], data.spaces[s].name + ": +2 VP")
+}
+
+function format_award_info(r, a)
+{
+	let winner = region_flag_winner(r)
+	let delta = region_flag_delta(r)
+	let leader = ""
+
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta)
+	} else {
+		leader = "+0"
+	}
+
+	let msg = data.regions[r].name + ": " + data.awards[a].name
+
+	msg = `<span
+		onmouseenter="_tip_focus_award(${a})"
+		onmouseleave="_tip_blur_award()"
+		onmousedown="_tip_click_light('award',${a})">${msg}</span>`
+
+	return leader + (get_preference("scoresies") ? " " + msg : "")
+}
+
+function format_demand_info(d)
+{
+	let awards = data.demands[d].awards[current_era()]
+	let msg = data.demands[d].name + ": +" + awards.vp + " VP"
+	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
+	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
+	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
+
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta)
+	} else {
+		leader = "+0"
+	}
+
+	msg = `<span
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})">${msg}</span>`
+
+	return leader + (get_preference("scoresies") ? " " + msg : "")
+}
+
+function format_demand_info_flags(d)
+{
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		let flag = winner === FRANCE ? "fr" : "br"
+		return say_flag_color(winner, "+" + delta) + `<div class="score-flag ${flag}"></div>`
+	}
+	return "+0"
+}
+
+function format_demand_info_table(d, era)
+{
+	let awards = data.demands[d].awards[era]
+	let msg = awards.vp + " VP"
+	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
+	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
+	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
+	return msg
+}
+
+function format_final_demand_info(d)
+{
+	let winner = demand_flag_winner(d)
+	let delta = demand_flag_delta(d)
+	let leader = ""
+	if (winner !== NONE) {
+		leader = say_flag_color(winner, "+" + delta + " " + data.demands[d].name + ": +1 VP")
+	} else {
+		leader = "+0 " + data.demands[d].name
+	}
+
+	leader = `<span
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})">${leader}</span>`
+
+	return leader
+}
+
+function format_results_info()
+{
+	preview_scoring_results()
+
+	let msg = ""
+	if (V.preview_vp === 0) {
+		msg += "+0 VP"
+	} else if (V.preview_vp > 0) {
+		msg += escape_square_brackets("[FF+" + V.preview_vp + " VP France]")
+	} else {
+		msg += escape_square_brackets("[FB+" + Math.abs(V.preview_vp) + " VP Britain]")
+	}
+	if (V.preview_trp[FRANCE] || V.preview_trp[BRITAIN]) {
+		msg += "<br/>"
+		if (V.preview_trp[FRANCE]) {
+			msg += escape_square_brackets("[FF+" + V.preview_trp[FRANCE] + " TRP France]")
+		}
+		if (V.preview_trp[BRITAIN]) {
+			if (V.preview_trp[FRANCE]) msg += ", "
+			msg += escape_square_brackets("[FB+" + V.preview_trp[BRITAIN] + " TRP Britain]")
+		}
+	}
+	if (V.preview_debt[FRANCE] || V.preview_debt[BRITAIN]) {
+		msg += "<br/>"
+		if (V.preview_debt[FRANCE]) {
+			msg += escape_square_brackets("[FF" + ((V.preview_debt[FRANCE] > 0) ? "+" : "") + V.preview_debt[FRANCE] + " Debt France]")
+		}
+		if (V.preview_debt[BRITAIN]) {
+			if (V.preview_debt[FRANCE]) msg += ", "
+			msg += escape_square_brackets("[FB" + ((V.preview_debt[BRITAIN] > 0) ? "+" : "") + V.preview_debt[BRITAIN] + " Debt Britain]")
+		}
+	}
+	if (V.preview_ministries.length > 0) {
+		msg += "<br/>"
+		msg += "Ministries: "
+		let any = false
+		for (const m of V.preview_ministries) {
+			if (any) msg += ", "
+			msg += escape_text("M" + ((data.ministries[m].side === FRANCE) ? "F" : "B") + m)
+			any = true
+		}
+	}
+
+	return msg
+}
+
+function preview_scoring_results() {
+	let vp = 0
+	let trp = [0, 0]
+	let debt = [0, 0]
+	let ministries = []
+
+	let winner = prestige_winner()
+	if (winner !== NONE) {
+		vp += ((winner === FRANCE) ? 2 : -2)
+	}
+
+	//TODO it would be *more sound* if this stuff were pre-computed in rules using the same code that runs "scoring_phase". It would require refactoring that code.
+
+	for (let r = 0; r < NUM_REGIONS; r++) {
+		let award = G.awards[r]
+		let winner = region_flag_winner(r)
+		let delta = region_flag_delta(r)
+		if (data.awards[award].by2 && region_flag_delta(r) < 2) continue
+		if (winner === NONE) continue
+
+		let award_vp = data.awards[award].vp
+		let award_trp = data.awards[award].trp
+		if (r === REGION_EUROPE) {
+			if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
+				award_vp++
+				ministries.push(COURT_OF_THE_SUN_KING)
+			}
+			if (has_active_ministry(winner, SAMUEL_JOHNSON)) {
+				ministries.push(SAMUEL_JOHNSON)
+				award_vp++
+			} else if (has_active_ministry(1 - winner, SAMUEL_JOHNSON)) {
+				if (award_vp > 0) {
+					award_vp--
+					ministries.push(SAMUEL_JOHNSON)
+				}
+			}
+		} else if (r === REGION_INDIA) {
+			if (has_active_ministry(winner, DUPLEIX)) {
+				award_trp++
+				ministries.push(DUPLEIX)
+			}
+		}
+
+		if (award_vp > 0) {
+			vp += ((winner === FRANCE) ? award_vp : -award_vp)
+		}
+		trp[winner] += award_trp
+
+		if (r === REGION_EUROPE) {
+			if (has_active_ministry(FRANCE, VOLTAIRE)) {
+				let multispace = 0
+				if (G.flags[IRELAND_2] === FRANCE) multispace++
+				if (G.flags[SCOTLAND_2] === FRANCE) multispace++
+				if ((G.flags[PRUSSIA_2] === FRANCE) || (G.flags[PRUSSIA_4] === FRANCE)) multispace++
+				if (G.flags[DUTCH_2] === FRANCE) multispace++
+				if ((G.flags[AUSTRIA_2] === FRANCE) || (G.flags[AUSTRIA_4] === FRANCE)) multispace++
+				if ((G.flags[SPAIN_2] === FRANCE) || (G.flags[SPAIN_4] === FRANCE)) multispace++
+
+				let countries = Math.min(3, multispace)
+				if (countries) {
+					trp[FRANCE] += countries
+					ministries.push(VOLTAIRE)
+				}
+			}
+		}
+	}
+
+	for (const d of G.global_demand) {
+		let winner = demand_flag_winner(d)
+		if (winner === NONE) continue
+
+		let award_vp = data.demands[d].awards[current_era()].vp
+		let award_trp = data.demands[d].awards[current_era()].trp
+		let award_debt = data.demands[d].awards[current_era()].debt
+
+		if ((d === COTTON) || (d === SPICE)) {
+			if (has_active_ministry(winner, DUPLEIX)) {
+				award_trp++
+				if (!ministries.includes(DUPLEIX)) ministries.push(DUPLEIX)
+			}
+		}
+
+		if (award_vp > 0) {
+			vp += ((winner === FRANCE) ? award_vp : -award_vp)
+		}
+		trp[winner] += award_trp
+		debt[winner] += award_debt
+	}
+
+	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
+		let award_vp = 0
+		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
+			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
+				award_vp++
+			}
+		}
+		award_vp = Math.min(award_vp, 3)
+		if (award_vp > 0) {
+			vp -= award_vp
+			ministries.push(EAST_INDIA_COMPANY)
+		}
+	}
+
+	V.preview_vp = vp
+	V.preview_trp = trp
+	V.preview_debt = debt
+	V.preview_ministries = ministries
+}
+
+function format_final_scoring_results_info()
+{
+	let vp = 0
+
+	let winner = prestige_winner()
+	if (winner !== NONE) {
+		vp += ((winner === FRANCE) ? 2 : -2)
+	}
+
+	winner = debt_winner()
+	if ((winner !== NONE) && (debt_award() > 0)) {
+		vp += ((winner === FRANCE) ? debt_award() : -debt_award())
+	}
+
+	for (let d = 0; d < NUM_DEMANDS; d++) {
+		winner = demand_flag_winner(d)
+		if (winner !== NONE) {
+			vp += ((winner === FRANCE) ? 1 : -1)
+		}
+	}
+
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
+			vp += 2
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			vp -= 2
+		}
+	}
+
+	if (vp > 0) {
+		return escape_square_brackets("[FF+" + vp + " VP France]")
+	} else if (vp < 0) {
+		return escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
+	} else {
+		return "+0 VP"
+	}
+}
+
+/* WINDOW: EVENT CARDS */
+
+function format_card_info(c) {
+	return escape_text("E" + c)
+}
+
+function update_event_card_dialog() {
+	var c, text = []
+
+	text.push("<dl>")
+
+	text.push(`<dt>Played Event Cards (${V.played_events.length})`)
+	for (c of V.played_events)
+		text.push("<dd>" + format_card_info(c))
+
+	text.push(`<dt>Discarded Event Cards (${V.discard_pile.length})`)
+	for (c of V.discard_pile)
+		text.push("<dd>" + format_card_info(c))
+
+	if (is_observing)
+		text.push(`<dt>Player Hands or Deck (${V.deck.length})`)
+	else
+		text.push(`<dt>Opponent's Hand or Deck (${V.deck.length})`)
+	for (c of V.deck)
+		for (c of V.deck)
+			text.push("<dd>" + format_card_info(c))
+
+	if (!is_observing()) {
+		text.push(`<dt>Your Hand (${V.hand[R].length})`)
+		for (c of V.hand[R])
+			text.push("<dd>" + format_card_info(c))
+	}
+
+	if (current_era() < EMPIRE_ERA) {
+		text.push(`<dt>Empire Era (not yet in play) (15)`)
+		for (c = SUCCESSION_ERA_CARDS + 1; c <= EMPIRE_ERA_CARDS; c++)
+			text.push("<dd>" + format_card_info(c))
+	}
+
+	if (current_era() < REVOLUTION_ERA) {
+		text.push(`<dt>Revolution Era (not yet in play) (11)`)
+		for (c = EMPIRE_ERA_CARDS + 1; c <= REVOLUTION_ERA_CARDS; c++)
+			text.push("<dd>" + format_card_info(c))
+	}
+
+	text.push("</dl>")
+
+	return text.join("")
+}
+
+/* WINDOW: MINISTRY CARDS */
+
+function format_ministry_info(c) {
+	return escape_text("M" + c)
+}
+
+function update_ministry_dialog(who) {
+	var m, text = []
+
+	text.push("<dl>")
+
+	text.push("<dt>Current Available Ministries")
+	for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+		if (data.ministries[m].side !== who) continue
+		if (!data.ministries[m].era.includes(current_era())) continue
+		if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
+		text.push("<dd>" + format_ministry_info(m))
+	}
+
+	if (current_era() === SUCCESSION_ERA) {
+		text.push("<dt>Empire Era Ministries (not yet in play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (current_era() < REVOLUTION_ERA) {
+		text.push("<dt>Revolution Era Ministries (not yet in play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			if (!data.ministries[m].era.includes(REVOLUTION_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (is_bit(JACOBITES_NEVER) && (who === FRANCE)) {
+		text.push("<dt>Removed From Game")
+		text.push("<dd>" + format_ministry_info(m))
+	}
+
+	if (current_era() === REVOLUTION_ERA) {
+		text.push("<dt>Empire Era Ministries (out of play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	if (current_era() !== SUCCESSION_ERA) {
+		text.push("<dt>Succession Era Ministries (out of play)")
+		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
+			if (data.ministries[m].side !== who) continue
+			if (data.ministries[m].era.includes(current_era())) continue
+			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
+			if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
+			if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
+			text.push("<dd>" + format_ministry_info(m))
+		}
+	}
+
+	text.push("</dl>")
+
+	return text.join("")
+}
+
+function update_british_ministry_dialog() {
+	return update_ministry_dialog(BRITAIN)
+}
+
+function update_french_ministry_dialog() {
+	return update_ministry_dialog(FRANCE)
+}
+
+/* WINDOW: SCORING SUMMARY */
+
+function format_winner_delta(winner, delta) {
+	if (winner === FRANCE)
+		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag fr"></div></div>`
+	if (winner === BRITAIN)
+		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag br"></div></div>`
+	return `<div class="score-flags">+0</div>`
+}
+
+function format_award_chit(a) {
+	return `<div class="marker square-sm black award a${a}"
+		onmouseenter="_tip_focus_award(${a})"
+		onmouseleave="_tip_blur_award()"
+		onmousedown="_tip_click_light('award',${a})"
+		></div>`
+}
+
+function format_demand_chit(d) {
+	var name = data.demands[d].name.toLowerCase()
+	return `<div class="square-sm marker demand ${name}"
+		onmouseenter="_tip_focus_demand(${d})"
+		onmouseleave="_tip_blur_demand()"
+		onmousedown="_tip_click_light('demand',${d})"
+		></div>`
+}
+
+function format_region_score_summary(r) {
+	var a = V.awards[r]
+	return (`
+		<div class="score-row">
+			${format_award_chit(a)}
+			<div>${data.regions[r].name}</div>
+			${format_winner_delta(region_flag_winner(r), region_flag_delta(r))}
+		</div>
+	`)
+}
+
+function format_prestige_score_summary() {
+	return (`
+		<div class="score-row">
+			<img style="display:block" src="images/award_2vp.webp" width=47 height=47>
+			<div>2 VP</div>
+			${format_winner_delta(prestige_winner(), prestige_flag_delta())}
+		</div>
+	`)
+}
+
+function format_demand_score_summary(d, era) {
+	return (`
+		<div class="score-row">
+			${format_demand_chit(d)}
+			<div>${format_demand_info_table(d, era)}</div>
+			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
+		</div>
+	`)
+}
+
+function format_final_demand_score_summary(d, era) {
+	return (`
+		<div class="score-row">
+			${format_demand_chit(d)}
+			<div>1 VP</div>
+			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
+		</div>
+	`)
+}
+
+function update_scoring_summary_dialog() {
+	if (V.bidding_for_sides) return "..."
+	if (get_preference("scoresies"))
+		return update_scoring_summary_dialog_text()
+	return update_scoring_summary_dialog_fancy()
+}
+
+function update_scoring_summary_dialog_text() {
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_prestige_info())
+
+	text.push("<dt>Regions")
+	for (var r = 0; r < NUM_REGIONS; r++) {
+		var a = V.awards[r]
+		text.push("<dd>" + format_award_info(r, a))
+	}
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++) {
+		if (!V.global_demand.includes(d))
+			continue
+		text.push("<dd>" + format_demand_info(d))
+	}
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_results_info(d))
+
+	text.push("</dl>")
+	return text.join("")
+}
+
+function update_scoring_summary_dialog_fancy() {
+	var text = []
+	text.push(`
+		<div class="score-summary">
+			<div class="score-summary-1">
+				<div>Regions</div>
+				<div class="score-table-awards">
+					${format_region_score_summary(REGION_NORTH_AMERICA)}
+					${format_region_score_summary(REGION_CARIBBEAN)}
+					${format_region_score_summary(REGION_EUROPE)}
+					${format_region_score_summary(REGION_INDIA)}
+				</div>
+			</div>
+			<div class="score-summary-2">
+				<div>Prestige &amp; Global Demand</div>
+				<div class="score-table-demands">
+					${format_prestige_score_summary()}
+	`)
+
+	for (var d = 0; d < NUM_DEMANDS; d++)
+		if (V.global_demand.includes(d))
+			text.push(format_demand_score_summary(d, current_era()))
+
+	text.push(`
+				</div>
+			</div>
+			<div class="score-summary-3">
+				<dl>
+					<dt>Projected Results
+					<dd>${format_results_info()}
+				</dl>
+			</div>
+		</div>
+	`)
+
+	return text.join("")
+}
+
+/* WINDOW: FINAL SCORING SUMMARY */
+
+function update_final_scoring_summary_dialog()
+{
+	if (V.bidding_for_sides) return "..."
+	if (get_preference("scoresies"))
+		return update_final_scoring_summary_dialog_text()
+	return update_final_scoring_summary_dialog_fancy()
+}
+
+function update_final_scoring_summary_dialog_text()
+{
+	var text = []
+	text.push("<dl>")
+
+	text.push("<dt>Prestige")
+	text.push("<dd>" + format_final_prestige_info())
+
+	text.push("<dt>Debt")
+	text.push("<dd>" + format_debt_info())
+
+	text.push("<dt>Global Demand")
+	for (var d = 0; d < NUM_DEMANDS; d++)
+		text.push("<dd>" + format_final_demand_info(d))
+
+	let any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	text.push("<dt>Projected Results")
+	text.push("<dd>" + format_final_scoring_results_info())
+
+	text.push("</dl>")
+	return text.join("")
+}
+
+function update_final_scoring_summary_dialog_fancy()
+{
+	var text = []
+
+	text.push(`
+		<div class="score-summary">
+			<div class="score-summary-2">
+				<div>Prestige &amp; Global Demand</div>
+				<div class="score-table-demands">
+					${format_prestige_score_summary()}
+					${format_final_demand_score_summary(0)}
+					${format_final_demand_score_summary(1)}
+					${format_final_demand_score_summary(2)}
+					${format_final_demand_score_summary(3)}
+					${format_final_demand_score_summary(4)}
+					${format_final_demand_score_summary(5)}
+				</div>
+			</div>
+			<div class="score-summary-1">
+				<dl>
+					<dt>Debt
+					<dd>${format_debt_info()}
+					<br>
+					<br>
+	`)
+
+	let any = false
+	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
+		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
+		if (G.flags[s] === BRITAIN) {
+			if (!any) {
+				text.push("<dt>Conquests")
+				any = true
+			}
+			text.push("<dd>" + format_space_info(s))
+		}
+	}
+
+	text.push(`
+				</dl>
+			</div>
+			<div class="score-summary-3">
+				<dl>
+					<dt>Projected Results
+					<dd>${format_final_scoring_results_info()}
+				</dl>
+			</div>
+		</div>
+	`)
+
+	return text.join("")
+}
+
+/* HOTKEYS */
+
 window.addEventListener("keydown", function (evt) {
 	if (document.activeElement instanceof HTMLInputElement)
 		return
@@ -3529,989 +4065,375 @@ window.addEventListener("keydown", function (evt) {
 	}
 })
 
+/* LAYOUT DATA */
 
-function advantage_tooltip_image(a, onoff) {
-	if (onoff) {
-		on_focus_advantage_tip(a)
-	} else {
-		on_blur_advantage_tip()
-	}
+function find_layout_node(name) {
+	if (name in layout_nodes)
+		return layout_nodes[name]
+	return null
 }
 
-function on_focus_advantage_tip(a) {
-	world.tip.hidden = is_mobile()
+// Usually one of these at a time. One fairly rare case of 3. So I put them to the right of the name of the map for a bit less scrolling down.
+const layout_theater_drawn = [700, 0, 400, 70]
 
-	// Show BOTH sides of the marker
-	world.tip.innerHTML = `
-		<div class="marker square advantage a${a} reverse advantage-back"></div>
-		<div class="marker square advantage a${a} advantage-front"></div>	`
+const layout_nodes = {
+	"Demand": [1111,323,324,61],
+	"Demand_winner":[1120, 375, 324, 25],
+	"Deal Tiles": [1250,0,324,61],
+	"record track 0": [2083,1302,58,58],
+	"record track 1": [2143,1302,58,58],
+	"record track 2": [2201,1302,58,58],
+	"record track 3": [2261,1302,58,58],
+	"record track 4": [2321,1302,58,58],
+	"record track 5": [2380,1302,58,58],
+	"record track 6": [2439,1302,58,58],
+	"record track -7": [2084,1242,58,58],
+	"record track -6": [2143,1242,58,58],
+	"record track -5": [2202,1242,58,58],
+	"record track -4": [2262,1242,58,58],
+	"record track -3": [2321,1242,58,58],
+	"record track -2": [2380,1242,58,58],
+	"record track -1": [2439,1242,58,58],
+	"record track 7": [2143,1363,58,58],
+	"record track 8": [2202,1363,58,58],
+	"record track 9": [2261,1363,58,58],
+	"record track 10": [2321,1363,58,58],
+	"record track 11": [2380,1363,58,58],
+	"record track 12": [2439,1363,58,58],
+	"record track 13": [2142,1422,58,58],
+	"record track 14": [2200,1422,58,58],
+	"record track 15": [2260,1422,58,58],
+	"record track 16": [2320,1422,58,58],
+	"record track 17": [2379,1422,58,58],
+	"record track 18": [2438,1422,58,58],
+	"record track 19": [2142,1483,58,58],
+	"record track 20": [2201,1483,58,58],
+	"record track 21": [2261,1483,58,58],
+	"record track 22": [2320,1483,58,58],
+	"record track 23": [2379,1483,58,58],
+	"record track 24": [2438,1483,58,58],
+	"record track 25": [2143,1542,58,58],
+	"record track 26": [2201,1542,58,58],
+	"record track 27": [2261,1542,58,58],
+	"record track 28": [2320,1542,58,58],
+	"record track 29": [2379,1542,58,58],
+	"record track 30": [2438,1542,58,58],
+	"record track 31": [2142,1601,58,58],
+	"record track 32": [2200,1601,58,58],
+	"record track 33": [2260,1601,58,58],
+	"record track 34": [2320,1601,58,58],
+	"record track 35": [2378,1601,58,58],
+	"record track 36": [2437,1601,58,58],
+	"Navy Box": [887,836,282,138],
+	"Navy Box France": [925,875,60,60],
+	"Navy Box Britain": [1050,875,60,60],
+	"Turn 5": [126,1180,58,101],
+	"Turn 4": [125,1281,58,101],
+	"Turn 3": [126,1383,58,101],
+	"Turn 2": [126,1485,58,56],
+	"Turn 1": [126,1546,58,56],
+	"War 4": [47,1129,78,104],
+	"War 3": [47,1233,78,102],
+	"War 2": [48,1334,78,102],
+	"War 1": [48,1493,78,104],
+	"Turn 6": [125,1079,58,101],
+	"Initiative": [251,1502,75,75],
+	"Award North America": [669,48,118,119],
+	"Award_winner North America": [669, 132, 118, 25],
+	"Award_winner North America Left": [684, 95, 40, 25],
+	"Award_winner North America Right": [757, 95, 40, 25],
+	"Award India": [1437,888,118,119],
+	"Award_winner India": [1437, 972, 118, 25],
+	"Award_winner India Left": [1451, 935, 40, 25],
+	"Award_winner India Right": [1526, 935, 40, 25],
+	"Award Europe": [1307,530,118,119],
+	"Award_winner Europe": [1321, 562, 40, 25],
+	"Award_winner Europe Left": [1321, 562, 40, 25],
+	"Award_winner Europe Right": [1395, 562, 40, 25],
+	"Award_winner Europe Prestige": [1321, 592, 40, 25],
+	"Award_winner Europe Prestige Left": [1321, 592, 40, 25],
+	"Award_winner Europe Prestige Right": [1393, 592, 40, 25],
+	"Award Caribbean": [1100,1238,118,119],
+	"Award_winner Caribbean": [1100, 1317, 118, 25],
+	"Award_winner Caribbean Left": [1114, 1284, 40, 25],
+	"Award_winner Caribbean Right": [1188, 1284, 40, 25],
+
+	"Ireland_1": [1492,242,65,65],
+	"Ireland_2": [1583,243,65,65],
+	"Scotland_1": [1695,126,65,65],
+	"Scotland_2": [1787,127,65,65],
+	"Denmark": [2024,55,65,65],
+	"Prussia_1": [2068,193,65,65],
+	"Prussia_2": [2161,193,65,65],
+	"Prussia_3": [2068,301,65,65],
+	"Prussia_4": [2161,301,65,65],
+	"Sweden": [2317,150,65,65],
+	"Russia": [2409,264,65,65],
+	"Dutch_1": [1846,294,65,65],
+	"Dutch_2": [1937,294,65,65],
+	"German_States_1": [2008,466,65,65],
+	"German_States_2": [2101,467,65,65],
+	"Bavaria": [2218,466,65,65],
+	"Austria_1": [2334,495,65,65],
+	"Austria_2": [2426,495,65,65],
+	"Austria_3": [2333,587,65,65],
+	"Austria_4": [2426,587,65,65],
+	"Sardinia": [2189,803,65,65],
+	"Savoy": [1989,611,65,65],
+	"Spain_1": [1523,578,65,65],
+	"Spain_2": [1615,578,65,65],
+	"Spain_3": [1523,669,65,65],
+	"Spain_4": [1615,669,65,65],
+	"Gibraltar": [1306,670,77,77],
+	"Minorca": [1306,780,77,77],
+	"Biscay": [1300,396,88,77],
+	"Balearic": [1394,396,88,77],
+	"Algonquin": [132,150,65,65],
+	"Hudson Bay": [331,70,77,77],
+	"York Factory": [257,156,76,76],
+	"Quebec & Montreal": [429,107,77,77],
+	"Gulf of St. Lawrence": [952,158,76,76],
+	"Cabot Strait": [927,256,88,77],
+	"Louisbourg": [1038,362,88,77],
+	"Acadia": [922,384,77,77],
+	"Northeast Channel": [820,439,76,76],
+	"Halifax": [796,324,88,77],
+	"Georges Bank": [732,508,76,76],
+	"Atlantic Passage": [619,589,88,77],
+	"Gulf of Maine": [609,429,88,77],
+	"Mass. Bay": [472,396,76,76],
+	"Northern Colonies": [261,660,77,77],
+	"Chesapeake": [223,772,76,76],
+	"Hudson Valley": [266,496,76,76],
+	"Albany": [315,396,76,76],
+	"Cumberland": [93,710,76,76],
+	"Ohio Forks": [27,609,88,77],
+	"Allegheny": [124,532,76,76],
+	"Niagara": [81,452,76,76],
+	"Oswego": [221,382,76,76],
+	"Champlain Valley": [337,272,88,77],
+	"Ile aux Noix": [440,212,76,76],
+	"Cataraqui": [213,259,76,76],
+	"Iroquois": [80,910,65,65],
+	"Sons of Liberty": [507,634,65,65],
+	"USA_Prestige_2": [1003,602,65,65],
+	"USA_Prestige_3": [1096,602,65,65],
+	"Asiento": [782,781,77,77],
+	"Privateers": [937,1139,65,65],
+	"Buccaneers": [528,1545,65,65],
+	"Carolinas": [698,691,77,77],
+	"Georgia": [591,723,76,76],
+	"San Agustin": [565,825,77,77],
+	"Panzacola": [450,905,76,76],
+	"Bahamas Run West": [528,1068,76,76],
+	"Bahamas Run North": [712,918,76,76],
+	"Caicos": [679,1147,76,76],
+	"Bahamas Run": [635,1044,88,77],
+	"St. Domingue": [754,1252,77,77],
+	"Port de Paix": [664,1250,76,76],
+	"Puerto Principe": [550,1185,76,76],
+	"Puerto Rico": [855,1283,76,76],
+	"Antigua": [898,1379,76,76],
+	"Martinique": [986,1445,76,76],
+	"St. Lucia": [962,1548,76,76],
+	"Antilles Channel": [855,1489,88,77],
+	"Guadeloupe": [1089,1381,77,77],
+	"Barbados": [1084,1536,77,77],
+	"Havana": [400,1215,76,76],
+	"Gulf of Cazones": [481,1257,88,77],
+	"Santiago": [559,1314,76,76],
+	"Jamaica": [452,1422,77,77],
+	"Cayman Passage": [313,1362,76,76],
+	"Cuba Passage East": [437,1109,76,76],
+	"Cuba Passage": [332,1124,88,77],
+	"St. James": [270,941,76,76],
+	"Louisiana": [325,848,77,77],
+	"Maratha": [1799,731,65,65],
+	"Nizam": [1409,1198,65,65],
+	"Mysore": [1408,1491,65,65],
+	"Malacca Route": [2254,1110,76,76],
+	"Hooghly River": [2026,986,88,77],
+	"Chandernagore": [2044,881,77,77],
+	"Plassey": [1936,791,76,76],
+	"West Bengal": [1812,859,76,76],
+	"Midnapore": [1870,1038,76,76],
+	"Calcutta": [2074,1106,77,77],
+	"Kurpa": [1558,1084,76,76],
+	"Arcot": [1644,1160,88,77],
+	"Vellore": [1544,1207,76,76],
+	"Kanchipuram": [1774,1278,76,76],
+	"Madras": [1957,1222,77,77],
+	"Pondicherry": [1957,1392,77,77],
+	"Karaikal": [1933,1513,76,76],
+	"Vandavasi": [1749,1419,88,77],
+	"Tiruchirappalli": [1614,1470,76,76],
+	"Calicut": [1333,1329,76,76],
+	"Mangalore": [1279,1073,76,76],
+	"Malabar Coast": [1243,1206,88,77],
+	"Baltic Trade": [1908,119,80,80],
+	"Central Europe Conflict": [2281,364,80,80],
+	"German Diplomacy": [2288,263,80,80],
+	"Italy Influence": [2177,646,80,80],
+	"Mediterranean Intrigue": [1788,592,80,80],
+	"Naval Bastion": [1406,661,80,80],
+	"Silesia Negotiations": [2418,382,80,80],
+	"Algonquin Raids": [45,249,80,80],
+	"Fur Trade": [224,46,80,80],
+	"Iroquois Raids": [47,1009,80,80],
+	"Patriot Agitation": [370,692,80,80],
+	"Wheat": [135,800,80,80],
+	"Fruit": [444,786,80,80],
+	"Letters of Marque": [1083,1100,80,80],
+	"Pirate Havens": [664,1555,80,80],
+	"Rum": [985,1242,80,80],
+	"Slaving Contracts": [866,721,80,80],
+	"Power Struggle": [1533,1545,80,80],
+	"Raids & Incursions": [1702,826,80,80],
+	"Separatist Wars": [1486,1318,80,80],
+	"Silk": [1767,952,80,80],
+	"Textiles": [1703,1539,80,80],
+	"Navy Box": [883,833,290,144],
 }
 
-function on_blur_advantage_tip() {
-	world.tip.hidden = true
-	world.tip.innerHTML = ""
-}
-
-function advantage_class_name(a) {
-	return `advantage.a${a}`
-}
-
-
-// True if ANY contingent action points of the specified type (ECON, DIPLO, MIL) theoretically available based on array of rules we're eligible for (or a single rule). Even if we've spent it all we can still use debt/TRPs in that category.
-function any_contingent(type, rules) {
-	if ((rules !== undefined) && (rules !== null)) {
-		if (rules.constructor === Array) {
-			for (let rule of rules) {
-				for (let i = 0; i < G.contingent.length; i++) {
-					if (G.contingent[i].type !== type) continue
-					if (G.contingent[i].rule !== rule) continue
-					return true
-				}
-			}
-		} else {
-			for (let i = 0; i < G.contingent.length; i++) {
-				if (G.contingent[i].type !== type) continue
-				if (G.contingent[i].rule !== rules) continue
-				return true
-			}
-		}
-	}
-	return false
-}
-
-
-// Amount of contingent action points of the specified type (ECON, DIPLO, MIL) available based on array of rules we're eligible for (or a single rule)
-function get_contingent(type, rules)
-{
-	let amount = 0
-	if ((rules !== undefined) && (rules !== null)) {
-		if (rules.constructor === Array) {
-			for (let rule of rules) {
-				for (let i = 0; i < G.contingent.length; i++) {
-					if (G.contingent[i].type !== type) continue
-					if (G.contingent[i].rule !== rule) continue
-					amount += G.contingent[i].amount
-				}
-			}
-		} else {
-			for (let i = 0; i < G.contingent.length; i++) {
-				if (G.contingent[i].type !== type) continue
-				if (G.contingent[i].rule !== rules) continue
-				amount += G.contingent[i].amount
-			}
-		}
-	}
-	return amount
-}
-
-
-function action_points_eligible(type, rules = []) {
-	return G.eligible[type] || any_contingent(type, rules)
-}
-
-// Returns a list of all presently-active contingent action point rules
-function active_rules() {
-	let rules = []
-	for (const contingency of G.contingent) {
-		rules.push(contingency.rule)
-	}
-	return rules
-}
-
-
-function active_rules_list() {
-	let rules = []
-	for (const contingency of G.contingent) {
-		rules.push( { "rule": contingency.rule, "short": contingency.short, "amount": contingency.amount } )
-	}
-	return rules
-}
-
-
-function is_action_phase()
-{
-	if (V === undefined) return false
-	return V.subphase !== NOT_ACTION_PHASE
-}
-
-
-function say_action_points(space = true, brackets = true) {
-
-	if (!is_action_phase()) return ""
-	if (G.subphase < PICKED_TILE_OPTION_TO_PASS) return ""
-
-	let verbose = get_preference("actionverbosity", "medium")
-	let names = []
-	let shortest = (verbose === "short")
-	let longest = (verbose === "long")
-	for (i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-		names[i] = escape_square_brackets("[@" + i + "]")
-		if (verbose === "short") {
-			//names[i] = "" // data.action_points[i].letter
-		} else if (verbose === "long") {
-			names[i] += " " + data.action_points[i].name
-		} else {
-			//names[i] = data.action_points[i].short
-		}
-	}
-
-
-	var need_comma = false;
-	var early = [ false, false, false ]
-	var tell = ""
-	var told_name = [ false, false, false ]
-	for (var level = MAJOR; level <= MINOR; level++) {
-		for (var i = 0; i < NUM_ACTION_POINTS_TYPES; i++) {
-			if (G.eligible === undefined) continue
-			if (!action_points_eligible(i, active_rules())) continue
-			if ((level === MAJOR) && G.eligible_major[i]) {
-
-				if (need_comma) {
-					tell += ", "
-				}
-				tell += names[i] + (!longest ? "" : ": ")
-				told_name[i] = true
-				need_comma = true
-
-				tell += G.major[i] //+ " major"
-				if (G.minor[i]) {
-					tell += shortest ? "M" : " Major" // only explicitly say Major if we also have Minor
-				}
-
-				early[i] = true // If we had legit major points of this, then ALL other types should display immediately (to stay consecutive with it in the list)
-			}
-
-			if ((level === MAJOR) === early[i]) {
-				if (data.investments[V.played_tile].minortype === i) { // (G.minor[i] || !G.eligible_major[i])) {
-					if (level === MINOR) {
-						if (need_comma) {
-							tell += ", "
-						}
-						tell += names[i] + (!longest ? "" : ": ")
-						told_name[i] = true
-					} else if (need_comma) {
-						tell += ", "
-					}
-
-					tell += G.minor[i] + (shortest ? "m" : " Minor")
-					need_comma = true
-				}
-
-				if (G.committed[i] > 0) {
-					if (need_comma) {
-						tell += ", "
-					}
-
-					if (!told_name[i]) {
-						tell += names[i] + (!longest ? "" : ": ")
-						told_name[i] = true
-					}
-
-					tell += G.committed[i] + " Bonus"
-					need_comma = true
-				}
-
-				for (let rule of active_rules_list()) {
-					let amount = rule.amount //get_contingent(i, rule.rule)
-					if (any_contingent(i, rule.rule)) {
-						if (need_comma) {
-							tell += ", "
-						}
-						if (!told_name[i]) {
-							tell += names[i] + (!longest ? "" : ": ")
-							told_name[i] = true
-						}
-						tell += amount + " " + (shortest ? rule.short : rule.rule)
-						need_comma = true
-					}
-				}
-			}
-		}
-	}
-
-	if (tell === "") return tell
-	//if (brackets) tell = "(" + tell + ")"
-	if (space) tell = " " + tell
-	tell = italic(tell)
-
-	if (is_mobile()) {
-		tell = "<div>" + tell + "</div>" // On mobile we don't let the amount of action points fold up
-	}
-
-	return tell
-
-
-	//console.log (get_preference("actionverbosity", "medium"))
-}
-
-function attract(e) {
-	e.classList.add("attract")
-	window.setTimeout(() => e.classList.remove("attract"), 1500)
-}
-
-
-function format_card_info(c) {
-	let text = "E" + c
-	return escape_text(text)
-}
-
-function format_ministry_info(c) {
-	let text = "M" + c
-	return escape_text(text)
-}
-
-function say_flag_color(who, string)
-{
-	return escape_square_brackets("[F" + (((who === FRANCE) || (who === USA)) ? "F" : (who === BRITAIN) ? "B" : "X") + string + "]")
-}
-
-function format_prestige_info()
-{
-	let winner = prestige_winner()
-	let delta = prestige_flag_delta()
-	let msg = ""
-
-	if (winner !== NONE) {
-		msg = say_flag_color(winner, "+" + delta)
-	} else {
-		msg = "+0"
-	}
-	msg = msg + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
-	msg = `<span
-		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
-		onmouseleave="_tip_blur_award()"
-		>${msg}</span>`
-	return msg
-}
-
-function format_final_prestige_info()
-{
-	let winner = prestige_winner()
-	let delta = prestige_flag_delta()
-	let msg = ""
-
-	if (winner !== NONE) {
-		msg = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
-	} else {
-		msg = "+0 Prestige: +0 VP"
-	}
-	msg = `<span
-		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
-		onmouseleave="_tip_blur_award()"
-		>${msg}</span>`
-	return msg
-}
-
-
-
-function format_debt_info() {
-	let winner = debt_winner()
-	let delta = debt_delta()
-	let award = debt_award()
-	let leader = ""
-
-	if ((winner !== NONE)) {
-		leader = say_flag_color(winner, "+" + delta + " Available Debt: +" + award + " VP")
-	} else {
-		leader = "+0 Available Debt: +0 VP"
-	}
-
-	return leader
-}
-
-
-function format_space_info(s)
-{
-	return say_flag_color(G.flags[s], data.spaces[s].name + ": +2 VP")
-}
-
-
-function format_award_info(r, a)
-{
-	let winner = region_flag_winner(r)
-	let delta = region_flag_delta(r)
-	let leader = ""
-
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta)
-	} else {
-		leader = "+0"
-	}
-
-	let msg = data.regions[r].name + ": " + data.awards[a].name
-
-	msg = `<span
-		onmouseenter="_tip_focus_award(${a})"
-		onmouseleave="_tip_blur_award()"
-		onmousedown="_tip_click_light('award',${a})">${msg}</span>`
-
-	return leader + (get_preference("scoresies") ? " " + msg : "")
-}
-
-
-
-function format_demand_info(d)
-{
-	let awards = data.demands[d].awards[current_era()]
-	let msg = data.demands[d].name + ": +" + awards.vp + " VP"
-	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
-	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
-	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
-
-	let winner = demand_flag_winner(d)
-	let delta = demand_flag_delta(d)
-	let leader = ""
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta)
-	} else {
-		leader = "+0"
-	}
-
-	msg = `<span
-		onmouseenter="_tip_focus_demand(${d})"
-		onmouseleave="_tip_blur_demand()"
-		onmousedown="_tip_click_light('demand',${d})">${msg}</span>`
-
-	return leader + (get_preference("scoresies") ? " " + msg : "")
-}
-
-function format_demand_info_flags(d)
-{
-	let winner = demand_flag_winner(d)
-	let delta = demand_flag_delta(d)
-	let leader = ""
-	if (winner !== NONE) {
-		let flag = winner === FRANCE ? "fr" : "br"
-		return say_flag_color(winner, "+" + delta) + `<div class="score-flag ${flag}"></div>`
-	}
-	return "+0"
-}
-
-function format_demand_info_table(d, era)
-{
-	let awards = data.demands[d].awards[era]
-	let msg = awards.vp + " VP"
-	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
-	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
-	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
-	return msg
-}
-
-function format_final_demand_info(d)
-{
-	let winner = demand_flag_winner(d)
-	let delta = demand_flag_delta(d)
-	let leader = ""
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta + " " + data.demands[d].name + ": +1 VP")
-	} else {
-		leader = "+0 " + data.demands[d].name
-	}
-
-	leader = `<span
-		onmouseenter="_tip_focus_demand(${d})"
-		onmouseleave="_tip_blur_demand()"
-		onmousedown="_tip_click_light('demand',${d})">${leader}</span>`
-
-	return leader
-}
-
-
-
-function format_results_info()
-{
-	preview_scoring_results()
-
-	let msg = ""
-	if (V.preview_vp === 0) {
-		msg += "+0 VP"
-	} else if (V.preview_vp > 0) {
-		msg += escape_square_brackets("[FF+" + V.preview_vp + " VP France]")
-	} else {
-		msg += escape_square_brackets("[FB+" + Math.abs(V.preview_vp) + " VP Britain]")
-	}
-	if (V.preview_trp[FRANCE] || V.preview_trp[BRITAIN]) {
-		msg += "<br/>"
-		if (V.preview_trp[FRANCE]) {
-			msg += escape_square_brackets("[FF+" + V.preview_trp[FRANCE] + " TRP France]")
-		}
-		if (V.preview_trp[BRITAIN]) {
-			if (V.preview_trp[FRANCE]) msg += ", "
-			msg += escape_square_brackets("[FB+" + V.preview_trp[BRITAIN] + " TRP Britain]")
-		}
-	}
-	if (V.preview_debt[FRANCE] || V.preview_debt[BRITAIN]) {
-		msg += "<br/>"
-		if (V.preview_debt[FRANCE]) {
-			msg += escape_square_brackets("[FF" + ((V.preview_debt[FRANCE] > 0) ? "+" : "") + V.preview_debt[FRANCE] + " Debt France]")
-		}
-		if (V.preview_debt[BRITAIN]) {
-			if (V.preview_debt[FRANCE]) msg += ", "
-			msg += escape_square_brackets("[FB" + ((V.preview_debt[BRITAIN] > 0) ? "+" : "") + V.preview_debt[BRITAIN] + " Debt Britain]")
-		}
-	}
-	if (V.preview_ministries.length > 0) {
-		msg += "<br/>"
-		msg += "Ministries: "
-		let any = false
-		for (const m of V.preview_ministries) {
-			if (any) msg += ", "
-			msg += escape_text("M" + ((data.ministries[m].side === FRANCE) ? "F" : "B") + m)
-			any = true
-		}
-	}
-
-	return msg
-}
-
-
-// Ministry is active if it's one of the player's ministry cards AND it has been revealed
-function has_active_ministry(who, m)
-{
-	if (!G.ministry[who].includes(m)) return false
-	let idx = G.ministry[who].indexOf(m)
-	return G.ministry_revealed[who][idx]
-}
-
-
-function preview_scoring_results() {
-	let vp = 0
-	let trp = [0, 0]
-	let debt = [0, 0]
-	let ministries = []
-
-	let winner = prestige_winner()
-	if (winner !== NONE) {
-		vp += ((winner === FRANCE) ? 2 : -2)
-	}
-
-	//TODO it would be *more sound* if this stuff were pre-computed in rules using the same code that runs "scoring_phase". It would require refactoring that code.
-
-	for (let r = 0; r < NUM_REGIONS; r++) {
-		let award = G.awards[r]
-		let winner = region_flag_winner(r)
-		let delta = region_flag_delta(r)
-		if (data.awards[award].by2 && region_flag_delta(r) < 2) continue
-		if (winner === NONE) continue
-
-		let award_vp = data.awards[award].vp
-		let award_trp = data.awards[award].trp
-		if (r === REGION_EUROPE) {
-			if (has_active_ministry(winner, COURT_OF_THE_SUN_KING)) {
-				award_vp++
-				ministries.push(COURT_OF_THE_SUN_KING)
-			}
-			if (has_active_ministry(winner, SAMUEL_JOHNSON)) {
-				ministries.push(SAMUEL_JOHNSON)
-				award_vp++
-			} else if (has_active_ministry(1 - winner, SAMUEL_JOHNSON)) {
-				if (award_vp > 0) {
-					award_vp--
-					ministries.push(SAMUEL_JOHNSON)
-				}
-			}
-		} else if (r === REGION_INDIA) {
-			if (has_active_ministry(winner, DUPLEIX)) {
-				award_trp++
-				ministries.push(DUPLEIX)
-			}
-		}
-
-		if (award_vp > 0) {
-			vp += ((winner === FRANCE) ? award_vp : -award_vp)
-		}
-		trp[winner] += award_trp
-
-		if (r === REGION_EUROPE) {
-			if (has_active_ministry(FRANCE, VOLTAIRE)) {
-				let multispace = 0
-				if (G.flags[IRELAND_2] === FRANCE) multispace++
-				if (G.flags[SCOTLAND_2] === FRANCE) multispace++
-				if ((G.flags[PRUSSIA_2] === FRANCE) || (G.flags[PRUSSIA_4] === FRANCE)) multispace++
-				if (G.flags[DUTCH_2] === FRANCE) multispace++
-				if ((G.flags[AUSTRIA_2] === FRANCE) || (G.flags[AUSTRIA_4] === FRANCE)) multispace++
-				if ((G.flags[SPAIN_2] === FRANCE) || (G.flags[SPAIN_4] === FRANCE)) multispace++
-
-				let countries = Math.min(3, multispace)
-				if (countries) {
-					trp[FRANCE] += countries
-					ministries.push(VOLTAIRE)
-				}
-			}
-		}
-	}
-
-	for (const d of G.global_demand) {
-		let winner = demand_flag_winner(d)
-		if (winner === NONE) continue
-
-		let award_vp = data.demands[d].awards[current_era()].vp
-		let award_trp = data.demands[d].awards[current_era()].trp
-		let award_debt = data.demands[d].awards[current_era()].debt
-
-		if ((d === COTTON) || (d === SPICE)) {
-			if (has_active_ministry(winner, DUPLEIX)) {
-				award_trp++
-				if (!ministries.includes(DUPLEIX)) ministries.push(DUPLEIX)
-			}
-		}
-
-		if (award_vp > 0) {
-			vp += ((winner === FRANCE) ? award_vp : -award_vp)
-		}
-		trp[winner] += award_trp
-		debt[winner] += award_debt
-	}
-
-	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
-		let award_vp = 0
-		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
-			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
-				award_vp++
-			}
-		}
-		award_vp = Math.min(award_vp, 3)
-		if (award_vp > 0) {
-			vp -= award_vp
-			ministries.push(EAST_INDIA_COMPANY)
-		}
-	}
-
-	V.preview_vp = vp
-	V.preview_trp = trp
-	V.preview_debt = debt
-	V.preview_ministries = ministries
-}
-
-
-function format_final_scoring_results_info()
-{
-	let vp = 0
-
-	let winner = prestige_winner()
-	if (winner !== NONE) {
-		vp += ((winner === FRANCE) ? 2 : -2)
-	}
-
-	winner = debt_winner()
-	if ((winner !== NONE) && (debt_award() > 0)) {
-		vp += ((winner === FRANCE) ? debt_award() : -debt_award())
-	}
-
-	for (let d = 0; d < NUM_DEMANDS; d++) {
-		winner = demand_flag_winner(d)
-		if (winner !== NONE) {
-			vp += ((winner === FRANCE) ? 1 : -1)
-		}
-	}
-
-	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-		if ((G.flags[s] === FRANCE) || (G.flags[s] === USA)) {
-			vp += 2
-		}
-	}
-
-	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-		if (G.flags[s] === BRITAIN) {
-			vp -= 2
-		}
-	}
-
-	if (vp > 0) {
-		return escape_square_brackets("[FF+" + vp + " VP France]")
-	} else if (vp < 0) {
-		return escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
-	} else {
-		return "+0 VP"
-	}
-}
-
-
-function debt_winner() {
-	if (available_debt(FRANCE) > available_debt(BRITAIN) + 1) return FRANCE
-	if (available_debt(BRITAIN) > available_debt(FRANCE) + 1) return BRITAIN
-	return NONE
-}
-
-
-function debt_delta() {
-	return Math.abs(available_debt(FRANCE) - available_debt(BRITAIN))
-}
-
-function debt_award() {
-	return Math.min(4, Math.floor(debt_delta() / 2))
-}
-
-function is_observing()
-{
-	return (R !== FRANCE) && (R !== BRITAIN)
-}
-
-function update_event_card_dialog() {
-	var c, text = []
-
-	text.push("<dl>")
-
-	text.push(`<dt>Played Event Cards (${V.played_events.length})`)
-	for (c of V.played_events)
-		text.push("<dd>" + format_card_info(c))
-
-	text.push(`<dt>Discarded Event Cards (${V.discard_pile.length})`)
-	for (c of V.discard_pile)
-		text.push("<dd>" + format_card_info(c))
-
-	if (is_observing)
-		text.push(`<dt>Player Hands or Deck (${V.deck.length})`)
-	else
-		text.push(`<dt>Opponent's Hand or Deck (${V.deck.length})`)
-	for (c of V.deck)
-		for (c of V.deck)
-			text.push("<dd>" + format_card_info(c))
-
-	if (!is_observing()) {
-		text.push(`<dt>Your Hand (${V.hand[R].length})`)
-		for (c of V.hand[R])
-			text.push("<dd>" + format_card_info(c))
-	}
-
-	if (current_era() < EMPIRE_ERA) {
-		text.push(`<dt>Empire Era (not yet in play) (15)`)
-		for (c = SUCCESSION_ERA_CARDS + 1; c <= EMPIRE_ERA_CARDS; c++)
-			text.push("<dd>" + format_card_info(c))
-	}
-
-	if (current_era() < REVOLUTION_ERA) {
-		text.push(`<dt>Revolution Era (not yet in play) (11)`)
-		for (c = EMPIRE_ERA_CARDS + 1; c <= REVOLUTION_ERA_CARDS; c++)
-			text.push("<dd>" + format_card_info(c))
-	}
-
-	text.push("</dl>")
-
-	return text.join("")
-}
-
-function update_ministry_dialog(who) {
-	var m, text = []
-
-	text.push("<dl>")
-
-	text.push("<dt>Current Available Ministries")
-	for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-		if (data.ministries[m].side !== who) continue
-		if (!data.ministries[m].era.includes(current_era())) continue
-		if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
-		text.push("<dd>" + format_ministry_info(m))
-	}
-
-	if (current_era() === SUCCESSION_ERA) {
-		text.push("<dt>Empire Era Ministries (not yet in play)")
-		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-			if (data.ministries[m].side !== who) continue
-			if (data.ministries[m].era.includes(current_era())) continue
-			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
-			text.push("<dd>" + format_ministry_info(m))
-		}
-	}
-
-	if (current_era() < REVOLUTION_ERA) {
-		text.push("<dt>Revolution Era Ministries (not yet in play)")
-		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-			if (data.ministries[m].side !== who) continue
-			if (data.ministries[m].era.includes(current_era())) continue
-			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
-			if (!data.ministries[m].era.includes(REVOLUTION_ERA)) continue
-			text.push("<dd>" + format_ministry_info(m))
-		}
-	}
-
-	if (is_bit(JACOBITES_NEVER) && (who === FRANCE)) {
-		text.push("<dt>Removed From Game")
-		text.push("<dd>" + format_ministry_info(m))
-	}
-
-	if (current_era() === REVOLUTION_ERA) {
-		text.push("<dt>Empire Era Ministries (out of play)")
-		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-			if (data.ministries[m].side !== who) continue
-			if (data.ministries[m].era.includes(current_era())) continue
-			if (!data.ministries[m].era.includes(EMPIRE_ERA)) continue
-			text.push("<dd>" + format_ministry_info(m))
-		}
-	}
-
-	if (current_era() !== SUCCESSION_ERA) {
-		text.push("<dt>Succession Era Ministries (out of play)")
-		for (m = 1; m <= NUM_MINISTRY_CARDS; m++) {
-			if (data.ministries[m].side !== who) continue
-			if (data.ministries[m].era.includes(current_era())) continue
-			if (data.ministries[m].era.includes(EMPIRE_ERA)) continue
-			if (!data.ministries[m].era.includes(SUCCESSION_ERA)) continue
-			if ((m === JACOBITE_UPRISINGS) && is_bit(JACOBITES_NEVER)) continue
-			text.push("<dd>" + format_ministry_info(m))
-		}
-	}
-
-	text.push("</dl>")
-
-	return text.join("")
-}
-
-function update_british_ministry_dialog() {
-	return update_ministry_dialog(BRITAIN)
-}
-
-function update_french_ministry_dialog() {
-	return update_ministry_dialog(FRANCE)
-}
-
-function update_scoring_summary_dialog() {
-	if (V.bidding_for_sides) return "..."
-	if (get_preference("scoresies"))
-		return update_scoring_summary_dialog_text()
-	return update_scoring_summary_dialog_fancy()
-}
-
-function update_scoring_summary_dialog_text() {
-	var text = []
-	text.push("<dl>")
-
-	text.push("<dt>Prestige")
-	text.push("<dd>" + format_prestige_info())
-
-	text.push("<dt>Regions")
-	for (var r = 0; r < NUM_REGIONS; r++) {
-		var a = V.awards[r]
-		text.push("<dd>" + format_award_info(r, a))
-	}
-
-	text.push("<dt>Global Demand")
-	for (var d = 0; d < NUM_DEMANDS; d++) {
-		if (!V.global_demand.includes(d))
-			continue
-		text.push("<dd>" + format_demand_info(d))
-	}
-
-	text.push("<dt>Projected Results")
-	text.push("<dd>" + format_results_info(d))
-
-	text.push("</dl>")
-	return text.join("")
-}
-
-function format_winner_delta(winner, delta) {
-	if (winner === FRANCE)
-		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag fr"></div></div>`
-	if (winner === BRITAIN)
-		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag br"></div></div>`
-	return `<div class="score-flags">+0</div>`
-}
-
-function format_award_chit(a) {
-	return `<div class="marker square-sm black award a${a}"
-		onmouseenter="_tip_focus_award(${a})"
-		onmouseleave="_tip_blur_award()"
-		onmousedown="_tip_click_light('award',${a})"
-		></div>`
-}
-
-function format_demand_chit(d) {
-	var name = data.demands[d].name.toLowerCase()
-	return `<div class="square-sm marker demand ${name}"
-		onmouseenter="_tip_focus_demand(${d})"
-		onmouseleave="_tip_blur_demand()"
-		onmousedown="_tip_click_light('demand',${d})"
-		></div>`
-}
-
-function format_region_score_summary(r) {
-	var a = V.awards[r]
-	return (`
-		<div class="score-row">
-			${format_award_chit(a)}
-			<div>${data.regions[r].name}</div>
-			${format_winner_delta(region_flag_winner(r), region_flag_delta(r))}
-		</div>
-	`)
-}
-
-function format_demand_score_summary(d, era) {
-	return (`
-		<div class="score-row">
-			${format_demand_chit(d)}
-			<div>${format_demand_info_table(d, era)}</div>
-			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
-		</div>
-	`)
-}
-
-function format_final_demand_score_summary(d, era) {
-	return (`
-		<div class="score-row">
-			${format_demand_chit(d)}
-			<div>1 VP</div>
-			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
-		</div>
-	`)
-}
-
-function format_prestige_score_summary() {
-	return (`
-		<div class="score-row">
-			<img style="display:block" src="images/award_2vp.webp" width=47 height=47>
-			<div>2 VP</div>
-			${format_winner_delta(prestige_winner(), prestige_flag_delta())}
-		</div>
-	`)
-}
-
-function update_scoring_summary_dialog_fancy() {
-	var text = []
-	text.push(`
-		<div class="score-summary">
-			<div class="score-summary-1">
-				<div>Regions</div>
-				<div class="score-table-awards">
-					${format_region_score_summary(REGION_NORTH_AMERICA)}
-					${format_region_score_summary(REGION_CARIBBEAN)}
-					${format_region_score_summary(REGION_EUROPE)}
-					${format_region_score_summary(REGION_INDIA)}
-				</div>
-			</div>
-			<div class="score-summary-2">
-				<div>Prestige &amp; Global Demand</div>
-				<div class="score-table-demands">
-					${format_prestige_score_summary()}
-	`)
-
-	for (var d = 0; d < NUM_DEMANDS; d++)
-		if (V.global_demand.includes(d))
-			text.push(format_demand_score_summary(d, current_era()))
-
-	text.push(`
-				</div>
-			</div>
-			<div class="score-summary-3">
-				<dl>
-					<dt>Projected Results
-					<dd>${format_results_info()}
-				</dl>
-			</div>
-		</div>
-	`)
-
-	return text.join("")
-}
-
-function update_final_scoring_summary_dialog()
-{
-	if (V.bidding_for_sides) return "..."
-	if (get_preference("scoresies"))
-		return update_final_scoring_summary_dialog_text()
-	return update_final_scoring_summary_dialog_fancy()
-}
-
-function update_final_scoring_summary_dialog_text()
-{
-	var text = []
-	text.push("<dl>")
-
-	text.push("<dt>Prestige")
-	text.push("<dd>" + format_final_prestige_info())
-
-	text.push("<dt>Debt")
-	text.push("<dd>" + format_debt_info())
-
-	text.push("<dt>Global Demand")
-	for (var d = 0; d < NUM_DEMANDS; d++)
-		text.push("<dd>" + format_final_demand_info(d))
-
-	let any = false
-	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-		if (G.flags[s] === BRITAIN) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	text.push("<dt>Projected Results")
-	text.push("<dd>" + format_final_scoring_results_info())
-
-	text.push("</dl>")
-	return text.join("")
-}
-
-function update_final_scoring_summary_dialog_fancy()
-{
-	var text = []
-
-	text.push(`
-		<div class="score-summary">
-			<div class="score-summary-2">
-				<div>Prestige &amp; Global Demand</div>
-				<div class="score-table-demands">
-					${format_prestige_score_summary()}
-					${format_final_demand_score_summary(0)}
-					${format_final_demand_score_summary(1)}
-					${format_final_demand_score_summary(2)}
-					${format_final_demand_score_summary(3)}
-					${format_final_demand_score_summary(4)}
-					${format_final_demand_score_summary(5)}
-				</div>
-			</div>
-			<div class="score-summary-1">
-				<dl>
-					<dt>Debt
-					<dd>${format_debt_info()}
-					<br>
-					<br>
-	`)
-
-	let any = false
-	for (const s of [ NORTHERN_COLONIES, CAROLINAS, JAMAICA, BARBADOS, MADRAS, CALCUTTA ]) {
-		if (G.flags[s] === FRANCE || G.flags[s] === USA) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	for (const s of [ ACADIA, QUEBEC_AND_MONTREAL, LOUISIANA, ST_DOMINGUE, GUADELOUPE, PONDICHERRY, CHANDERNAGORE ]) {
-		if (G.flags[s] === BRITAIN) {
-			if (!any) {
-				text.push("<dt>Conquests")
-				any = true
-			}
-			text.push("<dd>" + format_space_info(s))
-		}
-	}
-
-	text.push(`
-				</dl>
-			</div>
-			<div class="score-summary-3">
-				<dl>
-					<dt>Projected Results
-					<dd>${format_final_scoring_results_info()}
-				</dl>
-			</div>
-		</div>
-	`)
-
-	return text.join("")
+const war_layout = {
+	war_7yw_theater_drawn: [353, 0, 667, 93],
+	war_7yw_theater_1_france: [57, 132, 152, 152],
+	war_7yw_theater_1_britain: [225, 132, 152, 152],
+	war_7yw_theater_2_france: [579, 132, 152, 152],
+	war_7yw_theater_2_britain: [747, 132, 152, 152],
+	war_7yw_theater_3_france: [57, 503, 152, 152],
+	war_7yw_theater_3_britain: [225, 503, 152, 152],
+	war_7yw_theater_4_france: [579, 503, 152, 152],
+	war_7yw_theater_4_britain: [747, 503, 152, 152],
+	war_wss_theater_drawn: [240, 0, 667, 93],
+	war_wss_theater_1_france: [57, 132, 152, 152],
+	war_wss_theater_1_britain: [225, 132, 152, 152],
+	war_wss_theater_2_france: [579, 132, 152, 152],
+	war_wss_theater_2_britain: [747, 132, 152, 152],
+	war_wss_theater_3_france: [57, 504, 152, 152],
+	war_wss_theater_3_britain: [225, 504, 152, 152],
+	war_wss_theater_4_france: [579, 503, 152, 152],
+	war_wss_theater_4_britain: [747, 503, 152, 152],
+	war_was_theater_drawn: [233, 0, 667, 93],
+	war_was_theater_1_france: [57, 116, 152, 152],
+	war_was_theater_1_britain: [225, 116, 152, 152],
+	war_was_theater_2_france: [578, 116, 152, 152],
+	war_was_theater_2_britain: [746, 116, 152, 152],
+	war_was_theater_3_france: [57, 445, 152, 152],
+	war_was_theater_3_britain: [225, 445, 152, 152],
+	war_was_theater_4_france: [578, 439, 152, 152],
+	war_was_theater_4_britain: [746, 439, 152, 152],
+	war_awi_theater_drawn: [227, 0, 667, 93],
+	war_awi_theater_1_france: [57, 132, 152, 152],
+	war_awi_theater_1_britain: [225, 132, 152, 152],
+	war_awi_theater_2_france: [579, 132, 152, 152],
+	war_awi_theater_2_britain: [747, 132, 152, 152],
+	war_awi_theater_3_france: [579, 443, 152, 152],
+	war_awi_theater_3_britain: [747, 443, 152, 152],
+	war_awi_theater_4_france: [577, 132, 152, 152],
+	war_awi_theater_4_britain: [747, 132, 152, 152],
+
+	war_wss_theater_1: [35, 75, 508, 361],
+	war_wss_theater_2: [556, 75, 508, 361],
+	war_wss_theater_3: [35, 446, 508, 361],
+	war_wss_theater_4: [556, 446, 508, 361],
+
+	war_was_theater_1: [35, 65, 508, 324],
+	war_was_theater_2: [556, 65, 508, 324],
+	war_was_theater_3: [35, 398, 508, 302],
+	war_was_theater_4: [556, 398, 508, 420],
+
+	war_7yw_theater_1: [35, 75, 508, 361],
+	war_7yw_theater_2: [556, 75, 508, 361],
+	war_7yw_theater_3: [35, 446, 508, 361],
+	war_7yw_theater_4: [556, 446, 508, 361],
+
+	war_awi_theater_1: [35, 75, 508, 467],
+	war_awi_theater_2: [556, 75, 508, 299],
+	war_awi_theater_3: [556, 386, 508, 426],
+
+	// WSS - Strength
+	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
+	war_wss_theater_1_strength_br: [480, 400, 50, 25],
+	war_wss_theater_2_strength_fr: [560, 400, 50, 25],
+	war_wss_theater_2_strength_br: [1015, 400, 50, 25],
+	war_wss_theater_3_strength_fr: [42, 770, 50, 25],
+	war_wss_theater_3_strength_br: [480, 770, 50, 25],
+	war_wss_theater_4_strength_fr: [560, 770, 50, 25],
+	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
+
+	// WSS - Winner
+	war_wss_theater_1_winner: [290, 94, 60, 25],
+	war_wss_theater_2_winner: [690, 94, 60, 25],
+	war_wss_theater_3_winner: [340, 464, 60, 25],
+	war_wss_theater_4_winner: [850, 464, 60, 25],
+
+	// WSS - Alliances
+	war_wss_theater_1_alliances: [500, 142, 50, 152],
+	war_wss_theater_2_alliances: [1022, 160, 50, 152],
+	war_wss_theater_3_alliances: [500, 527, 50, 152],
+	war_wss_theater_4_alliances: [1022, 519, 50, 152],
+
+	// WAS - Strength
+	war_was_theater_1_strength_fr: [42, 360, 50, 25],
+	war_was_theater_1_strength_br: [490, 360, 50, 25],
+	war_was_theater_2_strength_fr: [560, 360, 50, 25],
+	war_was_theater_2_strength_br: [1015, 360, 50, 25],
+	war_was_theater_3_strength_fr: [40, 670, 50, 25],
+	war_was_theater_3_strength_br: [492, 670, 50, 25],
+	war_was_theater_4_strength_fr: [560, 815, 50, 25],
+	war_was_theater_4_strength_br: [1030, 815, 50, 25],
+
+	// WAS - Winner
+	war_was_theater_1_winner: [295, 82, 60, 25],
+	war_was_theater_2_winner: [865, 82, 60, 25],
+	war_was_theater_3_winner: [335, 413, 60, 25],
+	war_was_theater_4_winner: [865, 413, 60, 25],
+
+	// WAS - Alliances
+	war_was_theater_1_alliances: [500, 122, 50, 152],
+	war_was_theater_2_alliances: [1022, 142, 50, 152],
+	war_was_theater_3_alliances: [500, 471, 50, 152],
+	war_was_theater_4_alliances: [1022, 454, 50, 152],
+
+	// 7YW - Strength
+	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
+	war_7yw_theater_1_strength_br: [490, 405, 50, 25],
+	war_7yw_theater_2_strength_fr: [560, 405, 50, 25],
+	war_7yw_theater_2_strength_br: [1015, 405, 50, 25],
+	war_7yw_theater_3_strength_fr: [42, 775, 50, 25],
+	war_7yw_theater_3_strength_br: [480, 775, 50, 25],
+	war_7yw_theater_4_strength_fr: [560, 775, 50, 25],
+	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
+
+	// 7YW - Winner
+	war_7yw_theater_1_winner: [355, 94, 60, 25],
+	war_7yw_theater_2_winner: [875, 94, 60, 25],
+	war_7yw_theater_3_winner: [355, 465, 60, 25],
+	war_7yw_theater_4_winner: [810, 465, 60, 25],
+
+	// 7YW - Alliances
+	war_7yw_theater_1_alliances: [518, 147, 50, 152],
+	war_7yw_theater_2_alliances: [1022, 150, 50, 152],
+	war_7yw_theater_3_alliances: [533, 514, 50, 152],
+	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
+
+	// AWI - Strength
+	war_awi_theater_1_strength_fr: [36,  508, 50, 25],
+	war_awi_theater_1_strength_br: [495, 508, 50, 25],
+	war_awi_theater_2_strength_fr: [560,  343, 50, 25],
+	war_awi_theater_2_strength_br: [1015, 343, 50, 25],
+	war_awi_theater_3_strength_fr: [560, 780, 50, 25],
+	war_awi_theater_3_strength_br: [1010, 780, 50, 25],
+
+	// AWI - Winner
+	war_awi_theater_1_winner: [355, 93, 60, 25],
+	war_awi_theater_2_winner: [780, 93, 60, 25],
+	war_awi_theater_3_winner: [780, 404, 60, 25],
+
+	// AWI - Alliances
+	war_awi_theater_1_alliances: [502,  144, 50, 152],
+	war_awi_theater_2_alliances: [1037, 164, 50, 152],
+	war_awi_theater_3_alliances: [1032, 442, 50, 152],
+	war_awi_theater_4_alliances: [1022, 510, 50, 152],
 }
