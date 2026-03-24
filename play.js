@@ -4363,7 +4363,7 @@ function format_final_demand_score_summary(d, era) {
 function format_prestige_score_summary() {
 	return (`
 		<div class="score-row">
-			<img style="display:block" src="images/award_2vp.png" width=47 height=47>
+			<img style="display:block" src="images/award_2vp.webp" width=47 height=47>
 			<div>2 VP</div>
 			${format_winner_delta(prestige_winner(), prestige_flag_delta())}
 		</div>
