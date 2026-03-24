@@ -10,7 +10,7 @@ const space_type_class = [
 
 // Returns true if we're playing this on a mobile platform e.g. phone
 function is_mobile() {
-	return ("ontouchstart" in window)
+	return ("ontouchstart" in window) || (window.innerWidth < 800)
 }
 
 function attract(e) {
@@ -810,7 +810,9 @@ function bonus_war_tooltip(t, who) {
 /* ON INIT */
 
 function set_available_debt_tooltips() {
-	var id = roles[FRANCE].stat.my_id
+	roles[FRANCE].stat.addEventListener("click", function () {
+		scroll_to_debt()
+	})
 	roles[FRANCE].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(FRANCE)
 	})
@@ -818,14 +820,13 @@ function set_available_debt_tooltips() {
 		world.status.innerHTML = ""
 	})
 
-	roles[FRANCE].stat.addEventListener("click", function () { scroll_to_debt() })
-	roles[BRITAIN].stat.addEventListener("click", function () { scroll_to_debt() })
-
-	id = roles[BRITAIN].stat.my_id
+	roles[BRITAIN].stat.addEventListener("click", function () {
+		scroll_to_debt()
+	})
 	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
 		world.status.innerHTML = available_debt_tooltip(BRITAIN)
 	})
-	roles[FRANCE].stat.addEventListener("mouseleave", function () {
+	roles[BRITAIN].stat.addEventListener("mouseleave", function () {
 		world.status.innerHTML = ""
 	})
 }
@@ -1129,7 +1130,7 @@ function on_init() {
 		define_space("advantage", a.num, resize_rect(rect, 112, 112))
 			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
-		let marker = define_marker("advantage", a.num)
+		define_marker("advantage", a.num)
 			.keyword("square advantage a" + a.num)
 			.tooltip(advantage_tooltip)
 			.tooltip_image(advantage_tooltip_image)
@@ -1475,8 +1476,6 @@ function on_update() {
 
 		let winner = region_flag_winner(r)
 		let delta = region_flag_delta(r)
-		let fr_count = V.flag_count[FRANCE][r]
-		let br_count = V.flag_count[BRITAIN][r]
 
 		let html_left = ""
 		let html_right = ""
@@ -1498,8 +1497,6 @@ function on_update() {
 
 	let prestige_win = prestige_winner()
 	let prestige_delta = prestige_flag_delta()
-	let prestige_fr = V.prestige_flags[FRANCE]
-	let prestige_br = V.prestige_flags[BRITAIN]
 
 	let prestige_html_left = ""
 	let prestige_html_right = ""
@@ -1565,8 +1562,6 @@ function on_update() {
 			let demand = V.global_demand[i]
 			let winner = demand_flag_winner(demand)
 			let delta = demand_flag_delta(demand)
-			let fr_count = V.demand_flag_count[FRANCE][demand]
-			let br_count = V.demand_flag_count[BRITAIN][demand]
 
 			let html = ""
 			if (winner !== NONE) {
@@ -2281,9 +2276,6 @@ function update_war_display() {
 	const war_prefix = war_prefixes[war]
 	const num_war_theaters = data.wars[war_number].theaters
 
-	// Sort order: political (0) first, then forts (4), then naval (2)
-	const TYPE_SORT_ORDER = { [POLITICAL]: 0, [FORT]: 1, [NAVAL]: 2 }
-
 	function build_flag_row(c, name) {
 		let row = `<div class="alliance-row">`
 
@@ -2499,6 +2491,7 @@ const log_box_keywords = ["fr", "br", "both"]
 const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
 
 function on_log(text, ix) {
+	var keyword
 	if (typeof text !== "string") text = String(text)  // instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
 
 	var p = document.createElement("div")
@@ -2517,8 +2510,7 @@ function on_log(text, ix) {
 	switch (text[0]) {
 		case "{":
 			p.classList.add("header")
-			let keyword = log_box_keywords[text[1]] + "-" + log_box_types[text[2]]
-			open_log_box(ix, keyword)
+			open_log_box(ix, log_box_keywords[text[1]] + "-" + log_box_types[text[2]])
 			text = text.substring(3)
 			break
 		case "}":
@@ -2806,11 +2798,13 @@ function escape_square_brackets(text) {
 			let whom = ""
 			switch (type) {
 				case "a":
-					let verbose = get_preference("actionverbosity", "medium")
-					if (verbose === "long") {
-						tooltip_text = " " + data.action_points[value].name + " action point" + escape_typography(msg)
-					} else {
-						tooltip_text = ""
+					{
+						let verbose = get_preference("actionverbosity", "medium")
+						if (verbose === "long") {
+							tooltip_text = " " + data.action_points[value].name + " action point" + escape_typography(msg)
+						} else {
+							tooltip_text = ""
+						}
 					}
 					break
 				case "@":
@@ -3079,7 +3073,7 @@ function is_action_phase()
 	return V.subphase !== NOT_ACTION_PHASE
 }
 
-function say_action_points(space = true, brackets = true) {
+function say_action_points() {
 
 	if (!is_action_phase()) return ""
 	if (G.subphase < PICKED_TILE_OPTION_TO_PASS) return ""
@@ -3173,8 +3167,7 @@ function say_action_points(space = true, brackets = true) {
 	}
 
 	if (tell === "") return tell
-	//if (brackets) tell = "(" + tell + ")"
-	if (space) tell = " " + tell
+	tell = " " + tell
 	tell = italic(tell)
 
 	if (is_mobile()) {
@@ -3301,7 +3294,6 @@ function format_demand_info_flags(d)
 {
 	let winner = demand_flag_winner(d)
 	let delta = demand_flag_delta(d)
-	let leader = ""
 	if (winner !== NONE) {
 		let flag = winner === FRANCE ? "fr" : "br"
 		return say_flag_color(winner, "+" + delta) + `<div class="score-flag ${flag}"></div>`
@@ -3401,7 +3393,7 @@ function preview_scoring_results() {
 		let award = G.awards[r]
 		let winner = region_flag_winner(r)
 		let delta = region_flag_delta(r)
-		if (data.awards[award].by2 && region_flag_delta(r) < 2) continue
+		if (data.awards[award].by2 && delta < 2) continue
 		if (winner === NONE) continue
 
 		let award_vp = data.awards[award].vp
@@ -3723,7 +3715,7 @@ function format_demand_score_summary(d, era) {
 	`)
 }
 
-function format_final_demand_score_summary(d, era) {
+function format_final_demand_score_summary(d) {
 	return (`
 		<div class="score-row">
 			${format_demand_chit(d)}
@@ -4014,16 +4006,18 @@ window.addEventListener("keydown", function (evt) {
 
 		case "v":
 		case "V":
-			let verbose = get_preference("actionverbosity", "medium")
-			if (verbose === "short") {
-				verbose = "medium"
-			} else if (verbose === "medium") {
-				verbose = "long"
-			} else {
-				verbose = "short"
+			{
+				let verbose = get_preference("actionverbosity", "medium")
+				if (verbose === "short") {
+					verbose = "medium"
+				} else if (verbose === "medium") {
+					verbose = "long"
+				} else {
+					verbose = "short"
+				}
+				set_preference_radio("actionverbosity", verbose)
+				evt.preventDefault()
 			}
-			set_preference_radio("actionverbosity", verbose)
-			evt.preventDefault()
 			break
 
 		case " ":  //"Tab": // TAB
@@ -4110,7 +4104,6 @@ const layout_nodes = {
 	"record track 34": [2320,1601,58,58],
 	"record track 35": [2378,1601,58,58],
 	"record track 36": [2437,1601,58,58],
-	"Navy Box": [887,836,282,138],
 	"Navy Box France": [925,875,60,60],
 	"Navy Box Britain": [1050,875,60,60],
 	"Turn 5": [126,1180,58,101],
