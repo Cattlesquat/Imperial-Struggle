@@ -662,6 +662,11 @@ function update_size(action, id, w, h) {
 	thing.element.style.height = Math.round(h) + "px"
 }
 
+function update_show(action, id, show) {
+	var thing = lookup_thing(action, id)
+	thing.element.hidden = !show
+}
+
 function update_style(action, id, key, value) {
 	var thing = lookup_thing(action, id)
 	thing.element.style.setProperty(key, value)
@@ -691,17 +696,6 @@ function update_text_html(action, id, text) {
 	var thing = lookup_thing(action, id)
 	thing.ensure_text()
 	thing.my_text_html = text
-}
-
-function update_position(action, id, x, y) {
-	var thing = lookup_thing(action, id)
-	thing.element.style.left = Math.round(x) + "px"
-	thing.element.style.top = Math.round(y) + "px"
-}
-
-function update_show(action, id, show) {
-	var thing = lookup_thing(action, id)
-	thing.element.hidden = !show
 }
 
 /* STACKS */
@@ -1242,7 +1236,6 @@ function update_window_title(html_id, title) {
 }
 
 function update_window_content(html_id, body) {
-console.log("body", body)
 	if (body instanceof Element)
 		lookup_window(html_id).body.replaceChildren(body)
 	else

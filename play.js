@@ -3186,56 +3186,31 @@ function say_flag_color(who, string)
 
 /* WINDOW: PLAIN TEXT SUMMARIES */
 
+function format_delta(winner, delta)
+{
+	if (winner !== NONE)
+		return say_flag_color(winner, "+" + delta) + " "
+	return "+0 "
+}
+
 function format_prestige_info()
 {
-	let winner = prestige_winner()
-	let delta = prestige_flag_delta()
-	let msg = ""
-
-	if (winner !== NONE) {
-		msg = say_flag_color(winner, "+" + delta)
-	} else {
-		msg = "+0"
-	}
-	msg = msg + (get_preference("scoresies") ? " Prestige: 2 VP" : "")
-	msg = `<span
-		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
-		onmouseleave="_tip_blur_award()"
-		>${msg}</span>`
-	return msg
+	return format_delta(prestige_winner(), prestige_flag_delta()) + "Prestige: 2 VP"
 }
 
 function format_final_prestige_info()
 {
 	let winner = prestige_winner()
-	let delta = prestige_flag_delta()
-	let msg = ""
-
-	if (winner !== NONE) {
-		msg = say_flag_color(winner, "+" + delta + " Prestige: +2 VP")
-	} else {
-		msg = "+0 Prestige: +0 VP"
-	}
-	msg = `<span
-		onmouseenter="_tip_focus_award(${V.awards[REGION_EUROPE]})"
-		onmouseleave="_tip_blur_award()"
-		>${msg}</span>`
-	return msg
+	if (winner !== NONE)
+		return format_delta(winner, prestige_flag_delta()) + "Prestige: +2 VP"
+	return "+0 Prestige: +0 VP"
 }
 
 function format_debt_info() {
-	let winner = debt_winner()
-	let delta = debt_delta()
 	let award = debt_award()
-	let leader = ""
-
-	if ((winner !== NONE)) {
-		leader = say_flag_color(winner, "+" + delta + " Available Debt: +" + award + " VP")
-	} else {
-		leader = "+0 Available Debt: +0 VP"
-	}
-
-	return leader
+	if (debt_winner() !== NONE)
+		return format_delta(debt_winner(), debt_delta()) + "Available Debt: +" + award + " VP"
+	return "+0 Available Debt: +0 VP"
 }
 
 function format_space_info(s)
@@ -3247,66 +3222,33 @@ function format_award_info(r, a)
 {
 	let winner = region_flag_winner(r)
 	let delta = region_flag_delta(r)
-	let leader = ""
-
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta)
-	} else {
-		leader = "+0"
-	}
-
-	let msg = data.regions[r].name + ": " + data.awards[a].name
-
-	msg = `<span
+	let msg = format_delta(winner, delta) + data.regions[r].name + ": " + data.awards[a].name
+	return `<span
 		onmouseenter="_tip_focus_award(${a})"
 		onmouseleave="_tip_blur_award()"
 		onmousedown="_tip_click_light('award',${a})">${msg}</span>`
-
-	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
 function format_demand_info(d)
 {
-	let awards = data.demands[d].awards[current_era()]
-	let msg = data.demands[d].name + ": +" + awards.vp + " VP"
-	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
-	if (awards.debt < 0) msg += ", " + awards.debt + " Debt"
-	if (awards.debt > 0) msg += ", +" + awards.debt + " Debt"
-
 	let winner = demand_flag_winner(d)
 	let delta = demand_flag_delta(d)
-	let leader = ""
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta)
-	} else {
-		leader = "+0"
-	}
-
-	msg = `<span
+	let msg = format_delta(winner, delta) + data.demands[d].name + ": +" + format_demand_rewards(d)
+	return `<span
 		onmouseenter="_tip_focus_demand(${d})"
 		onmouseleave="_tip_blur_demand()"
 		onmousedown="_tip_click_light('demand',${d})">${msg}</span>`
-
-	return leader + (get_preference("scoresies") ? " " + msg : "")
 }
 
 function format_final_demand_info(d)
 {
 	let winner = demand_flag_winner(d)
 	let delta = demand_flag_delta(d)
-	let leader = ""
-	if (winner !== NONE) {
-		leader = say_flag_color(winner, "+" + delta + " " + data.demands[d].name + ": +1 VP")
-	} else {
-		leader = "+0 " + data.demands[d].name
-	}
-
-	leader = `<span
+	let msg = format_delta(winner, delta) + data.demands[d].name + (winner !== NONE ? ": +1 VP" : ": +0 VP")
+	return `<span
 		onmouseenter="_tip_focus_demand(${d})"
 		onmouseleave="_tip_blur_demand()"
-		onmousedown="_tip_click_light('demand',${d})">${leader}</span>`
-
-	return leader
+		onmousedown="_tip_click_light('demand',${d})">${msg}</span>`
 }
 
 function update_scoring_summary_dialog_text() {
@@ -3761,8 +3703,9 @@ function format_prestige_score_summary() {
 	`)
 }
 
-function format_demand_info_table(d, era)
+function format_demand_rewards(d)
 {
+	let era = current_era()
 	let awards = data.demands[d].awards[era]
 	let msg = awards.vp + " VP"
 	if (awards.trp > 0) msg += ", +" + awards.trp + " TRP"
@@ -3771,11 +3714,11 @@ function format_demand_info_table(d, era)
 	return msg
 }
 
-function format_demand_score_summary(d, era) {
+function format_demand_score_summary(d) {
 	return (`
 		<div class="score-row">
 			${format_demand_chit(d)}
-			<div>${format_demand_info_table(d, era)}</div>
+			<div>${format_demand_rewards(d)}</div>
 			${format_winner_delta(demand_flag_winner(d), demand_flag_delta(d))}
 		</div>
 	`)
@@ -3819,7 +3762,7 @@ function update_scoring_summary_dialog_fancy() {
 
 	for (var d = 0; d < NUM_DEMANDS; d++)
 		if (V.global_demand.includes(d))
-			text.push(format_demand_score_summary(d, current_era()))
+			text.push(format_demand_score_summary(d))
 
 	text.push(`
 				</div>
