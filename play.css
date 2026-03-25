@@ -326,6 +326,7 @@ body.Britain #events_br { grid-row: 2 }
 	padding: 0 5px;
 	width: max-content;
 	display: none;
+	z-index: 100;
 }
 
 [data-tooltip]:hover:after {
@@ -436,8 +437,8 @@ div[data-tooltip]:after {
 	height: 5px;
 }
 
-#log .group { 
-	margin: 0 6px 0px 6px; 
+#log .group {
+	margin: 0 6px 0px 6px;
 }
 
 #log .header {
@@ -693,11 +694,11 @@ div[data-tooltip]:after {
 	background-size: 100%;
 }
 
-.demand-flag.fr, .award-flag.fr, .score-flag.fr, .alliance-flag.fr, .theater-flag.fr {
+.score-flag.fr, .alliance-flag.fr, .theater-flag.fr {
 	background-image: url(tiles75/square-sm/flag_fr.webp);
 }
 
-.demand-flag.br, .award-flag.br, .score-flag.br, .alliance-flag.br, .theater-flag.br {
+.score-flag.br, .alliance-flag.br, .theater-flag.br {
 	background-image: url(tiles75/square-sm/flag_br.webp);
 }
 
@@ -985,66 +986,63 @@ body[data-noanims="false"] {
 	right: -8px;
 }
 
-/* WAR DISPLAY: FLAGS IN THEATER */
+/* WAR DISPLAY: FLAGS AND MARGIN-OF-VICTORY */
 
-.alliance-row-group {
+.war-alliance {
+	pointer-events: none;
 	display: flex;
+	flex-wrap: wrap;
 	flex-direction: column;
-	gap: 1px;
+	justify-content: center;
 	align-items: flex-start;
+	gap: 1px;
 }
 
 .alliance-row {
+	pointer-events: auto;
 	display: flex;
 	align-items: center;
 	gap: 1px;
 	min-height: 14px;
 }
 
-.alliance-row:has(.alliance-flag) {
-	cursor: pointer;
-}
-
-.alliance-row:has(.alliance-flag):hover {
-	background-color: rgba(255, 255, 0, 0.3);
-}
-
-.theater-strength, .theater-winner {
+.war-strength-br, .war-strength-fr, .war-winner {
+	pointer-events: none;
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	gap: 4px;
 	font-weight: bold;
+	font-size: 16px;
 	color: black;
 }
 
-.theater-strength { 
-	font-size: 16px; 
-}
-.theater-winner { 
-	font-size: 14px; 
+.war-strength-br span, .war-strength-fr span, .war-winner span {
+	padding: 0 6px;
+	background-color: #fff6;
+	line-height: 18px;
 }
 
-.theater-margin {
+.war-strength-br {
+	flex-direction: row-reverse;
+	justify-content: end;
+}
+
+.war-margin {
 	pointer-events: none;
-	z-index: 150;
-
-	background-size: 100px 100px;
-	border-width: 4px;
-	border-style: solid;
+	border: 4px solid transparent;
 }
 
-.theater-margin.fr {
+.war-margin.fr {
 	border-color: royalblue;
 }
 
-.theater-margin.br {
+.war-margin.br {
 	border-color: crimson;
 }
 
-.theater-margin.tie {
+.war-margin.tie {
 	border-color: springgreen;
 }
-
 
 /* ANIMATION KEYFRAMES */
 

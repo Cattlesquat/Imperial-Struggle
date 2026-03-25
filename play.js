@@ -1146,7 +1146,8 @@ function on_init() {
 		define_space("theater", 3, war_layout.war_wss_theater_3)
 		define_space("theater", 4, war_layout.war_wss_theater_4)
 
-		define_layout("lout-theater-drawn", 0, layout_theater_drawn) // war_layout.war_wss_theater_drawn)
+		define_layout("lout-theater-drawn", 0, layout_theater_drawn)
+
 		define_layout("lout-theater", 1, war_layout.war_wss_theater_1_france)
 		define_layout("lout-theater", 2, war_layout.war_wss_theater_1_britain)
 		define_layout("lout-theater", 3, war_layout.war_wss_theater_2_france)
@@ -1156,40 +1157,37 @@ function on_init() {
 		define_layout("lout-theater", 7, war_layout.war_wss_theater_4_france)
 		define_layout("lout-theater", 8, war_layout.war_wss_theater_4_britain)
 
-		// FIXME: use theater ids instead of -wss- baked into names
-		// FIXME: why are these "layout" - they're highlight markers without children?
+		define_thing("war-strength-br", 11).layout(war_layout.war_wss_theater_1_strength_br)
+		define_thing("war-strength-br", 12).layout(war_layout.war_wss_theater_2_strength_br)
+		define_thing("war-strength-br", 13).layout(war_layout.war_wss_theater_3_strength_br)
+		define_thing("war-strength-br", 14).layout(war_layout.war_wss_theater_4_strength_br)
+		define_thing("war-strength-fr", 11).layout(war_layout.war_wss_theater_1_strength_fr)
+		define_thing("war-strength-fr", 12).layout(war_layout.war_wss_theater_2_strength_fr)
+		define_thing("war-strength-fr", 13).layout(war_layout.war_wss_theater_3_strength_fr)
+		define_thing("war-strength-fr", 14).layout(war_layout.war_wss_theater_4_strength_fr)
 
-		define_layout("lout-wss-strength-br", 1, war_layout.war_wss_theater_1_strength_br, "theater-strength")
-		define_layout("lout-wss-strength-br", 2, war_layout.war_wss_theater_2_strength_br, "theater-strength")
-		define_layout("lout-wss-strength-br", 3, war_layout.war_wss_theater_3_strength_br, "theater-strength")
-		define_layout("lout-wss-strength-br", 4, war_layout.war_wss_theater_4_strength_br, "theater-strength")
-		define_layout("lout-wss-strength-fr", 1, war_layout.war_wss_theater_1_strength_fr, "theater-strength")
-		define_layout("lout-wss-strength-fr", 2, war_layout.war_wss_theater_2_strength_fr, "theater-strength")
-		define_layout("lout-wss-strength-fr", 3, war_layout.war_wss_theater_3_strength_fr, "theater-strength")
-		define_layout("lout-wss-strength-fr", 4, war_layout.war_wss_theater_4_strength_fr, "theater-strength")
+		define_thing("war-winner", 11).layout(war_layout.war_wss_theater_1_winner)
+		define_thing("war-winner", 12).layout(war_layout.war_wss_theater_2_winner)
+		define_thing("war-winner", 13).layout(war_layout.war_wss_theater_3_winner)
+		define_thing("war-winner", 14).layout(war_layout.war_wss_theater_4_winner)
 
-		define_layout("lout-wss-winner", 1,  war_layout.war_wss_theater_1_winner, "theater-winner")
-		define_layout("lout-wss-winner", 2,  war_layout.war_wss_theater_2_winner, "theater-winner")
-		define_layout("lout-wss-winner", 3,  war_layout.war_wss_theater_3_winner, "theater-winner")
-		define_layout("lout-wss-winner", 4,  war_layout.war_wss_theater_4_winner, "theater-winner")
+		define_thing("war-alliance", 11).layout(war_layout.war_wss_theater_1_alliances)
+		define_thing("war-alliance", 12).layout(war_layout.war_wss_theater_2_alliances)
+		define_thing("war-alliance", 13).layout(war_layout.war_wss_theater_3_alliances)
+		define_thing("war-alliance", 14).layout(war_layout.war_wss_theater_4_alliances)
 
-		define_layout("lout-wss-alliance", 1, war_layout.war_wss_theater_1_alliances, "alliance-row-group")
-		define_layout("lout-wss-alliance", 2, war_layout.war_wss_theater_2_alliances, "alliance-row-group")
-		define_layout("lout-wss-alliance", 3, war_layout.war_wss_theater_3_alliances, "alliance-row-group")
-		define_layout("lout-wss-alliance", 4, war_layout.war_wss_theater_4_alliances, "alliance-row-group")
-
-		define_layout("lout-wss-theater-1-margin-1", 1, [ 80,  304, 410, 17])
-		define_layout("lout-wss-theater-1-margin-2", 1, [ 80,  322, 410, 17])
-		define_layout("lout-wss-theater-1-margin-3", 1, [ 80,  340, 410, 17])
-		define_layout("lout-wss-theater-2-margin-1", 2, [600,  306, 412, 17])
-		define_layout("lout-wss-theater-2-margin-2", 2, [600,  324, 412, 17])
-		define_layout("lout-wss-theater-2-margin-3", 2, [600,  343, 412, 17])
-		define_layout("lout-wss-theater-3-margin-1", 3, [ 80,  680, 412, 17])
-		define_layout("lout-wss-theater-3-margin-2", 3, [ 80,  698, 412, 17])
-		define_layout("lout-wss-theater-3-margin-3", 3, [ 80,  717, 412, 30])
-		define_layout("lout-wss-theater-4-margin-1", 4, [600,  680, 412, 17])
-		define_layout("lout-wss-theater-4-margin-2", 4, [600,  698, 412, 17])
-		define_layout("lout-wss-theater-4-margin-3", 4, [600,  717, 412, 17])
+		define_thing("war-margin", 111).layout([ 80,  304, 410, 17])
+		define_thing("war-margin", 112).layout([ 80,  322, 410, 17])
+		define_thing("war-margin", 113).layout([ 80,  340, 410, 17])
+		define_thing("war-margin", 121).layout([600,  306, 412, 17])
+		define_thing("war-margin", 122).layout([600,  324, 412, 17])
+		define_thing("war-margin", 123).layout([600,  343, 412, 17])
+		define_thing("war-margin", 131).layout([ 80,  680, 412, 17])
+		define_thing("war-margin", 132).layout([ 80,  698, 412, 17])
+		define_thing("war-margin", 133).layout([ 80,  717, 412, 30])
+		define_thing("war-margin", 141).layout([600,  680, 412, 17])
+		define_thing("war-margin", 142).layout([600,  698, 412, 17])
+		define_thing("war-margin", 143).layout([600,  717, 412, 17])
 	}
 
 	define_board("#war_was", 1100, 850)
@@ -1199,7 +1197,8 @@ function on_init() {
 		define_space("theater", 7, war_layout.war_was_theater_3)
 		define_space("theater", 8, war_layout.war_was_theater_4)
 
-		define_layout("lout-theater-drawn", 1, layout_theater_drawn) // war_layout.war_was_theater_drawn)
+		define_layout("lout-theater-drawn", 1, layout_theater_drawn)
+
 		define_layout("lout-theater", 9, war_layout.war_was_theater_1_france)
 		define_layout("lout-theater", 10, war_layout.war_was_theater_1_britain)
 		define_layout("lout-theater", 11, war_layout.war_was_theater_2_france)
@@ -1209,40 +1208,40 @@ function on_init() {
 		define_layout("lout-theater", 15, war_layout.war_was_theater_4_france)
 		define_layout("lout-theater", 16, war_layout.war_was_theater_4_britain)
 
-		define_layout("lout-was-strength-br", 1, war_layout.war_was_theater_1_strength_br, "theater-strength")
-		define_layout("lout-was-strength-br", 2, war_layout.war_was_theater_2_strength_br, "theater-strength")
-		define_layout("lout-was-strength-br", 3, war_layout.war_was_theater_3_strength_br, "theater-strength")
-		define_layout("lout-was-strength-br", 4, war_layout.war_was_theater_4_strength_br, "theater-strength")
-		define_layout("lout-was-strength-fr", 1, war_layout.war_was_theater_1_strength_fr, "theater-strength")
-		define_layout("lout-was-strength-fr", 2, war_layout.war_was_theater_2_strength_fr, "theater-strength")
-		define_layout("lout-was-strength-fr", 3, war_layout.war_was_theater_3_strength_fr, "theater-strength")
-		define_layout("lout-was-strength-fr", 4, war_layout.war_was_theater_4_strength_fr, "theater-strength")
+		define_thing("war-strength-br", 21).layout(war_layout.war_was_theater_1_strength_br)
+		define_thing("war-strength-br", 22).layout(war_layout.war_was_theater_2_strength_br)
+		define_thing("war-strength-br", 23).layout(war_layout.war_was_theater_3_strength_br)
+		define_thing("war-strength-br", 24).layout(war_layout.war_was_theater_4_strength_br)
+		define_thing("war-strength-fr", 21).layout(war_layout.war_was_theater_1_strength_fr)
+		define_thing("war-strength-fr", 22).layout(war_layout.war_was_theater_2_strength_fr)
+		define_thing("war-strength-fr", 23).layout(war_layout.war_was_theater_3_strength_fr)
+		define_thing("war-strength-fr", 24).layout(war_layout.war_was_theater_4_strength_fr)
 
-		define_layout("lout-was-winner", 1,  war_layout.war_was_theater_1_winner, "theater-winner")
-		define_layout("lout-was-winner", 2,  war_layout.war_was_theater_2_winner, "theater-winner")
-		define_layout("lout-was-winner", 3,  war_layout.war_was_theater_3_winner, "theater-winner")
-		define_layout("lout-was-winner", 4,  war_layout.war_was_theater_4_winner, "theater-winner")
+		define_thing("war-winner", 21).layout(war_layout.war_was_theater_1_winner)
+		define_thing("war-winner", 22).layout(war_layout.war_was_theater_2_winner)
+		define_thing("war-winner", 23).layout(war_layout.war_was_theater_3_winner)
+		define_thing("war-winner", 24).layout(war_layout.war_was_theater_4_winner)
 
-		define_layout("lout-was-alliance", 1, war_layout.war_was_theater_1_alliances, "alliance-row-group")
-		define_layout("lout-was-alliance", 2, war_layout.war_was_theater_2_alliances, "alliance-row-group")
-		define_layout("lout-was-alliance", 3, war_layout.war_was_theater_3_alliances, "alliance-row-group")
-		define_layout("lout-was-alliance", 4, war_layout.war_was_theater_4_alliances, "alliance-row-group")
+		define_thing("war-alliance", 21).layout(war_layout.war_was_theater_1_alliances)
+		define_thing("war-alliance", 22).layout(war_layout.war_was_theater_2_alliances)
+		define_thing("war-alliance", 23).layout(war_layout.war_was_theater_3_alliances)
+		define_thing("war-alliance", 24).layout(war_layout.war_was_theater_4_alliances)
 
-		define_layout("lout-was-theater-1-margin-1", 1, [102,  283, 360, 17])
-		define_layout("lout-was-theater-1-margin-2", 1, [102,  301, 360, 17])
-		define_layout("lout-was-theater-1-margin-3", 1, [102,  301, 360, 17])
-		define_layout("lout-was-theater-2-margin-1", 2, [600,  283, 412, 17])
-		define_layout("lout-was-theater-2-margin-2", 2, [600,  301, 412, 17])
-		define_layout("lout-was-theater-2-margin-3", 2, [600,  301, 412, 17])
-		define_layout("lout-was-theater-3-margin-1", 3, [ 80,  615, 412, 17])
-		define_layout("lout-was-theater-3-margin-2", 3, [ 80,  632, 412, 17])
-		define_layout("lout-was-theater-3-margin-3", 3, [ 80,  650, 412, 17])
-		define_layout("lout-was-theater-4-margin-1", 4, [578,  591, 459, 17])
-		define_layout("lout-was-theater-4-margin-2", 4, [578,  609, 459, 17])
-		define_layout("lout-was-theater-4-margin-3", 4, [578,  627, 459, 17])
-		define_layout("lout-was-theater-4-margin-1-br", 4, [578,  669, 459, 17])
-		define_layout("lout-was-theater-4-margin-2-br", 4, [578,  687, 459, 17])
-		define_layout("lout-was-theater-4-margin-3-br", 4, [578,  705, 459, 17])
+		define_thing("war-margin", 211).layout([102,  283, 360, 17])
+		define_thing("war-margin", 212).layout([102,  301, 360, 17])
+		define_thing("war-margin", 213).layout([102,  301, 360, 17])
+		define_thing("war-margin", 221).layout([600,  283, 412, 17])
+		define_thing("war-margin", 222).layout([600,  301, 412, 17])
+		define_thing("war-margin", 223).layout([600,  301, 412, 17])
+		define_thing("war-margin", 231).layout([ 80,  615, 412, 17])
+		define_thing("war-margin", 232).layout([ 80,  632, 412, 17])
+		define_thing("war-margin", 233).layout([ 80,  650, 412, 17])
+		define_thing("war-margin", 241).layout([578,  591, 459, 17])
+		define_thing("war-margin", 242).layout([578,  609, 459, 17])
+		define_thing("war-margin", 243).layout([578,  627, 459, 17])
+		define_thing("war-margin", 244).layout([578,  669, 459, 17])
+		define_thing("war-margin", 245).layout([578,  687, 459, 17])
+		define_thing("war-margin", 246).layout([578,  705, 459, 17])
 	}
 
 	define_board("#war_7yw", 1100, 850)
@@ -1252,7 +1251,8 @@ function on_init() {
 		define_space("theater", 11, war_layout.war_7yw_theater_3)
 		define_space("theater", 12, war_layout.war_7yw_theater_4)
 
-		define_layout("lout-theater-drawn", 2, layout_theater_drawn) // war_layout.war_7yw_theater_drawn)
+		define_layout("lout-theater-drawn", 2, layout_theater_drawn)
+
 		define_layout("lout-theater", 17, war_layout.war_7yw_theater_1_france)
 		define_layout("lout-theater", 18, war_layout.war_7yw_theater_1_britain)
 		define_layout("lout-theater", 19, war_layout.war_7yw_theater_2_france)
@@ -1262,37 +1262,37 @@ function on_init() {
 		define_layout("lout-theater", 23, war_layout.war_7yw_theater_4_france)
 		define_layout("lout-theater", 24, war_layout.war_7yw_theater_4_britain)
 
-		define_layout("lout-7yw-strength-br", 1, war_layout.war_7yw_theater_1_strength_br, "theater-strength")
-		define_layout("lout-7yw-strength-br", 2, war_layout.war_7yw_theater_2_strength_br, "theater-strength")
-		define_layout("lout-7yw-strength-br", 3, war_layout.war_7yw_theater_3_strength_br, "theater-strength")
-		define_layout("lout-7yw-strength-br", 4, war_layout.war_7yw_theater_4_strength_br, "theater-strength")
-		define_layout("lout-7yw-strength-fr", 1, war_layout.war_7yw_theater_1_strength_fr, "theater-strength")
-		define_layout("lout-7yw-strength-fr", 2, war_layout.war_7yw_theater_2_strength_fr, "theater-strength")
-		define_layout("lout-7yw-strength-fr", 3, war_layout.war_7yw_theater_3_strength_fr, "theater-strength")
-		define_layout("lout-7yw-strength-fr", 4, war_layout.war_7yw_theater_4_strength_fr, "theater-strength")
+		define_thing("war-strength-br", 31).layout(war_layout.war_7yw_theater_1_strength_br)
+		define_thing("war-strength-br", 32).layout(war_layout.war_7yw_theater_2_strength_br)
+		define_thing("war-strength-br", 33).layout(war_layout.war_7yw_theater_3_strength_br)
+		define_thing("war-strength-br", 34).layout(war_layout.war_7yw_theater_4_strength_br)
+		define_thing("war-strength-fr", 31).layout(war_layout.war_7yw_theater_1_strength_fr)
+		define_thing("war-strength-fr", 32).layout(war_layout.war_7yw_theater_2_strength_fr)
+		define_thing("war-strength-fr", 33).layout(war_layout.war_7yw_theater_3_strength_fr)
+		define_thing("war-strength-fr", 34).layout(war_layout.war_7yw_theater_4_strength_fr)
 
-		define_layout("lout-7yw-winner", 1,  war_layout.war_7yw_theater_1_winner, "theater-winner")
-		define_layout("lout-7yw-winner", 2,  war_layout.war_7yw_theater_2_winner, "theater-winner")
-		define_layout("lout-7yw-winner", 3,  war_layout.war_7yw_theater_3_winner, "theater-winner")
-		define_layout("lout-7yw-winner", 4,  war_layout.war_7yw_theater_4_winner, "theater-winner")
+		define_thing("war-winner", 31).layout(war_layout.war_7yw_theater_1_winner)
+		define_thing("war-winner", 32).layout(war_layout.war_7yw_theater_2_winner)
+		define_thing("war-winner", 33).layout(war_layout.war_7yw_theater_3_winner)
+		define_thing("war-winner", 34).layout(war_layout.war_7yw_theater_4_winner)
 
-		define_layout("lout-7yw-alliance", 1, war_layout.war_7yw_theater_1_alliances, "alliance-row-group")
-		define_layout("lout-7yw-alliance", 2, war_layout.war_7yw_theater_2_alliances, "alliance-row-group")
-		define_layout("lout-7yw-alliance", 3, war_layout.war_7yw_theater_3_alliances, "alliance-row-group")
-		define_layout("lout-7yw-alliance", 4, war_layout.war_7yw_theater_4_alliances, "alliance-row-group")
+		define_thing("war-alliance", 31).layout(war_layout.war_7yw_theater_1_alliances)
+		define_thing("war-alliance", 32).layout(war_layout.war_7yw_theater_2_alliances)
+		define_thing("war-alliance", 33).layout(war_layout.war_7yw_theater_3_alliances)
+		define_thing("war-alliance", 34).layout(war_layout.war_7yw_theater_4_alliances)
 
-		define_layout("lout-7yw-theater-1-margin-1", 1, [ 88,  306, 396, 32])
-		define_layout("lout-7yw-theater-1-margin-2", 1, [ 88,  339, 396, 32])
-		define_layout("lout-7yw-theater-1-margin-3", 1, [ 88,  372, 396, 32])
-		define_layout("lout-7yw-theater-2-margin-1", 2, [600,  306, 412, 17])
-		define_layout("lout-7yw-theater-2-margin-2", 2, [600,  324, 412, 17])
-		define_layout("lout-7yw-theater-2-margin-3", 2, [600,  342, 412, 17])
-		define_layout("lout-7yw-theater-3-margin-1", 3, [ 80,  671, 412, 17])
-		define_layout("lout-7yw-theater-3-margin-2", 3, [ 80,  689, 412, 17])
-		define_layout("lout-7yw-theater-3-margin-3", 3, [ 80,  707, 412, 17])
-		define_layout("lout-7yw-theater-4-margin-1", 4, [600,  709, 416, 17])
-		define_layout("lout-7yw-theater-4-margin-2", 4, [600,  727, 416, 17])
-		define_layout("lout-7yw-theater-4-margin-3", 4, [600,  745, 416, 17])
+		define_thing("war-margin", 311).layout([ 88,  306, 396, 32])
+		define_thing("war-margin", 312).layout([ 88,  339, 396, 32])
+		define_thing("war-margin", 313).layout([ 88,  372, 396, 32])
+		define_thing("war-margin", 321).layout([600,  306, 412, 17])
+		define_thing("war-margin", 322).layout([600,  324, 412, 17])
+		define_thing("war-margin", 323).layout([600,  342, 412, 17])
+		define_thing("war-margin", 331).layout([ 80,  671, 412, 17])
+		define_thing("war-margin", 332).layout([ 80,  689, 412, 17])
+		define_thing("war-margin", 333).layout([ 80,  707, 412, 17])
+		define_thing("war-margin", 341).layout([600,  709, 416, 17])
+		define_thing("war-margin", 342).layout([600,  727, 416, 17])
+		define_thing("war-margin", 343).layout([600,  745, 416, 17])
 	}
 
 	define_board("#war_awi", 1100, 850)
@@ -1301,7 +1301,8 @@ function on_init() {
 		define_space("theater", 14, war_layout.war_awi_theater_2)
 		define_space("theater", 15, war_layout.war_awi_theater_3)
 
-		define_layout("lout-theater-drawn", 3, layout_theater_drawn) // war_layout.war_awi_theater_drawn)
+		define_layout("lout-theater-drawn", 3, layout_theater_drawn)
+
 		define_layout("lout-theater", 25, war_layout.war_awi_theater_1_france)
 		define_layout("lout-theater", 26, war_layout.war_awi_theater_1_britain)
 		define_layout("lout-theater", 27, war_layout.war_awi_theater_2_france)
@@ -1309,33 +1310,33 @@ function on_init() {
 		define_layout("lout-theater", 29, war_layout.war_awi_theater_3_france)
 		define_layout("lout-theater", 30, war_layout.war_awi_theater_3_britain)
 
-		define_layout("lout-awi-strength-br", 1, war_layout.war_awi_theater_1_strength_br, "theater-strength")
-		define_layout("lout-awi-strength-br", 2, war_layout.war_awi_theater_2_strength_br, "theater-strength")
-		define_layout("lout-awi-strength-br", 3, war_layout.war_awi_theater_3_strength_br, "theater-strength")
-		define_layout("lout-awi-strength-fr", 1, war_layout.war_awi_theater_1_strength_fr, "theater-strength")
-		define_layout("lout-awi-strength-fr", 2, war_layout.war_awi_theater_2_strength_fr, "theater-strength")
-		define_layout("lout-awi-strength-fr", 3, war_layout.war_awi_theater_3_strength_fr, "theater-strength")
+		define_thing("war-strength-br", 41).layout(war_layout.war_awi_theater_1_strength_br)
+		define_thing("war-strength-br", 42).layout(war_layout.war_awi_theater_2_strength_br)
+		define_thing("war-strength-br", 43).layout(war_layout.war_awi_theater_3_strength_br)
+		define_thing("war-strength-fr", 41).layout(war_layout.war_awi_theater_1_strength_fr)
+		define_thing("war-strength-fr", 42).layout(war_layout.war_awi_theater_2_strength_fr)
+		define_thing("war-strength-fr", 43).layout(war_layout.war_awi_theater_3_strength_fr)
 
-		define_layout("lout-awi-winner", 1,  war_layout.war_awi_theater_1_winner, "theater-winner")
-		define_layout("lout-awi-winner", 2,  war_layout.war_awi_theater_2_winner, "theater-winner")
-		define_layout("lout-awi-winner", 3,  war_layout.war_awi_theater_3_winner, "theater-winner")
+		define_thing("war-winner", 41).layout(war_layout.war_awi_theater_1_winner)
+		define_thing("war-winner", 42).layout(war_layout.war_awi_theater_2_winner)
+		define_thing("war-winner", 43).layout(war_layout.war_awi_theater_3_winner)
 
-		define_layout("lout-awi-alliance", 1, war_layout.war_awi_theater_1_alliances, "alliance-row-group")
-		define_layout("lout-awi-alliance", 2, war_layout.war_awi_theater_2_alliances, "alliance-row-group")
-		define_layout("lout-awi-alliance", 3, war_layout.war_awi_theater_3_alliances, "alliance-row-group")
+		define_thing("war-alliance", 41).layout(war_layout.war_awi_theater_1_alliances)
+		define_thing("war-alliance", 42).layout(war_layout.war_awi_theater_2_alliances)
+		define_thing("war-alliance", 43).layout(war_layout.war_awi_theater_3_alliances)
 
-		define_layout("lout-awi-theater-1-margin-1", 1, [ 80,  307, 412, 17])
-		define_layout("lout-awi-theater-1-margin-2", 1, [ 80,  325, 412, 17])
-		define_layout("lout-awi-theater-1-margin-3", 1, [ 80,  343, 412, 17])
-		define_layout("lout-awi-theater-1-margin-1-br", 1, [ 80,  400, 412, 17])
-		define_layout("lout-awi-theater-1-margin-2-br", 1, [ 80,  418, 412, 17])
-		define_layout("lout-awi-theater-1-margin-3-br", 1, [ 80,  436, 412, 17])
-		define_layout("lout-awi-theater-2-margin-1", 2, [600,  306, 412, 17])
-		define_layout("lout-awi-theater-2-margin-2", 2, [600,  324, 412, 17])
-		define_layout("lout-awi-theater-2-margin-3", 2, [600,  324, 412, 17])
-		define_layout("lout-awi-theater-3-margin-1", 3, [600,  620, 412, 17])
-		define_layout("lout-awi-theater-3-margin-2", 3, [600,  638, 412, 17])
-		define_layout("lout-awi-theater-3-margin-3", 3, [600,  656, 412, 17])
+		define_thing("war-margin", 411).layout([ 80,  307, 412, 17])
+		define_thing("war-margin", 412).layout([ 80,  325, 412, 17])
+		define_thing("war-margin", 413).layout([ 80,  343, 412, 17])
+		define_thing("war-margin", 414).layout([ 80,  400, 412, 17])
+		define_thing("war-margin", 415).layout([ 80,  418, 412, 17])
+		define_thing("war-margin", 416).layout([ 80,  436, 412, 17])
+		define_thing("war-margin", 421).layout([600,  306, 412, 17])
+		define_thing("war-margin", 422).layout([600,  324, 412, 17])
+		define_thing("war-margin", 423).layout([600,  324, 412, 17])
+		define_thing("war-margin", 431).layout([600,  620, 412, 17])
+		define_thing("war-margin", 432).layout([600,  638, 412, 17])
+		define_thing("war-margin", 433).layout([600,  656, 412, 17])
 	}
 
 	for (let sq = 0; sq < NUM_SQUADRONS; sq++) {
@@ -1382,7 +1383,7 @@ function on_update() {
 	let tell_vp = Math.min(36, Math.max(-7, V.vp))
 	populate("general-track", tell_vp, "victory-points")
 	if ((V.vp < 0) || (V.vp > 30)) {
-		update_text_html("victory-points", undefined, `<span class="vp-overlay">${V.vp}</span>`)
+		update_text_html("victory-points", undefined, `<div class="vp-overlay">${V.vp}</div>`)
 	}
 
 	populate("general-track", V.debt[FRANCE], "debt", FRANCE)
@@ -1988,6 +1989,192 @@ function theater_tier(war, winner, theater, delta)
 	return -1
 }
 
+function update_theater_flags(war, theater) {
+	function build_flag_row(c, name) {
+		let row = `<div class="alliance-row">`
+
+		for (let s of c.fr) {
+			let space_name = data.spaces[s].name
+			row += `<div class="alliance-flag fr" data-tooltip="${space_name}"
+				onmouseenter="_tip_focus_light('space',${s})"
+				onmouseleave="_tip_blur_light('space',${s})"
+				onmousedown="_tip_click_light('space',${s})"></div>`
+		}
+		for (let s of c.br) {
+			let space_name = data.spaces[s].name
+			row += `<div class="alliance-flag br" data-tooltip="${space_name}"
+				onmouseenter="_tip_focus_light('space',${s})"
+				onmouseleave="_tip_blur_light('space',${s})"
+				onmousedown="_tip_click_light('space',${s})"></div>`
+		}
+
+		row += `</div>`
+		return row
+	}
+
+	// Alliance flags for all wars
+	const war_number = war + 1
+
+	let theater_data = data.wars[war_number].theater[theater]
+	let ministry_keyword = theater_data.keyword
+
+	let minister = { fr: false, br: false }
+	let alliances = {}
+	let conflicts = {}
+
+	// Ministry keyword
+	if (ministry_keyword > 0) {
+		if (V.active_keywords && V.active_keywords[FRANCE].includes(ministry_keyword))
+			minister.fr = true
+		if (V.active_keywords && V.active_keywords[BRITAIN].includes(ministry_keyword))
+			minister.br = true
+	}
+
+	// Scan all spaces for alliances and conflicts
+	for (let s = 0; s < NUM_SPACES; s++) {
+		let space = data.spaces[s]
+		let flag = V.flags[s]
+
+		// Alliances
+		if (space.alliance) {
+			for (const a of space.alliance) {
+				if (a[0] !== war_number || a[1] !== theater)
+					continue
+
+				// 7YW Theater 3 includes both North America and Caribbean
+				if (war_number === WAR_7YW && theater === 3) {
+					if (space.region !== REGION_NORTH_AMERICA && space.region !== REGION_CARIBBEAN)
+						continue
+				}
+				// Group forts and naval spaces together
+				let name
+				if (space.type === FORT) {
+					name = "_Forts"
+				} else if (space.type === NAVAL) {
+					if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
+						if (space.region === REGION_CARIBBEAN) {
+							name = "_Squadrons (Caribbean)"
+						} else if (space.region === REGION_NORTH_AMERICA) {
+							name = "_Squadrons (N. Amer.)"
+						} else {
+							name = "_Squadrons"
+						}
+					} else {
+						name = "_Squadrons"
+					}
+				} else {
+					name = space.name
+						.split(" - ")[0]
+						.replace(/\s*\(\d+\)$/, "")
+						.trim()
+				}
+
+				if (!alliances[name]) {
+					alliances[name] = { fr: [], br: [], type: space.type }
+				}
+
+				// flag no count if conflict or damaged
+				if (flag !== FRANCE && flag !== BRITAIN)
+					continue
+				if (has_conflict_marker(s) || is_damaged_fort(s))
+					continue
+
+				// Add space to array (avoid duplicates)
+				if (flag === FRANCE && !alliances[name].fr.includes(s))
+					alliances[name].fr.push(s)
+				if (flag === BRITAIN && !alliances[name].br.includes(s))
+					alliances[name].br.push(s)
+			}
+		}
+
+		// Conflict markers
+		let region_match = space.region === theater_data.region
+		if (war_number === WAR_7YW && theater === 3 && space.region === REGION_CARIBBEAN) {
+			region_match = true
+		}
+		if (theater_data.conflicts && region_match) {
+			if (map_get(V.conflicts, s, 0) && (flag === FRANCE || flag === BRITAIN)) {
+				let opponent = 1 - flag
+				if (!conflicts["_Conflicts"]) {
+					conflicts["_Conflicts"] = { fr: [], br: [] }
+				}
+				if (opponent === FRANCE && !conflicts["_Conflicts"].fr.includes(s))
+					conflicts["_Conflicts"].fr.push(s)
+				if (opponent === BRITAIN && !conflicts["_Conflicts"].br.includes(s))
+					conflicts["_Conflicts"].br.push(s)
+			}
+		}
+	}
+
+	if (war_number === WAR_7YW && theater === 3) {
+		if (!alliances["_Spain"]) {
+			alliances["_Spain"] = { fr: [], br: [], type: TERRITORY }
+		}
+		for (let s of [ SPAIN_1, SPAIN_3 ]) {
+			let flag = V.flags[s]
+			if (flag !== FRANCE && flag !== BRITAIN)
+				continue
+			if (has_conflict_marker(s))
+				continue
+
+			if (flag === FRANCE && !alliances["_Spain"].fr.includes(s))
+				alliances["_Spain"].fr.push(s)
+			if (flag === BRITAIN && !alliances["_Spain"].br.includes(s))
+				alliances["_Spain"].br.push(s)
+		}
+	}
+
+	if (theater_data.conflicts && !conflicts["_Conflicts"]) {
+		conflicts["_Conflicts"] = { fr: [], br: [] }
+	}
+	if (conflicts["_Conflicts"]) {
+		alliances["_Conflicts"] = { fr: conflicts["_Conflicts"].fr, br: conflicts["_Conflicts"].br, type: -1 }
+	}
+
+	console.log(JSON.stringify({theater_data, minister, conflicts, alliances}, 0, 4))
+
+	// Build HTML
+	let flag_html = ""
+
+	// 1. Ministry keyword bonus
+	if (ministry_keyword > 0) {
+		let keyword_name = data.keywords[ministry_keyword].name
+		flag_html += `<div class="alliance-row">`
+		if (minister.fr)
+			flag_html += `<div class="alliance-flag fr" data-tooltip="${keyword_name}"></div>`
+		if (minister.br)
+			flag_html += `<div class="alliance-flag br" data-tooltip="${keyword_name}"></div>`
+		flag_html += `</div>`
+	}
+
+	// 2. Alliances
+	// Sort order: political (0), conflicts (1), forts (2), naval (3)
+	const SORT_ORDER = { [TERRITORY]: 0, [POLITICAL]: 0, [-1]: 1, [FORT]: 2, [NAVAL]: 3 }
+
+	let alliance_names = Object.keys(alliances).sort((a, b) => {
+		let orderA = SORT_ORDER[alliances[a].type] ?? 4
+		let orderB = SORT_ORDER[alliances[b].type] ?? 4
+		if (orderA !== orderB)
+			return orderA - orderB
+
+		// Special sort for 7YW theater 1 & 3
+		if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
+			const regionOrder = { "_Squadrons (Caribbean)": 0, _Squadrons: 1, "_Squadrons (N. Amer.)": 2 }
+			if (regionOrder[a] !== undefined && regionOrder[b] !== undefined) {
+				return regionOrder[a] - regionOrder[b]
+			}
+		}
+
+		return a.localeCompare(b)
+	})
+
+	for (let name of alliance_names) {
+		flag_html += build_flag_row(alliances[name], name)
+	}
+
+	update_text_html("war-alliance", war_number * 10 + theater, flag_html)
+}
+
 function update_war_display() {
 	var player, theater, offset
 	var war = G.next_war - 1 // make it zero-based
@@ -1999,58 +2186,11 @@ function update_war_display() {
 
 	if (V.bidding_for_sides) return // Don't reveal any war stuff during bidding for sides
 
-	const war_prefixes = ["wss", "was", "7yw", "awi"]
-
-	/*
-	// This code is for testing the positioning of theater margin-of-victory highlight bars
-	if (allwars) {
-		for (let w = 1; w <= 4; w++) {
-			var num_theaters = data.wars[w].theaters
-			let war_prefix = war_prefixes[w - 1]
-			for (theater = 1; theater <= num_theaters; theater++) {
-				for (let margin = 1; margin <= 3; margin++) {
-					let flag_class = "fr"
-					switch (margin) {
-						case 1:
-							flag_class = "fr";
-							break
-						case 2:
-							flag_class = "br";
-							break
-						case 3:
-							flag_class = "fr";
-							break
-					}
-
-					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
-
-					update_show(box, theater, false)
-
-					if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-						box += "-br"
-						update_show(box, theater, false)
-					}
-				}
-			}
-		}
-	}
-	*/
-
+	/* FIXME: always do this? */
 	if (allwars) {
 		for (let w = 1; w < G.next_war; w++) {
 			var num_theaters = data.wars[w].theaters
-			let war_prefix = war_prefixes[w-1]
 			for (theater = 1; theater <= num_theaters; theater++) {
-
-				for (let margin = 1; margin <= 3; margin++) {
-					let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
-					update_show(box, theater, false)
-					if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-						box += "-br"
-						update_show(box, theater, false)
-					}
-				}
-
 				if (V.old_winners && (V.old_winners[w][theater] !== -1)) {
 					let winner = V.old_winners[w][theater]
 					let margin = V.old_margins[w][theater]
@@ -2060,20 +2200,16 @@ function update_war_display() {
 					if (margin > 0) {
 						let tier = theater_tier(w, winner, theater, margin) + 1
 						if (tier > 0) {
-							let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
-							if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-								if (winner === BRITAIN) box += "-br"
-							}
-							update_keyword(box, theater, `theater-margin ${flag_class}`)
-							update_show(box, theater, true)
+							let box = w * 100 + theater * 10 + tier
+							if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1)))
+								if (winner === BRITAIN)
+									box += 3
+							update_keyword("war-margin", box, flag_class)
 						}
 					}
 
-					update_keyword(`lout-${war_prefix}-winner`, theater, `theater-winner ${flag_class}`)
-					update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="theater-flag ${flag_class}"></span><span>${margin}</span>`)
-					update_show(`lout-${war_prefix}-winner`, theater, true)
-				} else {
-					update_show(`lout-${war_prefix}-winner`, theater, false)
+					update_keyword("war-winner", w * 10 + theater, flag_class)
+					update_text_html("war-winner", w * 10 + theater, is_tie ? `<div>TIE</div>` : `<div class="theater-flag ${flag_class}"></div><span>${margin}</span>`)
 				}
 			}
 		}
@@ -2105,7 +2241,7 @@ function update_war_display() {
 			}
 		}
 
-		let war_prefix = war_prefixes[war]
+		let war_number = war+1
 		const num_theaters = data.wars[G.next_war].theaters
 
 		for (theater = 1; theater <= num_theaters; ++theater) {
@@ -2115,7 +2251,6 @@ function update_war_display() {
 			let unrevealed = 0
 
 			let already_done = ((V.theater_winner && V.theater_winner[theater] !== -1) || (V.old_winners && (V.old_winners[G.next_war][theater] !== -1)))
-
 			if (!already_done) {
 				if ((R === FRANCE) || (R === BRITAIN)) {
 					for (const t of G.theater_basic[R][theater]) {
@@ -2142,21 +2277,12 @@ function update_war_display() {
 			}
 
 			if (V.turn !== PEACE_TURN_6) {
-				update_text_html(`lout-${war_prefix}-strength-fr`, theater, `<span class="theater-flag fr"></span><span>${fr_strength}</span>`)
-				update_text_html(`lout-${war_prefix}-strength-br`, theater, `<span class="theater-flag br"></span><span>${br_strength}</span>`)
-			}
-
-			w = G.next_war
-			for (let margin = 1; margin <= 3; margin++) {
-				let box = `lout-${war_prefix}-theater-${theater}-margin-${margin}`
-				update_show(box, theater, false)
-				if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-					box += "-br"
-					update_show(box, theater, false)
-				}
+				update_text_html("war-strength-fr", war_number * 10 + theater, `<div class="theater-flag fr"></div><span>${fr_strength}</span>`)
+				update_text_html("war-strength-br", war_number * 10 + theater, `<div class="theater-flag br"></div><span>${br_strength}</span>`)
 			}
 
 			// Winner
+			w = G.next_war
 			if ((V.theater_winner && V.theater_winner[theater] !== -1) || (V.old_winners && (V.old_winners[G.next_war][theater] !== -1))) {
 				let winner = (V.old_winners && (V.old_winners[G.next_war][theater] !== -1)) ? V.old_winners[G.next_war][theater] : V.theater_winner[theater]
 				let margin = (V.old_winners && (V.old_winners[G.next_war][theater] !== -1)) ? V.old_margins[G.next_war][theater] : V.theater_margin[theater]
@@ -2166,205 +2292,33 @@ function update_war_display() {
 				if (margin > 0) {
 					let tier = theater_tier(G.next_war, winner, theater, margin) + 1
 					if (tier > 0) {
-						let box = `lout-${war_prefix}-theater-${theater}-margin-${tier}`
-						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1))) {
-							if (winner === BRITAIN) box += "-br"
-						}
-						update_keyword(box, theater, `theater-margin ${flag_class}`)
-						update_show(box, theater, true)
+						let box = w * 100 + theater * 10 + tier
+						if (((w === 2) && (theater === 4)) || ((w === 4) && (theater === 1)))
+							if (winner === BRITAIN) box += 3
+						update_keyword("war-margin", box, flag_class)
 					}
 				}
 
-				update_text_html(`lout-${war_prefix}-winner`, theater, is_tie ? `<span>TIE</span>` : `<span class="theater-flag ${flag_class}"></span><span>${margin}</span>`)
-				update_show(`lout-${war_prefix}-winner`, theater, true)
-			}
-			else {
-				update_show(`lout-${war_prefix}-winner`, theater, false)
+				update_text_html("war-winner", war_number * 10 + theater, is_tie ? `<div>TIE</div>` : `<div class="theater-flag ${flag_class}"></div><span>${margin}</span>`)
 			}
 		}
 	}
 
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		for (let theater = 0; theater <= data.wars[G.next_war].theaters; theater++) {
-			for (let tile of V.theater_bonus[who][theater]) {
-				if (tile >= 0) {
-					update_keyword("bonus_war", tile, (set_has(V.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE))  ? "revealed" : "hidden")
-				}
-			}
-			for (let tile of V.theater_basic[who][theater]) {
-				if (tile >= 0) {
-					update_keyword("basic_war", tile, set_has(V.basic_revealed[who], tile) ? "revealed" : "hidden")
-				}
-			}
+			for (let tile of V.theater_bonus[who][theater])
+				if (tile >= 0)
+					update_keyword("bonus_war", tile, "hidden", !(set_has(V.bonus_revealed[who], tile) || (tile === BYNG) || (tile === ATLANTIC_DOMINANCE)))
+			for (let tile of V.theater_basic[who][theater])
+				if (tile >= 0)
+					update_keyword("basic_war", tile, "hidden", !set_has(V.basic_revealed[who], tile))
 		}
 	}
 
 	if (V.turn >= PEACE_TURN_6) return
 
-	// Alliance flags for all wars
-	const war_number = war + 1
-	const war_prefix = war_prefixes[war]
-	const num_war_theaters = data.wars[war_number].theaters
-
-	function build_flag_row(c, name) {
-		let row = `<div class="alliance-row">`
-
-		for (let s of c.fr) {
-			let space_name = data.spaces[s].name
-			row += `<span class="alliance-flag fr" data-tooltip="${space_name}"
-				onmouseenter="_tip_focus_light('space',${s})"
-				onmouseleave="_tip_blur_light('space',${s})"
-				onmousedown="_tip_click_light('space',${s})"></span>`
-		}
-		for (let s of c.br) {
-			let space_name = data.spaces[s].name
-			row += `<span class="alliance-flag br" data-tooltip="${space_name}"
-				onmouseenter="_tip_focus_light('space',${s})"
-				onmouseleave="_tip_blur_light('space',${s})"
-				onmousedown="_tip_click_light('space',${s})"></span>`
-		}
-
-		row += `</div>`
-		return row
-	}
-
-	for (let theater = 1; theater <= num_war_theaters; theater++) {
-		let theater_data = data.wars[war_number].theater[theater]
-		let ministry_keyword = theater_data.keyword
-
-		let minister = { fr: false, br: false }
-		let alliances = {}
-		let conflicts = {}
-
-		// Ministry keyword
-		if (ministry_keyword > 0) {
-			if (V.active_keywords && V.active_keywords[FRANCE].includes(ministry_keyword)) minister.fr = true
-			if (V.active_keywords && V.active_keywords[BRITAIN].includes(ministry_keyword)) minister.br = true
-		}
-
-		// Scan all spaces for alliances and conflicts
-		for (let s = 0; s < NUM_SPACES; s++) {
-			let space = data.spaces[s]
-			let flag = V.flags[s]
-
-			// Alliances
-			if (space.alliance) {
-				for (const a of space.alliance) {
-					if (a[0] !== war_number || a[1] !== theater) continue
-
-					// 7YW Theater 3 includes both North America and Caribbean
-					if (war_number === WAR_7YW && theater === 3) {
-						if (space.region !== REGION_NORTH_AMERICA && space.region !== REGION_CARIBBEAN) continue
-					}
-					// Group forts and naval spaces together
-					let name
-					if (space.type === FORT) {
-						name = "_Forts"
-					} else if (space.type === NAVAL) {
-						if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
-							if (space.region === REGION_CARIBBEAN) {
-								name = "_Squadrons (Caribbean)"
-							} else if (space.region === REGION_NORTH_AMERICA) {
-								name = "_Squadrons (N. Amer.)"
-							} else {
-								name = "_Squadrons"
-							}
-						} else {
-							name = "_Squadrons"
-						}
-					} else {
-						name = space.name.split(" - ")[0].replace(/\s*\(\d+\)$/, "").trim()
-					}
-
-					if (!alliances[name]) {
-						alliances[name] = { fr: [], br: [], type: space.type }
-					}
-
-					// flag no count if conflict or damaged
-					if (flag !== FRANCE && flag !== BRITAIN) continue
-					if (has_conflict_marker(s) || is_damaged_fort(s)) continue
-
-					// Add space to array (avoid duplicates)
-					if (flag === FRANCE && !alliances[name].fr.includes(s)) alliances[name].fr.push(s)
-					if (flag === BRITAIN && !alliances[name].br.includes(s)) alliances[name].br.push(s)
-				}
-			}
-
-			// Conflict markers
-			let region_match = space.region === theater_data.region
-			if (war_number === WAR_7YW && theater === 3 && space.region === REGION_CARIBBEAN) {
-				region_match = true
-			}
-			if (theater_data.conflicts && region_match) {
-				if (map_get(V.conflicts, s, 0) && (flag === FRANCE || flag === BRITAIN)) {
-					let opponent = 1 - flag
-					if (!conflicts["_Conflicts"]) {
-						conflicts["_Conflicts"] = { fr: [], br: [] }
-					}
-					if (opponent === FRANCE && !conflicts["_Conflicts"].fr.includes(s)) conflicts["_Conflicts"].fr.push(s)
-					if (opponent === BRITAIN && !conflicts["_Conflicts"].br.includes(s)) conflicts["_Conflicts"].br.push(s)
-				}
-			}
-		}
-		if (war_number === WAR_7YW && theater === 3) {
-			if (!alliances["_Spain"]) {
-				alliances["_Spain"] = { fr: [], br: [], type: TERRITORY }
-			}
-			for (let s of [ SPAIN_1, SPAIN_3]) {
-				let flag = V.flags[s]
-				if (flag !== FRANCE && flag !== BRITAIN) continue
-				if (has_conflict_marker(s)) continue
-
-				if (flag === FRANCE && !alliances["_Spain"].fr.includes(s)) alliances["_Spain"].fr.push(s)
-				if (flag === BRITAIN && !alliances["_Spain"].br.includes(s)) alliances["_Spain"].br.push(s)
-			}
-		}
-
-		// Build HTML
-		let flag_html = ""
-
-		if (theater_data.conflicts && !conflicts["_Conflicts"]) {
-			conflicts["_Conflicts"] = { fr: [], br: [] }
-		}
-		if (conflicts["_Conflicts"]) {
-			alliances["_Conflicts"] = { fr: conflicts["_Conflicts"].fr, br: conflicts["_Conflicts"].br, type: -1 }
-		}
-
-		// 1. Ministry keyword bonus
-		if (ministry_keyword > 0) {
-			let keyword_name = data.keywords[ministry_keyword].name
-			flag_html += `<div class="alliance-row">`
-			if (minister.fr) flag_html += `<span class="alliance-flag fr" data-tooltip="${keyword_name}"></span>`
-			if (minister.br) flag_html += `<span class="alliance-flag br" data-tooltip="${keyword_name}"></span>`
-			flag_html += `</div>`
-		}
-
-		// 2. Alliances
-		// Sort order: political (0), conflicts (1), forts (2), naval (3)
-		const SORT_ORDER = { [TERRITORY]: 0, [POLITICAL]: 0, [-1]: 1, [FORT]: 2, [NAVAL]: 3 }
-
-		let alliance_names = Object.keys(alliances).sort((a, b) => {
-			let orderA = SORT_ORDER[alliances[a].type] ?? 4
-			let orderB = SORT_ORDER[alliances[b].type] ?? 4
-			if (orderA !== orderB) return orderA - orderB
-
-			// Special sort for 7YW theater 1 & 3
-			if (war_number === WAR_7YW && (theater === 1 || theater === 3)) {
-				const regionOrder = { "_Squadrons (Caribbean)": 0, "_Squadrons": 1, "_Squadrons (N. Amer.)": 2 }
-				if (regionOrder[a] !== undefined && regionOrder[b] !== undefined) {
-					return regionOrder[a] - regionOrder[b]
-				}
-			}
-
-			return a.localeCompare(b)
-		})
-
-		for (let name of alliance_names) {
-			flag_html += build_flag_row(alliances[name], name)
-		}
-
-		update_text_html(`lout-${war_prefix}-alliance`, theater, flag_html)
-	}
+	for (let theater = 1; theater <= data.wars[war + 1].theaters; theater++)
+		update_theater_flags(war, theater)
 }
 
 /* TEXT FORMATTING */
@@ -4134,7 +4088,6 @@ const war_layout = {
 	war_7yw_theater_3_britain: [225, 503, 152, 152],
 	war_7yw_theater_4_france: [579, 503, 152, 152],
 	war_7yw_theater_4_britain: [747, 503, 152, 152],
-	war_wss_theater_drawn: [240, 0, 667, 93],
 	war_wss_theater_1_france: [57, 132, 152, 152],
 	war_wss_theater_1_britain: [225, 132, 152, 152],
 	war_wss_theater_2_france: [579, 132, 152, 152],
@@ -4143,7 +4096,6 @@ const war_layout = {
 	war_wss_theater_3_britain: [225, 504, 152, 152],
 	war_wss_theater_4_france: [579, 503, 152, 152],
 	war_wss_theater_4_britain: [747, 503, 152, 152],
-	war_was_theater_drawn: [233, 0, 667, 93],
 	war_was_theater_1_france: [57, 116, 152, 152],
 	war_was_theater_1_britain: [225, 116, 152, 152],
 	war_was_theater_2_france: [578, 116, 152, 152],
@@ -4152,7 +4104,6 @@ const war_layout = {
 	war_was_theater_3_britain: [225, 445, 152, 152],
 	war_was_theater_4_france: [578, 439, 152, 152],
 	war_was_theater_4_britain: [746, 439, 152, 152],
-	war_awi_theater_drawn: [227, 0, 667, 93],
 	war_awi_theater_1_france: [57, 132, 152, 152],
 	war_awi_theater_1_britain: [225, 132, 152, 152],
 	war_awi_theater_2_france: [579, 132, 152, 152],
@@ -4182,14 +4133,14 @@ const war_layout = {
 	war_awi_theater_3: [556, 386, 508, 426],
 
 	// WSS - Strength
-	war_wss_theater_1_strength_fr: [42, 400, 50, 25],
-	war_wss_theater_1_strength_br: [480, 400, 50, 25],
-	war_wss_theater_2_strength_fr: [560, 400, 50, 25],
-	war_wss_theater_2_strength_br: [1015, 400, 50, 25],
-	war_wss_theater_3_strength_fr: [42, 770, 50, 25],
-	war_wss_theater_3_strength_br: [480, 770, 50, 25],
-	war_wss_theater_4_strength_fr: [560, 770, 50, 25],
-	war_wss_theater_4_strength_br: [1015, 770, 50, 25],
+	war_wss_theater_1_strength_fr: [50, 400, 100, 25],
+	war_wss_theater_1_strength_br: [430, 400, 100, 25],
+	war_wss_theater_2_strength_fr: [570, 400, 100, 25],
+	war_wss_theater_2_strength_br: [950, 400, 100, 25],
+	war_wss_theater_3_strength_fr: [50, 770, 100, 25],
+	war_wss_theater_3_strength_br: [430, 770, 100, 25],
+	war_wss_theater_4_strength_fr: [570, 770, 100, 25],
+	war_wss_theater_4_strength_br: [950, 770, 100, 25],
 
 	// WSS - Winner
 	war_wss_theater_1_winner: [290, 94, 60, 25],
@@ -4204,14 +4155,14 @@ const war_layout = {
 	war_wss_theater_4_alliances: [1022, 519, 50, 152],
 
 	// WAS - Strength
-	war_was_theater_1_strength_fr: [42, 360, 50, 25],
-	war_was_theater_1_strength_br: [490, 360, 50, 25],
-	war_was_theater_2_strength_fr: [560, 360, 50, 25],
-	war_was_theater_2_strength_br: [1015, 360, 50, 25],
-	war_was_theater_3_strength_fr: [40, 670, 50, 25],
-	war_was_theater_3_strength_br: [492, 670, 50, 25],
-	war_was_theater_4_strength_fr: [560, 815, 50, 25],
-	war_was_theater_4_strength_br: [1030, 815, 50, 25],
+	war_was_theater_1_strength_fr: [50, 355, 100, 25],
+	war_was_theater_1_strength_br: [430, 355, 100, 25],
+	war_was_theater_2_strength_fr: [570, 355, 100, 25],
+	war_was_theater_2_strength_br: [950, 355, 100, 25],
+	war_was_theater_3_strength_fr: [50, 665, 100, 25],
+	war_was_theater_3_strength_br: [430, 665, 100, 25],
+	war_was_theater_4_strength_fr: [570, 820, 100, 25],
+	war_was_theater_4_strength_br: [950, 820, 100, 25],
 
 	// WAS - Winner
 	war_was_theater_1_winner: [295, 82, 60, 25],
@@ -4226,19 +4177,19 @@ const war_layout = {
 	war_was_theater_4_alliances: [1022, 454, 50, 152],
 
 	// 7YW - Strength
-	war_7yw_theater_1_strength_fr: [42, 405, 50, 25],
-	war_7yw_theater_1_strength_br: [490, 405, 50, 25],
-	war_7yw_theater_2_strength_fr: [560, 405, 50, 25],
-	war_7yw_theater_2_strength_br: [1015, 405, 50, 25],
-	war_7yw_theater_3_strength_fr: [42, 775, 50, 25],
-	war_7yw_theater_3_strength_br: [480, 775, 50, 25],
-	war_7yw_theater_4_strength_fr: [560, 775, 50, 25],
-	war_7yw_theater_4_strength_br: [1015, 775, 50, 25],
+	war_7yw_theater_1_strength_fr: [50, 400, 100, 25],
+	war_7yw_theater_1_strength_br: [430, 400, 100, 25],
+	war_7yw_theater_2_strength_fr: [570, 400, 100, 25],
+	war_7yw_theater_2_strength_br: [950, 400, 100, 25],
+	war_7yw_theater_3_strength_fr: [50, 770, 100, 25],
+	war_7yw_theater_3_strength_br: [430, 770, 100, 25],
+	war_7yw_theater_4_strength_fr: [570, 770, 100, 25],
+	war_7yw_theater_4_strength_br: [950, 770, 100, 25],
 
 	// 7YW - Winner
 	war_7yw_theater_1_winner: [355, 94, 60, 25],
 	war_7yw_theater_2_winner: [875, 94, 60, 25],
-	war_7yw_theater_3_winner: [355, 465, 60, 25],
+	war_7yw_theater_3_winner: [370, 465, 60, 25],
 	war_7yw_theater_4_winner: [810, 465, 60, 25],
 
 	// 7YW - Alliances
@@ -4248,12 +4199,12 @@ const war_layout = {
 	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
 
 	// AWI - Strength
-	war_awi_theater_1_strength_fr: [36,  508, 50, 25],
-	war_awi_theater_1_strength_br: [495, 508, 50, 25],
-	war_awi_theater_2_strength_fr: [560,  343, 50, 25],
-	war_awi_theater_2_strength_br: [1015, 343, 50, 25],
-	war_awi_theater_3_strength_fr: [560, 780, 50, 25],
-	war_awi_theater_3_strength_br: [1010, 780, 50, 25],
+	war_awi_theater_1_strength_fr: [50,  506, 100, 25],
+	war_awi_theater_1_strength_br: [430, 506, 100, 25],
+	war_awi_theater_2_strength_fr: [570,  340, 100, 25],
+	war_awi_theater_2_strength_br: [950, 340, 100, 25],
+	war_awi_theater_3_strength_fr: [570, 778, 100, 25],
+	war_awi_theater_3_strength_br: [950, 778, 100, 25],
 
 	// AWI - Winner
 	war_awi_theater_1_winner: [355, 93, 60, 25],
