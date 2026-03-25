@@ -2394,7 +2394,7 @@ function on_log(text, ix) {
 	switch (text[0]) {
 		case "{":
 			p.classList.add("header")
-			open_log_box(ix, log_box_keywords[text[1]] + "-" + log_box_types[text[2]])
+			open_log_box(ix, log_box_keywords[text[1]])
 			text = text.substring(3)
 			break
 		case "}":
@@ -2427,10 +2427,6 @@ function on_log(text, ix) {
 	if (text.match(/^\.h2/)) {
 		text = text.substring(4)
 		p.className = 'h2'
-	}
-	if (text.match(/^\.h3/)) {
-		text = text.substring(4)
-		p.className = "h3"
 	}
 
 	apply_log_boxes(ix, p, "group")

@@ -96,7 +96,7 @@ menu li.separator {
 	line-height: 22px;
 	text-align: center;
 	padding: 4px;
-	background-color: cornsilk;
+	background-color: wheat;
 	border-bottom: 1px solid black;
 }
 
@@ -346,42 +346,18 @@ div[data-tooltip]:after {
 /* LOG */
 
 #log {
-	--fr-ministry: hsl(206, 85%, 90%);
-	--fr-ministry-header: hsl(206, 85%, 85%);
-	--br-ministry: hsl(6, 100%, 90%);
-	--br-ministry-header: hsl(6, 100%, 77%);
-	--both-ministry: hsl(0, 0%, 88%);
-	--both-ministry-header: hsl(0, 0%, 80%);
+	--fr-header: skyblue;
+	--fr-box-header: hsl(197, 71%, 80%);
+	--fr-box: hsl(197, 71%, 90%);
+	--fr-text: mediumblue;
 
-	--fr-event: hsl(206, 85%, 90%);
-	--fr-event-header: hsl(206, 85%, 85%);
-	--br-event: hsl(6, 100%, 90%);
-	--br-event-header: hsl(6, 100%, 77%);
-	--both-event: hsl(0, 0%, 88%);
-	--both-event-header: hsl(0, 0%, 80%);
+	--br-header: salmon;
+	--br-box-header: lightsalmon;
+	--br-box: peachpuff;
+	--br-text: darkred;
 
-	--fr-advantage: hsl(198, 66%, 85%);
-	--fr-advantage-header: skyblue; /* hsl(206, 85%, 70%); */
-	--br-advantage: hsl(6, 100%, 80%); /* hsl(355, 70%, 80%); */
-	--br-advantage-header: salmon;
-	--both-advantage: hsl(0, 0%, 75%);
-	--both-advantage-header: hsl(0, 0%, 65%);
-
-	--fr-misc: hsl(198, 66%, 85%); /* hsl(206, 85%, 80%); */
-	--fr-misc-header: skyblue; /* hsl(206, 85%, 70%); */
-	--br-misc: hsl(6, 100%, 80%);
-	--br-misc-header: salmon; /* hsl(355, 70%, 70%); */
-	--both-misc: hsl(0, 0%, 88%);
-	--both-misc-header: hsl(0, 0%, 80%);
-
-	/*
-	--fr-misc: hsl(206, 85%, 90%);
-	--fr-misc-header: hsl(206, 85%, 85%);
-	--br-misc: hsl(355, 70%, 90%);
-	--br-misc-header: hsl(355, 70%, 85%);
-	--both-misc: hsl(0, 0%, 88%);
-	--both-misc-header: hsl(0, 0%, 80%);
-	 */
+	--both-box-header: #ccc;
+	--both-box: #ddd;
 }
 
 #log .i {
@@ -390,51 +366,31 @@ div[data-tooltip]:after {
 
 #log .h1 {
 	margin: 8px 0;
-	background-color: tan;
+	background-color: violet;
 }
 
 #log .h2 {
 	margin: 8px 0;
-	background-color: wheat;
+	background-color: palegreen;
 }
 
 #log .h2.br {
 	margin: 8px 0;
-	background-color: salmon;
+	background-color: var(--br-header);
 }
 
 #log .h2.fr {
 	margin: 8px 0;
-	background-color: skyblue;
+	background-color: var(--fr-header);
 }
 
 #log .h1 { font-weight: bold; padding-top:2px; padding-bottom:2px; text-align: center; }
 #log .h2 { padding-top:2px; padding-bottom:2px; text-align: center; }
-#log .h3 { text-align: center; }
-#log .h4 { font-weight: bold; }
-#log .h5 { text-decoration: underline; }
 
-#log .h1 { background-color: tan }
-#log .h2 { background-color: wheat }
-#log .h3 { background-color: wheat }
-
-#log .h1, .h2, .h3 {
+#log .h1, .h2 {
 	font-variant-caps: small-caps;
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
-}
-
-#log .b {
-	font-weight: bold;
-}
-
-#log .strike {
-	text-decoration: line-through;
-}
-
-#log .small_br {
-	min-height: 5px;
-	height: 5px;
 }
 
 #log .group {
@@ -449,43 +405,15 @@ div[data-tooltip]:after {
 	text-align: center;
 }
 
-/* Ministry boxes */
-#log .group.fr-ministry { background-color: var(--fr-ministry); }
-#log .group.br-ministry { background-color: var(--br-ministry); }
-#log .group.both-ministry { background-color: var(--both-ministry); }
+/* Log boxes */
 
-#log .header.group.fr-ministry { background-color: var(--fr-ministry-header); }
-#log .header.group.br-ministry { background-color: var(--br-ministry-header); }
-#log .header.group.both-ministry { background-color: var(--both-ministry-header); }
+#log .group.header.fr { background-color: var(--fr-box-header); }
+#log .group.header.br { background-color: var(--br-box-header); }
+#log .group.header.both { background-color: var(--both-box-header); }
 
-/* Event boxes */
-#log .group.fr-event { background-color: var(--fr-event); }
-#log .group.br-event { background-color: var(--br-event); }
-#log .group.both-event { background-color: var(--both-event); }
-
-#log .header.group.fr-event { background-color: var(--fr-event-header); }
-#log .header.group.br-event { background-color: var(--br-event-header); }
-#log .header.group.both-event { background-color: var(--both-event-header); }
-
-/* Advantage boxes */
-#log .group.fr-advantage { background-color: var(--fr-advantage); }
-#log .group.br-advantage { background-color: var(--br-advantage); }
-#log .group.both-advantage { background-color: var(--both-advantage); }
-
-#log .header.group.fr-advantage { background-color: var(--fr-advantage-header); }
-#log .header.group.br-advantage { background-color: var(--br-advantage-header); }
-#log .header.group.both-advantage { background-color: var(--both-advantage-header); }
-
-/* Misc boxes */
-#log .group.fr-misc { background-color: var(--fr-misc); }
-#log .group.br-misc { background-color: var(--br-misc); }
-#log .group.both-misc { background-color: var(--both-misc); }
-
-#log .header.group.fr-misc { background-color: var(--fr-misc-header); }
-#log .header.group.br-misc { background-color: var(--br-misc-header); }
-#log .header.group.both-misc { background-color: var(--both-misc-header); }
-
-/* Nested boxes */
+#log .group.fr { background-color: var(--fr-box); }
+#log .group.br { background-color: var(--br-box); }
+#log .group.both { background-color: var(--both-box); }
 
 #log .header.group.nested {
 	margin-top: 0;
@@ -495,48 +423,41 @@ div[data-tooltip]:after {
 	margin-left: 6px;
 	border-left: 6px solid var(--parent-color);
 	border-right: 6px solid var(--parent-color);
-	border-bottom: 0;
 	margin-bottom: 0;
 }
 
-#log .group.nested.parent-fr-ministry { --parent-color: var(--fr-ministry); }
-#log .group.nested.parent-fr-event { --parent-color: var(--fr-event); }
-#log .group.nested.parent-fr-misc { --parent-color: var(--fr-misc); }
-#log .group.nested.parent-br-ministry { --parent-color: var(--br-ministry); }
-#log .group.nested.parent-br-event { --parent-color: var(--br-event); }
-#log .group.nested.parent-br-misc { --parent-color: var(--br-misc); }
-#log .group.nested.parent-both-ministry { --parent-color: var(--both-ministry); }
-#log .group.nested.parent-both-event { --parent-color: var(--both-event); }
-#log .group.nested.parent-both-misc { --parent-color: var(--both-misc); }
+#log .group.nested.parent-fr { --parent-color: var(--fr-box); }
+#log .group.nested.parent-br { --parent-color: var(--br-box); }
+#log .group.nested.parent-both { --parent-color: var(--both-box); }
 
 /* Tipsy text */
 
 .flag-string { color: black }
-.flag-string-fr { color: royalblue }
-.flag-string-br { color: crimson }
+.flag-string-fr { color: var(--fr-text) }
+.flag-string-br { color: var(--br-text) }
 
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr, .tip-bonus-war-fr, .tip-basic-war-fr {
 	font-style: italic;
 	text-decoration: underline;
-	color: royalblue;
+	color: var(--fr-text);
 }
 
 .tip-event-uc-fr, .tip-ministry-uc-fr, .tip-advantage-uc-fr, .tip-demand-uc-fr {
 	text-transform: uppercase;
 	text-decoration: underline;
-	color: royalblue;
+	color: var(--fr-text);
 }
 
 .tip-event-br, .tip-ministry-br, .tip-advantage-br, .tip-demand-br, .tip-spending-br, .tip.award-br, .tip-investment-br, .tip-space-br, .tip-bonus-war-br, .tip-basic-war-br {
 	font-style: italic;
 	text-decoration: underline;
-	color: crimson;
+	color: var(--br-text);
 }
 
 .tip-event-uc-br, .tip-ministry-uc-br, .tip-advantage-uc-br, .tip-demand-uc-br {
 	text-transform: uppercase;
 	text-decoration: underline;
-	color: crimson;
+	color: var(--br-text);
 }
 
 .tip-event, .tip-ministry, .tip-advantage, .tip-demand, .tip-spending, .tip-award, .tip-investment, .tip-space, .tip-bonus-war, .tip-basic-war {
