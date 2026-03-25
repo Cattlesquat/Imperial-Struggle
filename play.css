@@ -120,34 +120,39 @@ menu li.separator {
 	top: 178px;
 }
 
-/* DEMAND WINNER */
+/* DEMAND & AWARD FLAGS */
 
-/* FIXME: define in play.js */
-.layout.lout-demand-winner {
-	display: flex;
+.marker.demand .score-delta {
+	position: absolute;
+	top: 46px;
+	right: 0;
+	left: 0;
+	height: 16px;
+	line-height: 16px;
 	justify-content: center;
 }
 
-.marker.demand-winner-slot, .marker.award-winner-slot {
-	width: 40px;
-	min-height: 20px;
-	display: flex;
-	align-items: center;
-	pointer-events: none;
-	/* background: rgba(245, 235, 220, 0.85); */
-	padding: 2px 4px;
+.marker.demand .score-delta .score-flag {
+	margin: 0;
 }
 
-.marker.award-winner-slot.prestige {
-	pointer-events: none;
-	/* border: 2px solid springgreen; */
-}
-
-.demand-count, .award-count {
+.marker.demand .score-delta span {
+	background-color: #eddbbc;
+	padding: 0 3px;
 	font-size: 12px;
-	color: #333;
-	margin-left: 2px;
-	font-weight:bold;
+	font-weight: bold;
+	color: black;
+}
+
+.award-winner-left .score-flag {
+	margin-top: 4px;
+	margin-left: 0;
+}
+
+.award-winner-right {
+	margin-top: 4px;
+	font-size: 12px;
+	font-weight: bold;
 }
 
 /* MAP CUTOUTS */
@@ -668,33 +673,24 @@ div[data-tooltip]:after {
 
 /* MINI FLAGS */
 
-.demand-flag, .award-flag, .score-flag {
+.score-flag {
 	width: 16px;
 	height: 16px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
+	background-size: 100%;
+	margin-top: 3px;
+	margin-left: 3px;
 }
 
 .theater-flag {
 	width: 18px;
 	height: 18px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-.score-flag {
-	margin-top: 3px;
-	margin-left: 3px;
+	background-size: 100%;
 }
 
 .alliance-flag {
 	width: 15px;
 	height: 15px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
+	background-size: 100%;
 }
 
 .demand-flag.fr, .award-flag.fr, .score-flag.fr, .alliance-flag.fr, .theater-flag.fr {
@@ -724,11 +720,6 @@ div[data-tooltip]:after {
 }
 
 /* SPACES */
-
-/* Keep the auto-rollover-tipped bizarro spaces from being on top of the counters' rollovers */
-.tip-bizarro {
-	z-index: -10
-}
 
 .space {
 	box-sizing: border-box;

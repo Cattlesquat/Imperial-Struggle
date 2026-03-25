@@ -1,5 +1,7 @@
 "use strict"
 
+const REGION_AWARD = 4 /* prestige award magic region for layout */
+
 const space_type_class = [
 	"political",
 	"market",
@@ -810,28 +812,6 @@ function bonus_war_tooltip(t, who) {
 
 /* ON INIT */
 
-function set_available_debt_tooltips() {
-	roles[FRANCE].stat.addEventListener("click", function () {
-		scroll_to_debt(FRANCE)
-	})
-	roles[FRANCE].stat.addEventListener("mouseenter", function () {
-		world.status.innerHTML = available_debt_tooltip(FRANCE)
-	})
-	roles[FRANCE].stat.addEventListener("mouseleave", function () {
-		world.status.innerHTML = ""
-	})
-
-	roles[BRITAIN].stat.addEventListener("click", function () {
-		scroll_to_debt(BRITAIN)
-	})
-	roles[BRITAIN].stat.addEventListener("mouseenter", function () {
-		world.status.innerHTML = available_debt_tooltip(BRITAIN)
-	})
-	roles[BRITAIN].stat.addEventListener("mouseleave", function () {
-		world.status.innerHTML = ""
-	})
-}
-
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
@@ -857,7 +837,13 @@ function on_init() {
 		rebuild_ui()
 	})
 
-	set_available_debt_tooltips()
+	roles[FRANCE].stat.addEventListener("click", function () { scroll_to_debt(FRANCE) })
+	roles[FRANCE].stat.addEventListener("mouseenter", function () { world.status.innerHTML = available_debt_tooltip(FRANCE) })
+	roles[FRANCE].stat.addEventListener("mouseleave", function () { world.status.innerHTML = "" })
+
+	roles[BRITAIN].stat.addEventListener("click", function () { scroll_to_debt(BRITAIN) })
+	roles[BRITAIN].stat.addEventListener("mouseenter", function () { world.status.innerHTML = available_debt_tooltip(BRITAIN) })
+	roles[BRITAIN].stat.addEventListener("mouseleave", function () { world.status.innerHTML = "" })
 
 	// Rollovers for top toolbar
 	let toolbar = document.getElementById("toolbar")
@@ -917,6 +903,16 @@ function on_init() {
 	define_panel("#upcoming_investment_tiles", "panel-upcoming-investments")
 
 	define_board("#map", 2550, 1650, [0, 0, 0, 0])
+
+	for (s of data.bizarro_spaces) {
+		if (s.layout.includes("record track")) continue
+		var rect = find_layout_node(s.layout ?? s.name)
+		if (!rect) {
+			// console.log("No layout for Bizarro Space: " + s.name)
+			continue
+		}
+		define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
+	}
 
 	define_stack("lout-jacobite", undefined, [1750, 240, 40, 40], 5, -5, 0, -50)
 	define_marker("jacobite-victory", 0, "square-sm jacobite-victory").tooltip(jacobite_victory_tooltip)
@@ -1019,45 +1015,19 @@ function on_init() {
 		define_stack("turn-track", s.num, find_layout_node(s.layout), 8, -8, 0, -50)
 	}
 
-	for (s of data.bizarro_spaces) {
-		if (s.layout.includes("record track")) continue
-		var rect = find_layout_node(s.layout ?? s.name)
-		if (!rect) {
-			// console.log("No layout for Bizarro Space: " + s.name)
-			continue
-		}
+	define_thing("award-winner-left", REGION_EUROPE).layout(find_layout_node("Award_winner Europe Left"))
+	define_thing("award-winner-left", REGION_NORTH_AMERICA).layout(find_layout_node("Award_winner North America Left"))
+	define_thing("award-winner-left", REGION_CARIBBEAN).layout(find_layout_node("Award_winner Caribbean Left"))
+	define_thing("award-winner-left", REGION_INDIA).layout(find_layout_node("Award_winner India Left"))
+	define_thing("award-winner-left", REGION_AWARD).layout(find_layout_node("Award_winner Europe Prestige Left"))
 
-		define_thing("tip-bizarro", s.num).layout(rect).tooltip(bizarro_space_tooltip)
-	}
-
-	for (let r = 0; r < NUM_REGIONS; r++) {
-		define_marker("award-winner-left", r)
-			.keyword("award-winner-slot")
-		define_marker("award-winner-right", r)
-			.keyword("award-winner-slot")
-	}
-	define_marker("award-winner-prestige-left", 0)
-		.keyword("award-winner-slot prestige")
-	define_marker("award-winner-prestige-right", 0)
-		.keyword("award-winner-slot prestige")
-	define_layout("lout-award-winner-left", REGION_EUROPE, find_layout_node("Award_winner Europe Left"))
-	define_layout("lout-award-winner-left", REGION_NORTH_AMERICA, find_layout_node("Award_winner North America Left"))
-	define_layout("lout-award-winner-left", REGION_CARIBBEAN, find_layout_node("Award_winner Caribbean Left"))
-	define_layout("lout-award-winner-left", REGION_INDIA, find_layout_node("Award_winner India Left"))
-	define_layout("lout-award-winner-prestige-left", 0, find_layout_node("Award_winner Europe Prestige Left"))
-
-	define_layout("lout-award-winner-right", REGION_EUROPE, find_layout_node("Award_winner Europe Right"))
-	define_layout("lout-award-winner-right", REGION_NORTH_AMERICA, find_layout_node("Award_winner North America Right"))
-	define_layout("lout-award-winner-right", REGION_CARIBBEAN, find_layout_node("Award_winner Caribbean Right"))
-	define_layout("lout-award-winner-right", REGION_INDIA, find_layout_node("Award_winner India Right"))
-	define_layout("lout-award-winner-prestige-right", 0, find_layout_node("Award_winner Europe Prestige Right"))
+	define_thing("award-winner-right", REGION_EUROPE).layout(find_layout_node("Award_winner Europe Right"))
+	define_thing("award-winner-right", REGION_NORTH_AMERICA).layout(find_layout_node("Award_winner North America Right"))
+	define_thing("award-winner-right", REGION_CARIBBEAN).layout(find_layout_node("Award_winner Caribbean Right"))
+	define_thing("award-winner-right", REGION_INDIA).layout(find_layout_node("Award_winner India Right"))
+	define_thing("award-winner-right", REGION_AWARD).layout(find_layout_node("Award_winner Europe Prestige Right"))
 
 	define_layout("lout-demand", undefined, find_layout_node("Demand"))
-	for (let i = 0; i < 5; i++) {
-		define_marker("demand-winner", i)
-			.keyword("demand-winner-slot")
-	}
-	define_layout("lout-demand-winner", 0, find_layout_node("Demand_winner"))
 	define_layout("lout-initiative", undefined, find_layout_node("Initiative"))
 
 	define_layout("lout-award", REGION_EUROPE, find_layout_node("Award Europe"))
@@ -1462,48 +1432,26 @@ function on_update() {
 	}
 
 	for (let r = 0; r < NUM_REGIONS; r++) {
-		// FIXME: these populates never change -- use static_child in on_init
-		// FIXME: or use separate award-winner-left/right louts instead?
-		populate("lout-award-winner-left", r, "award-winner-left", r)
-		populate("lout-award-winner-right", r, "award-winner-right", r)
-
 		let winner = region_flag_winner(r)
 		let delta = region_flag_delta(r)
+		if (winner === FRANCE)
+			update_text_html("award-winner-left", r, `<div class="score-flag fr"></div>`)
+		if (winner === BRITAIN)
+			update_text_html("award-winner-left", r, `<div class="score-flag br"></div>`)
+		if (winner !== NONE)
+			update_text_html("award-winner-right", r, `+${delta}`)
 
-		let html_left = ""
-		let html_right = ""
-		if (winner !== NONE) {
-			let flag_class = winner === FRANCE ? "fr" : "br"
-			html_left += `<span class="award-flag ${flag_class}"></span>`
-			html_right += `<span class="award-count">+${delta}</span>`
-		}
-
-		update_text_html("award-winner-left", r, html_left)
-		update_text_html("award-winner-right", r, html_right)
 	}
 
 	// Europe prestige winner indicator
-	// FIXME: these populates never change -- use static_child in on_init
-	// FIXME: or use separate award-winner-left/right louts instead?
-	populate("lout-award-winner-prestige-left", 0, "award-winner-prestige-left", 0)
-	populate("lout-award-winner-prestige-right", 0, "award-winner-prestige-right", 0)
-
-	let prestige_win = prestige_winner()
-	let prestige_delta = prestige_flag_delta()
-
-	let prestige_html_left = ""
-	let prestige_html_right = ""
-	if (prestige_win !== NONE) {
-		let flag_class = prestige_win === FRANCE ? "fr" : "br"
-		prestige_html_left += `<span class="award-flag ${flag_class}"></span>`
-		prestige_html_right += `<span class="award-count">+${prestige_delta}<span style = "color:#007000; font-weight: bold;">♢</span></span>`
-	}
-
-	// Feather = 🪶
-	// Diamond = ♢
-
-	update_text_html("award-winner-prestige-left", 0, prestige_html_left)
-	update_text_html("award-winner-prestige-right", 0, prestige_html_right)
+	let pwin = prestige_winner()
+	let pdelta = prestige_flag_delta()
+	if (pwin === FRANCE)
+		update_text_html("award-winner-left", REGION_AWARD, `<div class="score-flag fr"></div>`)
+	if (pwin === BRITAIN)
+		update_text_html("award-winner-left", REGION_AWARD, `<div class="score-flag br"></div>`)
+	if (pwin !== NONE)
+		update_text_html("award-winner-right", REGION_AWARD, `+${pdelta}\u2666`)
 
 	populate_with_list("lout-demand", "demand", V.global_demand)
 
@@ -1548,22 +1496,11 @@ function on_update() {
 
 	if (V.global_demand) {
 		for (let i = 0; i < V.global_demand.length; i++) {
-			// FIXME: these populates never change -- use static_child in on_init
-			// FIXME: or lay out demand-winner directly instead?
-			populate("lout-demand-winner", 0, "demand-winner", i)
-
 			let demand = V.global_demand[i]
 			let winner = demand_flag_winner(demand)
 			let delta = demand_flag_delta(demand)
-
-			let html = ""
-			if (winner !== NONE) {
-				let flag_class = winner === FRANCE ? "fr" : "br"
-				html += `<span class="demand-flag ${flag_class}"></span>`
-				html += `<span class="demand-count"><span style="background-color:#e5c28a">+${delta}</span></span>`
-			}
-
-			update_text_html("demand-winner", i, html)
+			if (winner !== NONE)
+				update_text_html("demand", demand, format_winner_delta(winner, delta))
 		}
 	}
 
@@ -3657,7 +3594,7 @@ function format_winner_delta(winner, delta) {
 		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag fr"></div></div>`
 	if (winner === BRITAIN)
 		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag br"></div></div>`
-	return `<div class="score-flags">+0</div>`
+	return `<div class="score-delta">+0</div>`
 }
 
 function format_award_chit(a) {
