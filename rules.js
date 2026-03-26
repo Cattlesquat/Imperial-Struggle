@@ -13248,6 +13248,7 @@ const LOG_BOX_ADVANTAGE = 3
 const LOG_BOX_MISC      = 4 // Used in other situations -- scoring, wars, etc.
 
 function log_box_begin(who, header, type = LOG_BOX_MISC) {
+	log_br()
 	if (!G.log_box) {
 		G.log_box = []
 	}
@@ -14145,7 +14146,7 @@ function bit_init(total_bits) {
 // === Log Helpers ===
 
 function log_br() {
-	if (G.log.length > 0 && G.log[G.log.length-1] !== "")
+	if (G.log.length > 0 && (G.log[G.log.length-1] !== "" && G.log[G.log.length-1] !== "}"))
 		log("")
 }
 

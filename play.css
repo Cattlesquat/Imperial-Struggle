@@ -117,11 +117,9 @@ menu li.separator {
 }
 
 #vp_desktop {
-	font-size: 18px;
-	line-height: 22px;
 	text-align: center;
-	padding: 4px;
-	background-color: wheat;
+	padding: 2px;
+	background-color: gainsboro;
 	border-bottom: 1px solid black;
 }
 
@@ -420,14 +418,6 @@ div[data-tooltip]:after {
 	& .outer.fr > .inner.fr { background-color: var(--fr-fr-box); }
 	& .outer.br > .inner.br { background-color: var(--br-br-box); }
 
-	/* margins before and after boxes */
-	& :not(.group) + .group {
-		margin-top: 8px;
-	}
-	& .group + .not(.group) {
-		margin-top: 8px;
-	}
-
 	& .group.header {
 		padding: 4px 4px;
 		font-weight: bold;
@@ -445,15 +435,6 @@ div[data-tooltip]:after {
 	}
 	/* first box after header box */
 	& .group.header + .group:not(.header) {
-		padding-top: 4px;
-	}
-
-	/* regular box before nested box */
-	& .group:not(.outer):has(+.group.outer) {
-		padding-bottom: 4px;
-	}
-	/* regular box after nested box */
-	& .group.outer + .group:not(.outer) {
 		padding-top: 4px;
 	}
 
