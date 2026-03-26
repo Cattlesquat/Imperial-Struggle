@@ -3354,7 +3354,7 @@ function preview_scoring_results() {
 	if (has_active_ministry(BRITAIN, EAST_INDIA_COMPANY)) {
 		let award_vp = 0
 		for (const a of [ TEXTILES, SILK, FRUIT, FUR_TRADE, RUM]) {
-			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a)) {
+			if (has_advantage(BRITAIN, a) && !is_advantage_conflicted(a) && !is_advantage_exhausted(a)) {
 				award_vp++
 			}
 		}
