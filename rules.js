@@ -2233,7 +2233,7 @@ function preset_handicap(scenario)
 {
 	if (scenario !== "Standard" && scenario !== "Standard (Bid)") {
 		var { side, bid } = HANDICAP_TABLE[scenario]
-		log("=Setup")
+		log("#Setup")
 		log(say_nation(ROLES[side], side) + " received " + bid + " treaty point" + s(bid) + ".")
 		G.treaty_points[side] += bid
 	}
@@ -2270,7 +2270,7 @@ P.bid_for_sides = {
 		L.final_confirmation = false
 		L.bidding_for_sides = true // for client voodoo
 
-		log ("=Bid for Sides")
+		log ("#Bid for Sides")
 		//log ("First bidder: " + say_player(G.active) + ".")
 		log ("First bidder: " + say_nation("Player " + (G.active + 1), G.active))
 	},
@@ -4046,14 +4046,16 @@ P.final_scoring_phase = {
 
 /* 2.4 - VICTORY */
 P.game_over = function () {
-	log ("=Game Over")
 	if (G.vp >= 16) {
+		log ("=frGame Over")
 		let msg = bold("France wins! VP marker at " + G.vp + "!")
 		finish (FRANCE, msg)
 	} else if (G.vp <= 14) {
+		log ("=brGame Over")
 		let msg = bold("Britain wins! VP marker at " + G.vp + "!")
 		finish (BRITAIN, msg)
 	} else {
+		log ("=Game Over")
 		let msg = bold("Victory points tied at 15.")
 		log (msg)
 		if (available_debt(FRANCE) > available_debt(BRITAIN)) {
