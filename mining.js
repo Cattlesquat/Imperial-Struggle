@@ -413,6 +413,8 @@ const TRANSIENT_TILE_MADE_ECON              = 15
 
 // Data mining
 
+const TIE = 2
+
 var D = { }
 
 data_miner()
@@ -425,6 +427,7 @@ function report(string)
 function is_digit(c) {
 	return (c >= '0') && (c <= '9')
 }
+
 
 function data_miner()
 {
@@ -534,6 +537,24 @@ function data_miner()
 	D.resigned = 0
 	D.resigned_wins = [0, 0]
 
+	D.wars = [ 0, 0, 0, 0, 0 ]
+	D.theaters = [ ]
+	D.theaters_won = [ ]
+	D.theater_level = [ ]
+
+	for (let w = 0; w <= 4; w++) {
+		D.theaters[w] = []
+		D.theaters_won[w] = []
+		D.theater_level[w] = []
+		for (let t = 0; t <= 4; t++) {
+			D.theaters[w][t] = 0
+			D.theaters_won[w][t] = [0, 0, 0]
+			D.theater_level[w][t] = []
+			for (let v = 0; v <= 4; v++) {
+				D.theater_level[w][t][v] = [ 0, 0 ]
+			}
+		}
+	}
 
 
 	const fs = require("fs")
@@ -545,7 +566,7 @@ function data_miner()
 
 	for (var game of select_games_of_title.iterate("imperial-struggle")) {
 		var G = JSON.parse(game.state)
-		data_mine(G.log)
+		data_mine(G, G.log)
 	}
 
 	data_mine_victory()
@@ -820,7 +841,25 @@ function score(who, p, e = -1)
 	if (e >= 0) D.vp_scored_era[e][who] += p
 }
 
-function data_mine(log)
+
+function theater_tier(war, winner, theater, delta)
+{
+	var margin
+	if ((winner === FRANCE) && (data.wars[war].theater[theater].france_margin !== undefined)) {
+		margin = data.wars[war].theater[theater].france_margin
+	} else {
+		margin = data.wars[war].theater[theater].margin
+	}
+
+	for (let i = margin.length - 1; i >= 0; i--) {
+		if (delta >= margin[i]) return i
+	}
+
+	return -1
+}
+
+
+function data_mine(G, log)
 {
 	let turn = 0
 	let awards = [ 0, 0, 0, 0 ]
@@ -829,6 +868,7 @@ function data_mine(log)
 	let first
 	let era = 0
 	let final_scoring = false
+	let war = 0
 
 	let lasted_through_turn_1 = false
 	for (let idx = 0; idx < log.length; idx++) {
@@ -866,7 +906,7 @@ function data_mine(log)
 		}
 
 		if (l.startsWith("=Award Phase")) {
-			ll = log[idx+1]
+			ll = log[idx + 1]
 			for (let region = 0; region < NUM_REGIONS; region++) {
 				let a = ll[2 + region] - '0'
 				awards[region] = a
@@ -894,14 +934,14 @@ function data_mine(log)
 		}
 
 		if (l.startsWith("=Initiative Phase")) {
-			ll = log[idx+1]
+			ll = log[idx + 1]
 			initiative = ll.includes("France") ? FRANCE : BRITAIN
 			D.initiative[turn][initiative]++
 		}
 
 		// Ministry
 		if (l.includes("Ministry Revealed")) {
-			ll = log[idx-1]
+			ll = log[idx - 1]
 			let matches = ll.match(/\d+$/)
 			if (matches) {
 				let m = parseInt(matches[0])
@@ -912,7 +952,7 @@ function data_mine(log)
 		// Investment tile
 		//if (l.slice(1,3) === "i")
 		if (l.startsWith("[iX0")) {
-			ll = log[idx-1]
+			ll = log[idx - 1]
 			let who = ll.includes("France") ? FRANCE : BRITAIN
 			let inv = ((l[4] - '0') * 10) + (l[5] - '0')
 			D.investment_picked[inv][who]++
@@ -971,8 +1011,8 @@ function data_mine(log)
 		}
 
 		if (!final_scoring) {
-			if (l.includes ("Scoring: PRESTIGE")) {
-				ll = log[idx+1]
+			if (l.includes("Scoring: PRESTIGE")) {
+				ll = log[idx + 1]
 				if (ll.includes("gained")) {
 					let who = ll.includes("France") ? FRANCE : BRITAIN
 					D.prestige_wins[who]++
@@ -986,7 +1026,7 @@ function data_mine(log)
 			for (let region = 0; region < NUM_REGIONS; region++) {
 				let caps = data.regions[region].name.toUpperCase()
 				if (l.includes("Scoring: " + caps)) {
-					ll = log[idx+1]
+					ll = log[idx + 1]
 					if (ll.includes("gained") && ll.includes("VP")) {
 						let who = ll.includes("France") ? FRANCE : BRITAIN
 						D.region_wins[region][who]++
@@ -1007,7 +1047,7 @@ function data_mine(log)
 			for (let d = 0; d < NUM_DEMANDS; d++) {
 				let caps = data.demands[d].name.toUpperCase()
 				if (l.includes("Scoring: " + caps)) {
-					ll = log[idx+1]
+					ll = log[idx + 1]
 					if (ll.includes("gained") && ll.includes("VP")) {
 						let who = ll.includes("France") ? FRANCE : BRITAIN
 						D.demand_wins[d][who]++
@@ -1025,15 +1065,15 @@ function data_mine(log)
 				}
 			}
 		} else {
-			if (l.includes ("Final Scoring: PRESTIGE")) {
-				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN: 2
+			if (l.includes("Final Scoring: PRESTIGE")) {
+				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN : TIE
 				D.final_prestige_wins[who]++
 			}
 
-			if (l.includes ("Final Scoring: DEBT")) {
-				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN: 2
+			if (l.includes("Final Scoring: DEBT")) {
+				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN : TIE
 				D.final_debt_wins[who]++
-				if (who !== 2) {
+				if (who !== TIE) {
 					let matches = l.match(/\d+/)
 					if (matches) {
 						let vp = parseInt(matches[0])
@@ -1045,13 +1085,13 @@ function data_mine(log)
 			for (let d = 0; d < NUM_DEMANDS; d++) {
 				let caps = data.demands[d].name.toUpperCase()
 				if (l.includes("Final Scoring: " + caps)) {
-					let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN: 2
+					let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN : TIE
 					D.final_demand_wins[d][who]++
 				}
 			}
 
 			if (l.includes("2 VP (Control of")) {
-				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN: 2
+				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN : TIE
 				D.final_territory_wins[who]++
 				let matches = l.match(/\d+/g)
 				if (matches) {
@@ -1063,7 +1103,7 @@ function data_mine(log)
 			if (l.includes("France wins!") || l.includes("Britain wins!")) {
 				let who = l.includes("France") ? FRANCE : BRITAIN
 				D.final_scoring_wins[who]++
-				if (l.includes ("Tie-breaker")) {
+				if (l.includes("Tie-breaker")) {
 					D.tie_breaker++
 					D.tie_breaker_wins[who]++
 					if (l.includes("Final tie-breaker")) {
@@ -1076,7 +1116,7 @@ function data_mine(log)
 		if (l.includes("France resigned") || l.includes("Britain resigned")) {
 			let who = l.includes("France") ? FRANCE : BRITAIN
 			D.resigned++
-			D.resigned_wins[1-who]++
+			D.resigned_wins[1 - who]++
 		}
 
 		if (l.includes("wins the game")) {
@@ -1095,6 +1135,42 @@ function data_mine(log)
 				D.peace_autovictory[who]++
 			}
 		}
+
+		for (let w = 1; w <= 4; w++) {
+			if (l.includes(data.wars[w].name)) {
+				war = w
+				D.wars[war]++
+			}
+		}
+
+		if (l.includes("War Layout Phase")) war = 0
+
+		if (war > 0) {
+			for (let t = 1; t <= data.wars[war].theaters; t++) {
+				if (l.includes(data.wars[war].theater_names[t])) {
+					let who = -1
+					if (l.includes("France")) {
+						who = FRANCE
+					} else if (l.includes("Britain")) {
+						who = BRITAIN
+					} else if (l.includes("TIE")) {
+						who = TIE
+					}
+					if (who >= 0) {
+						D.theaters_won[war][t][who]++
+						if (who !== TIE) {
+							let matches = l.match(/\d+/g)
+							if (matches) {
+								let margin = parseInt(matches[0])
+								let tier = theater_tier(war, who, t, margin)
+								if (tier > 0) {
+									D.theater_level[war][t][tier][who]++
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
-
