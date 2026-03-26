@@ -3637,8 +3637,8 @@ function update_scoring_summary_dialog_fancy() {
 				<div>Regions</div>
 				<div class="score-table-awards">
 					${format_region_score_summary(REGION_NORTH_AMERICA)}
-					${format_region_score_summary(REGION_CARIBBEAN)}
 					${format_region_score_summary(REGION_EUROPE)}
+					${format_region_score_summary(REGION_CARIBBEAN)}
 					${format_region_score_summary(REGION_INDIA)}
 				</div>
 			</div>
