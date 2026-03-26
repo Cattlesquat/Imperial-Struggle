@@ -919,6 +919,10 @@ body[data-noanims="false"] {
 	gap: 1px;
 }
 
+.war-alliance.french-indian-war .alliance-row:nth-child(1n+4) {
+	margin-left: 15px;
+}
+
 .alliance-row {
 	pointer-events: auto;
 	display: flex;

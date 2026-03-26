@@ -1278,7 +1278,7 @@ function on_init() {
 
 		define_thing("war-alliance", 31).layout(war_layout.war_7yw_theater_1_alliances)
 		define_thing("war-alliance", 32).layout(war_layout.war_7yw_theater_2_alliances)
-		define_thing("war-alliance", 33).layout(war_layout.war_7yw_theater_3_alliances)
+		define_thing("war-alliance", 33).layout(war_layout.war_7yw_theater_3_alliances).keyword("french-indian-war")
 		define_thing("war-alliance", 34).layout(war_layout.war_7yw_theater_4_alliances)
 
 		define_thing("war-margin", 311).layout([ 88,  306, 396, 32])
@@ -4189,10 +4189,10 @@ const war_layout = {
 	war_7yw_theater_4_winner: [810, 465, 60, 25],
 
 	// 7YW - Alliances
-	war_7yw_theater_1_alliances: [518, 147, 50, 152],
-	war_7yw_theater_2_alliances: [1022, 150, 50, 152],
-	war_7yw_theater_3_alliances: [533, 514, 50, 152],
-	war_7yw_theater_4_alliances: [1022, 522, 50, 152],
+	war_7yw_theater_1_alliances: [520, 147, 50, 152],
+	war_7yw_theater_2_alliances: [1030, 150, 50, 152],
+	war_7yw_theater_3_alliances: [505, 514, 50, 152],
+	war_7yw_theater_4_alliances: [1030, 522, 50, 152],
 
 	// AWI - Strength
 	war_awi_theater_1_strength_fr: [50,  506, 100, 25],
