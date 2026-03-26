@@ -1,13 +1,38 @@
 main { background-color: slategray; }
 
-header { background-color: tan }
-body.France header.your_turn { background-color: skyblue }
-body.Britain header.your_turn { background-color: salmon }
+#chat_text .France { background-color: var(--blue) }
+#chat_text .Britain { background-color: var(--red) }
 
-#role_France { background-color: skyblue }
-#role_Britain { background-color: salmon }
-#chat_text .France { background-color: skyblue }
-#chat_text .Britain { background-color: salmon }
+header { background-color: tan }
+body.France header.your_turn { background-color: hsl(200, 85%, 75%) }
+body.Britain header.your_turn { background-color: hsl(360, 70%, 75%) }
+
+#role_France { background-color: hsl(200, 80%, 80%) }
+#role_Britain { background-color: hsl(360, 70%, 80%) }
+
+
+#log {
+	--fr-text: mediumblue;
+	--br-text: darkred;
+
+	--fr-header: hsl(200, 85%, 80%);
+	--fr-box-header: hsl(200, 85%, 85%);
+	--fr-box: hsl(200, 85%, 90%);
+	--fr-fr-box-header: hsl(200, 85%, 80%);
+	--fr-fr-box: hsl(200, 85%, 85%);
+
+	--br-header: hsl(360, 70%, 80%);
+	--br-box-header: hsl(360, 70%, 85%);
+	--br-box: hsl(360, 70%, 90%);
+	--br-br-box-header: hsl(360, 70%, 80%);
+	--br-br-box: hsl(360, 70%, 85%);
+
+	--both-box-header: hsl(0, 0%, 85%);
+	--both-box: hsl(0, 0%, 90%);
+
+	--turn-header: hsl(300, 50%, 75%);
+	--both-header: hsl(120, 50%, 80%);
+}
 
 header details menu li .hotkey { float: right; width: 16px; text-align: center; color: dimgray; }
 header details menu { min-width: 200px; }
@@ -345,33 +370,18 @@ div[data-tooltip]:after {
 
 /* LOG */
 
-#log {
-	--fr-header: skyblue;
-	--fr-box-header: hsl(197, 71%, 80%);
-	--fr-box: hsl(197, 71%, 90%);
-	--fr-text: mediumblue;
-
-	--br-header: salmon;
-	--br-box-header: lightsalmon;
-	--br-box: peachpuff;
-	--br-text: darkred;
-
-	--both-box-header: #ccc;
-	--both-box: #ddd;
-}
-
 #log .i {
 	text-indent: 20px;
 }
 
 #log .h1 {
 	margin: 8px 0;
-	background-color: violet;
+	background-color: var(--turn-header);
 }
 
 #log .h2 {
 	margin: 8px 0;
-	background-color: palegreen;
+	background-color: var(--both-header);
 }
 
 #log .h2.br {
@@ -393,44 +403,100 @@ div[data-tooltip]:after {
 	border-bottom: 1px solid black;
 }
 
-#log .group {
-	margin: 0 6px 0px 6px;
+/* LOG BOXES */
+
+#log {
+	& .group.header.fr { background-color: var(--fr-box-header); }
+	& .group.header.br { background-color: var(--br-box-header); }
+	& .group.header.both { background-color: var(--both-box-header); }
+
+	& .group.fr { background-color: var(--fr-box); }
+	& .group.br { background-color: var(--br-box); }
+	& .group.both { background-color: var(--both-box); }
+
+	/* darker color for inner box when same-color boxes nest */
+	& .outer.fr > .inner.header.fr { background-color: var(--fr-fr-box-header); }
+	& .outer.br > .inner.header.br { background-color: var(--br-br-box-header); }
+	& .outer.fr > .inner.fr { background-color: var(--fr-fr-box); }
+	& .outer.br > .inner.br { background-color: var(--br-br-box); }
+
+	/* margins before and after boxes */
+	& :not(.group) + .group {
+		margin-top: 8px;
+	}
+	& .group + .not(.group) {
+		margin-top: 8px;
+	}
+
+	& .group.header {
+		padding: 4px 4px;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	& .group {
+		margin: 0 6px;
+		padding: 0px 8px;
+	}
+
+	/* last box */
+	& .group:has(+:not(.group)) {
+		padding-bottom: 4px;
+	}
+	/* first box after header box */
+	& .group.header + .group:not(.header) {
+		padding-top: 4px;
+	}
+
+	/* regular box before nested box */
+	& .group:not(.outer):has(+.group.outer) {
+		padding-bottom: 4px;
+	}
+	/* regular box after nested box */
+	& .group.outer + .group:not(.outer) {
+		padding-top: 4px;
+	}
+
+	/* smaller padding in nested boxes */
+	& .outer.group {
+		padding: 0px 7px;
+	}
+	& .inner.group {
+		margin: 0;
+		padding: 0px 4px;
+	}
+	& .inner.group.header {
+		padding: 2px 4px;
+	}
 }
 
-#log .header {
-	padding: 4px;
-	margin-top:8px;
-	margin-bottom:0;
-	font-weight: bold;
-	text-align: center;
+/*
+#log {
+	& :not(.group) + .group {
+		border-top: 1px solid black;
+	}
+	& .group:has(+:not(.group)) {
+		border-bottom: 1px solid black;
+	}
+	& .group {
+		border-left: 1px solid black;
+		border-right: 1px solid black;
+	}
+
+	& :not(.outer) + .outer .inner {
+		border-top: 1px solid black;
+	}
+	& .outer:has(+:not(.outer)) .inner {
+		border-bottom: 1px solid black;
+	}
+
+	& .inner {
+		border: none !important;
+	}
 }
+*/
 
-/* Log boxes */
-
-#log .group.header.fr { background-color: var(--fr-box-header); }
-#log .group.header.br { background-color: var(--br-box-header); }
-#log .group.header.both { background-color: var(--both-box-header); }
-
-#log .group.fr { background-color: var(--fr-box); }
-#log .group.br { background-color: var(--br-box); }
-#log .group.both { background-color: var(--both-box); }
-
-#log .header.group.nested {
-	margin-top: 0;
-}
-
-#log .group.nested {
-	margin-left: 6px;
-	border-left: 6px solid var(--parent-color);
-	border-right: 6px solid var(--parent-color);
-	margin-bottom: 0;
-}
-
-#log .group.nested.parent-fr { --parent-color: var(--fr-box); }
-#log .group.nested.parent-br { --parent-color: var(--br-box); }
-#log .group.nested.parent-both { --parent-color: var(--both-box); }
-
-/* Tipsy text */
+/* LOG TIPSY TEXT */
 
 .flag-string { color: black }
 .flag-string-fr { color: var(--fr-text) }

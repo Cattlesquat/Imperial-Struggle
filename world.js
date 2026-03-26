@@ -1374,7 +1374,7 @@ function close_log_box(ix) {
 	}
 }
 
-function apply_log_boxes(ix, div, common) {
+function apply_log_boxes(ix, outer, common) {
 	var result = []
 	for (var box of world.log_boxes) {
 		// add to class if box is open and not yet closed!
@@ -1382,14 +1382,20 @@ function apply_log_boxes(ix, div, common) {
 			result.push(box.keyword)
 	}
 	if (result.length > 0) {
-		div.classList.add(common)
-		for (var keyword of result)
-			div.classList.add(keyword)
-		if (result.length > 1) {
-			div.classList.add("nested")
-			div.classList.add("parent-" + result[0])
+		outer.classList.add(common)
+		if (result.length > 1)
+			outer.classList.add("outer")
+		outer.classList.add(result[0])
+		for (var i = 1; i < result.length; ++i) {
+			var inner = document.createElement("div")
+			inner.classList.add(common)
+			inner.classList.add("inner")
+			inner.classList.add(result[i])
+			outer.appendChild(inner)
+			outer = inner
 		}
 	}
+	return outer
 }
 
 /* PREFERENCES (WIP) */

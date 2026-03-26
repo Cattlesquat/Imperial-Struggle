@@ -2361,7 +2361,7 @@ function strike(s, condition = true) {
 	return "<s>" + s + "</s>"
 }
 
-/* ESCAPE CODES: LOG & PROMPT FORMATTING */
+/* LOG & PROMPT FORMATTING */
 
 function on_prompt(text) {
 	if (text === null) {
@@ -2375,11 +2375,15 @@ const log_box_keywords = ["fr", "br", "both"]
 const log_box_types = { "1": "ministry", "2": "event", "3": "advantage", "4": "misc" }
 
 function on_log(text, ix) {
-	var keyword
-	if (typeof text !== "string") text = String(text)  // instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
+	// instead of having the whole client crash at the startsWith when I accidentally log(struct) or whatever
+	if (typeof text !== "string")
+		text = String(text)
 
 	var p = document.createElement("div")
+
 	update_log_boxes(ix)
+
+	var is_box_header = false
 
 	if (text.startsWith("=br")) {
 		text = text.substring(3)
@@ -2393,7 +2397,7 @@ function on_log(text, ix) {
 
 	switch (text[0]) {
 		case "{":
-			p.classList.add("header")
+			is_box_header = true
 			open_log_box(ix, log_box_keywords[text[1]])
 			text = text.substring(3)
 			break
@@ -2429,9 +2433,11 @@ function on_log(text, ix) {
 		p.className = 'h2'
 	}
 
-	apply_log_boxes(ix, p, "group")
+	var inner = apply_log_boxes(ix, p, "group")
+	inner.innerHTML = escape_text(text)
+	if (is_box_header)
+		inner.classList.add("header")
 
-	p.innerHTML = escape_text(text)
 	return p
 }
 
