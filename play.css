@@ -5,32 +5,32 @@ main { background-color: slategray; }
 
 header { background-color: tan }
 body.France header.your_turn { background-color: hsl(200, 85%, 75%) }
-body.Britain header.your_turn { background-color: hsl(360, 70%, 75%) }
+body.Britain header.your_turn { background-color: hsl(6, 95%, 75%) }
 
-#role_France { background-color: hsl(200, 80%, 80%) }
-#role_Britain { background-color: hsl(360, 70%, 80%) }
+#role_France { background-color: hsl(200, 85%, 80%) }
+#role_Britain { background-color: hsl(6, 95%, 80%) }
 
 
 #log {
 	--fr-text: mediumblue;
 	--br-text: darkred;
 
-	--fr-header: hsl(200, 85%, 80%);
+	--fr-header: hsl(200, 90%, 80%);
 	--fr-box-header: hsl(200, 85%, 85%);
 	--fr-box: hsl(200, 85%, 90%);
 	--fr-fr-box-header: hsl(200, 85%, 80%);
 	--fr-fr-box: hsl(200, 85%, 85%);
 
-	--br-header: hsl(360, 70%, 80%);
-	--br-box-header: hsl(360, 70%, 85%);
-	--br-box: hsl(360, 70%, 90%);
-	--br-br-box-header: hsl(360, 70%, 80%);
-	--br-br-box: hsl(360, 70%, 85%);
+	--br-header: hsl(6, 95%, 80%);
+	--br-box-header: hsl(6, 70%, 85%);
+	--br-box: hsl(6, 70%, 90%);
+	--br-br-box-header: hsl(6, 70%, 80%);
+	--br-br-box: hsl(6, 70%, 85%);
 
 	--both-box-header: hsl(0, 0%, 85%);
 	--both-box: hsl(0, 0%, 90%);
 
-	--turn-header: hsl(300, 50%, 75%);
+	--turn-header: darkseagreen;
 	--both-header: hsl(120, 50%, 80%);
 }
 
