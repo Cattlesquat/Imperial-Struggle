@@ -1,7 +1,421 @@
+"use strict"
+
+const data = require("./data.js")
+
+/* CONSTANTS */
+
+const GAME_STATE_VERSION = 22
+
+const TRUE  = 1 // JSON size optimization preserving a bit of readability
+const FALSE = 0
+
+// TURNS
+const PEACE_TURN_1 = 0
+const WAR_TURN_WSS = 1
+const PEACE_TURN_2 = 2
+const PEACE_TURN_3 = 3
+const WAR_TURN_WAS = 4
+const PEACE_TURN_4 = 5
+const WAR_TURN_7YW = 6
+const PEACE_TURN_5 = 7
+const WAR_TURN_AWI = 8
+const PEACE_TURN_6 = 9
+const GAME_OVER    = 10
+
+// FLAGS
+const FRANCE  = 0
+const BRITAIN = 1
+const SPAIN   = 2
+const USA     = 3
+const NONE    = 4   // HO HO HO! WHAT COULD POSSIBLY GO WRONG!
+
+// Types of Action Point
+const ECON  = 0
+const DIPLO = 1
+const MIL   = 2
+const WILD  = 3
+
+// Magnitudes of Action
+const MAJOR = 0
+const MINOR = 1
+
+// Amounts of things!
+const NUM_REGIONS           = 4
+const NUM_INVESTMENT_TILES  = 24
+const NUM_BASE_WAR_TILES    = 16 // per side
+const NUM_BONUS_WAR_TILES   = 12 // per side, per war
+const NUM_WARS              = 4
+const NUM_EVENT_CARDS       = 41
+const NUM_MINISTRY_KEYWORDS = 5
+const NUM_MINISTRY_CARDS    = 26
+const OLD_NUM_MINISTRY_CARDS= 21
+const NUM_MINISTRY_SLOTS    = 2
+const NUM_DEMANDS           = 6
+const NUM_AWARD_TILES       = 8
+const NUM_ADVANTAGES        = 22
+const NUM_SPACES            = 112
+const NUM_ACTION_POINTS_TYPES= 3
+const NUM_SQUADRONS         = 8 // per side, counter mix limit
+
+// Types of War Tile
+const WAR_DUDE = 0 // Just a soldier
+const WAR_DEBT = 1 // Debt attack
+const WAR_FORT = 2 // Fort/Fleet attack
+const WAR_FLAG = 3 // Diplomatic attack
+
+// Eras
+const SUCCESSION_ERA = 0
+const EMPIRE_ERA     = 1
+const REVOLUTION_ERA = 2
+
+// Wars
+const WAR_WSS = 1
+const WAR_WAS = 2
+const WAR_7YW = 3
+const WAR_AWI = 4
+
+// Ministry keywords
+const KEYWORD_NONE = -1
+const FINANCE      =  0
+const MERCANTILISM =  1
+const GOVERNANCE   =  2
+const STYLE        =  3
+const SCHOLARSHIP  =  4
+
+// Global Demand
+const FURS    = 0
+const SPICE   = 1
+const FISH    = 2
+const TOBACCO = 3
+const SUGAR   = 4
+const COTTON  = 5
+
+// Advantages
+const BALTIC_TRADE            = 0   // EUROPE
+const CENTRAL_EUROPE_CONFLICT = 1
+const GERMAN_DIPLOMACY        = 2
+const ITALY_INFLUENCE         = 3
+const MEDITERRANEAN_INTRIGUE  = 4
+const NAVAL_BASTION           = 5
+const SILESIA_NEGOTIATIONS    = 6
+const ALGONQUIN_RAIDS         = 7   // NORTH AMERICA
+const FUR_TRADE               = 8
+const IROQUOIS_RAIDS          = 9
+const PATRIOT_AGITATION       = 10
+const WHEAT                   = 11
+const FRUIT                   = 12  // CARIBBEAN
+const LETTERS_OF_MARQUE       = 13
+const PIRATE_HAVENS           = 14
+const RUM                     = 15
+const SLAVING_CONTRACTS       = 16
+const POWER_STRUGGLE          = 17  // INDIA
+const RAIDS_AND_INCURSIONS    = 18
+const SEPARATIST_WARS         = 19
+const SILK                    = 20
+const TEXTILES                = 21
+
+// Event Deck Eras
+const SUCCESSION_ERA_CARDS = 15
+const EMPIRE_ERA_CARDS     = 30
+const REVOLUTION_ERA_CARDS = 41
+
+// Event Cards
+const CARNATIC_WAR                  = 1  // SUCCESSION ERA
+const ACTS_OF_UNION                 = 2
+const TROPICAL_DISEASES             = 3
+const SOUTH_SEA_SPECULATION         = 4
+const WAR_OF_JENKINS_EAR            = 5
+const NATIVE_AMERICAN_ALLIANCES     = 6
+const AUSTRO_SPANISH_RIVALRY        = 7
+const TAX_REFORM                    = 8
+const GREAT_NORTHERN_WAR            = 9
+const VATICAN_POLITICS              = 10
+const CALICO_ACTS                   = 11
+const MILITARY_SPENDING_OVERRUNS    = 12
+const ALBERONIS_AMBITION            = 13
+const FAMINE_IN_IRELAND             = 14
+const INTEREST_PAYMENTS             = 15
+const CARIBBEAN_SLAVE_UNREST        = 16 // EMPIRE ERA
+const PACTE_DE_FAMILLE              = 17
+const BYNGS_TRIAL                   = 18
+const LE_BEAU_MONDE                 = 19
+const HYDER_ALI                     = 20
+const CO_HONG_SYSTEM                = 21
+const CORSICAN_CRISIS               = 22
+const EUROPEAN_PANIC                = 23
+const WEST_AFRICAN_GOLD_MINING      = 24
+const WAR_OF_THE_QUADRUPLE_ALLIANCE = 25
+const SALON_D_HERCULE               = 26
+const BENGAL_FAMINE                 = 27
+const FATHER_LE_LOUTRE              = 28
+const WAR_OF_THE_POLISH_SUCCESSION  = 29
+const JONATHANS_COFFEE_HOUSE        = 30
+const NOOTKA_INCIDENT               = 31 // REVOLUTION ERA
+const HAITIAN_REVOLUTION            = 32
+const LOGE_DES_NEUF_SOEURS          = 33
+const LA_GABELLE                    = 34
+const JESUIT_ABOLITION              = 35
+const WEALTH_OF_NATIONS             = 36
+const DEBT_CRISIS                   = 37
+const EAST_ASIA_PIRACY              = 38
+const STAMP_ACT                     = 39
+const FALKLANDS_CRISIS              = 40
+const COOK_AND_BOUGAINVILLE         = 41
+
+// MINISTRY CARDS
+const THE_CARDINAL_MINISTERS      = 1   // F
+const JOHN_LAW                    = 2   // F
+const COURT_OF_THE_SUN_KING       = 3   // F
+const JACOBITE_UPRISINGS          = 4   // F
+const ROBERT_WALPOLE              = 5   //  B
+const JONATHAN_SWIFT              = 6   //  B
+const EAST_INDIA_COMPANY          = 7   //  B
+const BANK_OF_ENGLAND             = 8   //  B
+const NEW_WORLD_HUGUENOTS         = 9   // F
+const EDMOND_HALLEY               = 10  //  B
+const CHOISEUL                    = 11  // F
+const DUPLEIX                     = 12  // F
+const POMPADOUR_AND_DU_BARRY      = 13  // F
+const VOLTAIRE                    = 14  // F
+const PITT_THE_ELDER              = 15  //  B
+const CHARLES_HANBURY_WILLIAMS    = 16  //  B
+const MERCHANT_BANKS              = 17  //  B
+const SAMUEL_JOHNSON              = 18  //  B
+const JAMES_WATT                  = 19  //  B
+const PAPACY_HANOVER_NEGOTIATIONS = 20  //  B
+const TOWNSHEND_ACTS              = 21  //  B
+const EDMUND_BURKE                = 22  //  B
+const TURGOT                      = 23  // F
+const NORTH_AMERICAN_TRADE        = 24  // F
+const MARQUIS_DE_CONDORCET        = 25  // F
+const LAVOISIER                   = 26  // F
+
+// REGIONS
+const REGION_EUROPE        = 0
+const REGION_NORTH_AMERICA = 1
+const REGION_CARIBBEAN     = 2
+const REGION_INDIA         = 3
+const REGION_ALL           = -1
+
+// SUBREGIONS
+const SUBREGION_CANADA         = 0
+const SUBREGION_NORTHERN_COL   = 1
+const SUBREGION_HOOGHLY_RIVER  = 2
+const SUBREGION_CARNATIC_COAST = 3
+
+// SPACE TYPES
+const POLITICAL = 0
+const MARKET    = 1
+const NAVAL     = 2
+const TERRITORY = 3
+const FORT      = 4
+
+// SPACES PER REGION
+const NUM_SPACES_EUROPE         = 30
+const NUM_SPACES_NORTH_AMERICA  = 30
+const NUM_SPACES_CARIBBEAN      = 30
+const NUM_SPACES_INDIA          = 22
+
+// SPACES
+const SPACE_NAVY_BOX = -1 // The negative numbers are for keeping track of squadron "token" locations for animation purposes
+const SPACE_UNBUILT = -2
+const SPACE_THE_BRIG = -3
+const SPACE_REMOVED_FROM_GAME = -4
+const IRELAND_1 = 0
+const IRELAND_2 = 1
+const SCOTLAND_1 = 2
+const SCOTLAND_2 = 3
+const DENMARK = 4
+const PRUSSIA_1 = 5
+const PRUSSIA_2 = 6
+const PRUSSIA_3 = 7
+const PRUSSIA_4 = 8
+const SWEDEN = 9
+const RUSSIA = 10
+const DUTCH_1 = 11
+const DUTCH_2 = 12
+const GERMAN_STATES_1 = 13
+const GERMAN_STATES_2 = 14
+const BAVARIA = 15
+const AUSTRIA_1 = 16
+const AUSTRIA_2 = 17
+const AUSTRIA_3 = 18
+const AUSTRIA_4 = 19
+const SARDINIA = 20
+const SAVOY = 21
+const SPAIN_1 = 22
+const SPAIN_2 = 23
+const SPAIN_3 = 24
+const SPAIN_4 = 25
+const GIBRALTAR = 26
+const MINORCA = 27
+const BISCAY = 28
+const BALEARIC = 29
+const ALGONQUIN = 30
+const HUDSON_BAY = 31
+const YORK_FACTORY = 32
+const QUEBEC_AND_MONTREAL = 33
+const GULF_OF_ST_LAWRENCE = 34
+const CABOT_STRAIT = 35
+const LOUISBOURG = 36
+const ACADIA = 37
+const NORTHEAST_CHANNEL = 38
+const HALIFAX = 39
+const GEORGES_BANK = 40
+const ATLANTIC_PASSAGE = 41
+const GULF_OF_MAINE = 42
+const MASS_BAY = 43
+const NORTHERN_COLONIES = 44
+const CHESAPEAKE = 45
+const HUDSON_VALLEY = 46
+const ALBANY = 47
+const CUMBERLAND = 48
+const OHIO_FORKS = 49
+const ALLEGHENY = 50
+const NIAGARA = 51
+const OSWEGO = 52
+const CHAMPLAIN_VALLEY = 53
+const ILE_AUX_NOIX = 54
+const CATARAQUI = 55
+const IROQUOIS = 56
+const SONS_OF_LIBERTY = 57
+const USA_1 = 58
+const USA_2 = 59
+const ASIENTO = 60
+const PRIVATEERS = 61
+const BUCCANEERS = 62
+const CAROLINAS = 63
+const GEORGIA = 64
+const SAN_AGUSTIN = 65
+const PANZACOLA = 66
+const BAHAMAS_RUN_WEST = 67
+const BAHAMAS_RUN_NORTH = 68
+const CAICOS = 69
+const BAHAMAS_RUN = 70
+const ST_DOMINGUE = 71
+const PORT_DE_PAIX = 72
+const PUERTO_PRINCIPE = 73
+const PUERTO_RICO = 74
+const ANTIGUA = 75
+const MARTINIQUE = 76
+const ST_LUCIA = 77
+const ANTILLES_CHANNEL = 78
+const GUADELOUPE = 79
+const BARBADOS = 80
+const HAVANA = 81
+const GULF_OF_CAZONES = 82
+const SANTIAGO = 83
+const JAMAICA = 84
+const CAYMAN_PASSAGE = 85
+const CUBA_PASSAGE_EAST = 86
+const CUBA_PASSAGE = 87
+const ST_JAMES = 88
+const LOUISIANA = 89
+const MARATHA = 90
+const NIZAM = 91
+const MYSORE = 92
+const MALACCA_ROUTE = 93
+const HOOGHLY_RIVER = 94
+const CHANDERNAGORE = 95
+const PLASSEY = 96
+const WEST_BENGAL = 97
+const MIDNAPORE = 98
+const CALCUTTA = 99
+const KURPA = 100
+const ARCOT = 101
+const VELLORE = 102
+const KANCHIPURAM = 103
+const MADRAS = 104
+const PONDICHERRY = 105
+const KARAIKAL = 106
+const VANDAVASI = 107
+const TIRUCHIRAPPALLI = 108
+const CALICUT = 109
+const MANGALORE = 110
+const MALABAR_COAST = 111
+
+// BIZARRO SPACES
+const NAVY_BOX = 0
+const AWARD_EUROPE = 1
+const AWARD_NORTH_AMERICA = 2
+const AWARD_CARIBBEAN = 3
+const AWARD_INDIA = 4
+
+const ATLANTIC_DOMINANCE = 96 // Index to end of bonus war tiles list
+const BYNG = 98
+
+
+// ACTION_SUBPHASES
+const BEFORE_PICKING_TILE           = 0
+const PICKED_TILE_OPTION_TO_PASS    = 1
+const OPTION_TO_PLAY_EVENT          = 2
+const DURING_EVENT                  = 3
+const BEFORE_SPENDING_ACTION_POINTS = 4
+const ACTION_POINTS_ALREADY_SPENT   = 5
+const NOT_ACTION_PHASE              = 6
+
+// Generic persistent bitflags
+const NUM_BITFLAGS                = 32
+const FLAG_MILITARY_UPGRADE       = 0
+const BUYING_WAR_TILE             = 1
+const JACOBITES_ALWAYS            = 2
+const JACOBITES_NEVER             = 3
+const JACOBITE_DEFEAT             = 4
+const ACTION_MINOR                = 5
+const ELIGIBLE_MINOR              = 6
+const ACTION_COST_ADJUSTED        = 7
+const MINISTRY_ALREADY_REVEALED   = 8
+const MINISTRY_OPTIONAL           = 9
+const MINISTRY_PROMPT_TO_EXHAUST  = 10
+const PAID_ACTION_COST            = 11
+const USED_REQUIRED_ADVANTAGE     = 12
+const MINISTRY_MANUALLY_CLICKED   = 13
+const CARD_HAS_BONUS              = 14
+const QUALIFIES_FOR_BONUS         = 15
+const ADVANTAGE_ALREADY_EXHAUSTED = 16
+const NAVY_FROM_NAVY_BOX          = 17
+const NAVY_DISPLACE               = 18
+const DID_THE_BRIG                = 19
+const JACOBITE_VICTORY_WSS        = 20
+const JACOBITE_VICTORY_WAS        = 21
+const ADVANTAGE_OPTIONAL          = 22
+const LEAVE_LOG_BOX_OPEN          = 23
+const STARTED_MINISTRY_BOX        = 24
+const ELIGIBLE_FOR_HUGUENOTS      = 25
+const MINISTRY_JUST_REVEALED      = 26
+const LAST_EVENT_BY_BRITAIN       = 27
+const DONT_EXHAUST_ADVANTAGE      = 28
+const MUST_PLACE_IN_NORTH_AMERICA = 29
+const SKIPPED_EVENT               = 30
+const ACTION_ENTIRELY_MINOR       = 31
+
+
+// TRANSIENT BITFLAGS FROM EVENTS, MINISTERS, ADVANTAGES
+const NUM_TRANSIENT_BITFLAGS = 32
+const TRANSIENT_SOUTH_SEA_SQUADRON_DISCOUNT = 0
+const TRANSIENT_JACOBITES_SCORE_VP          = 1 // Score VP
+const TRANSIENT_JACOBITES_SHIFT_SPACES      = 2 // Shift spaces with military action points
+const TRANSIENT_CHARLES_HANBURY_WILLIAMS    = 3
+const TRANSIENT_PACTE_DE_FAMILLE            = 4
+const TRANSIENT_MUST_BE_ENTIRELY_IN_EUROPE  = 5
+const TRANSIENT_NORTH_AMERICAN_TRADE        = 6
+const TRANSIENT_FIRST_DEBT_TAKEN            = 7
+const TRANSIENT_COOK                        = 8
+const TRANSIENT_BANK_OF_ENGLAND             = 9
+const TRANSIENT_BURKE_FOR_DISCOUNT          = 10
+const TRANSIENT_EVENT_MADE_DIPLO            = 11
+const TRANSIENT_TILE_MADE_DIPLO             = 12
+const TRANSIENT_EVENT_MADE_ECON             = 13
+const TRANSIENT_BOUGHT_EVENT                = 14
+const TRANSIENT_TILE_MADE_ECON              = 15
+
+
 
 // Data mining
 
 var D = { }
+
+data_miner()
 
 function report(string)
 {
