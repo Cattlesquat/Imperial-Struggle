@@ -577,7 +577,68 @@ function data_miner()
 	data_mine_investments()
 	data_mine_advantages()
 	data_mine_scoring()
+	data_mine_wars()
+}
 
+
+function data_mine_wars()
+{
+	let wins = [ 0, 0, 0 ]
+	let total = 0
+	for (let w = 1; w < 4; w++) {
+		for (let t = 1; t <= data.wars[w].theaters; t++) {
+			for (let who = FRANCE; who <= TIE; who++) {
+				wins[who] += D.theaters_won[w][t][who]
+				total += D.theaters_won[w][t][who]
+			}
+		}
+	}
+
+	report("")
+	report("WARS")
+	report("")
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		report("    " + percent(wins[who]/total) + " " + data.flags[who].adj + " Theater victories (" + wins[who] + ")")
+	}
+	report("    " + percent(wins[TIE]/total) + " Theater ties (" + wins[TIE] + ")")
+
+	for (let war = 1; war <= 4; war++) {
+		report("")
+		report(data.wars[war].name.toUpperCase() + ": " + D.wars[war] + " (" + percent(D.wars[war]/D.games) + " of games)")
+
+		let wins = [ 0, 0, 0 ]
+		let total = 0
+		for (let t = 1; t <= data.wars[war].theaters; t++) {
+			for (let who = FRANCE; who <= TIE; who++) {
+				wins[who] += D.theaters_won[war][t][who]
+				total += D.theaters_won[war][t][who]
+			}
+		}
+
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			report("    " + percent(wins[who]/total) + " " + data.flags[who].adj + " Theater victories (" + wins[who] + ")")
+		}
+		report("    " + percent(wins[TIE]/total) + " Theater ties (" + wins[TIE] + ")")
+
+		for (let t = 1; t <= data.wars[war].theaters; t++) {
+			report ("")
+			report ("        THEATER " + t + ": " + data.wars[war].theater_names[t].toUpperCase())
+
+			let wins = [ 0, 0, 0 ]
+			let total = 0
+			for (let who = FRANCE; who <= TIE; who++) {
+				wins[who] += D.theaters_won[war][t][who]
+				total += D.theaters_won[war][t][who]
+			}
+			for (let who = FRANCE; who <= BRITAIN; who++) {
+				report("            " + percent(wins[who]/total) + " " + data.flags[who].adj + " victories (" + wins[who] + ")")
+				for (let tier = 0; tier < 3; tier++) {
+					report("                " + percent(D.theater_level[war][t][tier][who] / wins[who]) + " Level " + (tier + 1) + " victories (" + D.theater_level[war][t][tier][who] + ")")
+				}
+			}
+			report("            " + percent(wins[TIE]/total) + " ties (" + wins[TIE] + ")")
+		}
+	}
 }
 
 
@@ -810,7 +871,7 @@ function data_mine_events()
 	for (let era = 0; era <= 2; era++) {
 		if (era) report("")
 		report("    Era " + (era + 1))
-		for (let e = 1; e < NUM_EVENT_CARDS; e++) {
+		for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
 			if (data.cards[e].era !== era) continue
 			let subset = D.games
 			let limit = 1
@@ -1137,7 +1198,7 @@ function data_mine(G, log)
 		}
 
 		for (let w = 1; w <= 4; w++) {
-			if (l.includes(data.wars[w].name)) {
+			if (l.includes("#" + data.wars[w].name)) {
 				war = w
 				D.wars[war]++
 			}
@@ -1159,11 +1220,11 @@ function data_mine(G, log)
 					if (who >= 0) {
 						D.theaters_won[war][t][who]++
 						if (who !== TIE) {
-							let matches = l.match(/\d+/g)
+							let matches = l.match(/\d+$/)
 							if (matches) {
 								let margin = parseInt(matches[0])
 								let tier = theater_tier(war, who, t, margin)
-								if (tier > 0) {
+								if (tier >= 0) {
 									D.theater_level[war][t][tier][who]++
 								}
 							}
