@@ -3437,8 +3437,7 @@ function update_event_card_dialog() {
 	else
 		text.push(`<dt>Opponent's Hand or Deck (${V.deck.length})`)
 	for (c of V.deck)
-		for (c of V.deck)
-			text.push("<dd>" + format_card_info(c))
+		text.push("<dd>" + format_card_info(c))
 
 	if (!is_observing()) {
 		text.push(`<dt>Your Hand (${V.hand[R].length})`)
