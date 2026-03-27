@@ -502,7 +502,7 @@ function data_miner() {
 		elo_compute(players, G)
 	}
 
-	do_data_mining()
+	do_data_mining(select_games_of_title, select_players_of_game)
 }
 
 
@@ -811,7 +811,9 @@ function data_mine_victory() {
 		report("        " + percent(D.war_autovictory[who] / total) + " Autovictories Wars (" + D.war_autovictory[who] + ", " + percent(D.war_autovictory[who] / D.autovictory[who]) + " of autovictories)")
 		report("    " + percent(D.final_scoring_wins[who] / total) + " Reached Final Scoring (" + D.final_scoring_wins[who] + ")")
 		report("    " + percent(D.tie_breaker_wins[who] / total) + " Decided By Tie Breaker (" + D.tie_breaker_wins[who] + ")")
-		report("    " + percent((who === BRITAIN) ? (D.final_tie_breaker / total) : 0) + " Decided By FINAL Tie Breaker (" + ((who === BRITAIN) ? D.final_tie_breaker : 0) + ")")
+		if (who === BRITAIN) {
+			report("    " + percent((who === BRITAIN) ? (D.final_tie_breaker / total) : 0) + " Decided By FINAL Tie Breaker (" + ((who === BRITAIN) ? D.final_tie_breaker : 0) + ")")
+		}
 		report("    " + percent(D.resigned_wins[who] / total) + " Opponent Resigned (" + D.resigned_wins[who] + ")")
 	}
 }
@@ -890,7 +892,7 @@ function data_mine_scoring()
 function data_mine_advantages()
 {
 	report("")
-	report("ADVANTAGES")
+	report("ADVANTAGES (total times activated)")
 	for (let a = 0; a < NUM_ADVANTAGES; a++) {
 		let f = D.advantage_used[a][FRANCE]
 		let b = D.advantage_used[a][BRITAIN]
@@ -902,7 +904,7 @@ function data_mine_advantages()
 function data_mine_investments()
 {
 	report("")
-	report("INVESTMENT TILES")
+	report("INVESTMENT TILES (number of times picked)")
 	for (let i = 0; i < NUM_INVESTMENT_TILES; i++) {
 		let f = D.investment_picked[i][FRANCE]
 		let b = D.investment_picked[i][BRITAIN]
@@ -968,7 +970,7 @@ function data_mine_turns()
 function data_mine_ministries(who)
 {
 	report (" ")
-	report (data.flags[who].adj + " Ministries")
+	report (data.flags[who].adj.toUpperCase() + " MINISTRIES" + ((who === FRANCE) ? " (NOT including Jacobites from winning WAS/4)" : ""))
 	for (let era = 0; era <= 2; era++) {
 		report ("    Era " + (era + 1))
 		let total = D.turn_reached[era*2 + 1]
@@ -992,27 +994,48 @@ function percent(v)
 function data_mine_events()
 {
 	report ("")
-	report ("EVENT CARDS")
+	report ("EVENT CARDS (popularity of events by era)")
 	for (let era = 0; era <= 2; era++) {
 		if (era) report("")
 		report("    Era " + (era + 1))
+		let events = []
 		for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
+			if (data.cards[e].era !== era) continue
+			let event = {}
+			event.id = e
+			event.played = D.event_played[e].anyone
+			events.push(event)
+		}
+
+		events.sort((a, b) =>
+		{
+			return b.played - a.played
+		})
+
+
+
+		for (const event of events) {
+			let e = event.id
+		    //for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
 			if (data.cards[e].era !== era) continue
 			let subset = D.games
 			let limit = 1
 			let msg = ")"
+			let percent_string = percent(D.event_played[e].anyone / D.games)
 
 			if (era === 1) {
 				limit = 3
 				subset = D.turn_reached[3]
 				msg = ", " + percent(D.event_played[e].anyone / subset) + " of games reaching turn " + limit + ")"
+				percent_string = percent(D.event_played[e].anyone / subset)
 			} else if (era === 2) {
 				limit = 5
 				subset = D.turn_reached[5]
 				msg = ", " + percent(D.event_played[e].anyone / subset) + " of games reaching turn " + limit + ")"
+				percent_string = percent(D.event_played[e].anyone / subset)
 			}
 
-			report ("        " + data.cards[e].name + "   " + D.event_played[e].anyone + " plays (" + percent(D.event_played[e].anyone / D.games) + " of all games" + msg)
+			report ("        " + percent_string + " " + data.cards[e].name + "   " + D.event_played[e].anyone + " plays (" + percent(D.event_played[e].anyone / D.games) + " of all games" + msg)
 			report ("            " + D.event_played[e].by[FRANCE] + " France, " + percent(D.event_played[e].by_with_bonus[FRANCE] / D.event_played[e].by[FRANCE]) + " with bonus.")
 			report ("            " + D.event_played[e].by[BRITAIN] + " Britain, " + percent(D.event_played[e].by_with_bonus[BRITAIN] / D.event_played[e].by[BRITAIN]) + " with bonus.")
 		}
@@ -1369,7 +1392,7 @@ function report(string)
 }
 
 // THESE ARE THE RUNS THAT WILL GET DONE
-function do_data_mining()
+function do_data_mining(select_games_of_title, select_players_of_game)
 {
 	//data_mining_run(select_games_of_title, select_players_of_game)  // All Games
 	data_mining_run(select_games_of_title, select_players_of_game, "High Skill", 1550, 9999, true)
