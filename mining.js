@@ -410,14 +410,76 @@ const TRANSIENT_BOUGHT_EVENT                = 14
 const TRANSIENT_TILE_MADE_ECON              = 15
 
 
-
 // Data mining
 
 const TIE = 2
 
 var D = { }
+var player_list = []
 
 data_miner()
+
+
+function elo_k(n)
+{
+	return 30
+}
+
+function elo_ev(a, players)
+{
+	// Generalized formula for multiple players.
+	// https://arxiv.org/pdf/2104.05422.pdf
+	let sum = 0
+	for (let p of players)
+		sum += Math.pow(10, p.rating / 400)
+	return Math.pow(10, a.rating / 400) / sum
+}
+
+function elo_change(a, players, s)
+{
+	return Math.round(elo_k(a.count) * (s - elo_ev(a, players)))
+}
+
+
+function elo_compute(players, G)
+{
+	let winner = (G.result === "France") ? FRANCE : (G.result === "Britain") ? BRITAIN: -1
+	if (winner < 0) return
+
+	let game_players = []
+	for (let p of players) {
+		let index = get_player_index(p.user_id)
+
+		let player = player_list[index]
+		player.role = p.role
+		game_players.push(player)
+	}
+
+	for (let p of game_players) {
+		let who = (p.role === "France") ? FRANCE : (p.role === "Britain") ? BRITAIN : -1
+		if (who < 0) continue
+		let record = get_player_index(p.user_id)
+
+		let change = elo_change(p, game_players, (who === winner) ? 1 : 0)
+		player_list[record].rating += change
+	}
+}
+
+
+function get_player_index(id)
+{
+	for (let p = 0; p < player_list.length; p++) {
+		if (player_list[p].user_id !== id) continue
+		return p
+	}
+
+	let player = { }
+	player.user_id = id
+	player.rating = 1500
+	player_list.push(player)
+	return player_list.length - 1
+}
+
 
 function report(string)
 {
@@ -431,6 +493,23 @@ function is_digit(c) {
 
 function data_miner()
 {
+	const fs = require("fs")
+	const sqlite3 = require("better-sqlite3")
+	var db = new sqlite3("archive-is.db")
+	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
+	var select_players_of_game = db.prepare("select * from players where game_id=?")
+
+	for (let game of select_games_of_title.iterate("imperial-struggle")) {
+		let players = select_players_of_game.all(game.game_id)
+		let G = JSON.parse(game.state)
+		elo_compute(players, G)
+	}
+
+	for (let p = 0; p < player_list.length; p++) {
+		console.log (p + ". " + player_list[p].rating)
+	}
+	return
+
 	D.games             = 0 // Total games scanned (if they lasted until at least the end of turn 1)
 	D.games_turn_1      = 0 // Total games discarded because they ended before the end of turn 1
 	D.final_scoring     = 0 // Games that reached final scoring
@@ -556,13 +635,6 @@ function data_miner()
 		}
 	}
 
-
-	const fs = require("fs")
-	const sqlite3 = require("better-sqlite3")
-
-	var db = new sqlite3("archive-is.db")
-
-	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
 
 	for (var game of select_games_of_title.iterate("imperial-struggle")) {
 		var G = JSON.parse(game.state)
