@@ -495,6 +495,7 @@ function data_miner() {
 	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
 	var select_players_of_game = db.prepare("select * from players where game_id=?")
 
+	total_dataset = 0
 	for (let game of select_games_of_title.iterate("imperial-struggle")) {
 		total_dataset++
 		let players = select_players_of_game.all(game.game_id)
@@ -646,7 +647,12 @@ function data_mining_run(select_games_of_title, select_players_of_game, descript
 	if (max_elo < 9999) report ("Maximum Elo: " + max_elo)
 	if (only_handicap) report ("Only games w/ British handicap >= 2")
 	report ("Base Dataset: " + total_dataset + " Ranked Games (filtered by above)")
-	report("")
+
+	let player_checkoff = []
+	for (let p = 0; p < player_list.length; p++) {
+		player_checkoff[p] = false
+	}
+	let uniques = 0
 
 	for (var game of select_games_of_title.iterate("imperial-struggle")) {
 		var G = JSON.parse(game.state)
@@ -668,8 +674,22 @@ function data_mining_run(select_games_of_title, select_players_of_game, descript
 			if (!valid) break
 		}
 
-		if (valid) data_mine(G, G.log)
+		if (valid) {
+			for (let p of players) {
+				let index = get_player_index(p.user_id)
+				if (!player_checkoff[index]) {
+					player_checkoff[index]++
+					uniques++
+				}
+			}
+
+			data_mine(G, G.log)
+		}
 	}
+
+	report ("Total unique players: " + uniques)
+
+	report("")
 
 	data_mine_victory()
 	data_mine_length()
@@ -1394,8 +1414,8 @@ function report(string)
 // THESE ARE THE RUNS THAT WILL GET DONE
 function do_data_mining(select_games_of_title, select_players_of_game)
 {
-	//data_mining_run(select_games_of_title, select_players_of_game)  // All Games
-	data_mining_run(select_games_of_title, select_players_of_game, "High Skill", 1550, 9999, true)
+	data_mining_run(select_games_of_title, select_players_of_game)  // All Games
+	//data_mining_run(select_games_of_title, select_players_of_game, "High Skill", 1550, 9999, true)
 	//data_mining_run(select_games_of_title, select_players_of_game, "Low Skill", -1, 1500)
 }
 
