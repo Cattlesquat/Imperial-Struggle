@@ -481,35 +481,33 @@ function get_player_index(id)
 }
 
 
-function report(string)
-{
-	console.log(string)
-}
-
 function is_digit(c) {
 	return (c >= '0') && (c <= '9')
 }
 
 
-function data_miner()
-{
+var total_dataset = 0
+
+function data_miner() {
 	const fs = require("fs")
 	const sqlite3 = require("better-sqlite3")
-	var db = new sqlite3("archive-is.db")
+	var db = new sqlite3("archive-is2.db")
 	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
 	var select_players_of_game = db.prepare("select * from players where game_id=?")
 
 	for (let game of select_games_of_title.iterate("imperial-struggle")) {
+		total_dataset++
 		let players = select_players_of_game.all(game.game_id)
 		let G = JSON.parse(game.state)
 		elo_compute(players, G)
 	}
 
-	for (let p = 0; p < player_list.length; p++) {
-		console.log (p + ". " + player_list[p].rating)
-	}
-	return
+	do_data_mining()
+}
 
+
+function data_mining_run(select_games_of_title, select_players_of_game, description = "ALL GAMES", min_elo = -1, max_elo = 9999, only_handicap = false)
+{
 	D.games             = 0 // Total games scanned (if they lasted until at least the end of turn 1)
 	D.games_turn_1      = 0 // Total games discarded because they ended before the end of turn 1
 	D.final_scoring     = 0 // Games that reached final scoring
@@ -636,12 +634,45 @@ function data_miner()
 	}
 
 
+	report(" ")
+	report(" ")
+	report("=============================")
+	report("= IMPERIAL STRUGGLE - STATS =")
+	report("=============================")
+	report(" ")
+	report("PARAMETERS")
+	report("Description: " + description)
+	if (min_elo >= 0) report ("Minimum Elo: " + min_elo)
+	if (max_elo < 9999) report ("Maximum Elo: " + max_elo)
+	if (only_handicap) report ("Only games w/ British handicap >= 2")
+	report ("Base Dataset: " + total_dataset + " Ranked Games (filtered by above)")
+	report("")
+
 	for (var game of select_games_of_title.iterate("imperial-struggle")) {
 		var G = JSON.parse(game.state)
-		data_mine(G, G.log)
+		let players = select_players_of_game.all(game.game_id)
+
+		let valid = true
+		for (let p of players) {
+			let index = get_player_index(p.user_id)
+			let rating = player_list[index].rating
+
+			if ((min_elo >= 0) && (rating < min_elo)) valid = false
+			if ((max_elo < 9999) && (rating > max_elo)) valid = false
+
+			if (only_handicap) {
+				if (G.handicap_side !== BRITAIN) valid = false
+				if (G.bid < 2) valid = false
+			}
+
+			if (!valid) break
+		}
+
+		if (valid) data_mine(G, G.log)
 	}
 
 	data_mine_victory()
+	data_mine_length()
 	data_mine_ministries(FRANCE)
 	data_mine_ministries(BRITAIN)
 	data_mine_events()
@@ -650,6 +681,35 @@ function data_miner()
 	data_mine_advantages()
 	data_mine_scoring()
 	data_mine_wars()
+}
+
+
+function data_mine_length()
+{
+	report ("")
+	report ("LENGTH OF GAME")
+
+	for (let turn of data.turns) {
+		let t = turn.id
+		if (!turn.war) {
+			report ("    " + percent(D.turn_reached[t] / D.games) + " reached Turn " + t + " (" + D.turn_reached[t] + ")")
+		} else {
+			let war = 0
+			if (turn.id === "WSS") war = 1
+			if (turn.id === "WAS") war = 2
+			if (turn.id === "7YW") war = 3
+			if (turn.id === "AWI") war = 4
+			if (war > 0) {
+				report("    " + percent(D.wars[war]/D.games) + " reached " + data.wars[war].name + " (" + D.wars[war] + ")")
+			}
+		}
+	}
+
+	let total = 0
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		total += D.final_scoring_wins[who] + D.resigned_wins[who] + D.autovictory[who]
+	}
+	report("    " + percent(D.final_scoring / total) + " reached Final Scoring (" + D.final_scoring + ")")
 }
 
 
@@ -715,13 +775,6 @@ function data_mine_wars()
 
 
 function data_mine_victory() {
-	report(" ")
-	report(" ")
-	report("=============================")
-	report("= IMPERIAL STRUGGLE - STATS =")
-	report("=============================")
-	report(" ")
-
 	report("DATA SET")
 	report("    " + (D.games + D.games_turn_1) + " Total Games Played")
 	report("    " + D.games_turn_1 + " Ended before end of turn 1 (data not used)")
@@ -924,7 +977,7 @@ function data_mine_ministries(who)
 			if (data.ministries[m].side !== who) continue
 			if (!D.ministry_picked[era][m]) continue
 			let percent = Math.round(((D.ministry_picked[era][m] * 100)) / total)
-			let msg = "        " + D.ministry_picked[era][m] + " (" + percent + "%) " + data.ministries[m].name
+			let msg = "        " + percent + "% " + data.ministries[m].name + " (" + D.ministry_picked[era][m] + ") "
 			report (msg)
 		}
 	}
@@ -1307,3 +1360,19 @@ function data_mine(G, log)
 		}
 	}
 }
+
+
+// THIS IS HOW RUNS WILL BE OUTPUT
+function report(string)
+{
+	console.log(string)
+}
+
+// THESE ARE THE RUNS THAT WILL GET DONE
+function do_data_mining()
+{
+	//data_mining_run(select_games_of_title, select_players_of_game)  // All Games
+	data_mining_run(select_games_of_title, select_players_of_game, "High Skill", 1550, 9999, true)
+	//data_mining_run(select_games_of_title, select_players_of_game, "Low Skill", -1, 1500)
+}
+
