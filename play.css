@@ -483,8 +483,12 @@ div[data-tooltip]:after {
 /* LOG TIPSY TEXT */
 
 .flag-string { color: black }
-.flag-string-fr { color: var(--fr-text) }
-.flag-string-br { color: var(--br-text) }
+.flag-string-fr { color: var(--fr-text); }
+.flag-string-br { color: var(--br-text); }
+
+.window .flag-string { margin: 0 -2px; padding: 0 2px; background-color: #0001; color: black; }
+.window .flag-string-fr { margin: 0 -2px; padding: 0 2px; background-color: #08f4; color: black; }
+.window .flag-string-br { margin: 0 -2px; padding: 0 2px; background-color: #f404;color: black; }
 
 .tip-event-fr, .tip-ministry-fr, .tip-advantage-fr, .tip-demand-fr, .tip-spending-fr, .tip-award-fr, .tip-investment-fr, .tip-space-fr, .tip-bonus-war-fr, .tip-basic-war-fr {
 	font-style: italic;
