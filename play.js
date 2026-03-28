@@ -554,15 +554,13 @@ function demand_tooltip_image(d, onoff) {
 		let winner = demand_flag_winner(d)
 		switch (winner) {
 			case FRANCE:
-				world.demand_highlight.style.borderColor = "skyblue"
+				world.demand_highlight.className = "fr"
 				break
-
 			case BRITAIN:
-				world.demand_highlight.style.borderColor = "salmon"
+				world.demand_highlight.className = "br"
 				break
-
 			default:
-				world.demand_highlight.style.borderColor = "green"
+				world.demand_highlight.className = "none"
 				break
 		}
 

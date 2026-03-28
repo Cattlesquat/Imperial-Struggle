@@ -142,6 +142,10 @@ menu li.separator {
 	top: 178px;
 }
 
+#demand_highlight.fr { border-color: blue }
+#demand_highlight.br { border-color: crimson }
+#demand_highlight.none { border-color: gray }
+
 /* DEMAND & AWARD FLAGS */
 
 .marker.demand .score-delta {
