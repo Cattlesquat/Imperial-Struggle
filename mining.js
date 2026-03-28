@@ -505,6 +505,8 @@ function data_mining_run(select_games_of_title, select_players_of_game, descript
 	D.init_goes_first  = [ [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0] ]  // Initiative holder chose to go first
 	D.init_goes_second = [ [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0] ]  // Initiative holder chose to go second
 
+	D.turn_wins        = [ [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],  [0, 0], [0, 0], [0, 0], [0, 0]]
+
 	D.investment_picked = [ ] // How many times investment tile picked by each player  D.investment_picked[i][who]
 
 	D.ministry_picked = [ [], [], [] ] // ministry_picked[era][m] - number of times picked in
@@ -691,10 +693,11 @@ function data_mining_run(select_games_of_title, select_players_of_game, descript
 
 function data_mine_length()
 {
-	report ("")
+	report_break()
 	report_header ("LENGTH OF GAME")
 
-	for (let turn of data.turns) {
+	for (let tindex = 0; tindex < data.turns.length; tindex++) {
+		let turn = data.turns[tindex]
 		let t = turn.id
 		if (!turn.war) {
 			report (indent(1) + percent(D.turn_reached[t] / D.games) + " reached Turn " + t + " (" + D.turn_reached[t] + ")")
@@ -708,6 +711,12 @@ function data_mine_length()
 				report(indent(1) + percent(D.wars[war]/D.games) + " reached " + data.wars[war].name + " (" + D.wars[war] + ")")
 			}
 		}
+
+		let total = D.turn_wins[tindex][FRANCE] + D.turn_wins[tindex][BRITAIN]
+		if (total === 0) total = 1
+		for (let who = FRANCE; who <= BRITAIN; who++) {
+			report(indent(2) + percent(D.turn_wins[tindex][who] / total) + " " + data.flags[who].adj + " victories")
+		}
 	}
 
 	let total = 0
@@ -715,6 +724,12 @@ function data_mine_length()
 		total += D.final_scoring_wins[who] + D.resigned_wins[who] + D.autovictory[who]
 	}
 	report(indent(1) + percent(D.final_scoring / total) + " reached Final Scoring (" + D.final_scoring + ")")
+
+	total = D.final_scoring_wins[FRANCE] + D.final_scoring_wins[BRITAIN]
+	if (total === 0) total = 1
+	for (let who = FRANCE; who <= BRITAIN; who++) {
+		report (indent(2) + percent(D.final_scoring_wins[who] /total) + " " + data.flags[who].adj + " victories")
+	}
 }
 
 
@@ -757,7 +772,7 @@ function data_mine_wars()
 		report(indent(2) + percent(wins[TIE]/total) + " Theater ties (" + wins[TIE] + ")")
 
 		for (let t = 1; t <= data.wars[war].theaters; t++) {
-			report ("")
+			report_break()
 			report_header (indent(2) + "THEATER " + t + ": " + data.wars[war].theater_names[t].toUpperCase())
 
 			let wins = [ 0, 0, 0 ]
@@ -864,7 +879,7 @@ function data_mine_scoring()
 	report(indent(2) + percent(D.prestige_ties/total) + " Ties " + say_eras_percent(D.prestige_ties_era, era_total))
 
 	for (let r = 0; r < NUM_REGIONS; r++) {
-		report ("")
+		report_break()
 		report_header (indent(1) + data.regions[r].name.toUpperCase() + " Scoring")
 		let total = D.region_wins[r][FRANCE] + D.region_wins[r][BRITAIN] + D.region_ties[r]
 		let era_total     = [ ]
@@ -1000,7 +1015,7 @@ function data_mine_events()
 	report_break()
 	report_header ("EVENT CARDS (popularity of events by era)")
 	for (let era = 0; era <= 2; era++) {
-		if (era) report("")
+		if (era) report_break()
 		report(indent(1) + "Era " + (era + 1))
 		let events = []
 		for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
@@ -1075,6 +1090,7 @@ function theater_tier(war, winner, theater, delta)
 function data_mine(G, log)
 {
 	let turn = 0
+	let turn_index = 0
 	let awards = [ 0, 0, 0, 0 ]
 	let demands
 	let initiative = FRANCE
@@ -1108,6 +1124,15 @@ function data_mine(G, log)
 		if (l.startsWith("#TURN ")) {
 			turn = l[6] - '0'
 			D.turn_reached[turn]++
+
+			switch (turn) {
+				case 1: turn_index = PEACE_TURN_1; break
+				case 2: turn_index = PEACE_TURN_2; break
+				case 3: turn_index = PEACE_TURN_3; break
+				case 4: turn_index = PEACE_TURN_4; break
+				case 5: turn_index = PEACE_TURN_5; break
+				case 6: turn_index = PEACE_TURN_6; break
+			}
 
 			if (turn <= 2) {
 				era = 0
@@ -1305,6 +1330,7 @@ function data_mine(G, log)
 
 			if (l.includes("2 VP (Control of")) {
 				let who = l.includes("France") ? FRANCE : l.includes("Britain") ? BRITAIN : TIE
+				D.turn_wins[GAME_OVER][who]++
 				D.final_territory_wins[who]++
 				let matches = l.match(/\d+/g)
 				if (matches) {
@@ -1328,6 +1354,9 @@ function data_mine(G, log)
 
 		if (l.includes("France resigned") || l.includes("Britain resigned")) {
 			let who = l.includes("France") ? FRANCE : BRITAIN
+
+			D.turn_wins[turn_index][1 - who]++
+
 			D.resigned++
 			D.resigned_wins[1 - who]++
 		}
@@ -1336,6 +1365,8 @@ function data_mine(G, log)
 			let who = l.includes("France") ? FRANCE : BRITAIN
 			D.autovictories++
 			D.autovictory[who]++
+
+			D.turn_wins[turn_index][who]++
 
 			if (l.includes("VP")) {
 				D.vp_autovictories++
@@ -1353,6 +1384,12 @@ function data_mine(G, log)
 			if (l.includes("#" + data.wars[w].name)) {
 				war = w
 				D.wars[war]++
+				switch (war) {
+					case 1: turn_index = WAR_TURN_WSS; break;
+					case 2: turn_index = WAR_TURN_WAS; break;
+					case 3: turn_index = WAR_TURN_7YW; break;
+					case 4: turn_index = WAR_TURN_AWI; break;
+				}
 			}
 		}
 
@@ -1394,7 +1431,7 @@ var total_dataset = 0
 function data_miner() {
 	const fs = require("fs")
 	const sqlite3 = require("better-sqlite3")
-	var db = "db"                                  // <== This is the DB to use
+	var db = new sqlite3("db")                  // <== This is the DB to use
 	//var db = new sqlite3("archive-is2.db")
 	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
 	var select_players_of_game = db.prepare("select * from players where game_id=?")
