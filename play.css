@@ -10,8 +10,7 @@ body.Britain header.your_turn { background-color: hsl(6, 95%, 75%) }
 #role_France { background-color: hsl(200, 85%, 80%) }
 #role_Britain { background-color: hsl(6, 95%, 80%) }
 
-
-#log {
+:root {
 	--fr-text: mediumblue;
 	--br-text: darkred;
 
