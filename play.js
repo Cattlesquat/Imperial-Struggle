@@ -3076,9 +3076,7 @@ function say_flag_color(who, string)
 
 function format_delta(winner, delta)
 {
-	if (winner !== NONE)
-		return say_flag_color(winner, "+" + delta) + " "
-	return "+0 "
+	return say_flag_color(winner, "+" + delta) + " "
 }
 
 function format_prestige_info()
@@ -3089,16 +3087,12 @@ function format_prestige_info()
 function format_final_prestige_info()
 {
 	let winner = prestige_winner()
-	if (winner !== NONE)
-		return format_delta(winner, prestige_flag_delta()) + "Prestige: +2 VP"
-	return "+0 Prestige: +0 VP"
+	return format_delta(winner, prestige_flag_delta()) + "Prestige: +2 VP"
 }
 
 function format_debt_info() {
 	let award = debt_award()
-	if (debt_winner() !== NONE)
-		return format_delta(debt_winner(), debt_delta()) + "Available Debt: +" + award + " VP"
-	return "+0 Available Debt: +0 VP"
+	return format_delta(debt_winner(), debt_delta()) + "Available Debt: +" + award + " VP"
 }
 
 function format_space_info(s)
@@ -3222,7 +3216,7 @@ function format_results_info()
 
 	let msg = ""
 	if (V.preview_vp === 0) {
-		msg += "+0 VP"
+		msg += escape_square_brackets("[FX+0 VP]")
 	} else if (V.preview_vp > 0) {
 		msg += escape_square_brackets("[FF+" + V.preview_vp + " VP France]")
 	} else {
@@ -3409,7 +3403,7 @@ function format_final_scoring_results_info()
 	} else if (vp < 0) {
 		return escape_square_brackets("[FB+" + (0 - vp) + " VP Britain]")
 	} else {
-		return "+0 VP"
+		return escape_square_brackets("[FX+" + (0 - vp) + " VP]")
 	}
 }
 
@@ -3549,7 +3543,7 @@ function format_winner_delta(winner, delta) {
 		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag fr"></div></div>`
 	if (winner === BRITAIN)
 		return `<div class="score-delta">${say_flag_color(winner, "+" + delta)}<div class="score-flag br"></div></div>`
-	return `<div class="score-delta">+0</div>`
+	return `<div class="score-delta">${say_flag_color(NONE, "+0")}<div class="score-flag none"></div></div>`
 }
 
 function format_award_chit(a) {
