@@ -3305,12 +3305,12 @@ function preview_scoring_results() {
 		if (r === REGION_EUROPE) {
 			if (has_active_ministry(FRANCE, VOLTAIRE)) {
 				let multispace = 0
-				if (G.flags[IRELAND_2] === FRANCE) multispace++
-				if (G.flags[SCOTLAND_2] === FRANCE) multispace++
-				if ((G.flags[PRUSSIA_2] === FRANCE) || (G.flags[PRUSSIA_4] === FRANCE)) multispace++
-				if (G.flags[DUTCH_2] === FRANCE) multispace++
-				if ((G.flags[AUSTRIA_2] === FRANCE) || (G.flags[AUSTRIA_4] === FRANCE)) multispace++
-				if ((G.flags[SPAIN_2] === FRANCE) || (G.flags[SPAIN_4] === FRANCE)) multispace++
+				if ((G.flags[IRELAND_2] === FRANCE) && !has_conflict_marker(IRELAND_2)) multispace++
+				if (G.flags[SCOTLAND_2] === FRANCE && !has_conflict_marker(SCOTLAND_2)) multispace++
+				if (((G.flags[PRUSSIA_2] === FRANCE) && !has_conflict_marker(PRUSSIA_2)) || ((G.flags[PRUSSIA_4] === FRANCE) && !has_conflict_marker(PRUSSIA_4))) multispace++
+				if ((G.flags[DUTCH_2] === FRANCE) && !has_conflict_marker(DUTCH_2)) multispace++
+				if (((G.flags[AUSTRIA_2] === FRANCE) && !has_conflict_marker(AUSTRIA_2)) || ((G.flags[AUSTRIA_4] === FRANCE) && !has_conflict_marker(AUSTRIA_4))) multispace++
+				if (((G.flags[SPAIN_2] === FRANCE) && !has_conflict_marker(SPAIN_2)) || ((G.flags[SPAIN_4] === FRANCE) && !has_conflict_marker(SPAIN_4))) multispace++
 
 				let countries = Math.min(3, multispace)
 				if (countries) {
