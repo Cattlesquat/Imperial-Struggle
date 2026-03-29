@@ -1427,7 +1427,7 @@ var total_dataset = 0
 
 function data_miner(db_path) {
 	var db = new sqlite3(db_path)
-	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
+	var select_games_of_title = db.prepare("select * from rated_games_view natural join game_state where title_id=?")
 	var select_players_of_game = db.prepare("select * from players where game_id=?")
 
 	total_dataset = 0
