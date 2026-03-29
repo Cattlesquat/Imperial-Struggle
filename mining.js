@@ -1,5 +1,7 @@
 "use strict"
 
+const fs = require("fs")
+const sqlite3 = require("better-sqlite3")
 const data = require("./data.js")
 
 /* CONSTANTS */
@@ -417,9 +419,6 @@ const TIE = 2
 var D = { }
 var player_list = []
 
-data_miner()
-
-
 function elo_k(n)
 {
 	return 30
@@ -622,9 +621,7 @@ function data_mining_run(select_games_of_title, select_players_of_game, descript
 
 	report_break()
 	report_break()
-	report_header("=============================")
-	report_header("= IMPERIAL STRUGGLE - STATS =")
-	report_header("=============================")
+	report("<h1>IMPERIAL STRUGGLE - STATS</h1>")
 	report_break()
 	report_header("PARAMETERS")
 	report("Description: " + description)
@@ -823,7 +820,7 @@ function data_mine_victory() {
 	for (let who = FRANCE; who <= BRITAIN; who++) {
 		report_break()
 		total = D.final_scoring_wins[who] + D.resigned_wins[who] + D.autovictory[who]
-		report(data.flags[who].adj.toUpperCase() + " VICTORIES")
+		report_subheader(data.flags[who].adj.toUpperCase() + " VICTORIES")
 		report(indent(1) + percent(D.autovictory[who] / total) + " Autovictories (" + D.autovictory[who] + ")")
 		report(indent(2) + percent(D.vp_autovictory[who] / total) + " Autovictories VP (" + D.vp_autovictory[who] + ", " + percent(D.vp_autovictory[who] / D.autovictory[who]) + " of autovictories)")
 		report(indent(2) + percent(D.peace_autovictory[who] / total) + " Autovictories Awards (" + D.peace_autovictory[who] + ", " + percent(D.peace_autovictory[who] / D.autovictory[who]) + " of autovictories)")
@@ -1428,11 +1425,8 @@ function data_mine(G, log)
 
 var total_dataset = 0
 
-function data_miner() {
-	const fs = require("fs")
-	const sqlite3 = require("better-sqlite3")
-	var db = new sqlite3("db")                  // <== This is the DB to use
-	//var db = new sqlite3("archive-is2.db")
+function data_miner(db_path) {
+	var db = new sqlite3(db_path)
 	var select_games_of_title = db.prepare("select * from games natural join game_state where title_id=?")
 	var select_players_of_game = db.prepare("select * from players where game_id=?")
 
@@ -1452,13 +1446,18 @@ function indent(times)
 {
 	let indent_string = ""
 	for (let i = 0; i < times; i++) {
-		indent_string += "&nbsp;&nbsp;&nbsp;&nbsp;"
+		indent_string += "\t"
 	}
 	return indent_string
 }
 
 function report_top()
 {
+	D.report_lines.push("<!doctype html>")
+	D.report_lines.push('<meta name="viewport" content="width=device-width, initial-scale=1">')
+	D.report_lines.push("<style>")
+	D.report_lines.push("p,h1,h2,h3{margin:0;padding:0;white-space:pre;font-size:1em;line-height:1.5em}")
+	D.report_lines.push("</style>")
 	D.report_lines.push("<body>")
 }
 
@@ -1474,7 +1473,12 @@ function report_break()
 
 function report_header(string)
 {
-	D.report_lines.push("<p>"+ string + "</p>")
+	D.report_lines.push("<h2>"+ string + "</h2>")
+}
+
+function report_subheader(string)
+{
+	D.report_lines.push("<h3>"+ string + "</h3>")
 }
 
 // THIS IS HOW RUNS WILL BE OUTPUT
@@ -1486,15 +1490,19 @@ function report(string)
 // THESE ARE THE RUNS THAT WILL GET DONE
 function do_data_mining(select_games_of_title, select_players_of_game)
 {
-	const fs = require("fs")
-
 	data_mining_run(select_games_of_title, select_players_of_game)  // All Games
-	fs.writeFileSync("stats.html", D.report_lines.join("\n"))
+	fs.writeFileSync("public/imperial-struggle/info/stats.html", D.report_lines.join("\n"))
 
 	data_mining_run(select_games_of_title, select_players_of_game, "High Elo", 1550, 9999, true)
-	fs.writeFileSync("stats_high_elo.html", D.report_lines.join("\n"))
+	fs.writeFileSync("public/imperial-struggle/info/stats_high_elo.html", D.report_lines.join("\n"))
 
 	data_mining_run(select_games_of_title, select_players_of_game, "Low Elo", -1, 1500)
-	fs.writeFileSync("stats_low_elo.html", D.report_lines.join("\n"))
+	fs.writeFileSync("public/imperial-struggle/info/stats_low_elo.html", D.report_lines.join("\n"))
 }
 
+if (process.argv.length !== 3) {
+	console.error("usage: node public/imperial-struggle/mining.js db")
+	process.exit(1)
+}
+
+data_miner(process.argv[2])
