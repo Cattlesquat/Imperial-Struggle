@@ -195,9 +195,7 @@ menu li.separator {
 
 	display: block;
 	background-image: url(boards75/map.avif);
-	background-size: auto;
-	background-repeat: no-repeat;
-	/* background-position: -500px -200px; */
+	background-size: 2550px 1650px;
 }
 
 /* PANELS */
