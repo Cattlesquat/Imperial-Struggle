@@ -2612,14 +2612,9 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
 	// Detect "Sherlock mode" and don't mangle the prefix
-	if ((params.mode === "review") || (params.mode === "debug")) {
-		let prefix = text.substring(0, text.indexOf(' '));
-		let main_text = text.substring(text.indexOf(' ') + 1);
-		if (prefix.length > 0) {
-			text = prefix + " " + escape_square_brackets(main_text)
-		} else {
-			text = escape_square_brackets(text)
-		}
+	if (params.mode !== "play" && text[0] === "[") {
+		var ix = text.indexOf("]") + 1
+		text = text.slice(0, ix) + escape_square_brackets(text.slice(ix))
 	} else {
 		text = escape_square_brackets(text)
 	}
