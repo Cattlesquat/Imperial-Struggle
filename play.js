@@ -2372,7 +2372,7 @@ function on_prompt(text) {
 		console.error("V.prompt is NULL")
 		return "V.prompt is NULL"
 	}
-	return escape_text(text)
+	return escape_text(text, true)
 }
 
 const log_box_keywords = ["fr", "br", "both"]
@@ -2566,7 +2566,7 @@ const ministry_card_names = data.ministries.map(x => x?.name)
 const advantage_names = data.advantages.map(x => x?.name)
 const demand_names = data.demands.map(x => x?.name)
 
-function escape_text(text) {
+function escape_text(text, prompt = false) {
 	let verbose = get_preference("actionverbosity", "medium")
 	let shortest = (verbose === "short")
 
@@ -2612,7 +2612,7 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
 	// Detect "Sherlock mode" and don't mangle the prefix
-	if (params.mode !== "play" && text[0] === "[") {
+	if (prompt && (params.mode !== "play" && text[0] === "[")) {
 		var ix = text.indexOf("]") + 1
 		text = text.slice(0, ix) + escape_square_brackets(text.slice(ix))
 	} else {
