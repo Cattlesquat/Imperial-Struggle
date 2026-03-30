@@ -1218,6 +1218,26 @@ body[data-noanims="false"] {
 .marker.investment.i23 { background-image: url(tiles75/square/investment23_2m_2d.webp) }
 .marker.investment.reverse { background-image: url(tiles75/square/investment_reverse.webp) }
 
+
+.event_card.deck:after { content: "DECK OR OPPONENT"; background-color: wheat;}
+.event_card.hand:after { content: "HAND"; background-color: lightsalmon; }
+.event_card.played:after { content: "PLAYED"; background-color: aquamarine; }
+.event_card.discarded:after { content: "DISCARDED"; background-color: gainsboro; }
+.event_card.empire:after { content: "NOT IN PLAY"; background-color: limegreen; }
+.event_card.revolution:after { content: "NOT IN PLAY"; background-color: mediumpurple; }
+
+.event_card.partial:after {
+    content: "REVEALED";
+    background: repeating-linear-gradient(
+            45deg,
+            linen,
+            linen 10px,
+            #ffd580 10px,
+            #ffd580 20px
+    );
+}
+
+
 /* IMAGES (CARDS) */
 
 .card.event_card.deck { background-image: url(cards100/deck_1.avif) }

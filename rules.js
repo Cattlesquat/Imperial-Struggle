@@ -13390,7 +13390,11 @@ exports.view = function (state, role) {
 				if (Array.isArray(G.active))
 					V.prompt = `Waiting for ${G.active.join(" and ")}.`
 				else
-					V.prompt = `Waiting for ${G.active}.`
+					if (L.bidding_for_sides) {
+						V.prompt = `Waiting for opponent.`
+					} else {
+						V.prompt = `Waiting for ${G.active}.`
+					}
 			}
 		}
 	}
