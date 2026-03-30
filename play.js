@@ -2137,8 +2137,6 @@ function update_theater_flags(war, theater) {
 		alliances["_Conflicts"] = { fr: conflicts["_Conflicts"].fr, br: conflicts["_Conflicts"].br, type: -1 }
 	}
 
-	console.log(JSON.stringify({theater_data, minister, conflicts, alliances}, 0, 4))
-
 	// Build HTML
 	let flag_html = ""
 
