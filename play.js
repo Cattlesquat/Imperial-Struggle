@@ -3447,9 +3447,10 @@ function update_event_card_display_fancy(width)
 
 	text.push("<dl>")
 
-	text.push("<div style='display:inline-block'>")
+	text.push("<div style='display: flex; flex-wrap: wrap;'>")
 	for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
-		text.push(`<div class="card event_card c${e}" style="display:inline-block"></div>`)
+		let status = "played"
+		text.push(`<div class="card event_card c${e} event_display ${status}"></div>`)
 	}
 	text.push("</div>")
 
