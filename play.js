@@ -2372,7 +2372,14 @@ function on_prompt(text) {
 		console.error("V.prompt is NULL")
 		return "V.prompt is NULL"
 	}
-	return escape_text(text, true)
+
+	// Detect "Sherlock mode" and don't mangle the prefix
+	if (params.mode !== "play" && text[0] === "[") {
+		var ix = text.indexOf("]") + 1
+		return text.slice(0, ix) + escape_text(text.slice(ix))
+	}
+
+	return escape_text(text)
 }
 
 const log_box_keywords = ["fr", "br", "both"]
@@ -2566,7 +2573,7 @@ const ministry_card_names = data.ministries.map(x => x?.name)
 const advantage_names = data.advantages.map(x => x?.name)
 const demand_names = data.demands.map(x => x?.name)
 
-function escape_text(text, prompt = false) {
+function escape_text(text) {
 	let verbose = get_preference("actionverbosity", "medium")
 	let shortest = (verbose === "short")
 
@@ -2611,13 +2618,7 @@ function escape_text(text, prompt = false) {
 	text = escape_demand(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
-	// Detect "Sherlock mode" and don't mangle the prefix
-	if (prompt && (params.mode !== "play" && text[0] === "[")) {
-		var ix = text.indexOf("]") + 1
-		text = text.slice(0, ix) + escape_square_brackets(text.slice(ix))
-	} else {
-		text = escape_square_brackets(text)
-	}
+	text = escape_square_brackets(text)
 
 	return escape_typography(text)
 }
