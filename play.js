@@ -2614,7 +2614,7 @@ function escape_text(text) {
 	// Detect "Sherlock mode" and don't mangle the prefix
 	if ((params.mode === "review") || (params.mode === "debug")) {
 		let prefix = text.substring(0, text.indexOf(' '));
-		let main_text = substring(text.indexOf(' ') + 1);
+		let main_text = text.substring(text.indexOf(' ') + 1);
 		if (prefix.length > 0) {
 			text = prefix + " " + escape_square_brackets(main_text)
 		} else {
