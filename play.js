@@ -821,6 +821,14 @@ function on_init() {
 	create_window("french_ministry_dialog", "French Ministry", update_french_ministry_dialog, true)
 	create_window("british_ministry_dialog", "British Ministry", update_british_ministry_dialog, true)
 
+	// Event Card reformats itself based on size, so refresh it when it is resized
+	lookup_window("event_card_dialog").element.addEventListener(
+		"resize",
+		function () {
+			update_window_content("event_card_dialog", update_event_card_dialog())
+		}
+	)
+
 	init_preference_checkbox("noanims", false)
 	init_preference_checkbox("noflipsies", false)
 	init_preference_checkbox("downanddirty", false)
@@ -2605,7 +2613,18 @@ function escape_text(text) {
 	text = escape_demand(text, /\bDF(\d+)\b/g, "tip-demand-fr", "marker square-sm demand $1", demand_names)
 	text = escape_demand(text, /\bDB(\d+)\b/g, "tip-demand-br", "marker square-sm demand $1", demand_names)
 
-	text = escape_square_brackets(text)
+	// Detect "Sherlock mode" and don't mangle the prefix
+	if ((params.mode === "review") || (params.mode === "debug")) {
+		let prefix = text.substring(0, text.indexOf(' '));
+		let main_text = substring(text.indexOf(' ') + 1);
+		if (prefix.length > 0) {
+			text = prefix + " " + escape_square_brackets(main_text)
+		} else {
+			text = escape_square_brackets(text)
+		}
+	} else {
+		text = escape_square_brackets(text)
+	}
 
 	return escape_typography(text)
 }
@@ -3411,7 +3430,26 @@ function format_card_info(c) {
 	return escape_text("E" + c)
 }
 
+
+function update_event_card_display_fancy(width)
+{
+	var c, text = []
+
+	text.push("<dl>")
+	///
+
+}
+
 function update_event_card_dialog() {
+
+	//let dialog = document.getElementById("event_card_dialog")
+	//let width = window.getComputedStyle(dialog).width
+
+	let width = lookup_window("event_card_dialog").body.offsetWidth
+	if (width >= 1000) {
+		return update_event_card_display_fancy(width)
+	}
+
 	var c, text = []
 
 	text.push("<dl>")
