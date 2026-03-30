@@ -810,13 +810,6 @@ function bonus_war_tooltip(t, who) {
 
 /* ON INIT */
 
-//new ResizeObserver(resizerizer).observe("event_card_dialog")
-
-function resizerizer() {
-	update_window_content("event_card_dialog", update_event_card_dialog())
-}
-
-
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
@@ -828,8 +821,7 @@ function on_init() {
 	create_window("french_ministry_dialog", "French Ministry", update_french_ministry_dialog, true)
 	create_window("british_ministry_dialog", "British Ministry", update_british_ministry_dialog, true)
 
-	let dialog = document.getElementById("event_card_dialog")
-	new ResizeObserver(resizerizer).observe(dialog)
+	new ResizeObserver(() => { update_window_content("event_card_dialog", update_event_card_dialog()) }).observe(lookup_window("event_card_dialog").element)
 
 	/*
 	let dialog = document.getElementById("event_card_dialog")
@@ -850,6 +842,8 @@ function on_init() {
 		}
 	)
 	*/
+
+	console.log(lookup_window("event_card_dialog"))
 
 	init_preference_checkbox("noanims", false)
 	init_preference_checkbox("noflipsies", false)
@@ -3463,12 +3457,7 @@ function update_event_card_display_fancy(width)
 }
 
 function update_event_card_dialog() {
-
-	let dialog = document.getElementById("event_card_dialog")
-	let width = parseInt(window.getComputedStyle(dialog).width)
-
-	//let width = lookup_window("event_card_dialog").body.offsetWidth
-
+	let width = lookup_window("event_card_dialog").body.offsetWidth
 	if (width >= 1000) {
 		return update_event_card_display_fancy(width)
 	}
