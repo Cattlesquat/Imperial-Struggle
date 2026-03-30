@@ -810,6 +810,13 @@ function bonus_war_tooltip(t, who) {
 
 /* ON INIT */
 
+//new ResizeObserver(resizerizer).observe("event_card_dialog")
+
+function resizerizer() {
+	update_window_content("event_card_dialog", update_event_card_dialog())
+}
+
+
 function on_init() {
 	var i, a, s, x, y, w, h, lout
 
@@ -821,13 +828,28 @@ function on_init() {
 	create_window("french_ministry_dialog", "French Ministry", update_french_ministry_dialog, true)
 	create_window("british_ministry_dialog", "British Ministry", update_british_ministry_dialog, true)
 
+	let dialog = document.getElementById("event_card_dialog")
+	new ResizeObserver(resizerizer).observe(dialog)
+
+	/*
+	let dialog = document.getElementById("event_card_dialog")
+	dialog.addEventListener(
+		"resize",
+		() => {
+			console.log("RESIZE!")
+			update_window_content("event_card_dialog", update_event_card_dialog())
+		}
+	)
+
 	// Event Card reformats itself based on size, so refresh it when it is resized
 	lookup_window("event_card_dialog").element.addEventListener(
 		"resize",
 		function () {
+			console.log ("RESIZE!!!")
 			update_window_content("event_card_dialog", update_event_card_dialog())
 		}
 	)
+	*/
 
 	init_preference_checkbox("noanims", false)
 	init_preference_checkbox("noflipsies", false)
@@ -3430,16 +3452,23 @@ function update_event_card_display_fancy(width)
 	var c, text = []
 
 	text.push("<dl>")
-	///
 
+	text.push("<div style='display:inline-block'>")
+	for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
+		text.push(`<div class="card event_card c${e}" style="display:inline-block"></div>`)
+	}
+	text.push("</div>")
+
+	return text.join("")
 }
 
 function update_event_card_dialog() {
 
-	//let dialog = document.getElementById("event_card_dialog")
-	//let width = window.getComputedStyle(dialog).width
+	let dialog = document.getElementById("event_card_dialog")
+	let width = parseInt(window.getComputedStyle(dialog).width)
 
-	let width = lookup_window("event_card_dialog").body.offsetWidth
+	//let width = lookup_window("event_card_dialog").body.offsetWidth
+
 	if (width >= 1000) {
 		return update_event_card_display_fancy(width)
 	}
