@@ -3445,12 +3445,41 @@ function update_event_card_display_fancy(width)
 {
 	var c, text = []
 
-	text.push("<dl>")
+	//lookup_window("event_card_dialog").body.style.transform = "scale(.75)"
 
-	text.push("<div style='display: flex; flex-wrap: wrap;'>")
-	for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
-		let status = "played"
-		text.push(`<div class="card event_card c${e} event_display ${status}"></div>`)
+	text.push("<div class='event-card-display'>")
+	for (let category of [ "inhand", "indeck", "played", "discarded", "empire", "revolution"]) {
+		for (let e = 1; e <= NUM_EVENT_CARDS; e++) {
+			let status, status_string;
+			if (V.played_events.includes(e)) {
+				status = "played"
+				status_string = "PLAYED"
+			} else if (V.discard_pile.includes(e)) {
+				status = "discarded"
+				status_string = "DISCARDED"
+			} else if (V.deck.includes(e)) {
+				status = "indeck"
+				if (is_observing()) {
+					status_string = "DECK OR HANDS"
+				} else {
+					status_string = "DECK OR OPPONENT"
+				}
+			} else if (!is_observing() && V.hand[R].includes(e)) {
+				status = "inhand"
+				status_string = "YOUR HAND"
+			} else if (e > EMPIRE_ERA_CARDS && (current_era() < REVOLUTION_ERA)) {
+				status = "revolution"
+				status_string = "NOT YET IN PLAY"
+			} else if (e > SUCCESSION_ERA_CARDS && (current_era() < EMPIRE_ERA)) {
+				status = "empire"
+				status_string = "NOT YET IN PLAY"
+			}
+			if (status !== category) continue
+
+			let who = NONE
+			text.push(`<div class="card-display card event_card c${e}" onmouseenter="_tip_focus_event('${who}', '${e}', 'card event_card c${e}')" onmouseleave="_tip_blur_event()"><div class="card-badge ${status}">${status_string}</div></div>`)
+			///
+		}
 	}
 	text.push("</div>")
 
@@ -3475,7 +3504,7 @@ function update_event_card_dialog() {
 	for (c of V.discard_pile)
 		text.push("<dd>" + format_card_info(c))
 
-	if (is_observing)
+	if (is_observing())
 		text.push(`<dt>Player Hands or Deck (${V.deck.length})`)
 	else
 		text.push(`<dt>Opponent's Hand or Deck (${V.deck.length})`)

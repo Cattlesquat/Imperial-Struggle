@@ -905,6 +905,7 @@ body[data-noanims="false"] {
 /* CARDS */
 
 .card {
+    position: relative;
 	width: 250px;
 	height: 350px;
 	background-size: 250px 350px;
@@ -1219,9 +1220,17 @@ body[data-noanims="false"] {
 .marker.investment.reverse { background-image: url(tiles75/square/investment_reverse.webp) }
 
 
-.event_display { margin: 4px; }
+.event-card-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
 
-.event_card:after {
+.card-display { width: 187px; height: 262px; background-size: 187px 262px; border-radius: 12px }
+
+/* .card-display:hover { transform: scale(1.333); z-index:1000 } */
+
+.card-badge {
     position: absolute;
     text-align: center;
     font-size: 16px;
@@ -1232,12 +1241,12 @@ body[data-noanims="false"] {
     border-radius: 0  0 12px 12px;
 }
 
-.event_card.deck:after { content: "DECK OR OPPONENT"; background-color: wheat;}
-.event_card.hand:after { content: "HAND"; background-color: linen; }
-.event_card.played:after { content: "PLAYED"; background-color: aquamarine; }
-.event_card.discarded:after { content: "DISCARDED"; background-color: gainsboro; }
-.event_card.empire:after { content: "NOT IN PLAY"; background-color: limegreen; }
-.event_card.revolution:after { content: "NOT IN PLAY"; background-color: mediumpurple; }
+.card-badge.indeck { background-color: #ffd580;}
+.card-badge.inhand { background-color: linen; }
+.card-badge.played { background-color: lightsalmon; }
+.card-badge.discarded { background-color: darkgrey; }
+.card-badge.empire { background-color: #789e65; }
+.card-badge.revolution { background-color: #ad92a8 }
 
 .event_card.partial:after {
     content: "REVEALED";
@@ -2467,4 +2476,9 @@ body[data-noanims="false"] {
 		margin: auto;
 	}
 }
+
+@media (min-width:1600px) {
+    #event_card_dialog { width: 1397px; height: 863px; }
+}
+
 
