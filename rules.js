@@ -7982,7 +7982,7 @@ function ministry_useful_this_phase(m, subphase)
 {
 	switch (subphase) {
 		case BEFORE_PICKING_TILE:
-			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS ].includes(m)
+			return [ BANK_OF_ENGLAND, ROBERT_WALPOLE, TOWNSHEND_ACTS, NEW_WORLD_HUGUENOTS ].includes(m)
 
 		case OPTION_TO_PLAY_EVENT:
 		case DURING_EVENT:

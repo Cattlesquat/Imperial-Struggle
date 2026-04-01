@@ -3478,7 +3478,6 @@ function update_event_card_display_fancy(width)
 
 			let who = NONE
 			text.push(`<div class="card-display card event_card c${e}" onmouseenter="_tip_focus_event('${who}', '${e}', 'card event_card c${e}')" onmouseleave="_tip_blur_event()"><div class="card-badge ${status}">${status_string}</div></div>`)
-			///
 		}
 	}
 	text.push("</div>")
