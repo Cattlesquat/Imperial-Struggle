@@ -12796,7 +12796,7 @@ P.war_theater_resolve = {
 				button("confirm_pass_usa_forts")
 			}
 		} else if (L.war_atlantic) {
-			msg += say_action("Place Atlantic Dominance marker in the French & Indian War theater box")
+			msg += say_action("Place Atlantic Dominance marker in the French & Indian War theater box.")
 			action_theater(3)
 		} else {
 			msg += say_action("Done.")
