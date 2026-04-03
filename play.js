@@ -856,7 +856,6 @@ function on_init() {
 
 	init_preference_radio("actionverbosity", "medium", function () {
 		mention_verbosity()
-		rebuild_ui()
 	})
 
 	roles[FRANCE].stat.addEventListener("click", function () { scroll_to_debt(FRANCE) })
