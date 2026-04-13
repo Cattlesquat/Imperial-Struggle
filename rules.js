@@ -6332,7 +6332,6 @@ P.event_pacte_de_famille = {
 			let msg = "Refresh up to two Advantages in Europe "
 			if (L.num_refreshed < 2) {
 				for (let a = 0; a < NUM_ADVANTAGES; a++) {
-					if (!has_advantage(R, a)) continue
 					if (!is_advantage_exhausted(a)) continue
 					if (get_advantage_region(a) !== REGION_EUROPE) continue
 					action_advantage(a)
@@ -6340,7 +6339,7 @@ P.event_pacte_de_famille = {
 				}
 				let gauge = ((any || (L.num_refreshed >= 2)) ? L.num_refreshed+ "/" + 2 : "DONE")
 				V.prompt = event_prompt(R, G.played_event, msg + parens(gauge), "gain " + say_action_points(2, DIPLO) + " in Spain and/or Austria")
-				if (!any) button("done")
+				button("done")
 			} else {
 				V.prompt = event_prompt(R, G.played_event, "Confirm gain of " + say_action_points(2, DIPLO) + " in Spain and/or Austria")
 				button("confirm")
