@@ -3468,6 +3468,12 @@ P.reduce_treaty_points_phase = function () {
 	end()
 }
 
+
+function has_unconflicted(s, who)
+{
+	return (G.flags[s] === who) && !has_conflict_marker(s)
+}
+
 /* 4.1.11 - ACTION PHASE */
 
 P.resolve_remaining_powers = function () {
@@ -3475,7 +3481,7 @@ P.resolve_remaining_powers = function () {
 
 	if (has_active_ministry(FRANCE, JOHN_LAW)) {
 		let debt_reduction = 1
-		if ((G.flags[SCOTLAND_1] === FRANCE) || (G.flags[SCOTLAND_2] === FRANCE)) debt_reduction++
+		if (has_unconflicted(SCOTLAND_1, FRANCE) || has_unconflicted(SCOTLAND_2, FRANCE)) debt_reduction++
 		debt_reduction = Math.min(debt_reduction, G.debt[FRANCE])
 		if (debt_reduction > 0) {
 			G.debt[FRANCE] -= debt_reduction
@@ -4464,8 +4470,8 @@ function add_action_points(type, amount)
 function potential_burke_points(who)
 {
 	let points = 0
-	if (G.flags[IRELAND_1] === BRITAIN) points++
-	if (G.flags[IRELAND_2] === BRITAIN) points++
+	if (has_unconflicted(IRELAND_1, BRITAIN)) points++
+	if (has_unconflicted(IRELAND_2, BRITAIN)) points++
 	return points
 }
 
@@ -4825,7 +4831,7 @@ function check_event_bonus_requirements(who) {
 		set_bit(CARD_HAS_BONUS)
 		var prestige = [ ]
 		for (let whom = FRANCE; whom <= BRITAIN; whom++) {
-			prestige[whom] = ((G.flags[IRELAND_2] === whom) ? 1 : 0) + ((G.flags[SCOTLAND_2] === whom) ? 1 : 0)
+			prestige[whom] = (has_unconflicted(IRELAND_2, whom) ? 1 : 0) + (has_unconflicted(SCOTLAND_2, whom) ? 1 : 0)
 		}
 		set_bit(QUALIFIES_FOR_BONUS, prestige[who] > prestige[1 - who]) // "More Prestige spaces in Scotland and Ireland"
 	}
@@ -4964,6 +4970,7 @@ function carnatic_conflicts(who) {
 	for (let s = data.regions[REGION_INDIA].first_space; s < data.regions[REGION_INDIA].first_space + data.regions[REGION_INDIA].spaces; s++) {
 		if (data.spaces[s].type !== POLITICAL) continue
 		if (G.flags[s] !== who) continue
+		if (has_conflict_marker(s)) continue
 		alliances++
 	}
 	return alliances
@@ -6118,8 +6125,8 @@ P.event_famine_in_ireland = {
 			L.tiles_to_draw = 0
 			L.drawn_tiles = false
 			L.placing_displaced_tile = false
-			if (G.flags[IRELAND_1] === FRANCE) L.tiles_to_draw++
-			if (G.flags[IRELAND_2] === FRANCE) L.tiles_to_draw++
+			if (has_unconflicted(IRELAND_1, FRANCE)) L.tiles_to_draw++
+			if (has_unconflicted(IRELAND_2, FRANCE)) L.tiles_to_draw++
 
 			L.already = num_bonus_tiles_in_play(R)
 		}
@@ -7824,6 +7831,7 @@ P.event_falklands_crisis = {
 			let spain = 0
 			for (const s of [ SPAIN_1, SPAIN_2, SPAIN_3, SPAIN_4 ]) {
 				if (G.flags[s] !== FRANCE) continue
+				if (has_conflict_marker(s)) continue
 				spain++
 			}
 			if (spain > 0) {
@@ -9151,7 +9159,7 @@ function eligible_for_minor_action(s, who)
 			// Other nations flags can only be removed w/ presence of a conflict marker
 
 			// ... except European diplomatic spaces with Jonathan Swift ministry active and at least one space in Ireland
-			if (((data.spaces[s].region === REGION_EUROPE) && (data.spaces[s].type === POLITICAL) && has_active_ministry(who, JONATHAN_SWIFT) && ((G.flags[IRELAND_1] === who) || (G.flags[IRELAND_2] === who)))) {
+			if (((data.spaces[s].region === REGION_EUROPE) && (data.spaces[s].type === POLITICAL) && has_active_ministry(who, JONATHAN_SWIFT) && (has_unconflicted(IRELAND_1, who) || has_unconflicted(IRELAND_2, who)))) {
 				return true
 			}
 
