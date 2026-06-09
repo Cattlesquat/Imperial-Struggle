@@ -12225,7 +12225,9 @@ P.war_theater_reveal = {
 					}
 				}
 				if (num_choices(R, WAR_FLAG)) {
-					if (space_type === MARKET) {
+                    if (has_conflict_marker(s)) continue // Surprisingly, you can't remove a flag with a conflict marker!
+
+                    if (space_type === MARKET) {
 						let okay = true
 						for (const s2 of data.spaces[s].connects) {
 							if (data.spaces[s2].type !== MARKET) continue
