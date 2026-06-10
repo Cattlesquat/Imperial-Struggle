@@ -1977,13 +1977,14 @@ const TILE_POSITIONS = {
 	1: [[40, 45]],
 	2: [[10, 9], [65, 64]],
 	3: [[40, 0], [0, 68], [75, 68]],
-	4: [[0, 0], [75, 0], [0, 68], [75, 68]]
+	4: [[0, 0], [75, 0], [0, 68], [75, 68]],
+	5: [[0, 0], [75, 0], [38, 34], [0, 68], [75, 68]]
 }
 
 function agencement_theater_tiles(element) {
 	let children = element.children
 	let count = children.length
-	if (count === 0 || count > 4)
+	if (count === 0 || count > 5)
 		return
 
 	let positions = TILE_POSITIONS[count]
