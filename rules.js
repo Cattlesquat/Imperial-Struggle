@@ -8207,6 +8207,7 @@ P.ministry_robert_walpole = {
 		}
 	},
 	event_card(c) {
+        push_undo()
 		log (data.flags[R].name + " discards event: E" + c)
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
