@@ -8207,7 +8207,7 @@ P.ministry_robert_walpole = {
 		}
 	},
 	event_card(c) {
-        push_undo()
+		push_undo()
 		log (data.flags[R].name + " discards event: E" + c)
 		// Discard the old card
 		array_delete_item(G.hand[R], c)
@@ -12226,9 +12226,9 @@ P.war_theater_reveal = {
 					}
 				}
 				if (num_choices(R, WAR_FLAG)) {
-                    if (has_conflict_marker(s)) continue // Surprisingly, you can't remove a flag with a conflict marker!
+					if (has_conflict_marker(s)) continue // Surprisingly, you can't remove a flag with a conflict marker!
 
-                    if (space_type === MARKET) {
+					if (space_type === MARKET) {
 						let okay = true
 						for (const s2 of data.spaces[s].connects) {
 							if (data.spaces[s2].type !== MARKET) continue
