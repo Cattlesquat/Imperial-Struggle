@@ -5985,21 +5985,23 @@ P.do_military_spending_overruns = {
 	},
 	inactive: "enjoy some tasty Military Spending Overruns",
 	prompt() {
-		let any = false
-		for (let s = 0; s < NUM_SPACES; s++) {
-			if (G.flags[s] !== G.active) continue
-			if ((data.spaces[s].type === NAVAL) ||
-				((data.spaces[s].type === FORT) && !is_damaged_fort(s))) {
-				action_space(s)
-				any = true
-			}
-		}
-		for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 to theaters, inclusive
-			for (let t of G.theater_bonus[G.active][theater]) {
-				any = true
-				action_bonus_war_tile(t)
-			}
-		}
+        if (L.removals_done < L.removals_required) {
+            let any = false
+            for (let s = 0; s < NUM_SPACES; s++) {
+                if (G.flags[s] !== G.active) continue
+                if ((data.spaces[s].type === NAVAL) ||
+                    ((data.spaces[s].type === FORT) && !is_damaged_fort(s))) {
+                    action_space(s)
+                    any = true
+                }
+            }
+            for (let theater = 1; theater <= data.wars[G.next_war].theaters; theater++) { // 1 to theaters, inclusive
+                for (let t of G.theater_bonus[G.active][theater]) {
+                    any = true
+                    action_bonus_war_tile(t)
+                }
+            }
+        }
 
 		let gauge = (any || (L.removals_done >= L.removals_required)) ? (L.removals_done + "/" + L.removals_required) : "DONE"
 		V.prompt = event_prompt(G.active, G.played_event, "Damage a fort, remove a squadron, or remove a bonus war tile from the next war " + parens(gauge))
