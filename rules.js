@@ -5985,8 +5985,8 @@ P.do_military_spending_overruns = {
 	},
 	inactive: "enjoy some tasty Military Spending Overruns",
 	prompt() {
+		let any = false
 		if (L.removals_done < L.removals_required) {
-			let any = false
 			for (let s = 0; s < NUM_SPACES; s++) {
 				if (G.flags[s] !== G.active) continue
 				if ((data.spaces[s].type === NAVAL) ||
