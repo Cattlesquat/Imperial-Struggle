@@ -786,17 +786,20 @@ function _layout_stacks() {
 
 		var i = 0, k = 0
 		for (var child of stack.element.children) {
-			var w = child.offsetWidth
-			var h = child.offsetHeight
-			var x = start_x + major_dx * i + minor_dx * k + (stack_w - w) * grav_x
-			var y = start_y + major_dy * i + minor_dy * k + (stack_h - h) * grav_y
-			child.style.left = x + "px"
-			child.style.top = y + "px"
-			child.style.zIndex = z
+			var w = child.thing.stack_w ??= child.offsetWidth
+			var h = child.thing.stack_h ??= child.offsetHeight
+			var x = child.thing.stack_x = start_x + major_dx * i + minor_dx * k + (stack_w - w) * grav_x
+			var y = child.thing.stack_y = start_y + major_dy * i + minor_dy * k + (stack_h - h) * grav_y
 			if (++i === wrap) {
 				i = 0
 				++k
 			}
+		}
+
+		for (var child of stack.element.children) {
+			child.style.left = child.thing.stack_x + "px"
+			child.style.top = child.thing.stack_y + "px"
+			child.style.zIndex = z
 		}
 	}
 }
